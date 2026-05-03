@@ -225,15 +225,16 @@ TEST_FILE
 			WString itemName, itemResult;
 			if (!DecodeRpcName(rpcLine, itemName, itemResult)) continue;
 
-			TEST_CASE(itemName)
-			{
-				TEST_PRINT(itemName);
-				auto sample = LoadSample(L"Rpc", itemName);
-				Ptr<WfModule> wrapperModule;
-
-				manager.Clear(true, true);
+				TEST_CASE(itemName)
 				{
-					auto module = ParseModule(sample, GetWorkflowParser());
+					TEST_PRINT(itemName);
+					auto sample = LoadSample(L"Rpc", itemName);
+					Ptr<WfModule> wrapperModule;
+					Ptr<WfModule> wrapperJsonModule;
+
+					manager.Clear(true, true);
+					{
+						auto module = ParseModule(sample, GetWorkflowParser());
 					TEST_ASSERT(module);
 					TEST_ASSERT(manager.errors.Count() == 0);
 
@@ -244,6 +245,10 @@ TEST_FILE
 
 					wrapperModule = GenerateModuleRpc(&manager, MakeRpcCppAssemblyName(itemName));
 					TEST_ASSERT(wrapperModule);
+					TEST_ASSERT(manager.errors.Count() == 0);
+
+					wrapperJsonModule = GenerateModuleRpcJson(&manager, MakeRpcCppAssemblyName(itemName));
+					TEST_ASSERT(wrapperJsonModule);
 					TEST_ASSERT(manager.errors.Count() == 0);
 
 					auto typeFullNames = Ptr(new List<WString>());
@@ -258,6 +263,10 @@ TEST_FILE
 					auto wrapperString = GenerateToStream([&](StreamWriter& writer)
 					{
 						WfPrint(wrapperModule, L"", writer);
+					});
+					auto wrapperJsonString = GenerateToStream([&](StreamWriter& writer)
+					{
+						WfPrint(wrapperJsonModule, L"", writer);
 					});
 					auto metadataString = GenerateToStream([&](StreamWriter& writer)
 					{
@@ -296,6 +305,13 @@ TEST_FILE
 					EncoderStream encoderStream(fileStream, encoder);
 					StreamWriter writer(encoderStream);
 					writer.WriteString(wrapperString);
+
+					auto outputJsonPath = outputFolder / (L"Wrapper_" + itemName + L"_Json.txt");
+					FileStream fileJsonStream(outputJsonPath.GetFullPath(), FileStream::WriteOnly);
+					BomEncoder jsonEncoder(BomEncoder::Utf8);
+					EncoderStream jsonEncoderStream(fileJsonStream, jsonEncoder);
+					StreamWriter jsonWriter(jsonEncoderStream);
+					jsonWriter.WriteString(wrapperJsonString);
 				}
 
 				manager.Clear(true, true);
@@ -306,6 +322,7 @@ TEST_FILE
 
 					manager.AddModule(module);
 					manager.AddModule(wrapperModule);
+					manager.AddModule(wrapperJsonModule);
 					manager.Rebuild(true, nullptr, false);
 					LogSampleParseResult(L"Rpc", itemName, sample, module, &manager);
 					TEST_ASSERT(manager.errors.Count() == 0);

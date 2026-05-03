@@ -481,10 +481,74 @@ Semantic Analyzing
 RPC Analyzing
 ***********************************************************************/
 
+			namespace rpc_generating
+			{
+				struct RpcParamModel
+				{
+					WString														name;
+					Ptr<WfType>													type;
+					reflection::description::ITypeInfo*							typeInfo = nullptr;
+					bool														byref = false;
+				};
+
+				enum class RpcMethodKind
+				{
+					Normal,
+					PropertyGetter,
+					PropertySetter,
+				};
+
+				struct RpcPropertyModel
+				{
+					WString														name;
+					Ptr<WfType>													type;
+					reflection::description::ITypeInfo*							typeInfo = nullptr;
+					bool														byref = false;
+					bool														cached = false;
+					WString														getterName;
+					WString														setterName;
+					WString														valueChangedEvent;
+				};
+
+				struct RpcMethodModel
+				{
+					WString														fullName;
+					WString														name;
+					Ptr<WfType>													returnType;
+					reflection::description::ITypeInfo*							returnTypeInfo = nullptr;
+					bool														returnByref = false;
+					RpcMethodKind												kind = RpcMethodKind::Normal;
+					vint														methodId = -1;
+					collections::List<RpcParamModel>							params;
+				};
+
+				struct RpcEventModel
+				{
+					WString														fullName;
+					WString														name;
+					vint														eventId = -1;
+					collections::List<RpcParamModel>							params;
+				};
+
+				struct RpcInterfaceModel
+				{
+					WString														fullName;
+					WString														interfaceName;
+					vint														typeId = -1;
+					bool														ctor = false;
+					WfClassDeclaration*											interfaceDecl = nullptr;
+					collections::List<WString>									baseFullNames;
+					collections::List<RpcPropertyModel>							properties;
+					collections::List<RpcMethodModel>							methods;
+					collections::List<RpcEventModel>							events;
+				};
+			}
+
 			extern void										PopulateAttributesOnTypeDescriptors(WfLexicalScopeManager* manager);
 			extern void										ValidateModuleRPC(WfLexicalScopeManager* manager, Ptr<WfModule> module);
 			extern WString									GenerateDtsFromRpcMetadata(WfLexicalScopeManager* manager);
 			extern Ptr<WfModule>							GenerateModuleRpc(WfLexicalScopeManager* manager, WString assemblyName);
+			extern Ptr<WfModule>							GenerateModuleRpcJson(WfLexicalScopeManager* manager, WString assemblyName);
 
 /***********************************************************************
 Expanding Virtual Nodes

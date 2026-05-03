@@ -17,6 +17,7 @@ namespace vl
 				Ptr<WfType> CreatePredefinedType(WfPredefinedTypeName name);
 				Ptr<WfType> CreateQualifiedType(const WString& fullName);
 				Ptr<WfType> CreateTopQualifiedType(const WString& fullName);
+				Ptr<WfType> CreateRawType(const WString& fullName);
 				Ptr<WfType> CreateSharedType(const WString& fullName);
 				Ptr<WfType> CreateNullableType(const WString& fullName);
 				Ptr<WfType> CreateMapType(Ptr<WfType> keyType, Ptr<WfType> valueType);
@@ -51,9 +52,12 @@ namespace vl
 				Ptr<WfConstructorArgument> CreateConstructorArgument(Ptr<WfExpression> key, Ptr<WfExpression> value);
 				Ptr<WfConstructorExpression> CreateConstructor();
 				Ptr<WfExpression> CreateNewClass(Ptr<WfType> type);
+				Ptr<WfExpression> CreateNewInterface(Ptr<WfType> type);
 				Ptr<WfStatement> CreateExpressionStatement(Ptr<WfExpression> expression);
 				Ptr<WfStatement> CreateReturn(Ptr<WfExpression> expression);
 				Ptr<WfStatement> CreateRaise(const WString& message);
+				Ptr<WfStatement> CreateTryFinally(Ptr<WfStatement> protectedStatement, Ptr<WfStatement> finallyStatement);
+				Ptr<WfVariableDeclaration> CreateVariableDeclaration(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression);
 				Ptr<WfStatement> CreateVariableStatement(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression);
 				Ptr<WfStatement> CreateIf(Ptr<WfExpression> condition, Ptr<WfStatement> trueBranch, Ptr<WfStatement> falseBranch = nullptr);
 				Ptr<WfForEachStatement> CreateForEach(const WString& name, Ptr<WfExpression> collection, Ptr<WfStatement> body);
@@ -62,6 +66,22 @@ namespace vl
 				Ptr<WfFunctionArgument> CreateFunctionArgument(const WString& name, Ptr<WfType> type);
 				Ptr<WfFunctionDeclaration> CreateFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind, WfFunctionAnonymity anonymity = WfFunctionAnonymity::Named);
 				void AddSwitchCase(Ptr<WfSwitchStatement> switchStat, Ptr<WfExpression> expression, Ptr<WfStatement> statement);
+				bool IsSharedInterfaceType(ITypeInfo* type);
+				bool IsVoidType(WfType* type);
+				Ptr<WfExpression> CreateRpcBoxExpression(ITypeInfo* typeInfo, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle);
+				Ptr<WfExpression> CreateRpcUnboxExpression(ITypeInfo* typeInfo, Ptr<WfType> type, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle);
+				Ptr<WfExpression> CreateRpcConstantReference(const wchar_t* prefix, const WString& fullName);
+				void CollectMangledNames(WfLexicalScopeManager* manager);
+				List<RpcInterfaceModel> BuildInterfaceModels(WfLexicalScopeManager* manager);
+				Ptr<WfStatement> BuildRegisterService();
+				WString GetRpcOpsInterfaceName(const WString& assemblyName);
+				WString GetRpcOpsInvokeMethodName(const RpcMethodModel& methodModel);
+				WString GetRpcOpsInvokeEventName(const RpcEventModel& eventModel);
+				WString GetRpcOpsArgumentName(const RpcParamModel& paramModel);
+				Ptr<WfFunctionDeclaration> CreateRpcOpsFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind);
+				void AddRpcOpsFunctionArguments(Ptr<WfFunctionDeclaration> functionDecl, const List<RpcParamModel>& params);
+				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel);
+				Ptr<WfExpression> CreateRpcOpsObjectEventInvoke(const RpcEventModel& eventModel);
 
 				enum class RpcJsonPrimitiveKind
 				{
@@ -1071,6 +1091,329 @@ namespace vl
 					tempIndex = context.tempIndex;
 					return result;
 				}
+
+				Ptr<WfType> CreateRpcJsonTransferType(ITypeInfo* typeInfo, bool byref, WfType* type)
+				{
+					if (IsSharedInterfaceType(typeInfo))
+					{
+						return byref
+							? CreateQualifiedType(L"system::RpcObjectReference")
+							: CreatePredefinedType(WfPredefinedTypeName::Object);
+					}
+					return CopyType(type);
+				}
+
+				Ptr<WfExpression> CreateRpcJsonTransferExpression(ITypeInfo* typeInfo, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
+				{
+					if (IsSharedInterfaceType(typeInfo))
+					{
+						return CreateRpcBoxExpression(typeInfo, byref, value, lifecycle);
+					}
+					return value;
+				}
+
+				Ptr<WfExpression> CreateRpcJsonTransferExpression(const RpcParamModel& paramModel, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
+				{
+					return CreateRpcJsonTransferExpression(paramModel.typeInfo, paramModel.byref, value, lifecycle);
+				}
+
+				Ptr<WfExpression> CreateJsonDispatchArgument(
+					WfLexicalScopeManager* manager,
+					vint& tempIndex,
+					Ptr<WfBlockStatement> block,
+					Ptr<WfExpression> node,
+					const RpcParamModel& paramModel)
+				{
+					auto transferType = CreateRpcJsonTransferType(paramModel.typeInfo, paramModel.byref, paramModel.type.Obj());
+					auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, node, transferType.Obj());
+					if (IsSharedInterfaceType(paramModel.typeInfo))
+					{
+						return CreateRpcUnboxExpression(paramModel.typeInfo, paramModel.type, paramModel.byref, CreateReference(valueName), CreateReference(L"_lc"));
+					}
+					return CreateReference(valueName);
+				}
+
+				Ptr<WfStatement> BuildInvokeMethodBranchJson(WfLexicalScopeManager* manager, const RpcInterfaceModel& interfaceModel, const RpcMethodModel& methodModel)
+				{
+					auto block = CreateBlock();
+					AddStatement(block, CreateVariableStatement(L"target", CreateSharedType(interfaceModel.fullName), CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
+
+					List<Ptr<WfExpression>> arguments;
+					vint tempIndex = 0;
+					for (vint i = 0; i < methodModel.params.Count(); i++)
+					{
+						auto&& paramModel = methodModel.params[i];
+						auto argument = CreateIndex(CreateReference(L"arguments"), CreateInt(i));
+						arguments.Add(CreateJsonDispatchArgument(
+							manager,
+							tempIndex,
+							block,
+							CreateCast(CreateSharedType(L"system::JsonNode"), argument),
+							paramModel));
+					}
+
+					auto invokeTarget = CreateMember(CreateReference(L"target"), methodModel.name);
+					auto invoke = Ptr(new WfCallExpression);
+					invoke->function = invokeTarget;
+					for (auto argument : arguments)
+					{
+						invoke->arguments.Add(argument);
+					}
+
+					if (IsVoidType(methodModel.returnType.Obj()))
+					{
+						AddStatement(block, CreateExpressionStatement(invoke));
+						AddStatement(block, CreateReturn(CreateNull()));
+					}
+					else
+					{
+						auto transferValue = CreateRpcJsonTransferExpression(methodModel.returnTypeInfo, methodModel.returnByref, invoke, CreateReference(L"_lc"));
+						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
+						auto nodeName = AddRpcJsonSerializeValue(manager, tempIndex, block, transferValue, transferType.Obj());
+						AddStatement(block, CreateReturn(CreateReference(nodeName)));
+					}
+					return block;
+				}
+
+				Ptr<WfStatement> BuildInvokeEventBranchJson(WfLexicalScopeManager* manager, const RpcInterfaceModel& interfaceModel, const RpcEventModel& eventModel)
+				{
+					auto block = CreateBlock();
+					AddStatement(block, CreateVariableStatement(L"target", CreateSharedType(interfaceModel.fullName), CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
+
+					auto invoke = Ptr(new WfCallExpression);
+					invoke->function = CreateMember(CreateReference(L"target"), eventModel.name);
+					vint tempIndex = 0;
+					for (vint i = 0; i < eventModel.params.Count(); i++)
+					{
+						auto&& paramModel = eventModel.params[i];
+						auto argument = CreateIndex(CreateReference(L"arguments"), CreateInt(i));
+						invoke->arguments.Add(CreateJsonDispatchArgument(
+							manager,
+							tempIndex,
+							block,
+							CreateCast(CreateSharedType(L"system::JsonNode"), argument),
+							paramModel));
+					}
+					AddStatement(block, CreateExpressionStatement(invoke));
+					return block;
+				}
+
+				Ptr<WfStatement> BuildDispatchChainJson(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces, bool forEvent)
+				{
+					auto switchStat = Ptr(new WfSwitchStatement);
+					switchStat->expression = CreateReference(forEvent ? L"eventId" : L"methodId");
+					switchStat->defaultBranch = CreateRaise(forEvent ? L"Unknown RPC event id." : L"Unknown RPC method id.");
+
+					for (auto&& interfaceModel : interfaces)
+					{
+						if (forEvent)
+						{
+							for (auto&& eventModel : interfaceModel.events)
+							{
+								auto switchCase = Ptr(new WfSwitchCase);
+								switchCase->expression = CreateRpcConstantReference(L"rpcevent_", eventModel.fullName);
+								switchCase->statement = BuildInvokeEventBranchJson(manager, interfaceModel, eventModel);
+								switchStat->caseBranches.Add(switchCase);
+							}
+						}
+						else
+						{
+							for (auto&& methodModel : interfaceModel.methods)
+							{
+								auto switchCase = Ptr(new WfSwitchCase);
+								switchCase->expression = CreateRpcConstantReference(L"rpcmethod_", methodModel.fullName);
+								switchCase->statement = BuildInvokeMethodBranchJson(manager, interfaceModel, methodModel);
+								switchStat->caseBranches.Add(switchCase);
+							}
+						}
+					}
+					return switchStat;
+				}
+
+				Ptr<WfDeclaration> GenerateObjectOpsFactoryJson(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectOpsJson", CreateSharedType(L"system::IRpcObjectOps"), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
+					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectOps")).Cast<WfNewInterfaceExpression>();
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
+
+					{
+						auto invokeMethod = CreateFunctionDeclaration(L"InvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
+						invokeMethod->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+						invokeMethod->arguments.Add(CreateFunctionArgument(L"methodId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+						invokeMethod->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
+						AddStatement(invokeMethod->statement.Cast<WfBlockStatement>(), BuildDispatchChainJson(manager, interfaces, false));
+						newOps->declarations.Add(invokeMethod);
+					}
+
+					{
+						auto objectHold = CreateFunctionDeclaration(L"ObjectHold", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+						objectHold->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+						objectHold->arguments.Add(CreateFunctionArgument(L"remoteClientId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+						objectHold->arguments.Add(CreateFunctionArgument(L"hold", CreatePredefinedType(WfPredefinedTypeName::Bool)));
+						auto trueBranch = CreateBlock();
+						AddStatement(trueBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectHold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
+						auto falseBranch = CreateBlock();
+						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectUnhold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
+						AddStatement(objectHold->statement.Cast<WfBlockStatement>(), CreateIf(CreateReference(L"hold"), trueBranch, falseBranch));
+						newOps->declarations.Add(objectHold);
+					}
+
+					{
+						auto registerService = CreateFunctionDeclaration(L"RegisterService", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+						registerService->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+						registerService->arguments.Add(CreateFunctionArgument(L"service", CreateSharedType(L"system::Interface")));
+						auto block = registerService->statement.Cast<WfBlockStatement>();
+						AddStatement(block, BuildRegisterService());
+						newOps->declarations.Add(registerService);
+					}
+
+					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateObjectEventOpsFactoryJson(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectEventOpsJson", CreateSharedType(L"system::IRpcObjectEventOps"), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
+					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectEventOps")).Cast<WfNewInterfaceExpression>();
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
+
+					{
+						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+						invokeEvent->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+						invokeEvent->arguments.Add(CreateFunctionArgument(L"eventId", CreatePredefinedType(WfPredefinedTypeName::Int)));
+						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
+						auto block = invokeEvent->statement.Cast<WfBlockStatement>();
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(true))));
+						auto finallyBlock = CreateBlock();
+						AddStatement(finallyBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(false))));
+						AddStatement(block, CreateTryFinally(BuildDispatchChainJson(manager, interfaces, true), finallyBlock));
+						newOps->declarations.Add(invokeEvent);
+					}
+
+					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
+					return functionDecl;
+				}
+
+				void AddRpcOpsArgumentsArrayJson(
+					WfLexicalScopeManager* manager,
+					Ptr<WfBlockStatement> block,
+					const List<RpcParamModel>& params,
+					vint& tempIndex)
+				{
+					AddStatement(block, CreateVariableStatement(L"arguments", CreateSharedType(L"system::Array"), CreateConstructor()));
+					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Resize"), CreateInt(params.Count()))));
+
+					for (vint i = 0; i < params.Count(); i++)
+					{
+						auto&& paramModel = params[i];
+						auto value = CreateReference(GetRpcOpsArgumentName(paramModel));
+						auto transferValue = CreateRpcJsonTransferExpression(paramModel, value, CreateReference(L"_lc"));
+						auto transferType = CreateRpcJsonTransferType(paramModel.typeInfo, paramModel.byref, paramModel.type.Obj());
+						auto nodeName = AddRpcJsonSerializeValue(manager, tempIndex, block, transferValue, transferType.Obj());
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), CreateReference(nodeName))));
+					}
+				}
+
+				Ptr<WfFunctionDeclaration> GenerateRpcOpsMethodImplementationJson(WfLexicalScopeManager* manager, const RpcMethodModel& methodModel)
+				{
+					auto functionDecl = CreateRpcOpsFunctionDeclaration(GetRpcOpsInvokeMethodName(methodModel), CopyType(methodModel.returnType.Obj()), WfFunctionKind::Override);
+					AddRpcOpsFunctionArguments(functionDecl, methodModel.params);
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					vint tempIndex = 0;
+					AddRpcOpsArgumentsArrayJson(manager, block, methodModel.params, tempIndex);
+					auto invoke = CreateRpcOpsObjectInvoke(methodModel);
+					if (IsVoidType(methodModel.returnType.Obj()))
+					{
+						AddStatement(block, CreateExpressionStatement(invoke));
+					}
+					else
+					{
+						AddStatement(block, CreateVariableStatement(L"jsonResult", CreateSharedType(L"system::JsonNode"), CreateCast(CreateSharedType(L"system::JsonNode"), invoke)));
+						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
+						auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, CreateReference(L"jsonResult"), transferType.Obj());
+						if (IsSharedInterfaceType(methodModel.returnTypeInfo))
+						{
+							AddStatement(block, CreateReturn(CreateRpcUnboxExpression(methodModel.returnTypeInfo, methodModel.returnType, methodModel.returnByref, CreateReference(valueName), CreateReference(L"_lc"))));
+						}
+						else
+						{
+							AddStatement(block, CreateReturn(CreateReference(valueName)));
+						}
+					}
+
+					return functionDecl;
+				}
+
+				Ptr<WfFunctionDeclaration> GenerateRpcOpsEventImplementationJson(WfLexicalScopeManager* manager, const RpcEventModel& eventModel)
+				{
+					auto functionDecl = CreateRpcOpsFunctionDeclaration(GetRpcOpsInvokeEventName(eventModel), CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+					AddRpcOpsFunctionArguments(functionDecl, eventModel.params);
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					vint tempIndex = 0;
+					AddRpcOpsArgumentsArrayJson(manager, block, eventModel.params, tempIndex);
+					AddStatement(block, CreateExpressionStatement(CreateRpcOpsObjectEventInvoke(eventModel)));
+					return functionDecl;
+				}
+
+				Ptr<WfDeclaration> GenerateRpcOpsFactoryJson(WfLexicalScopeManager* manager, const WString& assemblyName, const List<RpcInterfaceModel>& interfaces)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IOps_CreateJson", CreateSharedType(GetRpcOpsInterfaceName(assemblyName)), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
+					auto newOps = CreateNewInterface(CreateSharedType(GetRpcOpsInterfaceName(assemblyName))).Cast<WfNewInterfaceExpression>();
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
+
+					for (auto&& interfaceModel : interfaces)
+					{
+						for (auto&& methodModel : interfaceModel.methods)
+						{
+							newOps->declarations.Add(GenerateRpcOpsMethodImplementationJson(manager, methodModel));
+						}
+						for (auto&& eventModel : interfaceModel.events)
+						{
+							newOps->declarations.Add(GenerateRpcOpsEventImplementationJson(manager, eventModel));
+						}
+					}
+
+					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
+					return functionDecl;
+				}
+			}
+
+			Ptr<WfModule> GenerateModuleRpcJson(WfLexicalScopeManager* manager, WString assemblyName)
+			{
+				using namespace rpc_generating;
+
+				if (!manager || !manager->rpcMetadata || !manager->rpcMetadata->metadataModule)
+				{
+					return nullptr;
+				}
+
+				CollectMangledNames(manager);
+				if (manager->errors.Count() > 0)
+				{
+					return nullptr;
+				}
+
+				auto interfaces = BuildInterfaceModels(manager);
+				if (manager->errors.Count() > 0)
+				{
+					return nullptr;
+				}
+
+				auto module = Ptr(new WfModule);
+				module->moduleType = WfModuleType::Module;
+				module->name.value = L"RpcMetadataJson";
+
+				AddRpcJsonDeclarations(manager, module);
+				module->declarations.Add(GenerateObjectOpsFactoryJson(manager, interfaces));
+				module->declarations.Add(GenerateObjectEventOpsFactoryJson(manager, interfaces));
+				module->declarations.Add(GenerateRpcOpsFactoryJson(manager, assemblyName, interfaces));
+
+				return module;
 			}
 		}
 	}
