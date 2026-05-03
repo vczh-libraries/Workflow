@@ -51,11 +51,13 @@ But in any current test projects we only pass `nullptr`, actual testing will be 
 
 - Task 1 succeeds when the solution builds and the affected library/metadata unit tests pass after moving all `WfLibraryRpc*.*` files under `Source/Library/Rpc` and updating the `VlppWorkflow_Library` item/filter files. `CompilerTest_LoadAndCompile` and `Build.ps1` are skipped for this task by request.
 - Task 2 succeeds when `IRpcSerializer` appears in reflected metadata, all wrapper and default ops constructors accept the serializer pointer, collection element values are serialized/deserialized at wrapper/ops boundaries, and the requested build/test subset passes with all current call sites passing `nullptr`.
+- Task 3 succeeds when generated `Wrapper_*_Json.txt` files contain `rpcops_IRpcSerializer`, its override methods delegate through `rpcjson_Serialize` and `rpcjson_Deserialize`, generated C++ artifacts compile, and the generator/runtime/generated-C++ unit tests pass.
 
 # PROPOSALS
 
 - No.1 Extract byref collection wrappers to WfLibraryRpcWrappers [CONFIRMED]
 - No.2 Add reflected IRpcSerializer to byref collection wrappers [CONFIRMED]
+- No.3 Generate JSON RPC serializer factory [CONFIRMED]
 
 ## No.1 Extract byref collection wrappers to WfLibraryRpcWrappers
 
@@ -85,3 +87,16 @@ The extraction is confirmed by building `Test/UnitTest/UnitTest.sln` through `co
 ### CONFIRMED
 
 The serializer change is confirmed by building `Test/UnitTest/UnitTest.sln` through `copilotBuild.ps1` for `Debug|Win32` and `Debug|x64`, both succeeding with 0 warnings and 0 errors. The requested unit-test subset was executed through `copilotExecute.ps1` for `LibraryTest`, `CompilerTest_GenerateMetadata`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on both `Debug|Win32` and `Debug|x64`; all 12 executions succeeded. `CompilerTest_LoadAndCompile` and `Build.ps1` were intentionally skipped for Task 2 as requested.
+
+## No.3 Generate JSON RPC serializer factory
+
+### CODE CHANGE
+
+- Added `rpcops_IRpcSerializer` generation to RPC JSON metadata modules.
+- Generated `Serialize(value)` to return `rpcjson_Serialize(value)`.
+- Generated `Deserialize(value)` to cast the input to `system::JsonNode^` and return `rpcjson_Deserialize(...)`.
+- Regenerated RPC wrapper metadata, generated Workflow assembly dumps, and generated C++ RPC artifacts that now expose the serializer factory and implementation.
+
+### CONFIRMED
+
+The generator change is confirmed by running `CompilerTest_LoadAndCompile` for `Debug|x64`; it succeeded after regenerating the expected wrapper and generated C++ artifacts. `Test/UnitTest/UnitTest.sln` was then built through `copilotBuild.ps1` for `Debug|Win32` and `Debug|x64`, both succeeding with 0 warnings and 0 errors. The unit-test subset was executed through `copilotExecute.ps1` for `LibraryTest`, `CompilerTest_GenerateMetadata`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on both `Debug|Win32` and `Debug|x64`; all 12 executions succeeded. A final `CompilerTest_LoadAndCompile` `Debug|x64` run also succeeded.

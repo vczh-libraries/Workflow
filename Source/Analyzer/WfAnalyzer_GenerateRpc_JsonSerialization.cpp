@@ -1052,6 +1052,33 @@ namespace vl
 					module->declarations.Add(GenerateRpcJsonDeserialize(context));
 				}
 
+				Ptr<WfDeclaration> GenerateRpcSerializerFactoryJson()
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcSerializer", CreateSharedType(L"system::IRpcSerializer"), WfFunctionKind::Normal);
+					auto newSerializer = CreateNewInterface(CreateSharedType(L"system::IRpcSerializer")).Cast<WfNewInterfaceExpression>();
+
+					{
+						auto serialize = CreateFunctionDeclaration(L"Serialize", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
+						serialize->arguments.Add(CreateFunctionArgument(L"value", CreatePredefinedType(WfPredefinedTypeName::Object)));
+						auto block = serialize->statement.Cast<WfBlockStatement>();
+						AddStatement(block, CreateReturn(CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"value"))));
+						newSerializer->declarations.Add(serialize);
+					}
+
+					{
+						auto deserialize = CreateFunctionDeclaration(L"Deserialize", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
+						deserialize->arguments.Add(CreateFunctionArgument(L"value", CreatePredefinedType(WfPredefinedTypeName::Object)));
+						auto block = deserialize->statement.Cast<WfBlockStatement>();
+						AddStatement(block, CreateReturn(CreateCall(
+							CreateReference(L"rpcjson_Deserialize"),
+							CreateCast(CreateSharedType(L"system::JsonNode"), CreateReference(L"value")))));
+						newSerializer->declarations.Add(deserialize);
+					}
+
+					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newSerializer));
+					return functionDecl;
+				}
+
 				WString AddRpcJsonSerializeValue(WfLexicalScopeManager* manager, vint& tempIndex, Ptr<WfBlockStatement> block, Ptr<WfExpression> value, WfType* type)
 				{
 					List<RpcJsonPrimitiveModel> primitives;
@@ -1409,6 +1436,7 @@ namespace vl
 				module->name.value = L"RpcMetadataJson";
 
 				AddRpcJsonDeclarations(manager, module);
+				module->declarations.Add(GenerateRpcSerializerFactoryJson());
 				module->declarations.Add(GenerateObjectOpsFactoryJson(manager, interfaces));
 				module->declarations.Add(GenerateObjectEventOpsFactoryJson(manager, interfaces));
 				module->declarations.Add(GenerateRpcOpsFactoryJson(manager, assemblyName, interfaces));
