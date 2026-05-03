@@ -197,11 +197,6 @@ Interface Implementation Proxy (Implement)
 					INVOKEGET_INTERFACE_PROXY(InvokeMethod, ref, methodId, arguments);
 				}
 
-				vl::Ptr<vl::reflection::description::IAsync> InvokeMethodAsync(vl::rpc_controller::RpcObjectReference ref, vl::vint methodId, vl::Ptr<vl::reflection::description::IValueArray> arguments)override
-				{
-					INVOKEGET_INTERFACE_PROXY(InvokeMethodAsync, ref, methodId, arguments);
-				}
-
 				void ObjectHold(vl::rpc_controller::RpcObjectReference ref, vl::vint remoteClientId, bool hold)override
 				{
 					INVOKE_INTERFACE_PROXY(ObjectHold, ref, remoteClientId, hold);

@@ -21,7 +21,6 @@ namespace
 		}
 
 		Value InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)override				{ CHECK_FAIL(L"Not Supported!"); }
-		Ptr<IAsync> InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)override	{ CHECK_FAIL(L"Not Supported!"); }
 		void ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)override
 		{
 			if (hold)

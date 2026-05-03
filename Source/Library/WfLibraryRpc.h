@@ -75,7 +75,6 @@ namespace vl
 		{
 		public:
 			virtual reflection::description::Value					InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments) = 0;
-			virtual Ptr<reflection::description::IAsync>			InvokeMethodAsync(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments) = 0;
 			virtual void											ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold) = 0;
 			virtual void											RegisterService(vint typeId, Ptr<reflection::IDescriptable> service) = 0;
 		};

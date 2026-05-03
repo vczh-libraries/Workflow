@@ -49,6 +49,7 @@ Success criteria for Task 2:
 # PROPOSALS
 
 - No.1 Refine RPC boxing helpers to interface-shaped conversions
+- No.2 Remove unused RPC async method dispatch hook
 
 ## No.1 Refine RPC boxing helpers to interface-shaped conversions
 
@@ -83,3 +84,31 @@ Change the reflected helper signatures so byref boxing exposes `RpcObjectReferen
   - CppTest_Metaonly Debug Win32 and x64
   - CppTest_Reflection Debug Win32 and x64
 - Verification logs: `C:\Users\vczh\AppData\Local\Temp\Workflow_Task1_verify_20260503_010537`.
+
+## No.2 Remove unused RPC async method dispatch hook
+
+Remove `IRpcObjectOps::InvokeMethodAsync` from the public RPC object ops contract, reflection metadata, generated wrapper implementations, and release amalgamation mirrors. The generated implementations only threw "not supported" and no call sites use the method.
+
+### CODE CHANGE
+
+- Removed `InvokeMethodAsync` from `IRpcObjectOps` in `WfLibraryRpc.h`.
+- Removed reflection registration and interface proxy forwarding for `InvokeMethodAsync`.
+- Removed RPC wrapper generator emission of the unused override.
+- Removed the stale override from the hand-written LibraryTest RPC ops mock.
+- Mirrored the direct source changes in `Release\VlppWorkflowLibrary.*` and `Release\VlppWorkflowCompiler.cpp`.
+- Regenerated reflection baselines, RPC metadata, Workflow assembly output, and generated C++ RPC samples so the generated object ops classes no longer declare or define `InvokeMethodAsync`.
+
+### CONFIRMED
+
+- `git grep InvokeMethodAsync -- .` now only finds this investigation note.
+- Full Task 2 verification passed from `Test\UnitTest`:
+  - Build Debug Win32 and x64
+  - LibraryTest Debug Win32 and x64
+  - CompilerTest_GenerateMetadata Debug Win32 and x64
+  - CompilerTest_LoadAndCompile Debug x64
+  - Rebuild Debug Win32 and x64 after generated C++ refresh
+  - RuntimeTest Debug Win32 and x64
+  - CppTest Debug Win32 and x64
+  - CppTest_Metaonly Debug Win32 and x64
+  - CppTest_Reflection Debug Win32 and x64
+- Verification logs: `C:\Users\vczh\AppData\Local\Temp\Workflow_Task2_verify_20260503_013639`.

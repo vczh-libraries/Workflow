@@ -10843,15 +10843,6 @@ namespace vl
 					}
 
 					{
-						auto invokeMethodAsync = CreateFunctionDeclaration(L"InvokeMethodAsync", CreateSharedType(L"system::Async"), WfFunctionKind::Override);
-						invokeMethodAsync->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
-						invokeMethodAsync->arguments.Add(CreateFunctionArgument(L"methodId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						invokeMethodAsync->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
-						AddStatement(invokeMethodAsync->statement.Cast<WfBlockStatement>(), CreateRaise(L"InvokeMethodAsync is not supported."));
-						newOps->declarations.Add(invokeMethodAsync);
-					}
-
-					{
 						auto objectHold = CreateFunctionDeclaration(L"ObjectHold", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
 						objectHold->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
 						objectHold->arguments.Add(CreateFunctionArgument(L"remoteClientId", CreatePredefinedType(WfPredefinedTypeName::Int)));
