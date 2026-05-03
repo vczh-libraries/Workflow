@@ -4,8 +4,9 @@ You should complete tasks one by one.
 `General Instruction` is for each tasks, which means, during doing each task:
 - you have to run unit test to make sure your change works.
 - you have to follow complete instructions in `.github\Rules\verify-and-commit.md` to properly finish any task, before doing the next task.
+- If you can't fix a runtime issue within a few rounds of guess-and-edit, you need to debug the process.
 
-## Task 31
+## Task 1
 
 Add a second argument to `GenerateModuleRpc` called `WString assemblyName`.
 In `TestRpcCompile.cpp` you can pass the result of `MakeRpcCppAssemblyName` to it.
