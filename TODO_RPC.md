@@ -18,6 +18,7 @@
   - Sending cached property values proactively from remote to wrapper.
   - Interface inheritance.
 - Generate JSON from "RPC metadata in Workflow syntax".
+  - Implement weappers and ops for collections.
   - Review JSON related constructions.
   - Make `TestCasesRpc.cpp` use them (`RuntimeTest` still uses the non-JSON construction).
   - Make sure arguments are serialized to expected JSON representation.
