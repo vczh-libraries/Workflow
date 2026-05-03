@@ -591,12 +591,12 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcPropDynamic__IService_GetValue:
                 {
                     var target : RpcPropDynamic::IService^ = (cast (RpcPropDynamic::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifecycle::RpcBoxByval(target.GetValue(), _lc);
+                    return (cast (object) target.GetValue());
                 }
                 case rpcmethod_RpcPropDynamic__IService_SetValue:
                 {
                     var target : RpcPropDynamic::IService^ = (cast (RpcPropDynamic::IService^) _lc.RefToPtr(ref));
-                    target.SetValue((cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)));
+                    target.SetValue((cast (::system::String) arguments[0]));
                     return null;
                 }
                 case rpcmethod_RpcPropDynamic__IService_Signal:
@@ -738,7 +738,7 @@ func rpcwrapper_RpcPropDynamic__IService(lc : system::IRpcLifecycle*, proxyRef :
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPropDynamic__IService_GetValue, arguments), _lc));
+            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPropDynamic__IService_GetValue, arguments));
         }
 
         override func SetValue(value : ::system::String) : (::system::Void)
@@ -747,7 +747,7 @@ func rpcwrapper_RpcPropDynamic__IService(lc : system::IRpcLifecycle*, proxyRef :
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
+            arguments.Set(0, (cast (object) value));
             _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPropDynamic__IService_SetValue, arguments);
         }
 

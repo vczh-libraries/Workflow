@@ -595,7 +595,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcDtor2Test__IService_ReviewValue:
                 {
                     var target : RpcDtor2Test::IService^ = (cast (RpcDtor2Test::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifecycle::RpcBoxByval(target.ReviewValue((cast (::RpcDtor2Test::IValue^) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.ReviewValue((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::RpcDtor2Test::IValue^))), _lc);
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -728,7 +728,7 @@ func rpcwrapper_RpcDtor2Test__IService(lc : system::IRpcLifecycle*, proxyRef : s
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::RpcDtor2Test::IValue^) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtor2Test__IService_MakeValue, arguments), _lc));
+            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtor2Test__IService_MakeValue, arguments), _lc) as (::RpcDtor2Test::IValue^));
         }
 
         override func ReviewValue(value : ::RpcDtor2Test::IValue^) : (::RpcDtor2Test::IValue^)
@@ -738,7 +738,7 @@ func rpcwrapper_RpcDtor2Test__IService(lc : system::IRpcLifecycle*, proxyRef : s
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
-            return (cast (::RpcDtor2Test::IValue^) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtor2Test__IService_ReviewValue, arguments), _lc));
+            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtor2Test__IService_ReviewValue, arguments), _lc) as (::RpcDtor2Test::IValue^));
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);

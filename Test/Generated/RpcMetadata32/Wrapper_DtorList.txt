@@ -608,7 +608,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcDtorList__IService_Set:
                 {
                     var target : RpcDtorList::IService^ = (cast (RpcDtorList::IService^) _lc.RefToPtr(ref));
-                    target.Set((cast (::RpcDtorList::IValue^[]) system::IRpcLifecycle::RpcUnboxByref(arguments[0], _lc)));
+                    target.Set((system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) arguments[0]), _lc) as (::RpcDtorList::IValue^[])));
                     return null;
                 }
                 case rpcmethod_RpcDtorList__IService_Unhold:

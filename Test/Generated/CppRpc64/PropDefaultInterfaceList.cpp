@@ -1002,17 +1002,17 @@ Closures
 			if ((__vwsn_switch_4 == GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IValue_GetValue))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPropDefaultInterfaceList::IValue>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				return ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->GetValue()), _lc);
+				return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->GetValue());
 			}
 			else if ((__vwsn_switch_4 == GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IService_GetValue))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPropDefaultInterfaceList::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				return ::vl::rpc_controller::RpcBoxByref(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->GetValue()), _lc);
+				return ::vl::__vwsn::Box(::vl::rpc_controller::RpcBoxByref(::vl::Ptr<::vl::reflection::IDescriptable>(::vl::__vwsn::This(target.Obj())->GetValue()), _lc));
 			}
 			else if ((__vwsn_switch_4 == GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IService_SetValue))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPropDefaultInterfaceList::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				::vl::__vwsn::This(target.Obj())->SetValue(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueList>>(::vl::rpc_controller::RpcUnboxByref(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))), _lc)));
+				::vl::__vwsn::This(target.Obj())->SetValue(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueList>(::vl::rpc_controller::RpcUnboxByref(::vl::__vwsn::Unbox<::vl::rpc_controller::RpcObjectReference>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))), _lc).Obj()));
 				return ::vl::reflection::description::Value();
 			}
 			else if ((__vwsn_switch_4 == GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IService_Signal))
@@ -1127,7 +1127,7 @@ Closures
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IValue_GetValue, arguments), _lc));
+		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IValue_GetValue, arguments));
 	}
 
 	//-------------------------------------------------------------------
@@ -1168,7 +1168,7 @@ Closures
 		}
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		(__vwsn_Cached_ = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueList>>(::vl::rpc_controller::RpcUnboxByref(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IService_GetValue, arguments), _lc)));
+		(__vwsn_Cached_ = ::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueList>(::vl::rpc_controller::RpcUnboxByref(::vl::__vwsn::Unbox<::vl::rpc_controller::RpcObjectReference>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IService_GetValue, arguments)), _lc).Obj()));
 		(__vwsn_Available_ = true);
 		return __vwsn_Cached_;
 	}
@@ -1179,7 +1179,7 @@ Closures
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::rpc_controller::RpcBoxByref(::vl::__vwsn::Box(value), _lc));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(::vl::rpc_controller::RpcBoxByref(::vl::Ptr<::vl::reflection::IDescriptable>(value), _lc)));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->InvokeMethod(_ref, GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IService_SetValue, arguments);
 	}
 

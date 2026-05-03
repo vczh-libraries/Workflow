@@ -595,12 +595,12 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcWrapperTest__IService_Exchange1:
                 {
                     var target : RpcWrapperTest::IService^ = (cast (RpcWrapperTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifecycle::RpcBoxByval(target.Exchange1((cast (::RpcWrapperTest::IObj1^) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.Exchange1((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::RpcWrapperTest::IObj1^))), _lc);
                 }
                 case rpcmethod_RpcWrapperTest__IService_Exchange2:
                 {
                     var target : RpcWrapperTest::IService^ = (cast (RpcWrapperTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifecycle::RpcBoxByval(target.Exchange2((cast (::RpcWrapperTest::IObj2^) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.Exchange2((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::RpcWrapperTest::IObj2^))), _lc);
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -763,7 +763,7 @@ func rpcwrapper_RpcWrapperTest__IService(lc : system::IRpcLifecycle*, proxyRef :
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(o, _lc));
-            return (cast (::RpcWrapperTest::IObj2^) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcWrapperTest__IService_Exchange1, arguments), _lc));
+            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcWrapperTest__IService_Exchange1, arguments), _lc) as (::RpcWrapperTest::IObj2^));
         }
 
         override func Exchange2(o : ::RpcWrapperTest::IObj2^) : (::RpcWrapperTest::IObj1^)
@@ -773,7 +773,7 @@ func rpcwrapper_RpcWrapperTest__IService(lc : system::IRpcLifecycle*, proxyRef :
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(o, _lc));
-            return (cast (::RpcWrapperTest::IObj1^) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcWrapperTest__IService_Exchange2, arguments), _lc));
+            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcWrapperTest__IService_Exchange2, arguments), _lc) as (::RpcWrapperTest::IObj1^));
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);

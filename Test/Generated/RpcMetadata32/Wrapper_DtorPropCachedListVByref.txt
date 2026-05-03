@@ -601,7 +601,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcDtorPropCachedListVByref__IService_SetValue:
                 {
                     var target : RpcDtorPropCachedListVByref::IService^ = (cast (RpcDtorPropCachedListVByref::IService^) _lc.RefToPtr(ref));
-                    target.SetValue((cast (::RpcDtorPropCachedListVByref::IValue^[]) system::IRpcLifecycle::RpcUnboxByref(arguments[0], _lc)));
+                    target.SetValue((system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) arguments[0]), _lc) as (::RpcDtorPropCachedListVByref::IValue^[])));
                     return null;
                 }
                 case rpcmethod_RpcDtorPropCachedListVByref__IService_Signal:
@@ -790,7 +790,7 @@ func rpcwrapper_RpcDtorPropCachedListVByref__IService(lc : system::IRpcLifecycle
             }
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            (Value<Cached> = (cast (::RpcDtorPropCachedListVByref::IValue^[]) system::IRpcLifecycle::RpcUnboxByref(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtorPropCachedListVByref__IService_GetValue, arguments), _lc)));
+            (Value<Cached> = (system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtorPropCachedListVByref__IService_GetValue, arguments)), _lc) as (::RpcDtorPropCachedListVByref::IValue^[])));
             (Value<Available> = true);
             return Value<Cached>;
         }

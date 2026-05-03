@@ -594,7 +594,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcEventOblist__IService_SetList:
                 {
                     var target : RpcEventOblist::IService^ = (cast (RpcEventOblist::IService^) _lc.RefToPtr(ref));
-                    target.SetList((cast (observe ::system::Int32[]) system::IRpcLifecycle::RpcUnboxByref(arguments[0], _lc)));
+                    target.SetList((system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) arguments[0]), _lc) as (observe ::system::Int32[])));
                     return null;
                 }
                 case rpcmethod_RpcEventOblist__IService_WatchHeldList:

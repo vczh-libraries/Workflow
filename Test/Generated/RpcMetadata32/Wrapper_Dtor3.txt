@@ -600,7 +600,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcDtor3Test__IService_ContainValue:
                 {
                     var target : RpcDtor3Test::IService^ = (cast (RpcDtor3Test::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifecycle::RpcBoxByval(target.ContainValue((cast (::RpcDtor3Test::IValue^) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.ContainValue((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::RpcDtor3Test::IValue^))), _lc);
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -712,7 +712,7 @@ func rpcwrapper_RpcDtor3Test__IContainer(lc : system::IRpcLifecycle*, proxyRef :
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::RpcDtor3Test::IValue^) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtor3Test__IContainer_GetValue, arguments), _lc));
+            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtor3Test__IContainer_GetValue, arguments), _lc) as (::RpcDtor3Test::IValue^));
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
@@ -772,7 +772,7 @@ func rpcwrapper_RpcDtor3Test__IService(lc : system::IRpcLifecycle*, proxyRef : s
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
-            return (cast (::RpcDtor3Test::IContainer^) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtor3Test__IService_ContainValue, arguments), _lc));
+            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtor3Test__IService_ContainValue, arguments), _lc) as (::RpcDtor3Test::IContainer^));
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);

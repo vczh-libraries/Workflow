@@ -582,7 +582,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcServiceWrapperTest__IService_Self:
                 {
                     var target : RpcServiceWrapperTest::IService^ = (cast (RpcServiceWrapperTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifecycle::RpcBoxByval(target.Self((cast (::RpcServiceWrapperTest::IService^) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    return (cast (object) target.Self((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::RpcServiceWrapperTest::IService^))));
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -687,7 +687,7 @@ func rpcwrapper_RpcServiceWrapperTest__IService(lc : system::IRpcLifecycle*, pro
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(obj, _lc));
-            return (cast (::system::Boolean) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcServiceWrapperTest__IService_Self, arguments), _lc));
+            return (cast (::system::Boolean) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcServiceWrapperTest__IService_Self, arguments));
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);

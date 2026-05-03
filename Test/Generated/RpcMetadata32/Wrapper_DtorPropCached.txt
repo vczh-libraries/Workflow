@@ -601,7 +601,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcDtorPropCached__IService_SetValue:
                 {
                     var target : RpcDtorPropCached::IService^ = (cast (RpcDtorPropCached::IService^) _lc.RefToPtr(ref));
-                    target.SetValue((cast (::RpcDtorPropCached::IValue^) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)));
+                    target.SetValue((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::RpcDtorPropCached::IValue^)));
                     return null;
                 }
                 case rpcmethod_RpcDtorPropCached__IService_Signal:
@@ -790,7 +790,7 @@ func rpcwrapper_RpcDtorPropCached__IService(lc : system::IRpcLifecycle*, proxyRe
             }
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            (Value<Cached> = (cast (::RpcDtorPropCached::IValue^) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtorPropCached__IService_GetValue, arguments), _lc)));
+            (Value<Cached> = (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtorPropCached__IService_GetValue, arguments), _lc) as (::RpcDtorPropCached::IValue^)));
             (Value<Available> = true);
             return Value<Cached>;
         }

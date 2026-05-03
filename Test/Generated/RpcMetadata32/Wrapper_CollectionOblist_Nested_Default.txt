@@ -582,7 +582,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcCollectionOblist__Nested__Default__IService_DoList:
                 {
                     var target : RpcCollectionOblist::Nested::Default::IService^ = (cast (RpcCollectionOblist::Nested::Default::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifecycle::RpcBoxByref(target.DoList((cast (observe observe ::system::Int32[][]) system::IRpcLifecycle::RpcUnboxByref(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByref(target.DoList((system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) arguments[0]), _lc) as (observe observe ::system::Int32[][]))), _lc);
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -693,7 +693,7 @@ func rpcwrapper_RpcCollectionOblist__Nested__Default__IService(lc : system::IRpc
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByref(xs, _lc));
-            return (cast (observe observe ::system::Int32[][]) system::IRpcLifecycle::RpcUnboxByref(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcCollectionOblist__Nested__Default__IService_DoList, arguments), _lc));
+            return (system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcCollectionOblist__Nested__Default__IService_DoList, arguments)), _lc) as (observe observe ::system::Int32[][]));
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);

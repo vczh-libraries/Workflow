@@ -590,12 +590,12 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcNullable__IValue_GetValue:
                 {
                     var target : RpcNullable::IValue^ = (cast (RpcNullable::IValue^) _lc.RefToPtr(ref));
-                    return system::IRpcLifecycle::RpcBoxByval(target.GetValue(), _lc);
+                    return (cast (object) target.GetValue());
                 }
                 case rpcmethod_RpcNullable__IService_Print:
                 {
                     var target : RpcNullable::IService^ = (cast (RpcNullable::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifecycle::RpcBoxByval(target.Print((cast (::system::String?) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)), (cast (::RpcNullable::IValue^) system::IRpcLifecycle::RpcUnboxByval(arguments[1], _lc))), _lc);
+                    return (cast (object) target.Print((cast (::system::String?) arguments[0]), (system::IRpcLifecycle::RpcUnboxByval(arguments[1], _lc) as (::RpcNullable::IValue^))));
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -711,7 +711,7 @@ func rpcwrapper_RpcNullable__IValue(lc : system::IRpcLifecycle*, proxyRef : syst
             }
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            (Value<Cached> = (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcNullable__IValue_GetValue, arguments), _lc)));
+            (Value<Cached> = (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcNullable__IValue_GetValue, arguments)));
             (Value<Available> = true);
             return Value<Cached>;
         }
@@ -747,9 +747,9 @@ func rpcwrapper_RpcNullable__IService(lc : system::IRpcLifecycle*, proxyRef : sy
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(2);
-            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(value, _lc));
+            arguments.Set(0, (cast (object) value));
             arguments.Set(1, system::IRpcLifecycle::RpcBoxByval(v, _lc));
-            return (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcNullable__IService_Print, arguments), _lc));
+            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcNullable__IService_Print, arguments));
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);

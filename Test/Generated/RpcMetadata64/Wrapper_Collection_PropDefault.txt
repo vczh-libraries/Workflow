@@ -590,7 +590,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcCollection__PropDefault__IService_SetList:
                 {
                     var target : RpcCollection::PropDefault::IService^ = (cast (RpcCollection::PropDefault::IService^) _lc.RefToPtr(ref));
-                    target.SetList((cast (::system::Int64[]) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)));
+                    target.SetList((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::system::Int64[])));
                     return null;
                 }
                 default:
@@ -698,7 +698,7 @@ func rpcwrapper_RpcCollection__PropDefault__IService(lc : system::IRpcLifecycle*
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::system::Int64[]) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcCollection__PropDefault__IService_GetList, arguments), _lc));
+            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcCollection__PropDefault__IService_GetList, arguments), _lc) as (::system::Int64[]));
         }
 
         override func SetList(<value> : ::system::Int64[]) : (::system::Void)

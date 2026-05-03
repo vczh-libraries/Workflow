@@ -599,7 +599,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcPropDefaultInterface__IValue_GetValue:
                 {
                     var target : RpcPropDefaultInterface::IValue^ = (cast (RpcPropDefaultInterface::IValue^) _lc.RefToPtr(ref));
-                    return system::IRpcLifecycle::RpcBoxByval(target.GetValue(), _lc);
+                    return (cast (object) target.GetValue());
                 }
                 case rpcmethod_RpcPropDefaultInterface__IService_GetValue:
                 {
@@ -609,7 +609,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcPropDefaultInterface__IService_SetValue:
                 {
                     var target : RpcPropDefaultInterface::IService^ = (cast (RpcPropDefaultInterface::IService^) _lc.RefToPtr(ref));
-                    target.SetValue((cast (::RpcPropDefaultInterface::IValue^) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)));
+                    target.SetValue((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::RpcPropDefaultInterface::IValue^)));
                     return null;
                 }
                 case rpcmethod_RpcPropDefaultInterface__IService_Signal:
@@ -760,7 +760,7 @@ func rpcwrapper_RpcPropDefaultInterface__IValue(lc : system::IRpcLifecycle*, pro
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPropDefaultInterface__IValue_GetValue, arguments), _lc));
+            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPropDefaultInterface__IValue_GetValue, arguments));
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
@@ -807,7 +807,7 @@ func rpcwrapper_RpcPropDefaultInterface__IService(lc : system::IRpcLifecycle*, p
             }
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            (Value<Cached> = (cast (::RpcPropDefaultInterface::IValue^) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPropDefaultInterface__IService_GetValue, arguments), _lc)));
+            (Value<Cached> = (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPropDefaultInterface__IService_GetValue, arguments), _lc) as (::RpcPropDefaultInterface::IValue^)));
             (Value<Available> = true);
             return Value<Cached>;
         }

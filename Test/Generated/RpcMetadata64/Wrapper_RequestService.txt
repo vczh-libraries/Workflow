@@ -582,7 +582,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcTest__IService_GetText:
                 {
                     var target : RpcTest::IService^ = (cast (RpcTest::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifecycle::RpcBoxByval(target.GetText(), _lc);
+                    return (cast (object) target.GetText());
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -686,7 +686,7 @@ func rpcwrapper_RpcTest__IService(lc : system::IRpcLifecycle*, proxyRef : system
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::system::String) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcTest__IService_GetText, arguments), _lc));
+            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcTest__IService_GetText, arguments));
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);

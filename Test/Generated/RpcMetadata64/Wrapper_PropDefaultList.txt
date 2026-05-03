@@ -596,7 +596,7 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcPropDefaultList__IService_SetValue:
                 {
                     var target : RpcPropDefaultList::IService^ = (cast (RpcPropDefaultList::IService^) _lc.RefToPtr(ref));
-                    target.SetValue((cast (::system::String[]) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)));
+                    target.SetValue((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::system::String[])));
                     return null;
                 }
                 case rpcmethod_RpcPropDefaultList__IService_Signal:
@@ -752,7 +752,7 @@ func rpcwrapper_RpcPropDefaultList__IService(lc : system::IRpcLifecycle*, proxyR
             }
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            (Value<Cached> = (cast (::system::String[]) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPropDefaultList__IService_GetValue, arguments), _lc)));
+            (Value<Cached> = (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcPropDefaultList__IService_GetValue, arguments), _lc) as (::system::String[])));
             (Value<Available> = true);
             return Value<Cached>;
         }

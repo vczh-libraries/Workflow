@@ -590,12 +590,12 @@ func rpc_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
                 case rpcmethod_RpcCollectionOblist__Interface__Nested__InByref__OutByval__IValue_GetValue:
                 {
                     var target : RpcCollectionOblist::Interface::Nested::InByref::OutByval::IValue^ = (cast (RpcCollectionOblist::Interface::Nested::InByref::OutByval::IValue^) _lc.RefToPtr(ref));
-                    return system::IRpcLifecycle::RpcBoxByval(target.GetValue(), _lc);
+                    return (cast (object) target.GetValue());
                 }
                 case rpcmethod_RpcCollectionOblist__Interface__Nested__InByref__OutByval__IService_DoList:
                 {
                     var target : RpcCollectionOblist::Interface::Nested::InByref::OutByval::IService^ = (cast (RpcCollectionOblist::Interface::Nested::InByref::OutByval::IService^) _lc.RefToPtr(ref));
-                    return system::IRpcLifecycle::RpcBoxByval(target.DoList((cast (observe ::RpcCollectionOblist::Interface::Nested::InByref::OutByval::IValue^[][::system::Int32]) system::IRpcLifecycle::RpcUnboxByref(arguments[0], _lc))), _lc);
+                    return system::IRpcLifecycle::RpcBoxByval(target.DoList((system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) arguments[0]), _lc) as (observe ::RpcCollectionOblist::Interface::Nested::InByref::OutByval::IValue^[][::system::Int32]))), _lc);
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -715,7 +715,7 @@ func rpcwrapper_RpcCollectionOblist__Interface__Nested__InByref__OutByval__IValu
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::system::Int32) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcCollectionOblist__Interface__Nested__InByref__OutByval__IValue_GetValue, arguments), _lc));
+            return (cast (::system::Int32) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcCollectionOblist__Interface__Nested__InByref__OutByval__IValue_GetValue, arguments));
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
@@ -750,7 +750,7 @@ func rpcwrapper_RpcCollectionOblist__Interface__Nested__InByref__OutByval__IServ
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByref(xs, _lc));
-            return (cast (observe ::RpcCollectionOblist::Interface::Nested::InByref::OutByval::IValue^[][::system::Int32]) system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcCollectionOblist__Interface__Nested__InByref__OutByval__IService_DoList, arguments), _lc));
+            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcCollectionOblist__Interface__Nested__InByref__OutByval__IService_DoList, arguments), _lc) as (observe ::RpcCollectionOblist::Interface::Nested::InByref::OutByval::IValue^[][::system::Int32]));
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);

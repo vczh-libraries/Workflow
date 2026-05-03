@@ -765,7 +765,7 @@ func rpcwrapper_RpcDtorList2__IService(lc : system::IRpcLifecycle*, proxyRef : s
             raise "RPC wrapper has been disconnected from lifecycle.";
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::RpcDtorList2::IValue^[]) system::IRpcLifecycle::RpcUnboxByref(_lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtorList2__IService_Make, arguments), _lc));
+            return (system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).InvokeMethod(_ref, rpcmethod_RpcDtorList2__IService_Make, arguments)), _lc) as (::RpcDtorList2::IValue^[]));
         }
 
         override func Unhold() : (::system::Void)

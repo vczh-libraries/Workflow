@@ -281,16 +281,16 @@ interface system::IRpcLifecycle : system::Interface {
     function RequestService(fullName : system::String) : system::Interface^;
     @InvokeTemplate:::vl::rpc_controller::RpcBoxByref($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcBoxByref)
-    static function RpcBoxByref(trivial : system::Object, lc : system::IRpcLifecycle*) : system::Object;
+    static function RpcBoxByref(trivial : system::Interface^, lc : system::IRpcLifecycle*) : system::RpcObjectReference;
     @InvokeTemplate:::vl::rpc_controller::RpcBoxByval($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcBoxByval)
-    static function RpcBoxByval(trivial : system::Object, lc : system::IRpcLifecycle*) : system::Object;
+    static function RpcBoxByval(trivial : system::Interface^, lc : system::IRpcLifecycle*) : system::Object;
     @InvokeTemplate:::vl::rpc_controller::RpcUnboxByref($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcUnboxByref)
-    static function RpcUnboxByref(serializable : system::Object, lc : system::IRpcLifecycle*) : system::Object;
+    static function RpcUnboxByref(serializable : system::RpcObjectReference, lc : system::IRpcLifecycle*) : system::Interface^;
     @InvokeTemplate:::vl::rpc_controller::RpcUnboxByval($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcUnboxByval)
-    static function RpcUnboxByval(serializable : system::Object, lc : system::IRpcLifecycle*) : system::Object;
+    static function RpcUnboxByval(serializable : system::Object, lc : system::IRpcLifecycle*) : system::Interface^;
 
 }
 
