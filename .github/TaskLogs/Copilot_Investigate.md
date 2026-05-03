@@ -10,30 +10,61 @@ You should complete tasks one by one.
 
 ## Task 1
 
-In generated functions `rpcops_IOps_Create(Json)?` and `rpcops_IRpcObject(Event)?OpsJson`, currently casting between `object` and byval collection types is done by `as` weak cast, I would like you to do `cast` strong cast. As there is no rescue when the underlying protocol gets wrong, raising an exception is always better. Check if other places has similar issue.
+There are some code implementing wrappers for byref collections in `WfLibraryRpc.(h|cpp)`, I would like you to extract them to `WfLibraryRpcWrappers.(h|cpp)`. Including wrappers, and default implementation for `IRpcListOps` and `IRpcListEventOps`, meanwhile all interface definition should not move.
 
-Rename `WfAnalyzer_GenerateRpc.JsonSerialization.cpp` to `WfAnalyzer_GenerateRpc_JsonSerialization.cpp`.
-`rpcjson_*`, `rpcops_IOps_CreateJson`, `rpcops_IRpcObjectOpsJson` and `rpcops_IRpcObjectEventOpsJson` should be in `WfAnalyzer_GenerateRpc_JsonSerialization.cpp`, not in `WfAnalyzer_GenerateRpc.cpp`.
+All `WfLibraryRpc*.*` should be contained in `Source/Library/Rpc`. And in `VlppWorkflow_Library` project, they should be put in one more nested solution explorer folder called `Rpc`.
+
+To speed up testing, you can skip `CompilerTest_LoadAndCompile` and `Build.ps1` as this change should not affect the compiler.
 
 ## Task 2
 
-Currently `rpcjson_*`, `rpcops_IOps_CreateJson`, `rpcops_IRpcObjectOpsJson` and `rpcops_IRpcObjectEventOpsJson` are also in `Wrapper_*.txt`. I would like you to move this part (aka JSON specific thing) to `Wrapper_*_Json.txt`, using module name `RpcMetadataJson`.
+In `WfLibraryRpcWrappers.h`, a new `IRpcSerializer` is introduced, and it should be reflected as well. It has two member:
+- `Serialize` from `Value` to `Value`.
+- `Deserialize` from `Value` to `Value`.
 
-A `GenerateModuleRpcJson` function will be made in `WfAnalyzer_GenerateRpc_JsonSerialization.cpp`, therefore `CompilerTest_LoadAndCompile` should call this function too, and now you get two wrapper Workflow script files, link them together in later compiling.
+The direction is defined like this:
+- A `Value` will be put into wrappers, and wrappers call `Serialize`, before passing this value to `IRpcList(Event)?Ops`.
+- A `Value` will be received by `IRpcList(Event)?Ops`, and ops call `Deserialize`, before passing this value to wrappers.
+
+Therefore all wrappers and ops implementation in `WfLibraryRpcWrapper.h` should take the new `IRpcSerializer*` in their constructor:
+- When it is null, skip the call.
+- When it is not null, call it.
+- They are applied to collection elements only. Return value for `Contains` or `Add`, they are strong typed and known typed, they do not serialize.
+
+But in any current test projects we only pass `nullptr`, no `IRpcSerializer` will be implemented at the moment.
+
+To speed up testing, you can skip `CompilerTest_LoadAndCompile` and `Build.ps1` as this change should not affect the compiler.
+
+You can checkout multiple pairs of currently implemented files in this pattern: `Wrapper_*.txt` and `Wrapper_*_Json.txt`, they describes how serialization is used for rpc interfaces. But rpc interfaces are strong typed, collection wrappers are weak types for elements, that is the only difference. Unlike strong typed serialization, weak type serialization always transform `Value` to `Value`, skipping the serialization is easy (by just not calling it). So here we have one less layer than rpc interfaces.
+
+## Task 3
+
+In generated `Wrapper_*_Json.txt` we need one more function
+`func rpcops_IRpcSerializer() : (system::IRpcSerializer^)`
+and implement `(S|Des)erialize` using `rpcjson_(S|Des)erialize`.
+
+But in any current test projects we only pass `nullptr`, actual testing will be in the future.
 
 # UPDATES
 
-- Moved JSON-specific RPC Workflow wrapper generation out of `WfAnalyzer_GenerateRpc.cpp` and into the renamed `WfAnalyzer_GenerateRpc_JsonSerialization.cpp`.
-- Added `GenerateModuleRpcJson`, producing a separate `RpcMetadataJson` module for `rpcjson_*`, `rpcops_IOps_CreateJson`, `rpcops_IRpcObjectOpsJson`, and `rpcops_IRpcObjectEventOpsJson`.
-- Updated `CompilerTest_LoadAndCompile` to write both `Wrapper_*.txt` and `Wrapper_*_Json.txt`, then add both generated modules to the lexical scope manager before compiling generated wrappers.
-- Changed RPC unboxing casts for strong-typed/byval collection transfers from weak `as` casts to strong `cast` casts. Nullable non-collection RPC interface references remain weak casts so valid null values keep working.
-- Updated the Visual Studio item/filter files for the source rename from `WfAnalyzer_GenerateRpc.JsonSerialization.cpp` to `WfAnalyzer_GenerateRpc_JsonSerialization.cpp`.
+# TEST [CONFIRMED]
 
-# TEST
-
-- Built `UnitTest.sln` via `.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform Win32`: passed with 0 warnings and 0 errors.
-- Built `UnitTest.sln` via `.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform x64`: passed with 0 warnings and 0 errors.
-- Ran `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` via `.github\Scripts\copilotExecute.ps1 -Mode UnitTest` on Debug Win32 and Debug x64: all passed.
-- Confirmed generated collection wrappers emit `cast` around `RpcUnboxByval`, JSON wrappers are emitted as `Wrapper_*_Json.txt` with `module RpcMetadataJson`, and normal `Wrapper_*.txt` no longer contains JSON RPC wrapper declarations.
+- Task 1 succeeds when the solution builds and the affected library/metadata unit tests pass after moving all `WfLibraryRpc*.*` files under `Source/Library/Rpc` and updating the `VlppWorkflow_Library` item/filter files. `CompilerTest_LoadAndCompile` and `Build.ps1` are skipped for this task by request.
 
 # PROPOSALS
+
+- No.1 Extract byref collection wrappers to WfLibraryRpcWrappers [CONFIRMED]
+
+## No.1 Extract byref collection wrappers to WfLibraryRpcWrappers
+
+### CODE CHANGE
+
+- Moved `WfLibraryRpc.h`, `WfLibraryRpcController.(h|cpp)`, and `WfLibraryRpcLifecycle.(h|cpp)` under `Source/Library/Rpc`.
+- Split byref collection wrapper declarations and default `IRpcListOps` / `IRpcListEventOps` implementation declarations into `Source/Library/Rpc/WfLibraryRpcWrappers.h`.
+- Moved the existing wrapper and default list ops implementation into `Source/Library/Rpc/WfLibraryRpcWrappers.cpp`, leaving `Source/Library/Rpc/WfLibraryRpc.cpp` as the interface translation unit.
+- Kept RPC interface definitions in `WfLibraryRpc.h`.
+- Updated library includes, the RPC test mock include, and `VlppWorkflow_Library.vcxitems(.filters)` so all `WfLibraryRpc*.*` project items live in the nested `Library\Rpc` solution explorer folder.
+
+### CONFIRMED
+
+The extraction is confirmed by building `Test/UnitTest/UnitTest.sln` through `copilotBuild.ps1` for `Debug|Win32` and `Debug|x64`, both succeeding with 0 warnings and 0 errors. The requested unit-test subset was then executed through `copilotExecute.ps1` for `LibraryTest`, `CompilerTest_GenerateMetadata`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on both `Debug|Win32` and `Debug|x64`; all 12 executions succeeded. `CompilerTest_LoadAndCompile` and `Build.ps1` were intentionally skipped for Task 1 as requested.

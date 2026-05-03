@@ -1,4 +1,5 @@
 #include "WfLibraryRpcLifecycle.h"
+#include "WfLibraryRpcWrappers.h"
 
 namespace vl
 {

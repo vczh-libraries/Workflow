@@ -1,7 +1,7 @@
 #ifndef VCZH_WORKFLOW_TEST_RPC_DUAL_LIFECYCLE_MOCK
 #define VCZH_WORKFLOW_TEST_RPC_DUAL_LIFECYCLE_MOCK
 
-#include "../../Source/Library/WfLibraryRpcLifecycle.h"
+#include "../../Source/Library/Rpc/WfLibraryRpcLifecycle.h"
 
 namespace vl
 {

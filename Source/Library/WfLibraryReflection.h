@@ -10,7 +10,8 @@ Interfaces:
 #define VCZH_WORKFLOW_LIBRARY_REFLECTION
 
 #include "WfLibraryPredefined.h"
-#include "WfLibraryRpc.h"
+#include "Rpc/WfLibraryRpc.h"
+#include "Rpc/WfLibraryRpcWrappers.h"
 
 namespace vl
 {

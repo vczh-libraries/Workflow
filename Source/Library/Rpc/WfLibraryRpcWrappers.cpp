@@ -1,5 +1,5 @@
-#include "WfLibraryRpc.h"
-#include "WfLibraryReflection.h"
+#include "WfLibraryRpcWrappers.h"
+#include "../WfLibraryReflection.h"
 
 namespace vl
 {
