@@ -1990,6 +1990,31 @@ GenerateDtsFromRpcMetadata
 				using namespace reflection;
 				using namespace reflection::description;
 
+				enum class DtsPrimitiveKind
+				{
+					Number,
+					Boolean,
+					String,
+				};
+
+				struct DtsPrimitiveModel
+				{
+					WString					keyword;
+					DtsPrimitiveKind		kind = DtsPrimitiveKind::Number;
+				};
+
+				struct DtsEnumItemModel
+				{
+					WString					name;
+					vuint64_t				value = 0;
+				};
+
+				struct DtsEnumModel
+				{
+					WString						fullName;
+					Ptr<List<DtsEnumItemModel>>	items;
+				};
+
 				struct DtsFieldModel
 				{
 					WString					name;
@@ -2005,7 +2030,7 @@ GenerateDtsFromRpcMetadata
 				struct DtsContext
 				{
 					WfLexicalScopeManager*	manager = nullptr;
-					List<WString>*			enums = nullptr;
+					List<DtsEnumModel>*		enums = nullptr;
 					List<DtsStructModel>*	structs = nullptr;
 				};
 
@@ -2070,13 +2095,13 @@ GenerateDtsFromRpcMetadata
 					return EscapeDtsString(name);
 				}
 
-				WString MakeStructSchemaName(const WString& fullName)
+				WString MakeDtsTypeName(const WString& fullName)
 				{
-					WString result = L"StructSchema_";
+					WString result;
 					for (vint i = 0; i < fullName.Length(); i++)
 					{
 						auto c = fullName[i];
-						if (IsDtsIdentifierPart(c))
+						if ((result.Length() == 0 && IsDtsIdentifierStart(c)) || (result.Length() > 0 && IsDtsIdentifierPart(c)))
 						{
 							AppendChar(result, c);
 						}
@@ -2085,40 +2110,50 @@ GenerateDtsFromRpcMetadata
 							result += L"_";
 						}
 					}
-					if (result.Length() > 0 && result[result.Length() - 1] == L'_')
+					if (result.Length() == 0)
+					{
+						return L"_";
+					}
+					if (result[result.Length() - 1] == L'_')
 					{
 						result = result.Left(result.Length() - 1);
 					}
 					return result;
 				}
 
-				bool TryGetPrimitiveKeyword(const WString& fullName, WString& keyword)
+				WString MakeUnknownStructDtsTypeName(const WString& fullName)
 				{
-					auto tryName = [&](const wchar_t* name)
+					return L"UnknownType_" + MakeDtsTypeName(fullName);
+				}
+
+				bool TryGetPrimitiveModel(const WString& fullName, DtsPrimitiveModel& primitive)
+				{
+					auto tryName = [&](const wchar_t* name, DtsPrimitiveKind kind)
 					{
 						if (fullName == WString::Unmanaged(L"system::") + name)
 						{
-							keyword = WString::Unmanaged(name);
+							primitive.keyword = WString::Unmanaged(name);
+							primitive.kind = kind;
 							return true;
 						}
 						return false;
 					};
 
-					return tryName(L"UInt8")
-						|| tryName(L"UInt16")
-						|| tryName(L"UInt32")
-						|| tryName(L"UInt64")
-						|| tryName(L"Int8")
-						|| tryName(L"Int16")
-						|| tryName(L"Int32")
-						|| tryName(L"Int64")
-						|| tryName(L"Single")
-						|| tryName(L"Double")
-						|| tryName(L"Boolean")
-						|| tryName(L"Char")
-						|| tryName(L"String")
-						|| tryName(L"DateTime")
-						|| tryName(L"Locale");
+					return tryName(L"UInt8", DtsPrimitiveKind::Number)
+						|| tryName(L"UInt16", DtsPrimitiveKind::Number)
+						|| tryName(L"UInt32", DtsPrimitiveKind::Number)
+						|| tryName(L"UInt64", DtsPrimitiveKind::Number)
+						|| tryName(L"Int8", DtsPrimitiveKind::Number)
+						|| tryName(L"Int16", DtsPrimitiveKind::Number)
+						|| tryName(L"Int32", DtsPrimitiveKind::Number)
+						|| tryName(L"Int64", DtsPrimitiveKind::Number)
+						|| tryName(L"Single", DtsPrimitiveKind::Number)
+						|| tryName(L"Double", DtsPrimitiveKind::Number)
+						|| tryName(L"Boolean", DtsPrimitiveKind::Boolean)
+						|| tryName(L"Char", DtsPrimitiveKind::String)
+						|| tryName(L"String", DtsPrimitiveKind::String)
+						|| tryName(L"DateTime", DtsPrimitiveKind::String)
+						|| tryName(L"Locale", DtsPrimitiveKind::String);
 				}
 
 				WString GetPredefinedFullName(WfLexicalScopeManager* manager, WfPredefinedTypeName name)
@@ -2198,29 +2233,51 @@ GenerateDtsFromRpcMetadata
 					return -1;
 				}
 
+				vint FindEnum(const List<DtsEnumModel>& enums, const WString& fullName)
+				{
+					for (vint i = 0; i < enums.Count(); i++)
+					{
+						if (enums[i].fullName == fullName)
+						{
+							return i;
+						}
+					}
+					return -1;
+				}
+
 				WString GetDtsTypeFromFullName(DtsContext& context, const WString& fullName)
 				{
-					WString keyword;
-					if (TryGetPrimitiveKeyword(fullName, keyword))
+					DtsPrimitiveModel primitive;
+					if (TryGetPrimitiveModel(fullName, primitive))
 					{
-						return L"[" + EscapeDtsString(keyword) + L", string]";
+						switch (primitive.kind)
+						{
+						case DtsPrimitiveKind::Number:
+							return L"number";
+						case DtsPrimitiveKind::Boolean:
+							return L"boolean";
+						case DtsPrimitiveKind::String:
+							return L"string";
+						default:
+							CHECK_FAIL(L"Internal error: Unknown primitive kind.");
+						}
 					}
-					if (context.enums && context.enums->Contains(fullName))
+					if (context.enums && FindEnum(*context.enums, fullName) != -1)
 					{
-						return L"[" + EscapeDtsString(fullName) + L", number]";
+						return MakeDtsTypeName(fullName);
 					}
 					if (context.structs && FindStruct(*context.structs, fullName) != -1)
 					{
-						return MakeStructSchemaName(fullName);
+						return MakeDtsTypeName(fullName);
 					}
-					return L"Schema";
+					return L"UnknownTypeSchema";
 				}
 
 				WString GetDtsTypeFromType(DtsContext& context, WfType* type)
 				{
 					if (!type)
 					{
-						return L"Schema";
+						return L"UnknownTypeSchema";
 					}
 					if (auto nullable = dynamic_cast<WfNullableType*>(type))
 					{
@@ -2236,19 +2293,19 @@ GenerateDtsFromRpcMetadata
 					}
 					if (auto enumerable = dynamic_cast<WfEnumerableType*>(type))
 					{
-						return L"ListSchema<" + GetDtsTypeFromType(context, enumerable->element.Obj()) + L">";
+						return GetDtsTypeFromType(context, enumerable->element.Obj()) + L"[]";
 					}
 					if (auto map = dynamic_cast<WfMapType*>(type))
 					{
 						if (map->key)
 						{
-							return L"MapSchema<" + GetDtsTypeFromType(context, map->key.Obj()) + L", " + GetDtsTypeFromType(context, map->value.Obj()) + L">";
+							return L"Array<[" + GetDtsTypeFromType(context, map->key.Obj()) + L", " + GetDtsTypeFromType(context, map->value.Obj()) + L"]>";
 						}
-						return L"ListSchema<" + GetDtsTypeFromType(context, map->value.Obj()) + L">";
+						return GetDtsTypeFromType(context, map->value.Obj()) + L"[]";
 					}
 					if (auto observable = dynamic_cast<WfObservableListType*>(type))
 					{
-						return L"ObservableSchema<" + GetDtsTypeFromType(context, observable->element.Obj()) + L">";
+						return GetDtsTypeFromType(context, observable->element.Obj()) + L"[]";
 					}
 					return GetDtsTypeFromFullName(context, GetTypeFullName(context.manager, type));
 				}
@@ -2256,7 +2313,7 @@ GenerateDtsFromRpcMetadata
 				void AddDtsTypesFromDeclarations(
 					const List<Ptr<WfDeclaration>>& declarations,
 					const WString& prefix,
-					List<WString>& enums,
+					List<DtsEnumModel>& enums,
 					List<DtsStructModel>& structs)
 				{
 					for (auto declaration : declarations)
@@ -2266,11 +2323,37 @@ GenerateDtsFromRpcMetadata
 						{
 							AddDtsTypesFromDeclarations(namespaceDecl->declarations, fullName, enums, structs);
 						}
-						else if (declaration.Cast<WfEnumDeclaration>())
+						else if (auto enumDecl = declaration.Cast<WfEnumDeclaration>())
 						{
-							if (!enums.Contains(fullName))
+							if (FindEnum(enums, fullName) == -1)
 							{
-								enums.Add(fullName);
+								DtsEnumModel model;
+								model.fullName = fullName;
+								model.items = Ptr(new List<DtsEnumItemModel>);
+								Dictionary<WString, vuint64_t> values;
+								for (auto item : enumDecl->items)
+								{
+									DtsEnumItemModel itemModel;
+									itemModel.name = item->name.value;
+									if (item->kind == WfEnumItemKind::Constant)
+									{
+										itemModel.value = wtou64(item->number.value);
+									}
+									else
+									{
+										for (auto intersection : item->intersections)
+										{
+											auto index = values.Keys().IndexOf(intersection->name.value);
+											if (index != -1)
+											{
+												itemModel.value |= values.Values()[index];
+											}
+										}
+									}
+									values.Add(itemModel.name, itemModel.value);
+									model.items->Add(itemModel);
+								}
+								enums.Add(model);
 							}
 						}
 						else if (auto structDecl = declaration.Cast<WfStructDeclaration>())
@@ -2323,98 +2406,134 @@ GenerateDtsFromRpcMetadata
 					structs.Add(model);
 				}
 
-				void AppendPredefinedSchema(WString& dts)
+				const wchar_t* GetDtsPrimitiveTypeScriptType(DtsPrimitiveKind kind)
 				{
-					const wchar_t* primitiveNames[] =
+					switch (kind)
 					{
-						L"UInt8",
-						L"UInt16",
-						L"UInt32",
-						L"UInt64",
-						L"Int8",
-						L"Int16",
-						L"Int32",
-						L"Int64",
-						L"Single",
-						L"Double",
-						L"Boolean",
-						L"Char",
-						L"String",
-						L"DateTime",
-						L"Locale",
+					case DtsPrimitiveKind::Number:
+						return L"number";
+					case DtsPrimitiveKind::Boolean:
+						return L"boolean";
+					case DtsPrimitiveKind::String:
+						return L"string";
+					default:
+						CHECK_FAIL(L"Internal error: Unknown primitive kind.");
+					}
+				}
+
+				void AppendUnknownTypePrimitiveSchema(WString& dts)
+				{
+					const Pair<const wchar_t*, DtsPrimitiveKind> primitiveNames[] =
+					{
+						{ L"UInt8", DtsPrimitiveKind::Number },
+						{ L"UInt16", DtsPrimitiveKind::Number },
+						{ L"UInt32", DtsPrimitiveKind::Number },
+						{ L"UInt64", DtsPrimitiveKind::Number },
+						{ L"Int8", DtsPrimitiveKind::Number },
+						{ L"Int16", DtsPrimitiveKind::Number },
+						{ L"Int32", DtsPrimitiveKind::Number },
+						{ L"Int64", DtsPrimitiveKind::Number },
+						{ L"Single", DtsPrimitiveKind::Number },
+						{ L"Double", DtsPrimitiveKind::Number },
+						{ L"Char", DtsPrimitiveKind::String },
+						{ L"DateTime", DtsPrimitiveKind::String },
+						{ L"Locale", DtsPrimitiveKind::String },
 					};
 
-					dts += L"export type PredefinedSchema =\r\n";
-					for (auto name : primitiveNames)
+					dts += L"export type UnknownType_PrimitiveSchema =\r\n";
+					for (auto&& [name, kind] : primitiveNames)
 					{
-						dts += L"  | [" + EscapeDtsString(WString::Unmanaged(name)) + L", string]\r\n";
+						dts += L"  | [" + EscapeDtsString(WString::Unmanaged(name)) + L", " + WString::Unmanaged(GetDtsPrimitiveTypeScriptType(kind)) + L"]\r\n";
 					}
+					dts += L"  | null\r\n";
+					dts += L"  | true\r\n";
+					dts += L"  | false\r\n";
+					dts += L"  | string\r\n";
 					dts += L"  ;\r\n\r\n";
 				}
 
-				void AppendEnumSchema(WString& dts, const List<WString>& enums)
+				void AppendTypeListEnum(WString& dts, const List<DtsEnumModel>& enums)
 				{
 					if (enums.Count() == 0)
 					{
-						dts += L"export type EnumSchema = never;\r\n\r\n";
+						dts += L"export type TypeList_Enum = never;\r\n\r\n";
 						return;
 					}
 
-					dts += L"export type EnumSchema =\r\n";
-					for (auto fullName : enums)
+					dts += L"export type TypeList_Enum =\r\n";
+					for (auto&& model : enums)
 					{
-						dts += L"  | [" + EscapeDtsString(fullName) + L", number]\r\n";
+						dts += L"  | " + EscapeDtsString(model.fullName) + L"\r\n";
 					}
 					dts += L"  ;\r\n\r\n";
 				}
 
-				void AppendSchemaUnion(WString& dts, const List<WString>& enums, const List<DtsStructModel>& structs)
+				void AppendUnknownTypeEnumSchema(WString& dts)
 				{
-					dts += L"export type Schema =\r\n";
-					dts += L"  | null\r\n";
-					dts += L"  | PredefinedSchema\r\n";
-					if (enums.Count() > 0)
-					{
-						dts += L"  | EnumSchema\r\n";
-					}
-					dts += L"  | ListSchema\r\n";
-					dts += L"  | MapSchema\r\n";
-					dts += L"  | ObservableSchema\r\n";
+					dts += L"export type UnknownType_EnumSchema = [TypeList_Enum, number];\r\n\r\n";
+				}
+
+				void AppendUnknownTypeList(WString& dts)
+				{
+					dts += L"export interface UnknownType_List\r\n";
+					dts += L"{\r\n";
+					dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(L"list") + L" | " + EscapeDtsString(L"map") + L" | " + EscapeDtsString(L"oblist") + L";\r\n";
+					dts += L"  values: UnknownTypeSchema[];\r\n";
+					dts += L"}\r\n\r\n";
+				}
+
+				void AppendUnknownTypeSchemaUnion(WString& dts, const List<DtsStructModel>& structs)
+				{
+					dts += L"export type UnknownTypeSchema =\r\n";
+					dts += L"  | UnknownType_PrimitiveSchema\r\n";
+					dts += L"  | UnknownType_EnumSchema\r\n";
+					dts += L"  | UnknownType_List\r\n";
 					for (auto&& model : structs)
 					{
-						dts += L"  | " + MakeStructSchemaName(model.fullName) + L"\r\n";
+						dts += L"  | " + MakeUnknownStructDtsTypeName(model.fullName) + L"\r\n";
 					}
 					dts += L"  ;\r\n\r\n";
 				}
 
-				void AppendCollectionSchemas(WString& dts)
-				{
-					dts += L"export interface ListSchema<T extends Schema = Schema>\r\n";
-					dts += L"{\r\n";
-					dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(L"list") + L";\r\n";
-					dts += L"  values: T[];\r\n";
-					dts += L"}\r\n\r\n";
-
-					dts += L"export interface MapSchema<K extends Schema = Schema, V extends Schema = Schema>\r\n";
-					dts += L"{\r\n";
-					dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(L"map") + L";\r\n";
-					dts += L"  values: Array<[K, V]>;\r\n";
-					dts += L"}\r\n\r\n";
-
-					dts += L"export interface ObservableSchema<T extends Schema = Schema>\r\n";
-					dts += L"{\r\n";
-					dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(L"observable-list") + L";\r\n";
-					dts += L"  values: T[];\r\n";
-					dts += L"}\r\n\r\n";
-				}
-
-				void AppendStructSchemas(WString& dts, DtsContext& context)
+				void AppendUnknownStructSchemas(WString& dts, DtsContext& context)
 				{
 					for (auto&& model : *context.structs)
 					{
-						dts += L"export interface " + MakeStructSchemaName(model.fullName) + L"\r\n";
+						dts += L"export interface " + MakeUnknownStructDtsTypeName(model.fullName) + L" extends " + MakeDtsTypeName(model.fullName) + L"\r\n";
 						dts += L"{\r\n";
 						dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(model.fullName) + L";\r\n";
+						dts += L"}\r\n\r\n";
+					}
+				}
+
+				void AppendKnownEnums(WString& dts, const List<DtsEnumModel>& enums)
+				{
+					if (enums.Count() > 0)
+					{
+						dts += L"// below are all known types\r\n\r\n";
+					}
+					for (auto&& model : enums)
+					{
+						dts += L"export enum " + MakeDtsTypeName(model.fullName) + L"\r\n";
+						dts += L"{\r\n";
+						for (auto&& item : *model.items.Obj())
+						{
+							dts += L"  " + GetDtsPropertyName(item.name) + L" = " + u64tow(item.value) + L",\r\n";
+						}
+						dts += L"}\r\n\r\n";
+					}
+				}
+
+				void AppendKnownStructs(WString& dts, DtsContext& context)
+				{
+					if (context.enums->Count() == 0 && context.structs->Count() > 0)
+					{
+						dts += L"// below are all known types\r\n\r\n";
+					}
+					for (auto&& model : *context.structs)
+					{
+						dts += L"export interface " + MakeDtsTypeName(model.fullName) + L"\r\n";
+						dts += L"{\r\n";
 						for (auto&& field : *model.fields.Obj())
 						{
 							dts += L"  " + GetDtsPropertyName(field.name) + L": " + GetDtsTypeFromType(context, field.type.Obj()) + L";\r\n";
@@ -2434,7 +2553,7 @@ GenerateDtsFromRpcMetadata
 					return dts;
 				}
 
-				List<WString> enums;
+				List<DtsEnumModel> enums;
 				List<DtsStructModel> structs;
 				AddDtsTypesFromDeclarations(manager->rpcMetadata->metadataModule->declarations, L"", enums, structs);
 				AddRpcObjectReferenceDtsStruct(structs);
@@ -2444,11 +2563,14 @@ GenerateDtsFromRpcMetadata
 				context.enums = &enums;
 				context.structs = &structs;
 
-				AppendPredefinedSchema(dts);
-				AppendEnumSchema(dts, enums);
-				AppendSchemaUnion(dts, enums, structs);
-				AppendCollectionSchemas(dts);
-				AppendStructSchemas(dts, context);
+				AppendUnknownTypePrimitiveSchema(dts);
+				AppendTypeListEnum(dts, enums);
+				AppendUnknownTypeEnumSchema(dts);
+				AppendUnknownTypeList(dts);
+				AppendUnknownTypeSchemaUnion(dts, structs);
+				AppendUnknownStructSchemas(dts, context);
+				AppendKnownEnums(dts, enums);
+				AppendKnownStructs(dts, context);
 				return dts;
 			}
 		}
