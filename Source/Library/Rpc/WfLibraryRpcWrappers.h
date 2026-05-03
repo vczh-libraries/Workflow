@@ -17,6 +17,19 @@ namespace vl
 	{
 
 /***********************************************************************
+* Serialization
+***********************************************************************/
+
+		class IRpcSerializer
+			: public virtual reflection::IDescriptable
+			, public reflection::Description<IRpcSerializer>
+		{
+		public:
+			virtual reflection::description::Value					Serialize(const reflection::description::Value& value) = 0;
+			virtual reflection::description::Value					Deserialize(const reflection::description::Value& value) = 0;
+		};
+
+/***********************************************************************
 * Collection Caller Wrappers
 ***********************************************************************/
 
@@ -24,10 +37,11 @@ namespace vl
 		{
 		private:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 			RpcObjectReference								ref;
 			vint											index = -1;
 		public:
-			RpcByrefEnumerator(IRpcLifecycle* lc, RpcObjectReference enumeratorRef);
+			RpcByrefEnumerator(IRpcLifecycle* lc, RpcObjectReference enumeratorRef, IRpcSerializer* _serializer);
 			~RpcByrefEnumerator();
 
 			void											DisconnectFromLifecycle()override;
@@ -40,9 +54,10 @@ namespace vl
 		{
 		private:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 			RpcObjectReference								ref;
 		public:
-			RpcByrefEnumerable(IRpcLifecycle* lc, RpcObjectReference enumerableRef);
+			RpcByrefEnumerable(IRpcLifecycle* lc, RpcObjectReference enumerableRef, IRpcSerializer* _serializer);
 			~RpcByrefEnumerable();
 
 			void											DisconnectFromLifecycle()override;
@@ -53,9 +68,10 @@ namespace vl
 		{
 		protected:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 			RpcObjectReference								ref;
 		public:
-			RpcByrefReadonlyList(IRpcLifecycle* lc, RpcObjectReference listRef);
+			RpcByrefReadonlyList(IRpcLifecycle* lc, RpcObjectReference listRef, IRpcSerializer* _serializer);
 			~RpcByrefReadonlyList();
 
 			void											DisconnectFromLifecycle()override;
@@ -69,7 +85,7 @@ namespace vl
 		class RpcByrefList : public RpcByrefReadonlyList, public reflection::Description<RpcByrefList>, public virtual reflection::description::IValueList
 		{
 		public:
-			RpcByrefList(IRpcLifecycle* lc, RpcObjectReference listRef);
+			RpcByrefList(IRpcLifecycle* lc, RpcObjectReference listRef, IRpcSerializer* _serializer);
 			~RpcByrefList()override;
 
 			Ptr<reflection::description::IValueEnumerator>	CreateEnumerator()override;
@@ -89,9 +105,10 @@ namespace vl
 		{
 		private:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 			RpcObjectReference								ref;
 		public:
-			RpcByrefArray(IRpcLifecycle* lc, RpcObjectReference arrayRef);
+			RpcByrefArray(IRpcLifecycle* lc, RpcObjectReference arrayRef, IRpcSerializer* _serializer);
 			~RpcByrefArray();
 
 			void											DisconnectFromLifecycle()override;
@@ -108,9 +125,10 @@ namespace vl
 		{
 		private:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 			RpcObjectReference								ref;
 		public:
-			RpcByrefObservableList(IRpcLifecycle* lc, RpcObjectReference listRef);
+			RpcByrefObservableList(IRpcLifecycle* lc, RpcObjectReference listRef, IRpcSerializer* _serializer);
 			~RpcByrefObservableList();
 
 			void											DisconnectFromLifecycle()override;
@@ -131,9 +149,10 @@ namespace vl
 		{
 		private:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 			RpcObjectReference								ref;
 		public:
-			RpcByrefDictionary(IRpcLifecycle* lc, RpcObjectReference dictRef);
+			RpcByrefDictionary(IRpcLifecycle* lc, RpcObjectReference dictRef, IRpcSerializer* _serializer);
 			~RpcByrefDictionary();
 
 			void												DisconnectFromLifecycle()override;
@@ -154,9 +173,10 @@ namespace vl
 		{
 		private:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 
 		public:
-			RpcCalleeListOps(IRpcLifecycle* lc);
+			RpcCalleeListOps(IRpcLifecycle* lc, IRpcSerializer* _serializer);
 
 			RpcObjectReference								EnumCreate(RpcObjectReference ref)override;
 			bool											EnumNext(RpcObjectReference enumerator)override;
@@ -186,9 +206,10 @@ namespace vl
 		{
 		private:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 
 		public:
-			RpcCalleeListEventBridge(IRpcLifecycle* lc);
+			RpcCalleeListEventBridge(IRpcLifecycle* lc, IRpcSerializer* _serializer);
 
 			void											OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
 		};

@@ -81,10 +81,10 @@ namespace
 		RpcTestContext context;
 		context.lifecycle1 = Ptr(new RpcDualLifecycleMock(1));
 		context.lifecycle2 = Ptr(new RpcDualLifecycleMock(2));
-		context.listOps1 = Ptr(new RpcCalleeListOps(context.lifecycle1.Obj()));
-		context.listOps2 = Ptr(new RpcCalleeListOps(context.lifecycle2.Obj()));
-		context.listEventBridge1 = Ptr(new RpcCalleeListEventBridge(context.lifecycle1.Obj()));
-		context.listEventBridge2 = Ptr(new RpcCalleeListEventBridge(context.lifecycle2.Obj()));
+		context.listOps1 = Ptr(new RpcCalleeListOps(context.lifecycle1.Obj(), nullptr));
+		context.listOps2 = Ptr(new RpcCalleeListOps(context.lifecycle2.Obj(), nullptr));
+		context.listEventBridge1 = Ptr(new RpcCalleeListEventBridge(context.lifecycle1.Obj(), nullptr));
+		context.listEventBridge2 = Ptr(new RpcCalleeListEventBridge(context.lifecycle2.Obj(), nullptr));
 		context.lifecycle1->GetController()->Register(Ptr(new StubObjectOps(context.lifecycle1.Obj())), Ptr(new StubObjectEventOps), context.listOps1, context.listEventBridge1);
 		context.lifecycle2->GetController()->Register(Ptr(new StubObjectOps(context.lifecycle2.Obj())), Ptr(new StubObjectEventOps), context.listOps2, context.listEventBridge2);
 		context.dispatcher = Ptr(new RpcDualDispatcherMock(context.lifecycle1.Obj(), context.lifecycle2.Obj()));

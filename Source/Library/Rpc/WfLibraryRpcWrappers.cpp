@@ -1,4 +1,5 @@
 #include "WfLibraryRpcWrappers.h"
+#include "WfLibraryRpcLifecycle.h"
 #include "../WfLibraryReflection.h"
 
 namespace vl
@@ -53,9 +54,16 @@ namespace vl
 			}
 
 			template<typename TWrapper, typename TInterface>
-			Ptr<TInterface> CreateTrackedProxy(IRpcLifecycle* lc, RpcObjectReference ref)
+			Ptr<TInterface> CreateTrackedProxy(IRpcLifecycle* lc, RpcObjectReference ref, IRpcSerializer* serializer)
 			{
-				auto obj = lc->RefToPtr(ref);
+				auto obj = [&]()
+				{
+					if (auto lifecycle = dynamic_cast<RpcLifecycleBase*>(lc))
+					{
+						return lifecycle->RefToPtr(ref, serializer);
+					}
+					return lc->RefToPtr(ref);
+				}();
 				CHECK_ERROR(obj, L"RPC proxy creation returned null.");
 				if (auto wrapper = Ptr(CastRpcWrapperBase(obj.Obj())))
 				{
@@ -63,7 +71,7 @@ namespace vl
 					CHECK_ERROR(proxy, L"RPC proxy creation returned an unexpected type.");
 					return proxy;
 				}
-				return Ptr(new TWrapper(lc, ref));
+				return Ptr(new TWrapper(lc, ref, serializer));
 			}
 
 			void SetRemoteObjectHold(IRpcLifecycle* lc, RpcObjectReference ref, bool hold)
@@ -99,6 +107,16 @@ namespace vl
 				return lc->GetDispatcher()->SendToClient_ListOps(ref.clientId);
 			}
 
+			Value SerializeValue(IRpcSerializer* serializer, const Value& value)
+			{
+				return serializer ? serializer->Serialize(value) : value;
+			}
+
+			Value DeserializeValue(IRpcSerializer* serializer, const Value& value)
+			{
+				return serializer ? serializer->Deserialize(value) : value;
+			}
+
 			Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc);
 			Value RpcUnboxValueByref(const Value& serializable, IRpcLifecycle* lc);
 			Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited, List<Ptr<IDescriptable>>& keepAlive);
@@ -109,8 +127,9 @@ namespace vl
 * RpcByrefEnumerator
 ***********************************************************************/
 
-		RpcByrefEnumerator::RpcByrefEnumerator(IRpcLifecycle* lc, RpcObjectReference enumeratorRef)
+		RpcByrefEnumerator::RpcByrefEnumerator(IRpcLifecycle* lc, RpcObjectReference enumeratorRef, IRpcSerializer* _serializer)
 			: lifecycle(lc)
+			, serializer(_serializer)
 			, ref(enumeratorRef)
 		{
 			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
@@ -129,7 +148,7 @@ namespace vl
 
 		Value RpcByrefEnumerator::GetCurrent()
 		{
-			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref)->EnumGetCurrent(ref), lifecycle);
+			return RpcUnboxValueByref(DeserializeValue(serializer, GetRemoteListOps(lifecycle, ref)->EnumGetCurrent(ref)), lifecycle);
 		}
 
 		vint RpcByrefEnumerator::GetIndex()
@@ -147,8 +166,9 @@ namespace vl
 			return false;
 		}
 
-		RpcByrefEnumerable::RpcByrefEnumerable(IRpcLifecycle* lc, RpcObjectReference enumerableRef)
+		RpcByrefEnumerable::RpcByrefEnumerable(IRpcLifecycle* lc, RpcObjectReference enumerableRef, IRpcSerializer* _serializer)
 			: lifecycle(lc)
+			, serializer(_serializer)
 			, ref(enumerableRef)
 		{
 			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
@@ -167,15 +187,16 @@ namespace vl
 
 		Ptr<IValueEnumerator> RpcByrefEnumerable::CreateEnumerator()
 		{
-			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref)->EnumCreate(ref));
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref)->EnumCreate(ref), serializer);
 		}
 		
 /***********************************************************************
 * RpcByrefReadonlyList
 ***********************************************************************/
 
-		RpcByrefReadonlyList::RpcByrefReadonlyList(IRpcLifecycle* lc, RpcObjectReference listRef)
+		RpcByrefReadonlyList::RpcByrefReadonlyList(IRpcLifecycle* lc, RpcObjectReference listRef, IRpcSerializer* _serializer)
 			: lifecycle(lc)
+			, serializer(_serializer)
 			, ref(listRef)
 		{
 			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
@@ -194,7 +215,7 @@ namespace vl
 
 		Ptr<IValueEnumerator> RpcByrefReadonlyList::CreateEnumerator()
 		{
-			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref)->EnumCreate(ref));
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref)->EnumCreate(ref), serializer);
 		}
 
 		vint RpcByrefReadonlyList::GetCount()
@@ -204,25 +225,25 @@ namespace vl
 
 		Value RpcByrefReadonlyList::Get(vint index)
 		{
-			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref)->ListGet(ref, index), lifecycle);
+			return RpcUnboxValueByref(DeserializeValue(serializer, GetRemoteListOps(lifecycle, ref)->ListGet(ref, index)), lifecycle);
 		}
 
 		bool RpcByrefReadonlyList::Contains(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListContains(ref, RpcBoxValueByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListContains(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
 		}
 
 		vint RpcByrefReadonlyList::IndexOf(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListIndexOf(ref, RpcBoxValueByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListIndexOf(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
 		}
 		
 /***********************************************************************
 * RpcByrefList
 ***********************************************************************/
 
-		RpcByrefList::RpcByrefList(IRpcLifecycle* lc, RpcObjectReference listRef)
-			: RpcByrefReadonlyList(lc, listRef)
+		RpcByrefList::RpcByrefList(IRpcLifecycle* lc, RpcObjectReference listRef, IRpcSerializer* _serializer)
+			: RpcByrefReadonlyList(lc, listRef, _serializer)
 		{
 		}
 
@@ -257,17 +278,17 @@ namespace vl
 
 		void RpcByrefList::Set(vint index, const Value& value)
 		{
-			GetRemoteListOps(lifecycle, ref)->ListSet(ref, index, RpcBoxValueByref(value, lifecycle));
+			GetRemoteListOps(lifecycle, ref)->ListSet(ref, index, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
 		}
 
 		vint RpcByrefList::Add(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListAdd(ref, RpcBoxValueByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListAdd(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
 		}
 
 		vint RpcByrefList::Insert(vint index, const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListInsert(ref, index, RpcBoxValueByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListInsert(ref, index, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
 		}
 
 		bool RpcByrefList::Remove(const Value& value)
@@ -290,8 +311,9 @@ namespace vl
 * RpcByrefArray
 ***********************************************************************/
 
-		RpcByrefArray::RpcByrefArray(IRpcLifecycle* lc, RpcObjectReference arrayRef)
+		RpcByrefArray::RpcByrefArray(IRpcLifecycle* lc, RpcObjectReference arrayRef, IRpcSerializer* _serializer)
 			: lifecycle(lc)
+			, serializer(_serializer)
 			, ref(arrayRef)
 		{
 			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
@@ -310,7 +332,7 @@ namespace vl
 
 		Ptr<IValueEnumerator> RpcByrefArray::CreateEnumerator()
 		{
-			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref)->EnumCreate(ref));
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref)->EnumCreate(ref), serializer);
 		}
 
 		vint RpcByrefArray::GetCount()
@@ -320,22 +342,22 @@ namespace vl
 
 		Value RpcByrefArray::Get(vint index)
 		{
-			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref)->ListGet(ref, index), lifecycle);
+			return RpcUnboxValueByref(DeserializeValue(serializer, GetRemoteListOps(lifecycle, ref)->ListGet(ref, index)), lifecycle);
 		}
 
 		bool RpcByrefArray::Contains(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListContains(ref, RpcBoxValueByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListContains(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
 		}
 
 		vint RpcByrefArray::IndexOf(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListIndexOf(ref, RpcBoxValueByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListIndexOf(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
 		}
 
 		void RpcByrefArray::Set(vint index, const Value& value)
 		{
-			GetRemoteListOps(lifecycle, ref)->ListSet(ref, index, RpcBoxValueByref(value, lifecycle));
+			GetRemoteListOps(lifecycle, ref)->ListSet(ref, index, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
 		}
 
 		void RpcByrefArray::Resize(vint size)
@@ -352,8 +374,9 @@ namespace vl
 * RpcByrefObservableList
 ***********************************************************************/
 
-		RpcByrefObservableList::RpcByrefObservableList(IRpcLifecycle* lc, RpcObjectReference listRef)
+		RpcByrefObservableList::RpcByrefObservableList(IRpcLifecycle* lc, RpcObjectReference listRef, IRpcSerializer* _serializer)
 			: lifecycle(lc)
+			, serializer(_serializer)
 			, ref(listRef)
 		{
 			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
@@ -372,7 +395,7 @@ namespace vl
 
 		Ptr<IValueEnumerator> RpcByrefObservableList::CreateEnumerator()
 		{
-			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref)->EnumCreate(ref));
+			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref)->EnumCreate(ref), serializer);
 		}
 
 		vint RpcByrefObservableList::GetCount()
@@ -382,32 +405,32 @@ namespace vl
 
 		Value RpcByrefObservableList::Get(vint index)
 		{
-			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref)->ListGet(ref, index), lifecycle);
+			return RpcUnboxValueByref(DeserializeValue(serializer, GetRemoteListOps(lifecycle, ref)->ListGet(ref, index)), lifecycle);
 		}
 
 		bool RpcByrefObservableList::Contains(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListContains(ref, RpcBoxValueByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListContains(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
 		}
 
 		vint RpcByrefObservableList::IndexOf(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListIndexOf(ref, RpcBoxValueByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListIndexOf(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
 		}
 
 		void RpcByrefObservableList::Set(vint index, const Value& value)
 		{
-			GetRemoteListOps(lifecycle, ref)->ListSet(ref, index, RpcBoxValueByref(value, lifecycle));
+			GetRemoteListOps(lifecycle, ref)->ListSet(ref, index, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
 		}
 
 		vint RpcByrefObservableList::Add(const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListAdd(ref, RpcBoxValueByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListAdd(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
 		}
 
 		vint RpcByrefObservableList::Insert(vint index, const Value& value)
 		{
-			return GetRemoteListOps(lifecycle, ref)->ListInsert(ref, index, RpcBoxValueByref(value, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->ListInsert(ref, index, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
 		}
 
 		bool RpcByrefObservableList::Remove(const Value& value)
@@ -430,8 +453,9 @@ namespace vl
 * RpcByrefDictionary
 ***********************************************************************/
 
-		RpcByrefDictionary::RpcByrefDictionary(IRpcLifecycle* lc, RpcObjectReference dictRef)
+		RpcByrefDictionary::RpcByrefDictionary(IRpcLifecycle* lc, RpcObjectReference dictRef, IRpcSerializer* _serializer)
 			: lifecycle(lc)
+			, serializer(_serializer)
 			, ref(dictRef)
 		{
 			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
@@ -450,12 +474,12 @@ namespace vl
 
 		Ptr<IValueReadonlyList> RpcByrefDictionary::GetKeys()
 		{
-			return CreateTrackedProxy<RpcByrefReadonlyList, IValueReadonlyList>(lifecycle, GetRemoteListOps(lifecycle, ref)->DictGetKeys(ref));
+			return CreateTrackedProxy<RpcByrefReadonlyList, IValueReadonlyList>(lifecycle, GetRemoteListOps(lifecycle, ref)->DictGetKeys(ref), serializer);
 		}
 
 		Ptr<IValueReadonlyList> RpcByrefDictionary::GetValues()
 		{
-			return CreateTrackedProxy<RpcByrefReadonlyList, IValueReadonlyList>(lifecycle, GetRemoteListOps(lifecycle, ref)->DictGetValues(ref));
+			return CreateTrackedProxy<RpcByrefReadonlyList, IValueReadonlyList>(lifecycle, GetRemoteListOps(lifecycle, ref)->DictGetValues(ref), serializer);
 		}
 
 		vint RpcByrefDictionary::GetCount()
@@ -465,17 +489,21 @@ namespace vl
 
 		Value RpcByrefDictionary::Get(const Value& key)
 		{
-			return RpcUnboxValueByref(GetRemoteListOps(lifecycle, ref)->DictGet(ref, RpcBoxValueByref(key, lifecycle)), lifecycle);
+			auto serializedKey = SerializeValue(serializer, RpcBoxValueByref(key, lifecycle));
+			auto serializedValue = GetRemoteListOps(lifecycle, ref)->DictGet(ref, serializedKey);
+			return RpcUnboxValueByref(DeserializeValue(serializer, serializedValue), lifecycle);
 		}
 
 		void RpcByrefDictionary::Set(const Value& key, const Value& value)
 		{
-			GetRemoteListOps(lifecycle, ref)->DictSet(ref, RpcBoxValueByref(key, lifecycle), RpcBoxValueByref(value, lifecycle));
+			auto serializedKey = SerializeValue(serializer, RpcBoxValueByref(key, lifecycle));
+			auto serializedValue = SerializeValue(serializer, RpcBoxValueByref(value, lifecycle));
+			GetRemoteListOps(lifecycle, ref)->DictSet(ref, serializedKey, serializedValue);
 		}
 
 		bool RpcByrefDictionary::Remove(const Value& key)
 		{
-			return GetRemoteListOps(lifecycle, ref)->DictRemove(ref, RpcBoxValueByref(key, lifecycle));
+			return GetRemoteListOps(lifecycle, ref)->DictRemove(ref, SerializeValue(serializer, RpcBoxValueByref(key, lifecycle)));
 		}
 
 		void RpcByrefDictionary::Clear()
@@ -487,8 +515,9 @@ namespace vl
 * RpcCalleeListOps
 ***********************************************************************/
 
-		RpcCalleeListOps::RpcCalleeListOps(IRpcLifecycle* lc)
+		RpcCalleeListOps::RpcCalleeListOps(IRpcLifecycle* lc, IRpcSerializer* _serializer)
 			: lifecycle(lc)
+			, serializer(_serializer)
 		{
 			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
 		}
@@ -523,7 +552,7 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(enumerator);
 			auto e = Ptr(obj.Obj()->SafeAggregationCast<IValueEnumerator>());
 			CHECK_ERROR(e, L"RpcCalleeListOps::EnumGetCurrent cannot find the target enumerator.");
-			return RpcBoxValueByref(e->GetCurrent(), lifecycle);
+			return SerializeValue(serializer, RpcBoxValueByref(e->GetCurrent(), lifecycle));
 		}
 
 		vint RpcCalleeListOps::ListGetCount(RpcObjectReference ref)
@@ -539,14 +568,14 @@ namespace vl
 		{
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
-				return RpcBoxValueByref(roList->Get(index), lifecycle);
+				return SerializeValue(serializer, RpcBoxValueByref(roList->Get(index), lifecycle));
 			CHECK_FAIL(L"RpcCalleeListOps::ListGet cannot find the target list.");
 			return {};
 		}
 
 		void RpcCalleeListOps::ListSet(RpcObjectReference ref, vint index, const Value& value)
 		{
-			auto trivial = RpcUnboxValueByref(value, lifecycle);
+			auto trivial = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto array = Ptr(obj.Obj()->SafeAggregationCast<IValueArray>()))
 			{
@@ -563,7 +592,7 @@ namespace vl
 
 		vint RpcCalleeListOps::ListAdd(RpcObjectReference ref, const Value& value)
 		{
-			auto trivial = RpcUnboxValueByref(value, lifecycle);
+			auto trivial = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
 				return list->Add(trivial);
@@ -573,7 +602,7 @@ namespace vl
 
 		vint RpcCalleeListOps::ListInsert(RpcObjectReference ref, vint index, const Value& value)
 		{
-			auto trivial = RpcUnboxValueByref(value, lifecycle);
+			auto trivial = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
 				return list->Insert(index, trivial);
@@ -614,7 +643,7 @@ namespace vl
 
 		bool RpcCalleeListOps::ListContains(RpcObjectReference ref, const Value& value)
 		{
-			auto trivial = RpcUnboxValueByref(value, lifecycle);
+			auto trivial = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
 				return roList->Contains(trivial);
@@ -624,7 +653,7 @@ namespace vl
 
 		vint RpcCalleeListOps::ListIndexOf(RpcObjectReference ref, const Value& value)
 		{
-			auto trivial = RpcUnboxValueByref(value, lifecycle);
+			auto trivial = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
 				return roList->IndexOf(trivial);
@@ -645,7 +674,8 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
 			CHECK_ERROR(dict, L"RpcCalleeListOps::DictGet cannot find the target dictionary.");
-			return RpcBoxValueByref(dict->Get(RpcUnboxValueByref(key, lifecycle)), lifecycle);
+			auto trivialKey = RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle);
+			return SerializeValue(serializer, RpcBoxValueByref(dict->Get(trivialKey), lifecycle));
 		}
 
 		void RpcCalleeListOps::DictSet(RpcObjectReference ref, const Value& key, const Value& value)
@@ -653,7 +683,9 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
 			CHECK_ERROR(dict, L"RpcCalleeListOps::DictSet cannot find the target dictionary.");
-			dict->Set(RpcUnboxValueByref(key, lifecycle), RpcUnboxValueByref(value, lifecycle));
+			auto trivialKey = RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle);
+			auto trivialValue = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
+			dict->Set(trivialKey, trivialValue);
 		}
 
 		bool RpcCalleeListOps::DictRemove(RpcObjectReference ref, const Value& key)
@@ -661,7 +693,7 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
 			CHECK_ERROR(dict, L"RpcCalleeListOps::DictRemove cannot find the target dictionary.");
-			return dict->Remove(RpcUnboxValueByref(key, lifecycle));
+			return dict->Remove(RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle));
 		}
 
 		void RpcCalleeListOps::DictClear(RpcObjectReference ref)
@@ -677,7 +709,7 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
 			CHECK_ERROR(dict, L"RpcCalleeListOps::DictContainsKey cannot find the target dictionary.");
-			return dict->GetKeys()->Contains(RpcUnboxValueByref(key, lifecycle));
+			return dict->GetKeys()->Contains(RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle));
 		}
 
 		RpcObjectReference RpcCalleeListOps::DictGetKeys(RpcObjectReference ref)
@@ -700,8 +732,9 @@ namespace vl
 * RpcCalleeListEventBridge
 ***********************************************************************/
 
-		RpcCalleeListEventBridge::RpcCalleeListEventBridge(IRpcLifecycle* lc)
+		RpcCalleeListEventBridge::RpcCalleeListEventBridge(IRpcLifecycle* lc, IRpcSerializer* _serializer)
 			: lifecycle(lc)
+			, serializer(_serializer)
 		{
 			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
 		}

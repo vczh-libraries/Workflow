@@ -280,7 +280,7 @@ namespace vl
 			return nullptr;
 		}
 
-		Ptr<IDescriptable> RpcLifecycleBase::CreateCallerProxy(RpcObjectReference ref)
+		Ptr<IDescriptable> RpcLifecycleBase::CreateCallerProxy(RpcObjectReference ref, IRpcSerializer* serializer)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::CreateCallerProxy(RpcObjectReference)#"
 			IRpcLifecycle* lc = this;
@@ -289,25 +289,25 @@ namespace vl
 			switch (ref.typeId)
 			{
 			case RpcTypeId_IValueEnumerable:
-				wrapper = Ptr(new RpcByrefEnumerable(lc, ref));
+				wrapper = Ptr(new RpcByrefEnumerable(lc, ref, serializer));
 				break;
 			case RpcTypeId_IValueEnumerator:
-				wrapper = Ptr(new RpcByrefEnumerator(lc, ref));
+				wrapper = Ptr(new RpcByrefEnumerator(lc, ref, serializer));
 				break;
 			case RpcTypeId_IValueArray:
-				wrapper = Ptr(new RpcByrefArray(lc, ref));
+				wrapper = Ptr(new RpcByrefArray(lc, ref, serializer));
 				break;
 			case RpcTypeId_IValueReadonlyList:
-				wrapper = Ptr(new RpcByrefReadonlyList(lc, ref));
+				wrapper = Ptr(new RpcByrefReadonlyList(lc, ref, serializer));
 				break;
 			case RpcTypeId_IValueList:
-				wrapper = Ptr(new RpcByrefList(lc, ref));
+				wrapper = Ptr(new RpcByrefList(lc, ref, serializer));
 				break;
 			case RpcTypeId_IValueObservableList:
-				wrapper = Ptr(new RpcByrefObservableList(lc, ref));
+				wrapper = Ptr(new RpcByrefObservableList(lc, ref, serializer));
 				break;
 			case RpcTypeId_IValueDictionary:
-				wrapper = Ptr(new RpcByrefDictionary(lc, ref));
+				wrapper = Ptr(new RpcByrefDictionary(lc, ref, serializer));
 				break;
 			default:
 				CHECK_ERROR(universalWrapperFactory, ERROR_MESSAGE_PREFIX L"No wrapper factory registered.");
@@ -411,6 +411,11 @@ namespace vl
 
 		Ptr<IDescriptable> RpcLifecycleBase::RefToPtr(RpcObjectReference ref)
 		{
+			return RefToPtr(ref, nullptr);
+		}
+
+		Ptr<IDescriptable> RpcLifecycleBase::RefToPtr(RpcObjectReference ref, IRpcSerializer* serializer)
+		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::RefToPtr(RpcObjectReference)#"
 			if (ref.clientId == clientId)
 			{
@@ -430,7 +435,7 @@ namespace vl
 					return Ptr(descriptable);
 				}
 
-				return CreateCallerProxy(ref);
+				return CreateCallerProxy(ref, serializer);
 			}
 #undef ERROR_MESSAGE_PREFIX
 		}

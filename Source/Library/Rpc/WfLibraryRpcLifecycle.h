@@ -15,6 +15,7 @@ namespace vl
 {
 	namespace rpc_controller
 	{
+		class IRpcSerializer;
 		class RpcLifecycleBase;
 
 		class RpcLocalObjectTracker : public Object
@@ -89,7 +90,7 @@ namespace vl
 			void											UntrackLocalObject(RpcObjectReference ref, bool clearInternalProperty);
 			void											RemoveLocalObject(RpcObjectReference ref, bool clearInternalProperty);
 			bool											IsTracked(vint objectId)const;
-			Ptr<reflection::IDescriptable>					CreateCallerProxy(RpcObjectReference ref);
+			Ptr<reflection::IDescriptable>					CreateCallerProxy(RpcObjectReference ref, IRpcSerializer* serializer);
 			void											DisconnectWrappersForFinalize();
 		protected:
 			IRpcDispatcher*									dispatcher = nullptr;
@@ -115,6 +116,7 @@ namespace vl
 			void											RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service)override;
 			Ptr<reflection::IDescriptable>					RequestService(const WString& fullName)override;
 			Ptr<reflection::IDescriptable>					RefToPtr(RpcObjectReference ref)override;
+			Ptr<reflection::IDescriptable>					RefToPtr(RpcObjectReference ref, IRpcSerializer* serializer);
 			RpcObjectReference								PtrToRef(Ptr<reflection::IDescriptable> obj)override;
 		};
 	}

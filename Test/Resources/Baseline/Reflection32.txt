@@ -365,6 +365,16 @@ interface system::IRpcOperations : system::Interface {
 
 }
 
+@FullName:vl::rpc_controller::IRpcSerializer
+interface system::IRpcSerializer : system::Interface {
+    function Deserialize(value : system::Object) : system::Object;
+    function Serialize(value : system::Object) : system::Object;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcSerializer>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcSerializer>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::IRpcSerializer^;
+}
+
 @FullName:vl::rpc_controller::IRpcWrapperBase
 interface system::IRpcWrapperBase : system::Interface {
     function DisconnectFromLifecycle() : system::Void;

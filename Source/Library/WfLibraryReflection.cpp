@@ -37,6 +37,7 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::StateMachine, system::StateMachine)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Versioning, system::Versioning)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcObjectReference, system::RpcObjectReference)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcSerializer, system::IRpcSerializer)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListOps, system::IRpcListOps)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListEventOps, system::IRpcListEventOps)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcObjectOps, system::IRpcObjectOps)
@@ -115,6 +116,11 @@ WfLoadLibraryTypes
 				STRUCT_MEMBER(objectId)
 				STRUCT_MEMBER(typeId)
 			END_STRUCT_MEMBER(vl::rpc_controller::RpcObjectReference)
+
+			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcSerializer)
+				CLASS_MEMBER_METHOD(Serialize, { L"value" })
+				CLASS_MEMBER_METHOD(Deserialize, { L"value" })
+			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcSerializer)
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcListOps)
 				CLASS_MEMBER_METHOD(EnumCreate, { L"ref" })

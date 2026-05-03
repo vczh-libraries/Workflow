@@ -58,10 +58,10 @@ void RunRpcTestCase(
 	lc1->attachLocalEventsCallback = attachLocalEvents;
 	lc2->attachLocalEventsCallback = attachLocalEvents;
 
-	auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj()));
-	auto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj()));
-	auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj()));
-	auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj()));
+	auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj(), nullptr));
+	auto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj(), nullptr));
+	auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj(), nullptr));
+	auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj(), nullptr));
 
 	auto oo1 = instance.rpcops_IRpcObjectOps(lc1.Obj());
 	auto oeo1 = instance.rpcops_IRpcObjectEventOps(lc1.Obj());

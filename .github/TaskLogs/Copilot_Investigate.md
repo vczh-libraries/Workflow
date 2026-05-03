@@ -50,10 +50,12 @@ But in any current test projects we only pass `nullptr`, actual testing will be 
 # TEST [CONFIRMED]
 
 - Task 1 succeeds when the solution builds and the affected library/metadata unit tests pass after moving all `WfLibraryRpc*.*` files under `Source/Library/Rpc` and updating the `VlppWorkflow_Library` item/filter files. `CompilerTest_LoadAndCompile` and `Build.ps1` are skipped for this task by request.
+- Task 2 succeeds when `IRpcSerializer` appears in reflected metadata, all wrapper and default ops constructors accept the serializer pointer, collection element values are serialized/deserialized at wrapper/ops boundaries, and the requested build/test subset passes with all current call sites passing `nullptr`.
 
 # PROPOSALS
 
 - No.1 Extract byref collection wrappers to WfLibraryRpcWrappers [CONFIRMED]
+- No.2 Add reflected IRpcSerializer to byref collection wrappers [CONFIRMED]
 
 ## No.1 Extract byref collection wrappers to WfLibraryRpcWrappers
 
@@ -68,3 +70,18 @@ But in any current test projects we only pass `nullptr`, actual testing will be 
 ### CONFIRMED
 
 The extraction is confirmed by building `Test/UnitTest/UnitTest.sln` through `copilotBuild.ps1` for `Debug|Win32` and `Debug|x64`, both succeeding with 0 warnings and 0 errors. The requested unit-test subset was then executed through `copilotExecute.ps1` for `LibraryTest`, `CompilerTest_GenerateMetadata`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on both `Debug|Win32` and `Debug|x64`; all 12 executions succeeded. `CompilerTest_LoadAndCompile` and `Build.ps1` were intentionally skipped for Task 1 as requested.
+
+## No.2 Add reflected IRpcSerializer to byref collection wrappers
+
+### CODE CHANGE
+
+- Added `IRpcSerializer` to `WfLibraryRpcWrappers.h` with `Serialize(Value):Value` and `Deserialize(Value):Value`, and registered it as `system::IRpcSerializer` in reflection metadata.
+- Added `IRpcSerializer*` constructor arguments and members to byref collection caller wrappers, `RpcCalleeListOps`, and `RpcCalleeListEventBridge`; current test call sites pass `nullptr`.
+- Serialized boxed collection element values before wrapper calls into `IRpcListOps`, and deserialized returned element values before unboxing them back to wrapper callers.
+- Deserialized incoming element values in `RpcCalleeListOps` before forwarding to the real collection, and serialized boxed element values returned by the default ops.
+- Added an internal `RpcLifecycleBase::RefToPtr(ref, serializer)` path so nested collection proxies such as enumerators, keys, and values can be constructed and tracked with the same serializer.
+- Regenerated reflection metadata and baselines to include `system::IRpcSerializer`.
+
+### CONFIRMED
+
+The serializer change is confirmed by building `Test/UnitTest/UnitTest.sln` through `copilotBuild.ps1` for `Debug|Win32` and `Debug|x64`, both succeeding with 0 warnings and 0 errors. The requested unit-test subset was executed through `copilotExecute.ps1` for `LibraryTest`, `CompilerTest_GenerateMetadata`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on both `Debug|Win32` and `Debug|x64`; all 12 executions succeeded. `CompilerTest_LoadAndCompile` and `Build.ps1` were intentionally skipped for Task 2 as requested.

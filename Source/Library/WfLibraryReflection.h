@@ -59,6 +59,7 @@ Predefined Types
 			F(StateMachine)					\
 			F(Versioning)					\
 			F(vl::rpc_controller::RpcObjectReference)\
+			F(vl::rpc_controller::IRpcSerializer)\
 			F(vl::rpc_controller::IRpcListOps)\
 			F(vl::rpc_controller::IRpcListEventOps)\
 			F(vl::rpc_controller::IRpcObjectOps)\
@@ -89,6 +90,18 @@ Interface Implementation Proxy (Implement)
 
 #pragma warning(push)
 #pragma warning(disable:4250)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcSerializer)
+				vl::reflection::description::Value Serialize(const vl::reflection::description::Value& value)override
+				{
+					INVOKEGET_INTERFACE_PROXY(Serialize, value);
+				}
+
+				vl::reflection::description::Value Deserialize(const vl::reflection::description::Value& value)override
+				{
+					INVOKEGET_INTERFACE_PROXY(Deserialize, value);
+				}
+			END_INTERFACE_PROXY(vl::rpc_controller::IRpcSerializer)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcListOps)
 				vl::rpc_controller::RpcObjectReference EnumCreate(vl::rpc_controller::RpcObjectReference ref)override
