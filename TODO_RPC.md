@@ -21,6 +21,7 @@
   - Move all JSON related things to `WfAnalyzer_GenerateRpc_Json*.cpp`, fix file name mistake.
   - Review JSON related constructions.
   - Make `TestCasesRpc.cpp` use them.
+  - Make sure arguments are serialized to expected JSON representation.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
 - Document RPC.
 - Document compiler process.
