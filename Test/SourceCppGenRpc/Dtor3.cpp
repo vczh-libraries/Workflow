@@ -848,19 +848,24 @@ Global Functions
 		throw ::vl::Exception(::vl::WString::Unmanaged(L"Unsupported RPC JSON node."));
 	}
 
+	::vl::Ptr<::vl::rpc_controller::IRpcSerializer> Rpc_Dtor3::rpcops_IRpcSerializer()
+	{
+		return ::vl::Ptr<::vl::rpc_controller::IRpcSerializer>(new ::vl_workflow_global::__vwsnc10_Rpc_Dtor3_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer());
+	}
+
 	::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> Rpc_Dtor3::rpcops_IRpcObjectOpsJson(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectOps>(new ::vl_workflow_global::__vwsnc10_Rpc_Dtor3_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(lc));
+		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectOps>(new ::vl_workflow_global::__vwsnc11_Rpc_Dtor3_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(lc));
 	}
 
 	::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> Rpc_Dtor3::rpcops_IRpcObjectEventOpsJson(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc11_Rpc_Dtor3_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(lc));
+		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc12_Rpc_Dtor3_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(lc));
 	}
 
 	::vl::Ptr<::rpcops_IOps_Rpc_Dtor3> Rpc_Dtor3::rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		return ::vl::Ptr<::rpcops_IOps_Rpc_Dtor3>(new ::vl_workflow_global::__vwsnc12_Rpc_Dtor3_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor3(lc));
+		return ::vl::Ptr<::rpcops_IOps_Rpc_Dtor3>(new ::vl_workflow_global::__vwsnc13_Rpc_Dtor3_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor3(lc));
 	}
 
 	Rpc_Dtor3& Rpc_Dtor3::Instance()
@@ -874,12 +879,28 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc10_Rpc_Dtor3_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::__vwsnc10_Rpc_Dtor3_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	__vwsnc10_Rpc_Dtor3_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::__vwsnc10_Rpc_Dtor3_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer()
+	{
+	}
+
+	::vl::reflection::description::Value __vwsnc10_Rpc_Dtor3_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::Serialize(const ::vl::reflection::description::Value& value)
+	{
+		return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(value));
+	}
+
+	::vl::reflection::description::Value __vwsnc10_Rpc_Dtor3_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::Deserialize(const ::vl::reflection::description::Value& value)
+	{
+		return GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(value));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc11_Rpc_Dtor3_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::__vwsnc11_Rpc_Dtor3_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
 	}
 
-	::vl::reflection::description::Value __vwsnc10_Rpc_Dtor3_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	::vl::reflection::description::Value __vwsnc11_Rpc_Dtor3_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
 		{
 			auto __vwsn_switch_7 = methodId;
@@ -901,7 +922,7 @@ Closures
 		}
 	}
 
-	void __vwsnc10_Rpc_Dtor3_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold)
+	void __vwsnc11_Rpc_Dtor3_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold)
 	{
 		if (hold)
 		{
@@ -913,7 +934,7 @@ Closures
 		}
 	}
 
-	void __vwsnc10_Rpc_Dtor3_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::RegisterService(::vl::vint typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service)
+	void __vwsnc11_Rpc_Dtor3_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::RegisterService(::vl::vint typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service)
 	{
 		{
 			if (GLOBAL_NAME rpcwrapper_IsCtorInterfaceTypeId(typeId))
@@ -936,12 +957,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc11_Rpc_Dtor3_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps::__vwsnc11_Rpc_Dtor3_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	__vwsnc12_Rpc_Dtor3_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps::__vwsnc12_Rpc_Dtor3_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
 	}
 
-	void __vwsnc11_Rpc_Dtor3_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	void __vwsnc12_Rpc_Dtor3_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
 		::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->SetEventSuppressedFlag(ref, eventId, true);
 		{
@@ -966,12 +987,12 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc12_Rpc_Dtor3_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor3::__vwsnc12_Rpc_Dtor3_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor3(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	__vwsnc13_Rpc_Dtor3_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor3::__vwsnc13_Rpc_Dtor3_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor3(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
 	}
 
-	::vl::Ptr<::RpcDtor3Test::IValue> __vwsnc12_Rpc_Dtor3_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor3::InvokeMethod_RpcDtor3Test__IContainer_GetValue(::vl::rpc_controller::RpcObjectReference ref)
+	::vl::Ptr<::RpcDtor3Test::IValue> __vwsnc13_Rpc_Dtor3_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor3::InvokeMethod_RpcDtor3Test__IContainer_GetValue(::vl::rpc_controller::RpcObjectReference ref)
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(0));
@@ -980,7 +1001,7 @@ Closures
 		return ::vl::__vwsn::SharedPtrCast<::RpcDtor3Test::IValue>(::vl::rpc_controller::RpcUnboxByval(jsonValue0, _lc).Obj());
 	}
 
-	::vl::Ptr<::RpcDtor3Test::IContainer> __vwsnc12_Rpc_Dtor3_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor3::InvokeMethod_RpcDtor3Test__IService_ContainValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtor3Test::IValue> arg_value)
+	::vl::Ptr<::RpcDtor3Test::IContainer> __vwsnc13_Rpc_Dtor3_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor3::InvokeMethod_RpcDtor3Test__IService_ContainValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtor3Test::IValue> arg_value)
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));

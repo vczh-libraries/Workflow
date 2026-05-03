@@ -627,6 +627,22 @@ func rpcjson_Deserialize(node : system::JsonNode^) : (object)
     raise "Unsupported RPC JSON node.";
 }
 
+func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
+{
+    return new (system::IRpcSerializer^)
+    {
+        override func Serialize(value : object) : (object)
+        {
+            return rpcjson_Serialize(value);
+        }
+
+        override func Deserialize(value : object) : (object)
+        {
+            return rpcjson_Deserialize((cast (system::JsonNode^) value));
+        }
+    };
+}
+
 func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
 {
     return new (system::IRpcObjectOps^)
