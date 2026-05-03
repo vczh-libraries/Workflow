@@ -18,9 +18,6 @@
   - Sending cached property values proactively from remote to wrapper.
   - Interface inheritance.
 - Generate JSON from "RPC metadata in Workflow syntax".
-  - `rpcops_IOps_Create(Json)?` should use `cast` instead of `as` for byval collections.
-  - Move `rpcjson_*`, `rpcops_IOps_CreateJson`, `rpcops_IRpcObjectOpsJson` and `rpcops_IRpcObjectEventOpsJson` to another file, e.g. `Wrapper_*_Json`, with module name `RpcMetadataJson`.
-  - Move all JSON related things to `WfAnalyzer_GenerateRpc_Json*.cpp`, fix file name mistake.
   - Review JSON related constructions.
   - Make `TestCasesRpc.cpp` use them.
   - Make sure arguments are serialized to expected JSON representation.
