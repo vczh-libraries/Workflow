@@ -95,6 +95,7 @@ namespace vl
 		protected:
 			IRpcDispatcher*									dispatcher = nullptr;
 			collections::Dictionary<WString, vint>			idMap;
+			Ptr<IRpcSerializer>								serializer;
 
 			virtual vint									DecideTypeId(reflection::IDescriptable* obj)const;
 			virtual void									AttachLocalObjectEvents(RpcObjectReference ref, reflection::IDescriptable* obj) = 0;
@@ -104,6 +105,8 @@ namespace vl
 
 			void											SetIdMap(const collections::Dictionary<WString, vint>& _idMap);
 			void											RegisterWrapperFactory(UniversalWrapperFactory factory);
+			void											SetSerializer(Ptr<IRpcSerializer> _serializer);
+			IRpcSerializer*									GetSerializer();
 
 			// IRpcLifecycle
 

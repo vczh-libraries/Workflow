@@ -1529,7 +1529,15 @@ namespace vl
 						for (vint i = 0; i < eventModel->params.Count(); i++)
 						{
 							auto&& paramModel = eventModel->params[i];
-							AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Set"), CreateInt(i), CreateRpcBoxExpression(paramModel.typeInfo, paramModel.byref, CreateReference(paramModel.name), CreateReference(L"lc")))));
+							AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(
+								CreateMember(CreateReference(L"arguments"), L"Set"),
+								CreateInt(i),
+								CreateCall(
+									CreateQualifiedExpression(L"system::Sys::RpcSerializeEventArgument"),
+									CreateReference(L"lc"),
+									CreateRpcBoxExpression(paramModel.typeInfo, paramModel.byref, CreateReference(paramModel.name), CreateReference(L"lc"))
+									)
+								)));
 						}
 						AddStatement(
 							lambdaBody,

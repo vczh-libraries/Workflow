@@ -457,10 +457,18 @@ namespace vl
 				void AddRpcJsonTransferByvalKeepAlive(Ptr<WfBlockStatement> block, Ptr<WfExpression> source, Ptr<WfExpression> target)
 				{
 					AddStatement(block, CreateExpressionStatement(CreateCall(
-						CreateQualifiedExpression(L"system::IRpcLifecycle::RpcTransferByvalKeepAlive"),
+						CreateQualifiedExpression(L"system::Sys::RpcTransferByvalKeepAlive"),
 						source,
 						target
 						)));
+				}
+
+				Ptr<WfExpression> CreateRpcJsonSerializedArgument(vint index)
+				{
+					return CreateCall(
+						CreateQualifiedExpression(L"system::Sys::RpcGetSerializedArgument"),
+						CreateReference(L"arguments"),
+						CreateInt(index));
 				}
 
 				WString AddUnknownRpcJsonSerializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> value)
@@ -1187,12 +1195,11 @@ namespace vl
 					for (vint i = 0; i < methodModel.params.Count(); i++)
 					{
 						auto&& paramModel = methodModel.params[i];
-						auto argument = CreateIndex(CreateReference(L"arguments"), CreateInt(i));
 						arguments.Add(CreateJsonDispatchArgument(
 							manager,
 							tempIndex,
 							block,
-							CreateCast(CreateSharedType(L"system::JsonNode"), argument),
+							CreateCast(CreateSharedType(L"system::JsonNode"), CreateRpcJsonSerializedArgument(i)),
 							paramModel));
 					}
 
@@ -1230,12 +1237,11 @@ namespace vl
 					for (vint i = 0; i < eventModel.params.Count(); i++)
 					{
 						auto&& paramModel = eventModel.params[i];
-						auto argument = CreateIndex(CreateReference(L"arguments"), CreateInt(i));
 						invoke->arguments.Add(CreateJsonDispatchArgument(
 							manager,
 							tempIndex,
 							block,
-							CreateCast(CreateSharedType(L"system::JsonNode"), argument),
+							CreateCast(CreateSharedType(L"system::JsonNode"), CreateRpcJsonSerializedArgument(i)),
 							paramModel));
 					}
 					AddStatement(block, CreateExpressionStatement(invoke));

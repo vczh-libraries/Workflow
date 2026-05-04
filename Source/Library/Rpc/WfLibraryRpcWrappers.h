@@ -29,6 +29,8 @@ namespace vl
 			virtual reflection::description::Value					Deserialize(const reflection::description::Value& value) = 0;
 		};
 
+		reflection::description::Value								RpcSerializeEventArgument(IRpcLifecycle* lc, const reflection::description::Value& value);
+
 /***********************************************************************
 * Collection Caller Wrappers
 ***********************************************************************/

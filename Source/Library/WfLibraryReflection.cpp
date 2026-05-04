@@ -203,7 +203,6 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcUnboxByref, { L"serializable" _ L"lc" }, vl::Ptr<vl::reflection::IDescriptable>(*)(vl::rpc_controller::RpcObjectReference, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcUnboxByref)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcBoxByval, { L"trivial" _ L"lc" }, Value(*)(vl::Ptr<vl::reflection::IDescriptable>, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcBoxByval)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcUnboxByval, { L"serializable" _ L"lc" }, vl::Ptr<vl::reflection::IDescriptable>(*)(const Value&, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcUnboxByval)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcTransferByvalKeepAlive, { L"source" _ L"target" }, void(*)(const Value&, vl::Ptr<vl::reflection::IDescriptable>), vl::rpc_controller::RpcTransferByvalKeepAlive)
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifecycle)
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcWrapperBase)
@@ -267,6 +266,9 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_STATIC_METHOD(LoremIpsumSentence, { L"bestLength" })
 				CLASS_MEMBER_STATIC_METHOD(LoremIpsumParagraph, { L"bestLength" })
 				CLASS_MEMBER_STATIC_METHOD(ReverseEnumerable, { L"value" })
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcSerializeEventArgument, { L"lc" _ L"value" }, Value(*)(vl::rpc_controller::IRpcLifecycle*, const Value&), vl::rpc_controller::RpcSerializeEventArgument)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcTransferByvalKeepAlive, { L"source" _ L"target" }, void(*)(const Value&, const Value&), vl::rpc_controller::RpcTransferByvalKeepAlive)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcGetSerializedArgument, { L"arguments" _ L"index" }, Value(*)(vl::Ptr<vl::reflection::description::IValueArray>, vint), vl::rpc_controller::RpcGetSerializedArgument)
 #pragma push_macro("CompareString")
 #if defined CompareString
 #undef CompareString

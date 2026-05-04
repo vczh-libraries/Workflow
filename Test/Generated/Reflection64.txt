@@ -788,6 +788,15 @@ class system::Sys : system::ReferenceType {
     static function Mid(value : system::String, start : system::Int64, length : system::Int64) : system::String;
     static function ReverseEnumerable(value : system::Enumerable^) : system::Enumerable^;
     static function Right(value : system::String, length : system::Int64) : system::String;
+    @InvokeTemplate:::vl::rpc_controller::RpcGetSerializedArgument($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcGetSerializedArgument)
+    static function RpcGetSerializedArgument(arguments : system::Array^, index : system::Int64) : system::Object;
+    @InvokeTemplate:::vl::rpc_controller::RpcSerializeEventArgument($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcSerializeEventArgument)
+    static function RpcSerializeEventArgument(lc : system::IRpcLifecycle*, value : system::Object) : system::Object;
+    @InvokeTemplate:::vl::rpc_controller::RpcTransferByvalKeepAlive($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcTransferByvalKeepAlive)
+    static function RpcTransferByvalKeepAlive(source : system::Object, target : system::Object) : system::Void;
     static function ToLocalTime(dt : system::DateTime) : system::DateTime;
     static function ToUtcTime(dt : system::DateTime) : system::DateTime;
     static function UCase(value : system::String) : system::String;

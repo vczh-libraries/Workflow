@@ -1038,16 +1038,33 @@ namespace vl
 			return nullptr;
 		}
 
-		void RpcTransferByvalKeepAlive(const Value& source, Ptr<IDescriptable> target)
+		void RpcTransferByvalKeepAlive(const Value& source, const Value& target)
 		{
-			if (!target) return;
 			auto sourceObject = dynamic_cast<DescriptableObject*>(source.GetRawPtr());
-			auto targetObject = dynamic_cast<DescriptableObject*>(target.Obj());
+			auto targetObject = dynamic_cast<DescriptableObject*>(target.GetRawPtr());
 			if (!sourceObject || !targetObject) return;
 			if (auto keepAlive = sourceObject->GetInternalProperty(RpcByvalKeepAliveProperty))
 			{
 				targetObject->SetInternalProperty(RpcByvalKeepAliveProperty, keepAlive);
 			}
+		}
+
+		Value RpcGetSerializedArgument(Ptr<IValueArray> arguments, vint index)
+		{
+			CHECK_ERROR(arguments, L"RpcGetSerializedArgument needs an argument array.");
+			return arguments->Get(index);
+		}
+
+		Value RpcSerializeEventArgument(IRpcLifecycle* lc, const Value& value)
+		{
+			if (auto lifecycle = dynamic_cast<RpcLifecycleBase*>(lc))
+			{
+				if (auto serializer = lifecycle->GetSerializer())
+				{
+					return serializer->Serialize(value);
+				}
+			}
+			return value;
 		}
 	}
 }

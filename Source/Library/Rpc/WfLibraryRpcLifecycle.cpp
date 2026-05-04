@@ -82,6 +82,16 @@ namespace vl
 			CopyFrom(idMap, _idMap);
 		}
 
+		void RpcLifecycleBase::SetSerializer(Ptr<IRpcSerializer> _serializer)
+		{
+			serializer = _serializer;
+		}
+
+		IRpcSerializer* RpcLifecycleBase::GetSerializer()
+		{
+			return serializer.Obj();
+		}
+
 		void RpcLifecycleBase::RegisterWrapperFactory(UniversalWrapperFactory factory)
 		{
 			universalWrapperFactory = factory;
@@ -411,7 +421,7 @@ namespace vl
 
 		Ptr<IDescriptable> RpcLifecycleBase::RefToPtr(RpcObjectReference ref)
 		{
-			return RefToPtr(ref, nullptr);
+			return RefToPtr(ref, serializer.Obj());
 		}
 
 		Ptr<IDescriptable> RpcLifecycleBase::RefToPtr(RpcObjectReference ref, IRpcSerializer* serializer)

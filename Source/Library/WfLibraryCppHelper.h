@@ -167,10 +167,12 @@ namespace vl
 			static T* Unbox(const reflection::description::Value& value)
 			{
 				if (value.IsNull()) return nullptr;
-				if (auto converted = dynamic_cast<T*>(value.GetRawPtr())) return converted;
+				auto rawPtr = value.GetRawPtr();
+				if (!rawPtr) return nullptr;
+				if (auto converted = dynamic_cast<T*>(rawPtr)) return converted;
 				try
 				{
-					return value.GetRawPtr()->SafeAggregationCast<T>();
+					return rawPtr->SafeAggregationCast<T>();
 				}
 				catch (const Exception&)
 				{
@@ -185,10 +187,12 @@ namespace vl
 			static Ptr<T> Unbox(const reflection::description::Value& value)
 			{
 				if (value.IsNull()) return nullptr;
-				if (auto converted = dynamic_cast<T*>(value.GetRawPtr())) return Ptr(converted);
+				auto rawPtr = value.GetRawPtr();
+				if (!rawPtr) return nullptr;
+				if (auto converted = dynamic_cast<T*>(rawPtr)) return Ptr(converted);
 				try
 				{
-					return Ptr(value.GetRawPtr()->SafeAggregationCast<T>());
+					return Ptr(rawPtr->SafeAggregationCast<T>());
 				}
 				catch (const Exception&)
 				{
