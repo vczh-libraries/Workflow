@@ -8,30 +8,44 @@ You should complete tasks one by one.
 
 ## Task 1
 
-You are going to perform a tough change. So I strongly recommend you that, when a unit test project fails, immediatelly rerun it with a debugger.
-The goal is to test if JSON serialization works, core of the change is in generated wrapper Workflow script (`Wrapper_*_Json.txt`).
-Basically, when a wrapper pass message to the remote object, or when any object triggers an event and notify all lifecycle, it does the follow thing to arguments and return values
-- Turn an value to its serializable form, e.g., values in primitive types are untouched, interfaces or wrappers become `RpcObjectReference`, byval collections are copied and all elements are either byval copied or serialized.
-- Values in serializable forms are serialized to JSON.
-- JSON values get pass through `IRpc(Object|List)(Event)?Ops`.
-- In the other side, JSON values are deserialized to its serializable form.
-- Serializable forms are translated back to interfaces, wrappers, or values in primitive types.
+I would like you to perform a refactoring, to remove these 3 functions from `Sys` reflection registration:
+- `RpcGetSerializedArgument`
+- `RpcSerializeEventArgument`
+- `RpcTransferByvalKeepAlive`
 
-I would like the test to be limited in `CppRest*` projects, DO NOT modify `RuntimeTest` project. So basically you only want to touch `TestCasesRpc.h`, and any other places if bugged.
+### RpcGetSerializedArgument
 
-In order to turn on JSON serialization, several things need to be done:
-- In each test case, call `rpcops_IRpcSerializer`, when implementations of `IRpcListOps` and `IRpcListEventOps` are created, pass `IRpcSerializer*` in.
-- When any wrappers for collection types are created, pass pass `IRpcSerializer*` in. You may need to register the object into `RpcLifecycleBase`, but use its shared pointer form so that `RpcLifecycleBase` owns `IRpcSerializer^`, but no need to change the `IRpcLifecycle` interface.
-- Call `rpcops_IOps_CreateJson` instead of `rpcops_IOps_Create`.
-- Call `rpcops_IRpcObjectOpsJson` instead of `rpcops_IRpcObjectOps`.
-- Call `rpcops_IRpcObjectEventOpsJson` instead of `rpcops_IRpcObjectEventOps`.
+There is no need to have that function. In the caller side, you just always assume `arguments` is not null and retrieve its element right away.
 
-You should run `CompilerTest_LoadAndCompile` at least ones, because some compiler generated binaries are not covered by git.
-After that, if you only change `TestCasesRpc.h`, only `CppTest*` need to run.
+### RpcSerializeEventArgument
 
-Test results, aka `IndexRpc.txt`, should remain the same. These change only add one extra processing of JSON serialization on each side, they should not affect the semantic of the test in any mean.
+There is no need to have that function. The funcion only checks if the serializer exists. You should just check that in the generated call side,:
+- Firstly box all values to `arguments` variable.
+- Secondly, when `serialize` exists, serialize them inplace in a loop.
 
-The implementation might be buggy, be prepared to fail for a lot of times. So I strongly recommend you that, when a unit test project fails, immediatelly rerun it with a debugger, therefore you don't lost in your way.
+### RpcTransferByvalKeepAlive
+
+I suspect calling this function is unnecessary, for example in `Wrapper_Collection_Default_Json.txt` the function looks like:
+```Workflow
+override func InvokeMethod_RpcCollection__Default__IService_DoList(ref : system::RpcObjectReference, arg_xs : ::system::Int32[]) : (::system::Int32[])
+{
+    var arguments : system::Array^ = {};
+    arguments.Resize(1);
+    var jsonValue0 : object = system::IRpcLifecycle::RpcBoxByval(arg_xs, _lc);
+    var jsonNode1 : system::JsonNode^ = rpcjson_Serialize(jsonValue0);
+    system::Sys::RpcTransferByvalKeepAlive(jsonValue0, jsonNode1);
+    arguments.Set(0, jsonNode1);
+    var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcCollection__Default__IService_DoList, arguments));
+    var jsonValue2 : object = rpcjson_Deserialize(jsonResult);
+    return (cast (::system::Int32[]) system::IRpcLifecycle::RpcUnboxByval(jsonValue2, _lc));
+}
+```
+
+`RpcBoxByval` already "kept alive" elements in `jsonValue0`.
+`_lc.Dispatcher.SendToClient_ObjectOps` is a blocking function, it won't return before the remote side finishing the work.
+So those elements still alive after calling `_lc.Dispatcher.SendToClient_ObjectOps` because `jsonValue0` still alive.
+Then I believe even when you don't call `system::Sys::RpcTransferByvalKeepAlive` everything should still be fine.
+You need to verify this.
 
 ## Task 2
 
@@ -44,3 +58,9 @@ Assume the reader is one who want to use generated C++ version from Workflow, wi
 - `TODO_RPC_Json.md`
 - `TestCasesRpc.h`.
 But do not mention anything specific to test projects.
+
+## Task 3
+
+In `Wrapper_*.txt` and `Wrapper_*_Json.txt`, there are a lot of "in function variable" which have types.
+Variable types could be omitted if they are inside a function.
+You are going to remove all of them to keep them clean, unless any specific change causes problem.
