@@ -880,8 +880,18 @@ Closures
 			return;
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(2));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::rpc_controller::RpcSerializeEventArgument(lc, ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(arg0), lc)));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(1), ::vl::rpc_controller::RpcSerializeEventArgument(lc, ::vl::__vwsn::Box(::vl::rpc_controller::RpcBoxByref(::vl::Ptr<::vl::reflection::IDescriptable>(arg1), lc))));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(arg0), lc));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(1), ::vl::__vwsn::Box(::vl::rpc_controller::RpcBoxByref(::vl::Ptr<::vl::reflection::IDescriptable>(arg1), lc)));
+		auto rpcSerializer = ::vl::__vwsn::This(lc)->GetSerializer();
+		if ((rpcSerializer != nullptr))
+		{
+			auto rpcArgumentIndex = static_cast<::vl::vint32_t>(0);
+			while ((rpcArgumentIndex < ::vl::__vwsn::This(arguments.Obj())->GetCount()))
+			{
+				::vl::__vwsn::This(arguments.Obj())->Set(rpcArgumentIndex, ::vl::__vwsn::This(rpcSerializer)->Serialize(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(rpcArgumentIndex))));
+				(rpcArgumentIndex = (rpcArgumentIndex + static_cast<::vl::vint32_t>(1)));
+			}
+		}
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcEventArgs__IService_SomethingHappened, arguments);
 	}
 
@@ -1026,7 +1036,7 @@ Closures
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(2));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(arg_arg0), _lc));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(arg_arg0), _lc));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(1), ::vl::__vwsn::Box(::vl::rpc_controller::RpcBoxByref(::vl::Ptr<::vl::reflection::IDescriptable>(arg_arg1), _lc)));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcEventArgs__IService_SomethingHappened, arguments);
 	}
@@ -1077,7 +1087,6 @@ Closures
 	::vl::reflection::description::Value __vwsnc6_Rpc_EventArgs_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::Serialize(const ::vl::reflection::description::Value& value)
 	{
 		auto result = GLOBAL_NAME rpcjson_Serialize(value);
-		::vl::rpc_controller::RpcTransferByvalKeepAlive(value, ::vl::__vwsn::Box(result));
 		return ::vl::__vwsn::Box(result);
 	}
 
@@ -1171,8 +1180,8 @@ Closures
 					if ((__vwsn_switch_9 == GLOBAL_NAME rpcevent_RpcEventArgs__IService_SomethingHappened))
 					{
 						auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcEventArgs::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-						auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::rpc_controller::RpcGetSerializedArgument(arguments, static_cast<::vl::vint32_t>(0))));
-						auto jsonValue1 = GLOBAL_NAME rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::rpc_controller::RpcGetSerializedArgument(arguments, static_cast<::vl::vint32_t>(1))));
+						auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint32_t>(0)))));
+						auto jsonValue1 = GLOBAL_NAME rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint32_t>(1)))));
 						::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->SomethingHappened)(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueList>(::vl::rpc_controller::RpcUnboxByval(jsonValue0, _lc).Obj())), ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueObservableList>(::vl::rpc_controller::RpcUnboxByref(jsonValue1, _lc).Obj())));
 					}
 					else
@@ -1210,9 +1219,8 @@ Closures
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(2));
-		auto jsonValue0 = ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(arg_arg0), _lc);
+		auto jsonValue0 = ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(arg_arg0), _lc);
 		auto jsonNode1 = GLOBAL_NAME rpcjson_Serialize(jsonValue0);
-		::vl::rpc_controller::RpcTransferByvalKeepAlive(jsonValue0, ::vl::__vwsn::Box(jsonNode1));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::__vwsn::Box(jsonNode1));
 		auto jsonNode2 = GLOBAL_NAME rpcjson_Serialize_Struct_system__RpcObjectReference(::vl::rpc_controller::RpcBoxByref(::vl::Ptr<::vl::reflection::IDescriptable>(arg_arg1), _lc));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(1), ::vl::__vwsn::Box(jsonNode2));

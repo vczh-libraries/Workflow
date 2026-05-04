@@ -881,9 +881,8 @@ Closures
 			(jsonNode0 = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString2));
 		}
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonNode0));
-		auto jsonValue3 = ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(arg_v), _lc);
+		auto jsonValue3 = ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(arg_v), _lc);
 		auto jsonNode4 = GLOBAL_NAME rpcjson_Serialize(jsonValue3);
-		::vl::rpc_controller::RpcTransferByvalKeepAlive(jsonValue3, ::vl::__vwsn::Box(jsonNode4));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(1), ::vl::__vwsn::Box(jsonNode4));
 		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcNullable__IService_Print, arguments));
 		auto jsonValue5 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(jsonResult.Obj())).Obj())->content.value;
@@ -1022,7 +1021,7 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(2));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg_value));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(1), ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(arg_v), _lc));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(1), ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(arg_v), _lc));
 		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcNullable__IService_Print, arguments));
 	}
 
@@ -1103,7 +1102,6 @@ Closures
 	::vl::reflection::description::Value __vwsnc8_Rpc_Nullable_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::Serialize(const ::vl::reflection::description::Value& value)
 	{
 		auto result = GLOBAL_NAME rpcjson_Serialize(value);
-		::vl::rpc_controller::RpcTransferByvalKeepAlive(value, ::vl::__vwsn::Box(result));
 		return ::vl::__vwsn::Box(result);
 	}
 
@@ -1134,13 +1132,13 @@ Closures
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcNullable::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 				auto jsonValue0 = ::vl::Nullable<::vl::WString>();
-				auto jsonLiteral1 = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonLiteral>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::rpc_controller::RpcGetSerializedArgument(arguments, static_cast<::vl::vint>(0))).Obj());
+				auto jsonLiteral1 = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonLiteral>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0)))).Obj());
 				if (((! static_cast<bool>(jsonLiteral1)) || (::vl::__vwsn::This(jsonLiteral1.Obj())->value != ::vl::glr::json::JsonLiteralValue::Null)))
 				{
-					auto jsonValue2 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::rpc_controller::RpcGetSerializedArgument(arguments, static_cast<::vl::vint>(0))).Obj())).Obj())->content.value;
+					auto jsonValue2 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0)))).Obj())).Obj())->content.value;
 					(jsonValue0 = ::vl::Nullable<::vl::WString>(jsonValue2));
 				}
-				auto jsonValue3 = GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::rpc_controller::RpcGetSerializedArgument(arguments, static_cast<::vl::vint>(1))));
+				auto jsonValue3 = GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(1)))));
 				auto jsonString4 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
 				(::vl::__vwsn::This(jsonString4.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::This(target.Obj())->Print(jsonValue0, ::vl::__vwsn::SharedPtrCast<::RpcNullable::IValue>(::vl::rpc_controller::RpcUnboxByval(jsonValue3, _lc).Obj())); return __vwsn_temp__; }());
 				return ::vl::__vwsn::Box(jsonString4);

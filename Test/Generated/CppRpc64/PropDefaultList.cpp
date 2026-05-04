@@ -950,7 +950,7 @@ Closures
 			if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPropDefaultList__IService_GetValue))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPropDefaultList::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				return ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(::vl::__vwsn::This(target.Obj())->GetValue()), _lc);
+				return ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->GetValue()), _lc);
 			}
 			else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPropDefaultList__IService_SetValue))
 			{
@@ -1056,7 +1056,7 @@ Closures
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(arg_value), _lc));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(arg_value), _lc));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPropDefaultList__IService_SetValue, arguments);
 	}
 
@@ -1140,7 +1140,6 @@ Closures
 	::vl::reflection::description::Value __vwsnc6_Rpc_PropDefaultList_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::Serialize(const ::vl::reflection::description::Value& value)
 	{
 		auto result = GLOBAL_NAME rpcjson_Serialize(value);
-		::vl::rpc_controller::RpcTransferByvalKeepAlive(value, ::vl::__vwsn::Box(result));
 		return ::vl::__vwsn::Box(result);
 	}
 
@@ -1163,15 +1162,14 @@ Closures
 			if ((__vwsn_switch_8 == GLOBAL_NAME rpcmethod_RpcPropDefaultList__IService_GetValue))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPropDefaultList::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				auto jsonValue0 = ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(::vl::__vwsn::This(target.Obj())->GetValue()), _lc);
+				auto jsonValue0 = ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->GetValue()), _lc);
 				auto jsonNode1 = GLOBAL_NAME rpcjson_Serialize(jsonValue0);
-				::vl::rpc_controller::RpcTransferByvalKeepAlive(jsonValue0, ::vl::__vwsn::Box(jsonNode1));
 				return ::vl::__vwsn::Box(jsonNode1);
 			}
 			else if ((__vwsn_switch_8 == GLOBAL_NAME rpcmethod_RpcPropDefaultList__IService_SetValue))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPropDefaultList::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::rpc_controller::RpcGetSerializedArgument(arguments, static_cast<::vl::vint64_t>(0L))));
+				auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))));
 				::vl::__vwsn::This(target.Obj())->SetValue(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueList>(::vl::rpc_controller::RpcUnboxByval(jsonValue0, _lc).Obj())));
 				return ::vl::reflection::description::Value();
 			}
@@ -1275,9 +1273,8 @@ Closures
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
-		auto jsonValue0 = ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(arg_value), _lc);
+		auto jsonValue0 = ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(arg_value), _lc);
 		auto jsonNode1 = GLOBAL_NAME rpcjson_Serialize(jsonValue0);
-		::vl::rpc_controller::RpcTransferByvalKeepAlive(jsonValue0, ::vl::__vwsn::Box(jsonNode1));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(jsonNode1));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPropDefaultList__IService_SetValue, arguments);
 	}
