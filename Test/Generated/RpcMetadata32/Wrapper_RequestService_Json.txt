@@ -540,7 +540,6 @@ func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
         override func Serialize(value : object) : (object)
         {
             var result : system::JsonNode^ = rpcjson_Serialize(value);
-            system::Sys::RpcTransferByvalKeepAlive(value, result);
             return result;
         }
 

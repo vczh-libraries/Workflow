@@ -540,7 +540,6 @@ func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
         override func Serialize(value : object) : (object)
         {
             var result : system::JsonNode^ = rpcjson_Serialize(value);
-            system::Sys::RpcTransferByvalKeepAlive(value, result);
             return result;
         }
 
@@ -571,7 +570,7 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcPropDynamic__IService_SetValue:
                 {
                     var target : RpcPropDynamic::IService^ = (cast (RpcPropDynamic::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::String = (cast (::system::String) (cast (system::JsonString^) (cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0))).content.value);
+                    var jsonValue0 : ::system::String = (cast (::system::String) (cast (system::JsonString^) (cast (system::JsonNode^) arguments[0])).content.value);
                     target.SetValue(jsonValue0);
                     return null;
                 }

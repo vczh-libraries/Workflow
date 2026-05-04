@@ -540,7 +540,6 @@ func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
         override func Serialize(value : object) : (object)
         {
             var result : system::JsonNode^ = rpcjson_Serialize(value);
-            system::Sys::RpcTransferByvalKeepAlive(value, result);
             return result;
         }
 
@@ -571,7 +570,7 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcOverloadingTest__IService_ToString_value__1:
                 {
                     var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::Boolean = ((cast (system::JsonLiteral^) (cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0))).value == system::JsonLiteralValue::True);
+                    var jsonValue0 : ::system::Boolean = ((cast (system::JsonLiteral^) (cast (system::JsonNode^) arguments[0])).value == system::JsonLiteralValue::True);
                     var jsonString1 : system::JsonString^ = new (system::JsonString^)();
                     (jsonString1.content = {value : (cast (string) target.ToString(jsonValue0));});
                     return jsonString1;
@@ -579,7 +578,7 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcOverloadingTest__IService_ToString_value__2:
                 {
                     var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::String = (cast (::system::String) (cast (system::JsonString^) (cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0))).content.value);
+                    var jsonValue0 : ::system::String = (cast (::system::String) (cast (system::JsonString^) (cast (system::JsonNode^) arguments[0])).content.value);
                     var jsonString1 : system::JsonString^ = new (system::JsonString^)();
                     (jsonString1.content = {value : (cast (string) target.ToString(jsonValue0));});
                     return jsonString1;
@@ -587,7 +586,7 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcOverloadingTest__IService_ToString_value__3:
                 {
                     var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : object = rpcjson_Deserialize((cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0)));
+                    var jsonValue0 : object = rpcjson_Deserialize((cast (system::JsonNode^) arguments[0]));
                     var jsonString1 : system::JsonString^ = new (system::JsonString^)();
                     (jsonString1.content = {value : (cast (string) target.ToString((system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::RpcOverloadingTest::IStringRepresentable^))));});
                     return jsonString1;
@@ -595,10 +594,10 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_:
                 {
                     var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::Int64 = (cast (::system::Int64) (cast (system::JsonNumber^) (cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0))).content.value);
-                    var jsonValue1 : ::system::Boolean = ((cast (system::JsonLiteral^) (cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 1))).value == system::JsonLiteralValue::True);
-                    var jsonValue2 : ::system::String = (cast (::system::String) (cast (system::JsonString^) (cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 2))).content.value);
-                    var jsonValue3 : object = rpcjson_Deserialize((cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 3)));
+                    var jsonValue0 : ::system::Int64 = (cast (::system::Int64) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
+                    var jsonValue1 : ::system::Boolean = ((cast (system::JsonLiteral^) (cast (system::JsonNode^) arguments[1])).value == system::JsonLiteralValue::True);
+                    var jsonValue2 : ::system::String = (cast (::system::String) (cast (system::JsonString^) (cast (system::JsonNode^) arguments[2])).content.value);
+                    var jsonValue3 : object = rpcjson_Deserialize((cast (system::JsonNode^) arguments[3]));
                     var jsonString4 : system::JsonString^ = new (system::JsonString^)();
                     (jsonString4.content = {value : (cast (string) target.ToString(jsonValue0, jsonValue1, jsonValue2, (system::IRpcLifecycle::RpcUnboxByval(jsonValue3, _lc) as (::RpcOverloadingTest::IStringRepresentable^))));});
                     return jsonString4;
@@ -606,7 +605,7 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcOverloadingTest__IService_ToStringInt:
                 {
                     var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::Int64 = (cast (::system::Int64) (cast (system::JsonNumber^) (cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0))).content.value);
+                    var jsonValue0 : ::system::Int64 = (cast (::system::Int64) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
                     var jsonString1 : system::JsonString^ = new (system::JsonString^)();
                     (jsonString1.content = {value : (cast (string) target.ToStringInt(jsonValue0));});
                     return jsonString1;
@@ -722,7 +721,6 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Over
             arguments.Resize(1);
             var jsonValue0 : object = system::IRpcLifecycle::RpcBoxByval(arg_value, _lc);
             var jsonNode1 : system::JsonNode^ = rpcjson_Serialize(jsonValue0);
-            system::Sys::RpcTransferByvalKeepAlive(jsonValue0, jsonNode1);
             arguments.Set(0, jsonNode1);
             var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToString_value__3, arguments));
             var jsonValue2 : ::system::String = (cast (::system::String) (cast (system::JsonString^) jsonResult).content.value);
@@ -747,7 +745,6 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Over
             arguments.Set(2, jsonString2);
             var jsonValue3 : object = system::IRpcLifecycle::RpcBoxByval(arg_value4, _lc);
             var jsonNode4 : system::JsonNode^ = rpcjson_Serialize(jsonValue3);
-            system::Sys::RpcTransferByvalKeepAlive(jsonValue3, jsonNode4);
             arguments.Set(3, jsonNode4);
             var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_, arguments));
             var jsonValue5 : ::system::String = (cast (::system::String) (cast (system::JsonString^) jsonResult).content.value);

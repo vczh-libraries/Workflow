@@ -186,7 +186,17 @@ func rpclistener_RpcEvent__IService(lc : system::IRpcLifecycle*, ref : system::R
         return;
         var arguments : system::Array^ = {};
         arguments.Resize(1);
-        arguments.Set(0, system::Sys::RpcSerializeEventArgument(lc, (cast (object) arg0)));
+        arguments.Set(0, (cast (object) arg0));
+        var rpcSerializer : system::IRpcSerializer* = lc.Serializer;
+        if (rpcSerializer is not null)
+        {
+            var rpcArgumentIndex : int = 0;
+            while ((rpcArgumentIndex < arguments.Count))
+            {
+                arguments.Set(rpcArgumentIndex, rpcSerializer.Serialize(arguments[rpcArgumentIndex]));
+                (rpcArgumentIndex = (rpcArgumentIndex + 1));
+            }
+        }
         lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcEvent__IService_SomethingHappened, arguments);
     });
 }
