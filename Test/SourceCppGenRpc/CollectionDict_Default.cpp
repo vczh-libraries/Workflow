@@ -851,6 +851,8 @@ Closures
 	__vwsnc2_Rpc_CollectionDict_Default_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::__vwsnc2_Rpc_CollectionDict_Default_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
+		this->_slot = static_cast<::vl::vint>(0);
+		this->_byvalReturnValues = ::vl::reflection::description::IValueDictionary::Create();
 	}
 
 	::vl::reflection::description::Value __vwsnc2_Rpc_CollectionDict_Default_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
@@ -860,11 +862,23 @@ Closures
 			if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcCollectionDict__Default__IService_DoList))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcCollectionDict::Default::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				return ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->DoList(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueDictionary>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0))), _lc).Obj())))), _lc);
+				auto copiedReturnValue = ::vl::rpc_controller::RpcCopyByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->DoList(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueDictionary>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0))), _lc).Obj())))), _lc);
+				auto boxedReturnValue = ::vl::rpc_controller::RpcBoxByval(copiedReturnValue, _lc);
+				auto byvalReturnValue = ::vl::Ptr<::vl::rpc_controller::RpcByvalReturnValue>(new ::vl::rpc_controller::RpcByvalReturnValue());
+				(::vl::__vwsn::This(byvalReturnValue.Obj())->value = boxedReturnValue);
+				(::vl::__vwsn::This(byvalReturnValue.Obj())->slot = _slot);
+				::vl::__vwsn::This(_byvalReturnValues.Obj())->Set(::vl::__vwsn::Box(_slot), copiedReturnValue);
+				(_slot = (_slot + static_cast<::vl::vint>(1)));
+				return ::vl::__vwsn::Box(byvalReturnValue);
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
 		}
+	}
+
+	void __vwsnc2_Rpc_CollectionDict_Default_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::EndInvokeMethod(::vl::vint slot)
+	{
+		::vl::__vwsn::This(_byvalReturnValues.Obj())->Remove(::vl::__vwsn::Box(slot));
 	}
 
 	void __vwsnc2_Rpc_CollectionDict_Default_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold)
@@ -942,7 +956,11 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(arg_xs), _lc));
-		return ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueDictionary>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcCollectionDict__Default__IService_DoList, arguments), _lc).Obj()));
+		auto objectOps = ::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId);
+		auto byvalReturnValue = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::rpc_controller::RpcByvalReturnValue>>(::vl::__vwsn::This(objectOps)->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcCollectionDict__Default__IService_DoList, arguments));
+		auto result = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueDictionary>(::vl::rpc_controller::RpcUnboxByval(::vl::__vwsn::This(byvalReturnValue.Obj())->value, _lc).Obj()));
+		::vl::__vwsn::This(objectOps)->EndInvokeMethod(::vl::__vwsn::This(byvalReturnValue.Obj())->slot);
+		return result;
 	}
 
 	//-------------------------------------------------------------------
@@ -997,6 +1015,8 @@ Closures
 	__vwsnc7_Rpc_CollectionDict_Default_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::__vwsnc7_Rpc_CollectionDict_Default_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
+		this->_slot = static_cast<::vl::vint>(0);
+		this->_byvalReturnValues = ::vl::reflection::description::IValueDictionary::Create();
 	}
 
 	::vl::reflection::description::Value __vwsnc7_Rpc_CollectionDict_Default_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
@@ -1007,13 +1027,24 @@ Closures
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcCollectionDict::Default::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 				auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0)))));
-				auto jsonValue1 = ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->DoList(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueDictionary>(::vl::rpc_controller::RpcUnboxByval(jsonValue0, _lc).Obj())))), _lc);
+				auto copiedReturnValue = ::vl::rpc_controller::RpcCopyByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->DoList(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueDictionary>(::vl::rpc_controller::RpcUnboxByval(jsonValue0, _lc).Obj())))), _lc);
+				auto jsonValue1 = ::vl::rpc_controller::RpcBoxByval(copiedReturnValue, _lc);
 				auto jsonNode2 = GLOBAL_NAME rpcjson_Serialize(jsonValue1);
-				return ::vl::__vwsn::Box(jsonNode2);
+				auto byvalReturnValue = ::vl::Ptr<::vl::rpc_controller::RpcByvalReturnValue>(new ::vl::rpc_controller::RpcByvalReturnValue());
+				(::vl::__vwsn::This(byvalReturnValue.Obj())->value = ::vl::__vwsn::Box(jsonNode2));
+				(::vl::__vwsn::This(byvalReturnValue.Obj())->slot = _slot);
+				::vl::__vwsn::This(_byvalReturnValues.Obj())->Set(::vl::__vwsn::Box(_slot), copiedReturnValue);
+				(_slot = (_slot + static_cast<::vl::vint>(1)));
+				return ::vl::__vwsn::Box(byvalReturnValue);
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
 		}
+	}
+
+	void __vwsnc7_Rpc_CollectionDict_Default_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::EndInvokeMethod(::vl::vint slot)
+	{
+		::vl::__vwsn::This(_byvalReturnValues.Obj())->Remove(::vl::__vwsn::Box(slot));
 	}
 
 	void __vwsnc7_Rpc_CollectionDict_Default_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold)
@@ -1093,9 +1124,13 @@ Closures
 		auto jsonValue0 = ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(arg_xs), _lc);
 		auto jsonNode1 = GLOBAL_NAME rpcjson_Serialize(jsonValue0);
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonNode1));
-		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcCollectionDict__Default__IService_DoList, arguments));
+		auto objectOps = ::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId);
+		auto byvalReturnValue = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::rpc_controller::RpcByvalReturnValue>>(::vl::__vwsn::This(objectOps)->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcCollectionDict__Default__IService_DoList, arguments));
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(byvalReturnValue.Obj())->value);
 		auto jsonValue2 = GLOBAL_NAME rpcjson_Deserialize(jsonResult);
-		return ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueDictionary>(::vl::rpc_controller::RpcUnboxByval(jsonValue2, _lc).Obj()));
+		auto result = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueDictionary>(::vl::rpc_controller::RpcUnboxByval(jsonValue2, _lc).Obj()));
+		::vl::__vwsn::This(objectOps)->EndInvokeMethod(::vl::__vwsn::This(byvalReturnValue.Obj())->slot);
+		return result;
 	}
 
 }

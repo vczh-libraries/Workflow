@@ -849,6 +849,8 @@ Closures
 	__vwsnc2_Rpc_CollectionDict_Nested_InByref_OutByref_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::__vwsnc2_Rpc_CollectionDict_Nested_InByref_OutByref_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
+		this->_slot = static_cast<::vl::vint>(0);
+		this->_byvalReturnValues = ::vl::reflection::description::IValueDictionary::Create();
 	}
 
 	::vl::reflection::description::Value __vwsnc2_Rpc_CollectionDict_Nested_InByref_OutByref_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
@@ -863,6 +865,11 @@ Closures
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
 		}
+	}
+
+	void __vwsnc2_Rpc_CollectionDict_Nested_InByref_OutByref_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::EndInvokeMethod(::vl::vint slot)
+	{
+		::vl::__vwsn::This(_byvalReturnValues.Obj())->Remove(::vl::__vwsn::Box(slot));
 	}
 
 	void __vwsnc2_Rpc_CollectionDict_Nested_InByref_OutByref_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold)
@@ -995,6 +1002,8 @@ Closures
 	__vwsnc7_Rpc_CollectionDict_Nested_InByref_OutByref_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::__vwsnc7_Rpc_CollectionDict_Nested_InByref_OutByref_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
+		this->_slot = static_cast<::vl::vint>(0);
+		this->_byvalReturnValues = ::vl::reflection::description::IValueDictionary::Create();
 	}
 
 	::vl::reflection::description::Value __vwsnc7_Rpc_CollectionDict_Nested_InByref_OutByref_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
@@ -1011,6 +1020,11 @@ Closures
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
 		}
+	}
+
+	void __vwsnc7_Rpc_CollectionDict_Nested_InByref_OutByref_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::EndInvokeMethod(::vl::vint slot)
+	{
+		::vl::__vwsn::This(_byvalReturnValues.Obj())->Remove(::vl::__vwsn::Box(slot));
 	}
 
 	void __vwsnc7_Rpc_CollectionDict_Nested_InByref_OutByref_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold)

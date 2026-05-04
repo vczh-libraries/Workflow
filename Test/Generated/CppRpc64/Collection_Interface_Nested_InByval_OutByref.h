@@ -207,7 +207,10 @@ Closures
 		__vwsnc3_Rpc_Collection_Interface_Nested_InByval_OutByref_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::vint64_t _slot = 0;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> _byvalReturnValues;
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		void EndInvokeMethod(::vl::vint64_t slot) override;
 		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t remoteClientId, bool hold) override;
 		void RegisterService(::vl::vint64_t typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service) override;
 	};
@@ -272,7 +275,10 @@ Closures
 		__vwsnc9_Rpc_Collection_Interface_Nested_InByval_OutByref_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::vint64_t _slot = 0;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> _byvalReturnValues;
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		void EndInvokeMethod(::vl::vint64_t slot) override;
 		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t remoteClientId, bool hold) override;
 		void RegisterService(::vl::vint64_t typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service) override;
 	};
