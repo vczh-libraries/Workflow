@@ -19,7 +19,7 @@
   - Interface inheritance.
 - Generate JSON from "RPC metadata in Workflow syntax".
   - Review JSON related constructions.
-  - Make `TestCasesRpc.cpp` use them (`RuntimeTest` still uses the non-JSON construction).
+  - In `Wrapper_*.txt` and `Wrapper_*_Json.txt`, there are a lot of "in function variable" which have types, local variable types should be omitted when possible.
   - Make sure arguments are serialized to expected JSON representation.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
 - Document RPC.
