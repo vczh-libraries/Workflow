@@ -1059,7 +1059,9 @@ Closures
 
 	::vl::reflection::description::Value __vwsnc8_Rpc_Dtor_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::Serialize(const ::vl::reflection::description::Value& value)
 	{
-		return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(value));
+		auto result = GLOBAL_NAME rpcjson_Serialize(value);
+		::vl::rpc_controller::RpcTransferByvalKeepAlive(value, ::vl::__vwsn::Box(result));
+		return ::vl::__vwsn::Box(result);
 	}
 
 	::vl::reflection::description::Value __vwsnc8_Rpc_Dtor_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::Deserialize(const ::vl::reflection::description::Value& value)
@@ -1081,8 +1083,10 @@ Closures
 			if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcDtorTest__IService_MakeValue))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcDtorTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				auto jsonNode0 = GLOBAL_NAME rpcjson_Serialize(::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(::vl::__vwsn::This(target.Obj())->MakeValue()), _lc));
-				return ::vl::__vwsn::Box(jsonNode0);
+				auto jsonValue0 = ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(::vl::__vwsn::This(target.Obj())->MakeValue()), _lc);
+				auto jsonNode1 = GLOBAL_NAME rpcjson_Serialize(jsonValue0);
+				::vl::rpc_controller::RpcTransferByvalKeepAlive(jsonValue0, ::vl::__vwsn::Box(jsonNode1));
+				return ::vl::__vwsn::Box(jsonNode1);
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));

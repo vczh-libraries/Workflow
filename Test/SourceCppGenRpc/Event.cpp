@@ -850,7 +850,7 @@ Closures
 			return;
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg0));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::rpc_controller::RpcSerializeEventArgument(lc, ::vl::__vwsn::Box(arg0)));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcEvent__IService_SomethingHappened, arguments);
 	}
 
@@ -1041,7 +1041,9 @@ Closures
 
 	::vl::reflection::description::Value __vwsnc6_Rpc_Event_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::Serialize(const ::vl::reflection::description::Value& value)
 	{
-		return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(value));
+		auto result = GLOBAL_NAME rpcjson_Serialize(value);
+		::vl::rpc_controller::RpcTransferByvalKeepAlive(value, ::vl::__vwsn::Box(result));
+		return ::vl::__vwsn::Box(result);
 	}
 
 	::vl::reflection::description::Value __vwsnc6_Rpc_Event_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::Deserialize(const ::vl::reflection::description::Value& value)
@@ -1134,7 +1136,7 @@ Closures
 					if ((__vwsn_switch_9 == GLOBAL_NAME rpcevent_RpcEvent__IService_SomethingHappened))
 					{
 						auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcEvent::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-						auto jsonValue0 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0)))).Obj())).Obj())->content.value;
+						auto jsonValue0 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::rpc_controller::RpcGetSerializedArgument(arguments, static_cast<::vl::vint>(0))).Obj())).Obj())->content.value;
 						::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->SomethingHappened)(jsonValue0);
 					}
 					else

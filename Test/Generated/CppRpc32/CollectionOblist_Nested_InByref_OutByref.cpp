@@ -979,7 +979,9 @@ Closures
 
 	::vl::reflection::description::Value __vwsnc6_Rpc_CollectionOblist_Nested_InByref_OutByref_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::Serialize(const ::vl::reflection::description::Value& value)
 	{
-		return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(value));
+		auto result = GLOBAL_NAME rpcjson_Serialize(value);
+		::vl::rpc_controller::RpcTransferByvalKeepAlive(value, ::vl::__vwsn::Box(result));
+		return ::vl::__vwsn::Box(result);
 	}
 
 	::vl::reflection::description::Value __vwsnc6_Rpc_CollectionOblist_Nested_InByref_OutByref_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::Deserialize(const ::vl::reflection::description::Value& value)
@@ -1001,7 +1003,7 @@ Closures
 			if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcCollectionOblist__Nested__InByref__OutByref__IService_DoList))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcCollectionOblist::Nested::InByref::OutByref::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint32_t>(0)))));
+				auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::rpc_controller::RpcGetSerializedArgument(arguments, static_cast<::vl::vint32_t>(0))));
 				auto jsonNode1 = GLOBAL_NAME rpcjson_Serialize_Struct_system__RpcObjectReference(::vl::rpc_controller::RpcBoxByref(::vl::Ptr<::vl::reflection::IDescriptable>(::vl::__vwsn::This(target.Obj())->DoList(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueObservableList>(::vl::rpc_controller::RpcUnboxByref(jsonValue0, _lc).Obj())))), _lc));
 				return ::vl::__vwsn::Box(jsonNode1);
 			}

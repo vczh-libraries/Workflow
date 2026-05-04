@@ -897,14 +897,16 @@ Closures
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(2));
-		auto jsonNode0 = GLOBAL_NAME rpcjson_Serialize(::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(arg_obj), _lc));
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::__vwsn::Box(jsonNode0));
-		auto jsonNumber1 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-		(::vl::__vwsn::This(jsonNumber1.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(arg_index); return __vwsn_temp__; }());
-		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(1), ::vl::__vwsn::Box(jsonNumber1));
+		auto jsonValue0 = ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(arg_obj), _lc);
+		auto jsonNode1 = GLOBAL_NAME rpcjson_Serialize(jsonValue0);
+		::vl::rpc_controller::RpcTransferByvalKeepAlive(jsonValue0, ::vl::__vwsn::Box(jsonNode1));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::__vwsn::Box(jsonNode1));
+		auto jsonNumber2 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+		(::vl::__vwsn::This(jsonNumber2.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(arg_index); return __vwsn_temp__; }());
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(1), ::vl::__vwsn::Box(jsonNumber2));
 		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcFailDoubleRegistrationTest__IService_SetObject, arguments));
-		auto jsonValue2 = GLOBAL_NAME rpcjson_Deserialize(jsonResult);
-		return ::vl::__vwsn::SharedPtrCast<::RpcFailDoubleRegistrationTest::IObject>(::vl::rpc_controller::RpcUnboxByval(jsonValue2, _lc).Obj());
+		auto jsonValue3 = GLOBAL_NAME rpcjson_Deserialize(jsonResult);
+		return ::vl::__vwsn::SharedPtrCast<::RpcFailDoubleRegistrationTest::IObject>(::vl::rpc_controller::RpcUnboxByval(jsonValue3, _lc).Obj());
 	}
 
 	//-------------------------------------------------------------------
@@ -1112,7 +1114,9 @@ Closures
 
 	::vl::reflection::description::Value __vwsnc8_Rpc_FailDoubleRegistration_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::Serialize(const ::vl::reflection::description::Value& value)
 	{
-		return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(value));
+		auto result = GLOBAL_NAME rpcjson_Serialize(value);
+		::vl::rpc_controller::RpcTransferByvalKeepAlive(value, ::vl::__vwsn::Box(result));
+		return ::vl::__vwsn::Box(result);
 	}
 
 	::vl::reflection::description::Value __vwsnc8_Rpc_FailDoubleRegistration_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::Deserialize(const ::vl::reflection::description::Value& value)
@@ -1141,10 +1145,12 @@ Closures
 			else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcFailDoubleRegistrationTest__IService_SetObject))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcFailDoubleRegistrationTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint32_t>(0)))));
-				auto jsonValue1 = ::vl::__vwsn::Parse<::vl::vint32_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint32_t>(1)))).Obj())).Obj())->content.value);
-				auto jsonNode2 = GLOBAL_NAME rpcjson_Serialize(::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(::vl::__vwsn::This(target.Obj())->SetObject(::vl::__vwsn::SharedPtrCast<::RpcFailDoubleRegistrationTest::IObject>(::vl::rpc_controller::RpcUnboxByval(jsonValue0, _lc).Obj()), jsonValue1)), _lc));
-				return ::vl::__vwsn::Box(jsonNode2);
+				auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::rpc_controller::RpcGetSerializedArgument(arguments, static_cast<::vl::vint32_t>(0))));
+				auto jsonValue1 = ::vl::__vwsn::Parse<::vl::vint32_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::rpc_controller::RpcGetSerializedArgument(arguments, static_cast<::vl::vint32_t>(1))).Obj())).Obj())->content.value);
+				auto jsonValue2 = ::vl::rpc_controller::RpcBoxByval(::vl::Ptr<::vl::reflection::IDescriptable>(::vl::__vwsn::This(target.Obj())->SetObject(::vl::__vwsn::SharedPtrCast<::RpcFailDoubleRegistrationTest::IObject>(::vl::rpc_controller::RpcUnboxByval(jsonValue0, _lc).Obj()), jsonValue1)), _lc);
+				auto jsonNode3 = GLOBAL_NAME rpcjson_Serialize(jsonValue2);
+				::vl::rpc_controller::RpcTransferByvalKeepAlive(jsonValue2, ::vl::__vwsn::Box(jsonNode3));
+				return ::vl::__vwsn::Box(jsonNode3);
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
