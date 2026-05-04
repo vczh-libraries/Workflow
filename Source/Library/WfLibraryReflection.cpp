@@ -37,6 +37,7 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::StateMachine, system::StateMachine)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Versioning, system::Versioning)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcObjectReference, system::RpcObjectReference)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcByvalReturnValue, system::RpcByvalReturnValue)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcSerializer, system::IRpcSerializer)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListOps, system::IRpcListOps)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListEventOps, system::IRpcListEventOps)
@@ -117,6 +118,12 @@ WfLoadLibraryTypes
 				STRUCT_MEMBER(typeId)
 			END_STRUCT_MEMBER(vl::rpc_controller::RpcObjectReference)
 
+			BEGIN_CLASS_MEMBER(vl::rpc_controller::RpcByvalReturnValue)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<vl::rpc_controller::RpcByvalReturnValue>(), NO_PARAMETER)
+				CLASS_MEMBER_FIELD(value)
+				CLASS_MEMBER_FIELD(slot)
+			END_CLASS_MEMBER(vl::rpc_controller::RpcByvalReturnValue)
+
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcSerializer)
 				CLASS_MEMBER_METHOD(Serialize, { L"value" })
 				CLASS_MEMBER_METHOD(Deserialize, { L"value" })
@@ -153,6 +160,7 @@ WfLoadLibraryTypes
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectOps)
 				CLASS_MEMBER_METHOD(InvokeMethod, { L"ref" _ L"methodId" _ L"arguments" })
+				CLASS_MEMBER_METHOD(EndInvokeMethod, { L"slot" })
 				CLASS_MEMBER_METHOD(ObjectHold, { L"ref" _ L"remoteClientId" _ L"hold" })
 				CLASS_MEMBER_METHOD(RegisterService, { L"typeId" _ L"service" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectOps)
@@ -202,6 +210,7 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_METHOD(RequestService, { L"fullName" })
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcBoxByref, { L"trivial" _ L"lc" }, vl::rpc_controller::RpcObjectReference(*)(vl::Ptr<vl::reflection::IDescriptable>, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcBoxByref)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcUnboxByref, { L"serializable" _ L"lc" }, vl::Ptr<vl::reflection::IDescriptable>(*)(vl::rpc_controller::RpcObjectReference, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcUnboxByref)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcCopyByval, { L"trivial" _ L"lc" }, Value(*)(const Value&, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcCopyByval)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcBoxByval, { L"trivial" _ L"lc" }, Value(*)(const Value&, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcBoxByval)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcUnboxByval, { L"serializable" _ L"lc" }, vl::Ptr<vl::reflection::IDescriptable>(*)(const Value&, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcUnboxByval)
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifecycle)

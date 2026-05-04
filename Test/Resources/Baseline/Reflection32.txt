@@ -287,6 +287,9 @@ interface system::IRpcLifecycle : system::Interface {
     @InvokeTemplate:::vl::rpc_controller::RpcBoxByval($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcBoxByval)
     static function RpcBoxByval(trivial : system::Object, lc : system::IRpcLifecycle*) : system::Object;
+    @InvokeTemplate:::vl::rpc_controller::RpcCopyByval($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcCopyByval)
+    static function RpcCopyByval(trivial : system::Object, lc : system::IRpcLifecycle*) : system::Object;
     @InvokeTemplate:::vl::rpc_controller::RpcUnboxByref($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcUnboxByref)
     static function RpcUnboxByref(serializable : system::RpcObjectReference, lc : system::IRpcLifecycle*) : system::Interface^;
@@ -344,6 +347,7 @@ interface system::IRpcObjectEventOps : system::Interface {
 
 @FullName:vl::rpc_controller::IRpcObjectOps
 interface system::IRpcObjectOps : system::Interface {
+    function EndInvokeMethod(slot : system::Int32) : system::Void;
     function InvokeMethod(ref : system::RpcObjectReference, methodId : system::Int32, arguments : system::Array^) : system::Object;
     function ObjectHold(ref : system::RpcObjectReference, remoteClientId : system::Int32, hold : system::Boolean) : system::Void;
     function RegisterService(typeId : system::Int32, service : system::Interface^) : system::Void;
@@ -706,6 +710,14 @@ class system::RpcByrefObservableList : system::ObservableList, system::IRpcWrapp
 
 @FullName:vl::rpc_controller::RpcByrefReadonlyList
 class system::RpcByrefReadonlyList : system::ReadonlyList, system::IRpcWrapperBase {
+}
+
+@FullName:vl::rpc_controller::RpcByvalReturnValue
+class system::RpcByvalReturnValue : system::ReferenceType {
+    property slot : system::Int32;
+    property value : system::Object;
+
+    constructor () : system::RpcByvalReturnValue^;
 }
 
 @FullName:vl::rpc_controller::RpcObjectReference

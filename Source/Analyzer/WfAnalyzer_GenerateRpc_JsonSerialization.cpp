@@ -68,8 +68,11 @@ namespace vl
 				void AddSwitchCase(Ptr<WfSwitchStatement> switchStat, Ptr<WfExpression> expression, Ptr<WfStatement> statement);
 				bool IsSharedInterfaceType(ITypeInfo* type);
 				bool IsVoidType(WfType* type);
+				bool IsRpcByvalReturn(const RpcMethodModel& methodModel);
 				Ptr<WfExpression> CreateRpcBoxExpression(ITypeInfo* typeInfo, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle);
 				Ptr<WfExpression> CreateRpcUnboxExpression(ITypeInfo* typeInfo, Ptr<WfType> type, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle);
+				Ptr<WfExpression> CreateRpcCopyByvalExpression(Ptr<WfExpression> value, Ptr<WfExpression> lifecycle);
+				void AddRpcByvalReturnValue(Ptr<WfBlockStatement> block, Ptr<WfExpression> value, Ptr<WfExpression> copiedValue);
 				Ptr<WfExpression> CreateRpcConstantReference(const wchar_t* prefix, const WString& fullName);
 				void CollectMangledNames(WfLexicalScopeManager* manager);
 				List<RpcInterfaceModel> BuildInterfaceModels(WfLexicalScopeManager* manager);
@@ -80,6 +83,8 @@ namespace vl
 				WString GetRpcOpsArgumentName(const RpcParamModel& paramModel);
 				Ptr<WfFunctionDeclaration> CreateRpcOpsFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind);
 				void AddRpcOpsFunctionArguments(Ptr<WfFunctionDeclaration> functionDecl, const List<RpcParamModel>& params);
+				Ptr<WfExpression> CreateRpcOpsObjectOps();
+				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel, Ptr<WfExpression> objectOps);
 				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel);
 				Ptr<WfExpression> CreateRpcOpsObjectEventInvoke(const RpcEventModel& eventModel);
 
@@ -1204,10 +1209,20 @@ namespace vl
 					}
 					else
 					{
-						auto transferValue = CreateRpcJsonTransferExpression(methodModel.returnTypeInfo, methodModel.returnByref, invoke, CreateReference(L"_lc"));
 						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
-						auto nodeName = AddRpcJsonSerializeValue(manager, tempIndex, block, transferValue, transferType.Obj());
-						AddStatement(block, CreateReturn(CreateReference(nodeName)));
+						if (IsRpcByvalReturn(methodModel))
+						{
+							AddStatement(block, CreateVariableStatement(L"copiedReturnValue", CreatePredefinedType(WfPredefinedTypeName::Object), CreateRpcCopyByvalExpression(invoke, CreateReference(L"_lc"))));
+							auto transferValue = CreateRpcJsonTransferExpression(methodModel.returnTypeInfo, methodModel.returnByref, CreateReference(L"copiedReturnValue"), CreateReference(L"_lc"));
+							auto nodeName = AddRpcJsonSerializeValue(manager, tempIndex, block, transferValue, transferType.Obj());
+							AddRpcByvalReturnValue(block, CreateCast(CreatePredefinedType(WfPredefinedTypeName::Object), CreateReference(nodeName)), CreateReference(L"copiedReturnValue"));
+						}
+						else
+						{
+							auto transferValue = CreateRpcJsonTransferExpression(methodModel.returnTypeInfo, methodModel.returnByref, invoke, CreateReference(L"_lc"));
+							auto nodeName = AddRpcJsonSerializeValue(manager, tempIndex, block, transferValue, transferType.Obj());
+							AddStatement(block, CreateReturn(CreateReference(nodeName)));
+						}
 					}
 					return block;
 				}
@@ -1272,6 +1287,8 @@ namespace vl
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
 					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectOps")).Cast<WfNewInterfaceExpression>();
 					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_slot", CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(0)));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_byvalReturnValues", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::Int), CreatePredefinedType(WfPredefinedTypeName::Object)), CreateConstructor()));
 
 					{
 						auto invokeMethod = CreateFunctionDeclaration(L"InvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
@@ -1280,6 +1297,13 @@ namespace vl
 						invokeMethod->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
 						AddStatement(invokeMethod->statement.Cast<WfBlockStatement>(), BuildDispatchChainJson(manager, interfaces, false));
 						newOps->declarations.Add(invokeMethod);
+					}
+
+					{
+						auto endInvokeMethod = CreateFunctionDeclaration(L"EndInvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+						endInvokeMethod->arguments.Add(CreateFunctionArgument(L"slot", CreatePredefinedType(WfPredefinedTypeName::Int)));
+						AddStatement(endInvokeMethod->statement.Cast<WfBlockStatement>(), CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_byvalReturnValues"), L"Remove"), CreateReference(L"slot"))));
+						newOps->declarations.Add(endInvokeMethod);
 					}
 
 					{
@@ -1360,13 +1384,39 @@ namespace vl
 
 					vint tempIndex = 0;
 					AddRpcOpsArgumentsArrayJson(manager, block, methodModel.params, tempIndex);
-					auto invoke = CreateRpcOpsObjectInvoke(methodModel);
 					if (IsVoidType(methodModel.returnType.Obj()))
 					{
+						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
 						AddStatement(block, CreateExpressionStatement(invoke));
+					}
+					else if (IsRpcByvalReturn(methodModel))
+					{
+						AddStatement(block, CreateVariableStatement(L"objectOps", CreateRawType(L"system::IRpcObjectOps"), CreateRpcOpsObjectOps()));
+						auto invoke = CreateRpcOpsObjectInvoke(methodModel, CreateReference(L"objectOps"));
+						AddStatement(block, CreateVariableStatement(
+							L"byvalReturnValue",
+							CreateSharedType(L"system::RpcByvalReturnValue"),
+							CreateCast(CreateSharedType(L"system::RpcByvalReturnValue"), invoke)));
+						AddStatement(block, CreateVariableStatement(
+							L"jsonResult",
+							CreateSharedType(L"system::JsonNode"),
+							CreateCast(CreateSharedType(L"system::JsonNode"), CreateMember(CreateReference(L"byvalReturnValue"), L"value"))));
+						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
+						auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, CreateReference(L"jsonResult"), transferType.Obj());
+						AddStatement(block, CreateVariableStatement(
+							L"result",
+							CopyType(methodModel.returnType.Obj()),
+							IsSharedInterfaceType(methodModel.returnTypeInfo)
+								? CreateRpcUnboxExpression(methodModel.returnTypeInfo, methodModel.returnType, methodModel.returnByref, CreateReference(valueName), CreateReference(L"_lc"))
+								: CreateReference(valueName)));
+						AddStatement(block, CreateExpressionStatement(CreateCall(
+							CreateMember(CreateReference(L"objectOps"), L"EndInvokeMethod"),
+							CreateMember(CreateReference(L"byvalReturnValue"), L"slot"))));
+						AddStatement(block, CreateReturn(CreateReference(L"result")));
 					}
 					else
 					{
+						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
 						AddStatement(block, CreateVariableStatement(L"jsonResult", CreateSharedType(L"system::JsonNode"), CreateCast(CreateSharedType(L"system::JsonNode"), invoke)));
 						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
 						auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, CreateReference(L"jsonResult"), transferType.Obj());

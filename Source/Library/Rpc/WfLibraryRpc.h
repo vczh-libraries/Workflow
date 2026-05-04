@@ -30,6 +30,15 @@ namespace vl
 			auto operator<=>(const RpcObjectReference&) const = default;
 		};
 
+		class RpcByvalReturnValue
+			: public Object
+			, public reflection::Description<RpcByvalReturnValue>
+		{
+		public:
+			reflection::description::Value	value;
+			vint							slot = -1;
+		};
+
 		inline constexpr vint				RpcTypeId_IValueEnumerable = -1;
 		inline constexpr vint				RpcTypeId_IValueEnumerator = -2;
 		inline constexpr vint				RpcTypeId_IValueArray = -3;
@@ -77,6 +86,7 @@ namespace vl
 		{
 		public:
 			virtual reflection::description::Value					InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments) = 0;
+			virtual void											EndInvokeMethod(vint slot) = 0;
 			virtual void											ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold) = 0;
 			virtual void											RegisterService(vint typeId, Ptr<reflection::IDescriptable> service) = 0;
 		};
@@ -172,6 +182,7 @@ namespace vl
 
 		RpcObjectReference									RpcBoxByref		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
 		Ptr<reflection::IDescriptable>						RpcUnboxByref	(RpcObjectReference serializable, IRpcLifecycle* lc);
+		reflection::description::Value						RpcCopyByval	(const reflection::description::Value& trivial, IRpcLifecycle* lc);
 		reflection::description::Value						RpcBoxByval		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
 		reflection::description::Value						RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
 		Ptr<reflection::IDescriptable>						RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);

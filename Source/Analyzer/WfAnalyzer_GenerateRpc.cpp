@@ -727,6 +727,11 @@ namespace vl
 					return CreateCast(CopyType(type.Obj()), unboxed);
 				}
 
+				Ptr<WfExpression> CreateRpcCopyByvalExpression(Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
+				{
+					return CreateLifecycleHelperCall(L"RpcCopyByval", value, lifecycle);
+				}
+
 				bool IsVoidType(WfType* type)
 				{
 					if (auto predefined = dynamic_cast<WfPredefinedType*>(type))
@@ -744,6 +749,23 @@ namespace vl
 						}
 					}
 					return false;
+				}
+
+				bool IsRpcByvalReturn(const RpcMethodModel& methodModel)
+				{
+					return !IsVoidType(methodModel.returnType.Obj())
+						&& !methodModel.returnByref
+						&& (IsStrongTypedCollectionType(methodModel.returnType.Obj()) || IsRpcStrongTypedCollection(methodModel.returnTypeInfo));
+				}
+
+				void AddRpcByvalReturnValue(Ptr<WfBlockStatement> block, Ptr<WfExpression> value, Ptr<WfExpression> copiedValue)
+				{
+					AddStatement(block, CreateVariableStatement(L"byvalReturnValue", CreateSharedType(L"system::RpcByvalReturnValue"), CreateNewClass(CreateSharedType(L"system::RpcByvalReturnValue"))));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"byvalReturnValue"), L"value"), value)));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"byvalReturnValue"), L"slot"), CreateReference(L"_slot"))));
+					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_byvalReturnValues"), L"Set"), CreateReference(L"_slot"), copiedValue)));
+					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateReference(L"_slot"), CreateBinary(WfBinaryOperator::Add, CreateReference(L"_slot"), CreateInt(1)))));
+					AddStatement(block, CreateReturn(CreateReference(L"byvalReturnValue")));
 				}
 
 				Ptr<WfExpression> CreateRpcConstantReference(const wchar_t* prefix, const WString& fullName)
@@ -1153,7 +1175,16 @@ namespace vl
 					}
 					else
 					{
-						AddStatement(block, CreateReturn(CreateRpcBoxExpression(methodModel.returnTypeInfo, methodModel.returnByref, invoke, CreateReference(L"_lc"))));
+						if (IsRpcByvalReturn(methodModel))
+						{
+							AddStatement(block, CreateVariableStatement(L"copiedReturnValue", CreatePredefinedType(WfPredefinedTypeName::Object), CreateRpcCopyByvalExpression(invoke, CreateReference(L"_lc"))));
+							AddStatement(block, CreateVariableStatement(L"boxedReturnValue", CreatePredefinedType(WfPredefinedTypeName::Object), CreateRpcBoxExpression(methodModel.returnTypeInfo, methodModel.returnByref, CreateReference(L"copiedReturnValue"), CreateReference(L"_lc"))));
+							AddRpcByvalReturnValue(block, CreateReference(L"boxedReturnValue"), CreateReference(L"copiedReturnValue"));
+						}
+						else
+						{
+							AddStatement(block, CreateReturn(CreateRpcBoxExpression(methodModel.returnTypeInfo, methodModel.returnByref, invoke, CreateReference(L"_lc"))));
+						}
 					}
 					return block;
 				}
@@ -1308,6 +1339,8 @@ namespace vl
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
 					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectOps")).Cast<WfNewInterfaceExpression>();
 					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_slot", CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(0)));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_byvalReturnValues", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::Int), CreatePredefinedType(WfPredefinedTypeName::Object)), CreateConstructor()));
 
 					{
 						auto invokeMethod = CreateFunctionDeclaration(L"InvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
@@ -1316,6 +1349,13 @@ namespace vl
 						invokeMethod->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
 						AddStatement(invokeMethod->statement.Cast<WfBlockStatement>(), BuildDispatchChain(interfaces, false));
 						newOps->declarations.Add(invokeMethod);
+					}
+
+					{
+						auto endInvokeMethod = CreateFunctionDeclaration(L"EndInvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+						endInvokeMethod->arguments.Add(CreateFunctionArgument(L"slot", CreatePredefinedType(WfPredefinedTypeName::Int)));
+						AddStatement(endInvokeMethod->statement.Cast<WfBlockStatement>(), CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_byvalReturnValues"), L"Remove"), CreateReference(L"slot"))));
+						newOps->declarations.Add(endInvokeMethod);
 					}
 
 					{
@@ -1691,20 +1731,27 @@ namespace vl
 					}
 				}
 
-				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel)
+				Ptr<WfExpression> CreateRpcOpsObjectOps()
 				{
 					return CreateCall(
-						CreateMember(
-							CreateCall(
-								CreateMember(CreateMember(CreateReference(L"_lc"), L"Dispatcher"), L"SendToClient_ObjectOps"),
-								CreateMember(CreateReference(L"ref"), L"clientId")
-								),
-							L"InvokeMethod"
-							),
+						CreateMember(CreateMember(CreateReference(L"_lc"), L"Dispatcher"), L"SendToClient_ObjectOps"),
+						CreateMember(CreateReference(L"ref"), L"clientId")
+						);
+				}
+
+				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel, Ptr<WfExpression> objectOps)
+				{
+					return CreateCall(
+						CreateMember(objectOps, L"InvokeMethod"),
 						CreateReference(L"ref"),
 						CreateRpcConstantReference(L"rpcmethod_", methodModel.fullName),
 						CreateReference(L"arguments")
 						);
+				}
+
+				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel)
+				{
+					return CreateRpcOpsObjectInvoke(methodModel, CreateRpcOpsObjectOps());
 				}
 
 				Ptr<WfExpression> CreateRpcOpsObjectEventInvoke(const RpcEventModel& eventModel)
@@ -1730,13 +1777,36 @@ namespace vl
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
 					AddRpcOpsArgumentsArray(block, methodModel.params);
-					auto invoke = CreateRpcOpsObjectInvoke(methodModel);
 					if (IsVoidType(methodModel.returnType.Obj()))
 					{
+						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
 						AddStatement(block, CreateExpressionStatement(invoke));
+					}
+					else if (IsRpcByvalReturn(methodModel))
+					{
+						AddStatement(block, CreateVariableStatement(L"objectOps", CreateRawType(L"system::IRpcObjectOps"), CreateRpcOpsObjectOps()));
+						auto invoke = CreateRpcOpsObjectInvoke(methodModel, CreateReference(L"objectOps"));
+						AddStatement(block, CreateVariableStatement(
+							L"byvalReturnValue",
+							CreateSharedType(L"system::RpcByvalReturnValue"),
+							CreateCast(CreateSharedType(L"system::RpcByvalReturnValue"), invoke)));
+						AddStatement(block, CreateVariableStatement(
+							L"result",
+							CopyType(methodModel.returnType.Obj()),
+							CreateRpcUnboxExpression(
+								methodModel.returnTypeInfo,
+								methodModel.returnType,
+								methodModel.returnByref,
+								CreateMember(CreateReference(L"byvalReturnValue"), L"value"),
+								CreateReference(L"_lc"))));
+						AddStatement(block, CreateExpressionStatement(CreateCall(
+							CreateMember(CreateReference(L"objectOps"), L"EndInvokeMethod"),
+							CreateMember(CreateReference(L"byvalReturnValue"), L"slot"))));
+						AddStatement(block, CreateReturn(CreateReference(L"result")));
 					}
 					else
 					{
+						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
 						AddStatement(block, CreateReturn(CreateRpcUnboxExpression(methodModel.returnTypeInfo, methodModel.returnType, methodModel.returnByref, invoke, CreateReference(L"_lc"))));
 					}
 

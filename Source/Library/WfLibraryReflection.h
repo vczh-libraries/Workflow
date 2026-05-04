@@ -59,6 +59,7 @@ Predefined Types
 			F(StateMachine)					\
 			F(Versioning)					\
 			F(vl::rpc_controller::RpcObjectReference)\
+			F(vl::rpc_controller::RpcByvalReturnValue)\
 			F(vl::rpc_controller::IRpcSerializer)\
 			F(vl::rpc_controller::IRpcListOps)\
 			F(vl::rpc_controller::IRpcListEventOps)\
@@ -209,6 +210,11 @@ Interface Implementation Proxy (Implement)
 				vl::reflection::description::Value InvokeMethod(vl::rpc_controller::RpcObjectReference ref, vl::vint methodId, vl::Ptr<vl::reflection::description::IValueArray> arguments)override
 				{
 					INVOKEGET_INTERFACE_PROXY(InvokeMethod, ref, methodId, arguments);
+				}
+
+				void EndInvokeMethod(vl::vint slot)override
+				{
+					INVOKE_INTERFACE_PROXY(EndInvokeMethod, slot);
 				}
 
 				void ObjectHold(vl::rpc_controller::RpcObjectReference ref, vl::vint remoteClientId, bool hold)override

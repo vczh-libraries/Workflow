@@ -93,6 +93,10 @@ and then check the first element of array or "$" field of object,
 and we know the exact type.
 Throw an exception if all type testings fail.
 
+## JSON Return Values for Byval Collections
+
+When an RPC method returns an `@rpc:Byval` collection, JSON serialization still uses the same known-type or unknown-type schema for the collection value. The generated object ops put the resulting `JsonNode` in `system::RpcByvalReturnValue.value` and use `system::RpcByvalReturnValue.slot` to keep the recursive copied collection alive until the caller calls `EndInvokeMethod(slot)`. Non-byval JSON returns still return the `JsonNode` directly.
+
 ## Other Strict Rules
 
 DO NOT generate any helper function that is not mentioned here, especially which just builds any `system::JsonNode^`.

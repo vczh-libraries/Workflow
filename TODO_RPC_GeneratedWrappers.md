@@ -44,6 +44,8 @@ A wrapper method finishes synchronously. It boxes all arguments according to the
 
 On the receiving lifecycle, generated `IRpcObjectOps::InvokeMethod` switches on `methodId`, converts `ref` back to the target object through `RefToPtr(ref)`, unboxes arguments, calls the real object method, boxes the return value, and returns it to the caller. Unknown method ids raise an exception.
 
+When the return value is an `@rpc:Byval` collection, generated object ops return `system::RpcByvalReturnValue` instead of the raw boxed collection. Its `value` field contains the boxed transfer value, and its `slot` field identifies a recursive copy of the returned collection cached in the callee-side ops object. Generated caller-side ops cast the result directly to `system::RpcByvalReturnValue^`, unbox `value` into the real return variable, call `EndInvokeMethod(slot)` on the same object ops, and then return that variable. Non-byval return values keep the direct return path.
+
 Object lifetime is completed through hold and unhold messages. Wrapper creation sends `ObjectHold(..., true)` to the owner lifecycle. Wrapper destruction sends `ObjectHold(..., false)`. The owner lifecycle updates local-object interest counts through `LocalObjectHold` and `LocalObjectUnhold`.
 
 A generated local event listener first checks the lifecycle controller's event suppression flag. If the event is not suppressed, it boxes the event arguments and broadcasts them through `IRpcDispatcher::BroadcastFromClient_ObjectEventOps(clientId)`. On the receive side, generated `IRpcObjectEventOps::InvokeEvent` sets the suppression flag, raises the local event, and clears the flag in a `finally` block.
@@ -55,6 +57,8 @@ Service registration finishes by validating that the type id exists and represen
 JSON caller-side ops box arguments first, serialize each boxed value to a `JsonNode`, and put those nodes into the argument array. They send the method call through the same dispatcher path, receive a `JsonNode` result, deserialize it, unbox it to the expected return type, and return it.
 
 JSON callee-side object ops deserialize each incoming `JsonNode` argument before unboxing it to the declared Workflow type. After calling the target method, they box the return value, serialize it to `JsonNode`, and return that node to the caller.
+
+For an `@rpc:Byval` collection return, JSON object ops still serialize the transfer value as a `JsonNode`, but that node is stored in `system::RpcByvalReturnValue.value` and the recursive copied collection is cached by `slot` on the callee. JSON caller-side ops cast the `InvokeMethod` result directly to `system::RpcByvalReturnValue^`, deserialize `value`, unbox the real return value, call `EndInvokeMethod(slot)`, and then return the unboxed result. Non-byval JSON returns still receive a direct `JsonNode`.
 
 JSON event sending follows the same argument rule. The generated listener boxes all event values into `arguments`, checks whether `lc.Serializer` exists, and, when it does, serializes every argument in place before broadcasting. JSON event receiving deserializes the argument nodes before raising the local event under the suppression flag.
 

@@ -250,3 +250,18 @@ When `IRpcObjectEventOps::InvokeEvent(ref, eventId, arguments)` receives a remot
 Generated `rpclistener_*` handlers should check `lc.Controller.GetEventSuppressedFlag(ref, eventId)` before boxing arguments. If the flag is set, the handler returns immediately. Otherwise it boxes arguments and broadcasts through `IRpcDispatcher`.
 
 List events use the same shape without an event id. When receive-side `OnItemChanged(ref, index, oldCount, newCount)` replays a remote list notification locally, it should set `SetItemChangedSuppressedFlag(ref, true)`, raise the local list notification, and clear the flag in a `finally` block. The locally attached native list event handler should check `GetItemChangedSuppressedFlag(ref)` before broadcasting.
+
+## Byval Return Collection Lifecycle
+
+When a method return value is marked with `@rpc:Byval`, the generated `IRpcObjectOps::InvokeMethod` result is not the boxed collection itself. It is a `system::RpcByvalReturnValue` object:
+
+- `value` stores the boxed returned collection, or the JSON serialized `JsonNode` when JSON object ops are used.
+- `slot` stores an incremental index allocated by the callee-side object ops object.
+
+The generated object ops object owns `_slot : int` and `_byvalReturnValues : object[int]`. For each byval collection return, it first calls `system::IRpcLifecycle::RpcCopyByval` on the real returned collection. This recursively copies every nested collection layer, so later mutation of the original collection cannot affect the value being transported. The copied collection is stored in `_byvalReturnValues[slot]`, and then the copied collection is boxed or serialized for `RpcByvalReturnValue.value`.
+
+The callee caches the copied collection instead of the boxed or JSON value. This keeps interface elements alive for both non-JSON and JSON transport: boxed byval collections may contain only `RpcObjectReference` values, and JSON values contain no interface objects at all. Holding the recursive copy keeps the actual interface objects alive until the caller has received the result and created the needed wrappers.
+
+Generated caller-side ops know from metadata whether a return value uses this path. They cast the `InvokeMethod` result directly to `system::RpcByvalReturnValue^`, deserialize and unbox `value` into a local return variable, call `EndInvokeMethod(slot)` on the same object ops object, and then return the local variable. `EndInvokeMethod` removes the cached copied collection from `_byvalReturnValues`.
+
+Non-byval returns do not use `RpcByvalReturnValue`, `_slot`, `_byvalReturnValues`, or `EndInvokeMethod` for result cleanup.

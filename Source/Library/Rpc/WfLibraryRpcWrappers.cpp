@@ -32,22 +32,6 @@ namespace vl
 					&& ref.typeId == RpcTypeId_NotFound;
 			}
 
-			bool IsRpcWrapperObject(DescriptableObject* obj)
-			{
-				if (!obj) return false;
-				if (dynamic_cast<IRpcWrapperBase*>(obj)) return true;
-#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
-				if (auto typeDescriptor = obj->GetTypeDescriptor())
-				{
-					if (auto wrapperType = GetTypeDescriptor(WString::Unmanaged(L"system::IRpcWrapperBase")))
-					{
-						return typeDescriptor->CanConvertTo(wrapperType);
-					}
-				}
-#endif
-				return false;
-			}
-
 			IRpcWrapperBase* CastRpcWrapperBase(IDescriptable* obj)
 			{
 				if (!obj) return nullptr;
@@ -95,29 +79,6 @@ namespace vl
 				lc->GetDispatcher()->SendToClient_ObjectOps(ref.clientId)->ObjectHold(ref, lc->GetClientId(), hold);
 			}
 
-			/*
-			* When a container of interfaces is boxed byval
-			* the boxed result is a container of RpcObjectReference values
-			* but before the boxed container is unboxed from the other side
-			* contained wrappers must be kept alive for a while
-			* so RpcByvalKeepAlive will be assigned to the boxed container with RpcByvalKeepAliveProperty
-			* these wrappers will still be alive even when there is no other shared pointers holding them,
-			*
-			* when the boxed value gets passed to the other side
-			* connection established and these wrappers are now referenced by the other side
-			* the boxed containers of RpcObjectReference is no longer needed
-			* therefore RpcByvalKeepAlive can now be destroyed along with the boxed container
-			* and the remote object of these wrappers are still alive
-			* (it is possible that "the other side" actually ownes some remote objects)
-			*/
-			const WString RpcByvalKeepAliveProperty = L"RpcByvalKeepAlive";
-
-			class RpcByvalKeepAlive : public Object
-			{
-			public:
-				List<Ptr<DescriptableObject>> objects;
-			};
-
 			IRpcListOps* GetRemoteListOps(IRpcLifecycle* lc, RpcObjectReference ref)
 			{
 				return lc->GetDispatcher()->SendToClient_ListOps(ref.clientId);
@@ -135,7 +96,8 @@ namespace vl
 
 			Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc);
 			Value RpcUnboxValueByref(const Value& serializable, IRpcLifecycle* lc);
-			Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited, List<Ptr<DescriptableObject>>& keepAlive);
+			Value RpcCopyValueByvalInternal(const Value& trivial, Dictionary<const DescriptableObject*, bool>& visited);
+			Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
 			Value RpcUnboxValueByvalInternal(const Value& serializable, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
 		}
 		
@@ -841,7 +803,81 @@ namespace vl
 				return nullptr;
 			}
 
-			Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited, List<Ptr<DescriptableObject>>& keepAlive)
+			Value RpcCopyValueByvalInternal(const Value& trivial, Dictionary<const DescriptableObject*, bool>& visited)
+			{
+				if (trivial.IsNull()) return trivial;
+				if (trivial.GetValueType() == Value::SharedPtr)
+				{
+					if (auto roDict = TryGetValueInterface<IValueReadonlyDictionary>(trivial))
+					{
+						auto key = static_cast<const DescriptableObject*>(trivial.GetRawPtr());
+						if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval copying does not support cycles.");
+						visited.Add(key, true);
+
+						auto dict = IValueDictionary::Create();
+						auto keys = roDict->GetKeys();
+						for (vint i = 0; i < keys->GetCount(); i++)
+						{
+							auto dictKey = keys->Get(i);
+							dict->Set(
+								RpcCopyValueByvalInternal(dictKey, visited),
+								RpcCopyValueByvalInternal(roDict->Get(dictKey), visited)
+							);
+						}
+						visited.Remove(key);
+						return BoxValue(dict);
+					}
+
+					if (auto obsList = TryGetValueInterface<IValueObservableList>(trivial))
+					{
+						auto key = static_cast<const DescriptableObject*>(trivial.GetRawPtr());
+						if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval copying does not support cycles.");
+						visited.Add(key, true);
+
+						auto list = IValueObservableList::Create();
+						for (vint i = 0; i < obsList->GetCount(); i++)
+						{
+							list->Add(RpcCopyValueByvalInternal(obsList->Get(i), visited));
+						}
+						visited.Remove(key);
+						return BoxValue(list);
+					}
+
+					if (auto array = TryGetValueInterface<IValueArray>(trivial))
+					{
+						auto key = static_cast<const DescriptableObject*>(trivial.GetRawPtr());
+						if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval copying does not support cycles.");
+						visited.Add(key, true);
+
+						auto list = IValueArray::Create();
+						list->Resize(array->GetCount());
+						for (vint i = 0; i < array->GetCount(); i++)
+						{
+							list->Set(i, RpcCopyValueByvalInternal(array->Get(i), visited));
+						}
+						visited.Remove(key);
+						return BoxValue(list);
+					}
+
+					if (auto roList = TryGetValueInterface<IValueReadonlyList>(trivial))
+					{
+						auto key = static_cast<const DescriptableObject*>(trivial.GetRawPtr());
+						if (ContainsKey(visited, key)) CHECK_FAIL(L"Byval copying does not support cycles.");
+						visited.Add(key, true);
+
+						auto list = IValueList::Create();
+						for (vint i = 0; i < roList->GetCount(); i++)
+						{
+							list->Add(RpcCopyValueByvalInternal(roList->Get(i), visited));
+						}
+						visited.Remove(key);
+						return BoxValue(list);
+					}
+				}
+				return trivial;
+			}
+
+			Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited)
 			{
 				if (trivial.IsNull()) return trivial;
 				if (trivial.GetValueType() == Value::SharedPtr)
@@ -858,8 +894,8 @@ namespace vl
 						{
 							auto dictKey = keys->Get(i);
 							dict->Set(
-								RpcBoxValueByvalInternal(dictKey, lc, visited, keepAlive),
-								RpcBoxValueByvalInternal(roDict->Get(dictKey), lc, visited, keepAlive)
+								RpcBoxValueByvalInternal(dictKey, lc, visited),
+								RpcBoxValueByvalInternal(roDict->Get(dictKey), lc, visited)
 							);
 						}
 						visited.Remove(key);
@@ -875,7 +911,7 @@ namespace vl
 						auto list = IValueObservableList::Create();
 						for (vint i = 0; i < obsList->GetCount(); i++)
 						{
-							list->Add(RpcBoxValueByvalInternal(obsList->Get(i), lc, visited, keepAlive));
+							list->Add(RpcBoxValueByvalInternal(obsList->Get(i), lc, visited));
 						}
 						visited.Remove(key);
 						return BoxValue(list);
@@ -891,7 +927,7 @@ namespace vl
 						list->Resize(array->GetCount());
 						for (vint i = 0; i < array->GetCount(); i++)
 						{
-							list->Set(i, RpcBoxValueByvalInternal(array->Get(i), lc, visited, keepAlive));
+							list->Set(i, RpcBoxValueByvalInternal(array->Get(i), lc, visited));
 						}
 						visited.Remove(key);
 						return BoxValue(list);
@@ -906,7 +942,7 @@ namespace vl
 						auto list = IValueList::Create();
 						for (vint i = 0; i < roList->GetCount(); i++)
 						{
-							list->Add(RpcBoxValueByvalInternal(roList->Get(i), lc, visited, keepAlive));
+							list->Add(RpcBoxValueByvalInternal(roList->Get(i), lc, visited));
 						}
 						visited.Remove(key);
 						return BoxValue(list);
@@ -917,16 +953,20 @@ namespace vl
 						if (auto obj = dynamic_cast<IDescriptable*>(raw))
 						{
 							auto ref = lc->PtrToRef(Ptr<IDescriptable>(obj));
-							if (IsRpcWrapperObject(raw))
-							{
-								keepAlive.Add(Ptr<DescriptableObject>(raw));
-							}
 							return BoxValue(ref);
 						}
 					}
 				}
 				return trivial;
 			}
+		}
+
+		Value RpcCopyByval(const Value& trivial, IRpcLifecycle* lc)
+		{
+			if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
+			if (trivial.IsNull()) return {};
+			Dictionary<const DescriptableObject*, bool> visited;
+			return RpcCopyValueByvalInternal(trivial, visited);
 		}
 
 		Value RpcBoxByval(Ptr<IDescriptable> trivial, IRpcLifecycle* lc)
@@ -941,21 +981,7 @@ namespace vl
 			if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
 			if (trivial.IsNull()) return {};
 			Dictionary<const DescriptableObject*, bool> visited;
-			List<Ptr<DescriptableObject>> keepAlive;
-			auto serializable = RpcBoxValueByvalInternal(trivial, lc, visited, keepAlive);
-			if (keepAlive.Count() > 0)
-			{
-				if (auto obj = serializable.GetRawPtr())
-				{
-					if (auto root = dynamic_cast<DescriptableObject*>(obj))
-					{
-						auto holder = Ptr(new RpcByvalKeepAlive);
-						CopyFrom(holder->objects, keepAlive);
-						root->SetInternalProperty(RpcByvalKeepAliveProperty, holder);
-					}
-				}
-			}
-			return serializable;
+			return RpcBoxValueByvalInternal(trivial, lc, visited);
 		}
 
 		namespace
