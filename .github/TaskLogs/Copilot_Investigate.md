@@ -10,32 +10,54 @@ You should complete tasks one by one.
 
 ## Task 1
 
-You are going to perform a tough change. So I strongly recommend you that, when a unit test project fails, immediatelly rerun it with a debugger.
-The goal is to test if JSON serialization works, core of the change is in generated wrapper Workflow script (`Wrapper_*_Json.txt`).
-Basically, when a wrapper pass message to the remote object, or when any object triggers an event and notify all lifecycle, it does the follow thing to arguments and return values
-- Turn an value to its serializable form, e.g., values in primitive types are untouched, interfaces or wrappers become `RpcObjectReference`, byval collections are copied and all elements are either byval copied or serialized.
-- Values in serializable forms are serialized to JSON.
-- JSON values get pass through `IRpc(Object|List)(Event)?Ops`.
-- In the other side, JSON values are deserialized to its serializable form.
-- Serializable forms are translated back to interfaces, wrappers, or values in primitive types.
+I have tried `Build.ps1 Workflow`, everything was good until the last test project `RuntimeTest`, figure it out. To speed up testing, you could just build and run CompilerTest_LoadAndCompiler x64, RuntimeTest x64+x86 .
 
-I would like the test to be limited in `CppRest*` projects, DO NOT modify `RuntimeTest` project. So basically you only want to touch `TestCasesRpc.h`, and any other places if bugged.
-
-In order to turn on JSON serialization, several things need to be done:
-- In each test case, call `rpcops_IRpcSerializer`, when implementations of `IRpcListOps` and `IRpcListEventOps` are created, pass `IRpcSerializer*` in.
-- When any wrappers for collection types are created, pass pass `IRpcSerializer*` in. You may need to register the object into `RpcLifecycleBase`, but use its shared pointer form so that `RpcLifecycleBase` owns `IRpcSerializer^`, but no need to change the `IRpcLifecycle` interface.
-- Call `rpcops_IOps_CreateJson` instead of `rpcops_IOps_Create`.
-- Call `rpcops_IRpcObjectOpsJson` instead of `rpcops_IRpcObjectOps`.
-- Call `rpcops_IRpcObjectEventOpsJson` instead of `rpcops_IRpcObjectEventOps`.
-
-You should run `CompilerTest_LoadAndCompile` at least ones, because some compiler generated binaries are not covered by git.
-After that, if you only change `TestCasesRpc.h`, only `CppTest*` need to run.
-
-Test results, aka `IndexRpc.txt`, should remain the same. These change only add one extra processing of JSON serialization on each side, they should not affect the semantic of the test in any mean.
-
-The implementation might be buggy, be prepared to fail for a lot of times. So I strongly recommend you that, when a unit test project fails, immediatelly rerun it with a debugger, therefore you don't lost in your way.
+You have to respect all existing public API design, try your best to fix the code without touching them.
+- Rpc(Unb|B)oxByref are by design only accept interfaces. Do not change that.
+- There is also by design to distinguish interface processing with primitive type or byval collection processing, due to strong-typed serialization requirement. You have to keep that shape.
 
 ## Task 2
+
+I would like you to perform a refactoring, to remove these 3 functions from `Sys` reflection registration:
+- `RpcGetSerializedArgument`
+- `RpcSerializeEventArgument`
+- `RpcTransferByvalKeepAlive`
+
+### RpcGetSerializedArgument
+
+There is no need to have that function. In the caller side, you just always assume `arguments` is not null and retrieve its element right away.
+
+### RpcSerializeEventArgument
+
+There is no need to have that function. The funcion only checks if the serializer exists. You should just check that in the generated call side,:
+- Firstly box all values to `arguments` variable.
+- Secondly, when `serialize` exists, serialize them inplace in a loop.
+
+### RpcTransferByvalKeepAlive
+
+I suspect calling this function is unnecessary, for example in `Wrapper_Collection_Default_Json.txt` the function looks like:
+```Workflow
+override func InvokeMethod_RpcCollection__Default__IService_DoList(ref : system::RpcObjectReference, arg_xs : ::system::Int32[]) : (::system::Int32[])
+{
+    var arguments : system::Array^ = {};
+    arguments.Resize(1);
+    var jsonValue0 : object = system::IRpcLifecycle::RpcBoxByval(arg_xs, _lc);
+    var jsonNode1 : system::JsonNode^ = rpcjson_Serialize(jsonValue0);
+    system::Sys::RpcTransferByvalKeepAlive(jsonValue0, jsonNode1);
+    arguments.Set(0, jsonNode1);
+    var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcCollection__Default__IService_DoList, arguments));
+    var jsonValue2 : object = rpcjson_Deserialize(jsonResult);
+    return (cast (::system::Int32[]) system::IRpcLifecycle::RpcUnboxByval(jsonValue2, _lc));
+}
+```
+
+`RpcBoxByval` already "kept alive" elements in `jsonValue0`.
+`_lc.Dispatcher.SendToClient_ObjectOps` is a blocking function, it won't return before the remote side finishing the work.
+So those elements still alive after calling `_lc.Dispatcher.SendToClient_ObjectOps` because `jsonValue0` still alive.
+Then I believe even when you don't call `system::Sys::RpcTransferByvalKeepAlive` everything should still be fine.
+You need to verify this.
+
+## Task 3
 
 You are going to create `TODO_RPC_GeneratedWrappers.md` to the following sections:
 - Describe when to call generated functions and what do they do. Another section for generated functions about JSON serialization.
@@ -47,55 +69,35 @@ Assume the reader is one who want to use generated C++ version from Workflow, wi
 - `TestCasesRpc.h`.
 But do not mention anything specific to test projects.
 
+## Task 4
+
+In `Wrapper_*.txt` and `Wrapper_*_Json.txt`, there are a lot of "in function variable" which have types.
+Variable types could be omitted if they are inside a function.
+You are going to remove all of them to keep them clean, unless any specific change causes problem.
+
 # UPDATES
 
-## UPDATE
-
-You accidentally stopped. Please follow [investigate.prompt.md](.github/prompts/investigate.prompt.md) to continue the work. By the way, more information are offered:
-- The `VlppReflection.h` file was accidentally changed prior the work. I have reset it, but it may affect your current work. You have to do everything you can not to touch files under Import
-- Progress so far has been git committed
-- I ran `Build.sh Workflow` for you, and `CompilerTest_LoadAndCompile` fails at all RPC samples. Although in the instructions you are asked to debug the test right after it fails, but for `CompilerTest_LoadAndCompiler`, you can read error messages in generated `Parsing.*.*.txt`. If the workflow compiler was able to run stably and produce compile errors for Workflow, launching debugger might not be helpful here.
+- Task 1 reproduced the `RuntimeTest` failure in the RPC `Dtor2` sample as an ambiguous aggregation cast before `RpcBoxByval` entered its helper body.
+- Debugging showed reflection was unboxing the first reflected `RpcBoxByval` argument as `Ptr<IDescriptable>`, and an aggregated RPC wrapper has multiple `IDescriptable` paths.
+- The reflected `RpcBoxByval` entry now accepts a `system::Object` / `Value` argument, while the existing C++ `Ptr<IDescriptable>` overload remains available and the byref APIs remain interface-only.
+- Wrapper tracker lookup now uses the aggregation root, and wrapper detection avoids ambiguous `SafeAggregationCast` when only a yes/no wrapper check is needed.
+- Metadata and generated RPC outputs were regenerated for both 32-bit and 64-bit configurations.
 
 # TEST
 
-Task 1 succeeds when RPC generated C++ tests run through the JSON RPC operation path without changing the expected `IndexRpc.txt` semantics. The minimum verification is to run `CompilerTest_LoadAndCompile` once, then run `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` after the `TestCasesRpc.h` change.
-
-Task 2 succeeds when `TODO_RPC_GeneratedWrappers.md` explains generated wrapper APIs and JSON wrapper APIs for generated C++ users without relying on test-project-specific wording.
+- [x] [CONFIRMED] Reproduced the original x64 `RuntimeTest` failure in `Dtor2`: `SafeAggregationCast<T>()#Found multiple ways to do aggregation cast.`
+- [x] [CONFIRMED] `.\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform x64` completed successfully.
+- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Executable CompilerTest_GenerateMetadata -Platform x64` completed successfully.
+- [x] [CONFIRMED] `.\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform Win32` completed successfully.
+- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Executable CompilerTest_GenerateMetadata -Platform Win32` completed successfully.
+- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Executable CompilerTest_LoadAndCompile -Platform x64` completed successfully after both metadata architectures were regenerated.
+- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Executable RuntimeTest -Platform x64` completed successfully with 4/4 files and 257/257 test cases passed.
+- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Executable RuntimeTest -Platform Win32` completed successfully with 4/4 files and 257/257 test cases passed.
 
 # PROPOSALS
 
-- No.1 Enable JSON RPC test path and preserve byval keep-alive across JSON serialization [CONFIRMED]
+## COMPLETED
 
-## No.1 Enable JSON RPC test path and preserve byval keep-alive across JSON serialization
+Task 1 is fixed by changing only the reflected Workflow entry point shape for byval boxing: generated Workflow code can pass any strongly typed byval value as `system::Object`, avoiding reflection-time interface pointer unboxing for aggregated wrappers. The native `Ptr<IDescriptable>` overload is preserved for existing C++ callers, and the byref boxing/unboxing helpers continue to accept interfaces only.
 
-### CODE CHANGE
-
-The implemented change switches the generated C++ RPC test harness to the JSON RPC operations and serializer. `TestCasesRpc.h` stores the generated serializer in `RpcLifecycleBase`, passes that serializer to list-operation bridges, list-event bridges, and byref collection wrappers, and uses the generated JSON object-operation and object-event-operation implementations.
-
-`RpcLifecycleBase` now owns an optional `IRpcSerializer^`, exposes `SetSerializer` and `GetSerializer`, and uses the serializer when creating caller-side proxies from `RefToPtr`. Generated JSON dispatch was updated to read serialized JSON arguments through `system::Sys::RpcGetSerializedArgument` so it does not unbox the array element as a nested `system::Object` first.
-
-Byval keep-alive transfer was moved to reflected `system::Sys` helpers and changed to transfer between two `system::Object` values. This lets generated serializers transfer the internal RPC keep-alive holder from the original boxed byval object to the JSON node returned by `rpcjson_Serialize`.
-
-Generated event listeners now wrap each boxed event argument with `system::Sys::RpcSerializeEventArgument(lc, value)` before broadcasting. When the lifecycle has a serializer, this sends JSON object-event operations serialized JSON nodes instead of raw boxed Workflow values.
-
-The full-reflection runtime path also exposed a pre-existing weak-unbox crash: `UnboxWeak<Ptr<T>>` and `UnboxWeak<T*>` attempted `SafeAggregationCast` through a null raw pointer while probing boxed value types such as `RpcObjectReference`. `WfLibraryCppHelper.h` now treats a boxed non-object value as a failed weak pointer cast and returns null, allowing generated serializers to continue to the later struct-specific serialization branch.
-
-Generated metadata and generated RPC C++ outputs were regenerated by the existing test generators.
-
-### CONFIRMED
-
-The proposal is confirmed. `CompilerTest_LoadAndCompile` now passes after the JSON helper changes; generated `Event.cpp` shows listener event arguments being serialized with `RpcSerializeEventArgument` and JSON dispatch reading arguments through `RpcGetSerializedArgument`.
-
-Build verification passed for `Debug|x64` and `Debug|Win32`.
-
-Metadata generation passed for both platforms, and both `Reflection64.txt` and `Reflection32.txt` contain `RpcSerializeEventArgument`, `RpcGetSerializedArgument`, and `RpcTransferByvalKeepAlive` on `system::Sys`.
-
-Runtime verification passed after rebuilding both platforms:
-- `CppTest x64`: passed test files 2/2, test cases 223/223.
-- `CppTest_Metaonly x64`: passed test files 2/2, test cases 223/223.
-- `CppTest_Reflection x64`: passed test files 2/2, test cases 223/223.
-- `CppTest Win32`: passed test files 2/2, test cases 223/223.
-- `CppTest_Metaonly Win32`: passed test files 2/2, test cases 223/223.
-- `CppTest_Reflection Win32`: passed test files 2/2, test cases 223/223.
-
-The `Import` folder remained untouched throughout the confirmation.
+The wrapper lifetime tracker now follows the aggregation root before reading or writing the internal tracker property. Wrapper detection uses metadata type information instead of aggregation casting when no wrapper pointer is needed, avoiding the same ambiguous-cast pattern during byval serialization.

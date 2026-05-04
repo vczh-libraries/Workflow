@@ -32,20 +32,36 @@ namespace vl
 					&& ref.typeId == RpcTypeId_NotFound;
 			}
 
-		IRpcWrapperBase* CastRpcWrapperBase(IDescriptable* obj)
-		{
-			if (!obj) return nullptr;
-			if (auto wrapper = dynamic_cast<IRpcWrapperBase*>(obj)) return wrapper;
-			return obj->SafeAggregationCast<IRpcWrapperBase>();
-		}
+			bool IsRpcWrapperObject(DescriptableObject* obj)
+			{
+				if (!obj) return false;
+				if (dynamic_cast<IRpcWrapperBase*>(obj)) return true;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+				if (auto typeDescriptor = obj->GetTypeDescriptor())
+				{
+					if (auto wrapperType = GetTypeDescriptor(WString::Unmanaged(L"system::IRpcWrapperBase")))
+					{
+						return typeDescriptor->CanConvertTo(wrapperType);
+					}
+				}
+#endif
+				return false;
+			}
 
-		template<typename TInterface>
-		TInterface* CastRpcInterface(IDescriptable* obj)
-		{
-			if (!obj) return nullptr;
-			if (auto proxy = dynamic_cast<TInterface*>(obj)) return proxy;
-			return obj->SafeAggregationCast<TInterface>();
-		}
+			IRpcWrapperBase* CastRpcWrapperBase(IDescriptable* obj)
+			{
+				if (!obj) return nullptr;
+				if (auto wrapper = dynamic_cast<IRpcWrapperBase*>(obj)) return wrapper;
+				return obj->SafeAggregationCast<IRpcWrapperBase>();
+			}
+
+			template<typename TInterface>
+			TInterface* CastRpcInterface(IDescriptable* obj)
+			{
+				if (!obj) return nullptr;
+				if (auto proxy = dynamic_cast<TInterface*>(obj)) return proxy;
+				return obj->SafeAggregationCast<TInterface>();
+			}
 
 			template<typename K, typename V>
 			bool ContainsKey(const Dictionary<K, V>& xs, const K& key)
@@ -99,7 +115,7 @@ namespace vl
 			class RpcByvalKeepAlive : public Object
 			{
 			public:
-				List<Ptr<IDescriptable>> objects;
+				List<Ptr<DescriptableObject>> objects;
 			};
 
 			IRpcListOps* GetRemoteListOps(IRpcLifecycle* lc, RpcObjectReference ref)
@@ -119,7 +135,7 @@ namespace vl
 
 			Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc);
 			Value RpcUnboxValueByref(const Value& serializable, IRpcLifecycle* lc);
-			Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited, List<Ptr<IDescriptable>>& keepAlive);
+			Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited, List<Ptr<DescriptableObject>>& keepAlive);
 			Value RpcUnboxValueByvalInternal(const Value& serializable, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
 		}
 		
@@ -825,7 +841,7 @@ namespace vl
 				return nullptr;
 			}
 
-			Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited, List<Ptr<IDescriptable>>& keepAlive)
+			Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited, List<Ptr<DescriptableObject>>& keepAlive)
 			{
 				if (trivial.IsNull()) return trivial;
 				if (trivial.GetValueType() == Value::SharedPtr)
@@ -901,9 +917,9 @@ namespace vl
 						if (auto obj = dynamic_cast<IDescriptable*>(raw))
 						{
 							auto ref = lc->PtrToRef(Ptr<IDescriptable>(obj));
-							if (CastRpcWrapperBase(obj))
+							if (IsRpcWrapperObject(raw))
 							{
-								keepAlive.Add(Ptr<IDescriptable>(obj));
+								keepAlive.Add(Ptr<DescriptableObject>(raw));
 							}
 							return BoxValue(ref);
 						}
@@ -917,9 +933,16 @@ namespace vl
 		{
 			if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
 			if (!trivial) return {};
+			return RpcBoxByval(BoxValue(trivial), lc);
+		}
+
+		Value RpcBoxByval(const Value& trivial, IRpcLifecycle* lc)
+		{
+			if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
+			if (trivial.IsNull()) return {};
 			Dictionary<const DescriptableObject*, bool> visited;
-			List<Ptr<IDescriptable>> keepAlive;
-			auto serializable = RpcBoxValueByvalInternal(BoxValue(trivial), lc, visited, keepAlive);
+			List<Ptr<DescriptableObject>> keepAlive;
+			auto serializable = RpcBoxValueByvalInternal(trivial, lc, visited, keepAlive);
 			if (keepAlive.Count() > 0)
 			{
 				if (auto obj = serializable.GetRawPtr())

@@ -11,13 +11,22 @@ namespace vl
 
 		namespace
 		{
-		IRpcWrapperBase* CastRpcWrapperBase(DescriptableObject* obj)
-		{
-			if (!obj) return nullptr;
-			if (auto wrapper = dynamic_cast<IRpcWrapperBase*>(obj)) return wrapper;
-			return obj->SafeAggregationCast<IRpcWrapperBase>();
+			bool IsRpcWrapperObject(DescriptableObject* obj)
+			{
+				if (!obj) return false;
+				if (dynamic_cast<IRpcWrapperBase*>(obj)) return true;
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+				if (auto typeDescriptor = obj->GetTypeDescriptor())
+				{
+					if (auto wrapperType = GetTypeDescriptor(WString::Unmanaged(L"system::IRpcWrapperBase")))
+					{
+						return typeDescriptor->CanConvertTo(wrapperType);
+					}
+				}
+#endif
+				return false;
+			}
 		}
-	}
 
 		WString RpcLifecycleBase::InternalProperty_LocalObjectTracker = WString::Unmanaged(L"RpcLocalObjectTracker");
 		WString RpcLifecycleBase::InternalProperty_WrapperTracker = WString::Unmanaged(L"RpcWrapperTracker");
@@ -240,6 +249,9 @@ namespace vl
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::TrackWrapper(reflection::DescriptableObject*, IRpcWrapperBase*, RpcObjectReference)#"
 			CHECK_ERROR(root != nullptr, ERROR_MESSAGE_PREFIX L"Wrapper does not implement DescriptableObject.");
 			CHECK_ERROR(proxy != nullptr, ERROR_MESSAGE_PREFIX L"Wrapper is null.");
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+			root = root->SafeGetAggregationRoot();
+#endif
 			CHECK_ERROR(root->GetInternalProperty(InternalProperty_WrapperTracker) == nullptr, ERROR_MESSAGE_PREFIX L"Wrapper already tracked.");
 
 			auto tracker = Ptr(new RpcWrapperTracker(this, ref));
@@ -262,20 +274,23 @@ namespace vl
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::TryGetTrackedWrapperRef(reflection::DescriptableObject*, RpcObjectReference&)const#"
 			auto wrapperRoot = obj;
-			if (auto wrapperBase = CastRpcWrapperBase(obj))
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+			if (wrapperRoot)
 			{
-				auto aggregatedRoot = dynamic_cast<DescriptableObject*>(wrapperBase);
-				CHECK_ERROR(aggregatedRoot, ERROR_MESSAGE_PREFIX L"Wrapper root does not implement DescriptableObject.");
-				wrapperRoot = aggregatedRoot;
+				wrapperRoot = wrapperRoot->SafeGetAggregationRoot();
 			}
+#endif
 
-			if (auto trackerObj = wrapperRoot->GetInternalProperty(InternalProperty_WrapperTracker))
+			if (wrapperRoot)
 			{
-				auto tracker = trackerObj.Cast<RpcWrapperTracker>();
-				CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid internal property type.");
-				CHECK_ERROR(tracker->GetLifecycle() == this, ERROR_MESSAGE_PREFIX L"Wrapper registered to a different lifecycle.");
-				ref = tracker->GetRef();
-				return true;
+				if (auto trackerObj = wrapperRoot->GetInternalProperty(InternalProperty_WrapperTracker))
+				{
+					auto tracker = trackerObj.Cast<RpcWrapperTracker>();
+					CHECK_ERROR(tracker, ERROR_MESSAGE_PREFIX L"Invalid internal property type.");
+					CHECK_ERROR(tracker->GetLifecycle() == this, ERROR_MESSAGE_PREFIX L"Wrapper registered to a different lifecycle.");
+					ref = tracker->GetRef();
+					return true;
+				}
 			}
 			return false;
 #undef ERROR_MESSAGE_PREFIX
@@ -463,11 +478,8 @@ namespace vl
 					return wrapperRef;
 				}
 
-				if (auto wrapperBase = CastRpcWrapperBase(descObj))
+				if (IsRpcWrapperObject(descObj))
 				{
-					auto wrapperRoot = dynamic_cast<DescriptableObject*>(wrapperBase);
-					CHECK_ERROR(wrapperRoot, ERROR_MESSAGE_PREFIX L"Wrapper root does not implement DescriptableObject.");
-					CHECK_ERROR(wrapperRoot->GetInternalProperty(InternalProperty_WrapperTracker), ERROR_MESSAGE_PREFIX L"Wrapper tracker missing.");
 					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Wrapper tracker lookup unexpectedly failed.");
 				}
 			}
