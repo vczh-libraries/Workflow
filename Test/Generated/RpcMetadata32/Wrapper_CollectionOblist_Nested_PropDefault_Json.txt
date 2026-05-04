@@ -556,6 +556,10 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
     {
         var _lc : system::IRpcLifecycle* = lc;
 
+        var _slot : int = 0;
+
+        var _byvalReturnValues : object[int] = {};
+
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
             switch (methodId)
@@ -576,6 +580,11 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 default:
                 raise "Unknown RPC method id.";
             }
+        }
+
+        override func EndInvokeMethod(slot : int) : (void)
+        {
+            _byvalReturnValues.Remove(slot);
         }
 
         override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)

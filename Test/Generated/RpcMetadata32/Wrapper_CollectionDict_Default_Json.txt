@@ -556,6 +556,10 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
     {
         var _lc : system::IRpcLifecycle* = lc;
 
+        var _slot : int = 0;
+
+        var _byvalReturnValues : object[int] = {};
+
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
             switch (methodId)
@@ -564,13 +568,24 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 {
                     var target : RpcCollectionDict::Default::IService^ = (cast (RpcCollectionDict::Default::IService^) _lc.RefToPtr(ref));
                     var jsonValue0 : object = rpcjson_Deserialize((cast (system::JsonNode^) arguments[0]));
-                    var jsonValue1 : object = system::IRpcLifecycle::RpcBoxByval(target.DoList((cast (::system::String[::system::Int32]) system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc))), _lc);
+                    var copiedReturnValue : object = system::IRpcLifecycle::RpcCopyByval(target.DoList((cast (::system::String[::system::Int32]) system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc))), _lc);
+                    var jsonValue1 : object = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
                     var jsonNode2 : system::JsonNode^ = rpcjson_Serialize(jsonValue1);
-                    return jsonNode2;
+                    var byvalReturnValue : system::RpcByvalReturnValue^ = new (system::RpcByvalReturnValue^)();
+                    (byvalReturnValue.value = (cast (object) jsonNode2));
+                    (byvalReturnValue.slot = _slot);
+                    _byvalReturnValues.Set(_slot, copiedReturnValue);
+                    (_slot = (_slot + 1));
+                    return byvalReturnValue;
                 }
                 default:
                 raise "Unknown RPC method id.";
             }
+        }
+
+        override func EndInvokeMethod(slot : int) : (void)
+        {
+            _byvalReturnValues.Remove(slot);
         }
 
         override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
@@ -644,9 +659,13 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Coll
             var jsonValue0 : object = system::IRpcLifecycle::RpcBoxByval(arg_xs, _lc);
             var jsonNode1 : system::JsonNode^ = rpcjson_Serialize(jsonValue0);
             arguments.Set(0, jsonNode1);
-            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcCollectionDict__Default__IService_DoList, arguments));
+            var objectOps : system::IRpcObjectOps* = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
+            var byvalReturnValue : system::RpcByvalReturnValue^ = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcCollectionDict__Default__IService_DoList, arguments));
+            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) byvalReturnValue.value);
             var jsonValue2 : object = rpcjson_Deserialize(jsonResult);
-            return (cast (::system::String[::system::Int32]) system::IRpcLifecycle::RpcUnboxByval(jsonValue2, _lc));
+            var result : ::system::String[::system::Int32] = (cast (::system::String[::system::Int32]) system::IRpcLifecycle::RpcUnboxByval(jsonValue2, _lc));
+            objectOps.EndInvokeMethod(byvalReturnValue.slot);
+            return result;
         }
     };
 }

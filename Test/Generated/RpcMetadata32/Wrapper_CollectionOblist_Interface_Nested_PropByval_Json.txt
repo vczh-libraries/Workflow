@@ -556,6 +556,10 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
     {
         var _lc : system::IRpcLifecycle* = lc;
 
+        var _slot : int = 0;
+
+        var _byvalReturnValues : object[int] = {};
+
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
             switch (methodId)
@@ -570,9 +574,15 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcCollectionOblist__Interface__Nested__InByval__PropByval__IService_GetList:
                 {
                     var target : RpcCollectionOblist::Interface::Nested::InByval::PropByval::IService^ = (cast (RpcCollectionOblist::Interface::Nested::InByval::PropByval::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : object = system::IRpcLifecycle::RpcBoxByval(target.GetList(), _lc);
+                    var copiedReturnValue : object = system::IRpcLifecycle::RpcCopyByval(target.GetList(), _lc);
+                    var jsonValue0 : object = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
                     var jsonNode1 : system::JsonNode^ = rpcjson_Serialize(jsonValue0);
-                    return jsonNode1;
+                    var byvalReturnValue : system::RpcByvalReturnValue^ = new (system::RpcByvalReturnValue^)();
+                    (byvalReturnValue.value = (cast (object) jsonNode1));
+                    (byvalReturnValue.slot = _slot);
+                    _byvalReturnValues.Set(_slot, copiedReturnValue);
+                    (_slot = (_slot + 1));
+                    return byvalReturnValue;
                 }
                 case rpcmethod_RpcCollectionOblist__Interface__Nested__InByval__PropByval__IService_SetList:
                 {
@@ -584,6 +594,11 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 default:
                 raise "Unknown RPC method id.";
             }
+        }
+
+        override func EndInvokeMethod(slot : int) : (void)
+        {
+            _byvalReturnValues.Remove(slot);
         }
 
         override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
@@ -663,9 +678,13 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Coll
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcCollectionOblist__Interface__Nested__InByval__PropByval__IService_GetList, arguments));
+            var objectOps : system::IRpcObjectOps* = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
+            var byvalReturnValue : system::RpcByvalReturnValue^ = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcCollectionOblist__Interface__Nested__InByval__PropByval__IService_GetList, arguments));
+            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) byvalReturnValue.value);
             var jsonValue0 : object = rpcjson_Deserialize(jsonResult);
-            return (cast (observe ::RpcCollectionOblist::Interface::Nested::InByval::PropByval::IValue^[][::system::Int32]) system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc));
+            var result : observe ::RpcCollectionOblist::Interface::Nested::InByval::PropByval::IValue^[][::system::Int32] = (cast (observe ::RpcCollectionOblist::Interface::Nested::InByval::PropByval::IValue^[][::system::Int32]) system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc));
+            objectOps.EndInvokeMethod(byvalReturnValue.slot);
+            return result;
         }
 
         override func InvokeMethod_RpcCollectionOblist__Interface__Nested__InByval__PropByval__IService_SetList(ref : system::RpcObjectReference, arg_<value> : observe ::RpcCollectionOblist::Interface::Nested::InByval::PropByval::IValue^[][::system::Int32]) : (::system::Void)
