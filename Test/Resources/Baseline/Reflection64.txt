@@ -285,6 +285,9 @@ interface system::IRpcLifecycle : system::Interface {
     @InvokeTemplate:::vl::rpc_controller::RpcBoxByval($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcBoxByval)
     static function RpcBoxByval(trivial : system::Interface^, lc : system::IRpcLifecycle*) : system::Object;
+    @InvokeTemplate:::vl::rpc_controller::RpcTransferByvalKeepAlive($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcTransferByvalKeepAlive)
+    static function RpcTransferByvalKeepAlive(source : system::Object, target : system::Interface^) : system::Void;
     @InvokeTemplate:::vl::rpc_controller::RpcUnboxByref($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcUnboxByref)
     static function RpcUnboxByref(serializable : system::RpcObjectReference, lc : system::IRpcLifecycle*) : system::Interface^;
