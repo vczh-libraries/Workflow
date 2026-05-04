@@ -99,7 +99,7 @@ Compile errors will appear in this file.
 
 ### Debugging RuntimeTest Project
 
-The Many test cases load binary files compiled from `CompileTest_LoadAndCompile` and run it with a Workflow virtual machine.
+Many test cases load binary files compiled from `CompileTest_LoadAndCompile` and run it with a Workflow virtual machine.
 When you are not confidence about the cause, you could attach a debugger to catch any exception, and you might find your self inside a Workflow virtual machine instructions execution loop.
 To have a big picture of instructions, you can find Test\Generated\Workflow(32|64)\Assembly.CATEGORY.SAMPLE.txt,
 along with the `Printed` section in Test\Generated\Workflow(32|64)\Parsing.CATEGORY.SAMPLE.txt,
