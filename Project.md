@@ -42,6 +42,8 @@ When any test case fails, you must fix the issue immediately, even those errors 
 `CompilerTest_GenerateMetadata` read all reflectable types in C++ code and generate metadata of type information.
 `CompilerTest_LoadAndCompile` load these metadata so that reflectable C++ types are visible to Workflow script, generating C++ source code from some Workflow scripts and they are to be executed later.
 
+**IMPORTANT** You should run `CompilerTest_LoadAndCompile` for at least ones, because some compiler generated binaries are not covered by git. When the project is updated from other computers, those files might be out-dated. Either `CompilerTest_LoadAndCompiler` or `Build.ps1 Workflow` will fix this issue.
+
 The correct order to run them is:
 - Build debug Win32 and x64.
 - Run `LibraryTest` for Win32 and x64.
