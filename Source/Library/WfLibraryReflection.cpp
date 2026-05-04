@@ -203,6 +203,7 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcUnboxByref, { L"serializable" _ L"lc" }, vl::Ptr<vl::reflection::IDescriptable>(*)(vl::rpc_controller::RpcObjectReference, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcUnboxByref)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcBoxByval, { L"trivial" _ L"lc" }, Value(*)(vl::Ptr<vl::reflection::IDescriptable>, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcBoxByval)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcUnboxByval, { L"serializable" _ L"lc" }, vl::Ptr<vl::reflection::IDescriptable>(*)(const Value&, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcUnboxByval)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcTransferByvalKeepAlive, { L"source" _ L"target" }, void(*)(const Value&, vl::Ptr<vl::reflection::IDescriptable>), vl::rpc_controller::RpcTransferByvalKeepAlive)
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifecycle)
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcWrapperBase)

@@ -1037,5 +1037,17 @@ namespace vl
 			CHECK_FAIL(L"Interface value or null is expected.");
 			return nullptr;
 		}
+
+		void RpcTransferByvalKeepAlive(const Value& source, Ptr<IDescriptable> target)
+		{
+			if (!target) return;
+			auto sourceObject = dynamic_cast<DescriptableObject*>(source.GetRawPtr());
+			auto targetObject = dynamic_cast<DescriptableObject*>(target.Obj());
+			if (!sourceObject || !targetObject) return;
+			if (auto keepAlive = sourceObject->GetInternalProperty(RpcByvalKeepAliveProperty))
+			{
+				targetObject->SetInternalProperty(RpcByvalKeepAliveProperty, keepAlive);
+			}
+		}
 	}
 }

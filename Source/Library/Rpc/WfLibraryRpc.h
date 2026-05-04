@@ -171,6 +171,7 @@ namespace vl
 		Ptr<reflection::IDescriptable>						RpcUnboxByref	(RpcObjectReference serializable, IRpcLifecycle* lc);
 		reflection::description::Value						RpcBoxByval		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
 		Ptr<reflection::IDescriptable>						RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
+		void												RpcTransferByvalKeepAlive(const reflection::description::Value& source, Ptr<reflection::IDescriptable> target);
 	}
 }
 

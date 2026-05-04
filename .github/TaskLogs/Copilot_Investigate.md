@@ -10,93 +10,57 @@ You should complete tasks one by one.
 
 ## Task 1
 
-There are some code implementing wrappers for byref collections in `WfLibraryRpc.(h|cpp)`, I would like you to extract them to `WfLibraryRpcWrappers.(h|cpp)`. Including wrappers, and default implementation for `IRpcListOps` and `IRpcListEventOps`, meanwhile all interface definition should not move.
+You are going to perform a tough change. So I strongly recommend you that, when a unit test project fails, immediatelly rerun it with a debugger.
+The goal is to test if JSON serialization works, core of the change is in generated wrapper Workflow script (`Wrapper_*_Json.txt`).
+Basically, when a wrapper pass message to the remote object, or when any object triggers an event and notify all lifecycle, it does the follow thing to arguments and return values
+- Turn an value to its serializable form, e.g., values in primitive types are untouched, interfaces or wrappers become `RpcObjectReference`, byval collections are copied and all elements are either byval copied or serialized.
+- Values in serializable forms are serialized to JSON.
+- JSON values get pass through `IRpc(Object|List)(Event)?Ops`.
+- In the other side, JSON values are deserialized to its serializable form.
+- Serializable forms are translated back to interfaces, wrappers, or values in primitive types.
 
-All `WfLibraryRpc*.*` should be contained in `Source/Library/Rpc`. And in `VlppWorkflow_Library` project, they should be put in one more nested solution explorer folder called `Rpc`.
+I would like the test to be limited in `CppRest*` projects, DO NOT modify `RuntimeTest` project. So basically you only want to touch `TestCasesRpc.h`, and any other places if bugged.
 
-To speed up testing, you can skip `CompilerTest_LoadAndCompile` and `Build.ps1` as this change should not affect the compiler.
+In order to turn on JSON serialization, several things need to be done:
+- In each test case, call `rpcops_IRpcSerializer`, when implementations of `IRpcListOps` and `IRpcListEventOps` are created, pass `IRpcSerializer*` in.
+- When any wrappers for collection types are created, pass pass `IRpcSerializer*` in. You may need to register the object into `RpcLifecycleBase`, but use its shared pointer form so that `RpcLifecycleBase` owns `IRpcSerializer^`, but no need to change the `IRpcLifecycle` interface.
+- Call `rpcops_IOps_CreateJson` instead of `rpcops_IOps_Create`.
+- Call `rpcops_IRpcObjectOpsJson` instead of `rpcops_IRpcObjectOps`.
+- Call `rpcops_IRpcObjectEventOpsJson` instead of `rpcops_IRpcObjectEventOps`.
+
+You should run `CompilerTest_LoadAndCompile` at least ones, because some compiler generated binaries are not covered by git.
+After that, if you only change `TestCasesRpc.h`, only `CppTest*` need to run.
+
+Test results, aka `IndexRpc.txt`, should remain the same. These change only add one extra processing of JSON serialization on each side, they should not affect the semantic of the test in any mean.
+
+The implementation might be buggy, be prepared to fail for a lot of times. So I strongly recommend you that, when a unit test project fails, immediatelly rerun it with a debugger, therefore you don't lost in your way.
 
 ## Task 2
 
-In `WfLibraryRpcWrappers.h`, a new `IRpcSerializer` is introduced, and it should be reflected as well. It has two member:
-- `Serialize` from `Value` to `Value`.
-- `Deserialize` from `Value` to `Value`.
+You are going to create `TODO_RPC_GeneratedWrappers.md` to the following sections:
+- Describe when to call generated functions and what do they do. Another section for generated functions about JSON serialization.
+- Describe how do generated functions finish their work. Another section for generated functions about JSON serialization.
 
-The direction is defined like this:
-- A `Value` will be put into wrappers, and wrappers call `Serialize`, before passing this value to `IRpcList(Event)?Ops`.
-- A `Value` will be received by `IRpcList(Event)?Ops`, and ops call `Deserialize`, before passing this value to wrappers.
-
-Therefore all wrappers and ops implementation in `WfLibraryRpcWrapper.h` should take the new `IRpcSerializer*` in their constructor:
-- When it is null, skip the call.
-- When it is not null, call it.
-- They are applied to collection elements only. Return value for `Contains` or `Add`, they are strong typed and known typed, they do not serialize.
-
-But in any current test projects we only pass `nullptr`, no `IRpcSerializer` will be implemented at the moment.
-
-To speed up testing, you can skip `CompilerTest_LoadAndCompile` and `Build.ps1` as this change should not affect the compiler.
-
-You can checkout multiple pairs of currently implemented files in this pattern: `Wrapper_*.txt` and `Wrapper_*_Json.txt`, they describes how serialization is used for rpc interfaces. But rpc interfaces are strong typed, collection wrappers are weak types for elements, that is the only difference. Unlike strong typed serialization, weak type serialization always transform `Value` to `Value`, skipping the serialization is easy (by just not calling it). So here we have one less layer than rpc interfaces.
-
-## Task 3
-
-In generated `Wrapper_*_Json.txt` we need one more function
-`func rpcops_IRpcSerializer() : (system::IRpcSerializer^)`
-and implement `(S|Des)erialize` using `rpcjson_(S|Des)erialize`.
-
-But in any current test projects we only pass `nullptr`, actual testing will be in the future.
+Assume the reader is one who want to use generated C++ version from Workflow, willing to adopt RPC. By the way, no need to cover the usage of attributes because the are already in `TODO_RPC_Definition.md`. You can reference the following materials:
+- `TODO_RPC_Definitions.md`
+- `TODO_RPC_Json.md`
+- `TestCasesRpc.h`.
+But do not mention anything specific to test projects.
 
 # UPDATES
 
-# TEST [CONFIRMED]
+# TEST
 
-- Task 1 succeeds when the solution builds and the affected library/metadata unit tests pass after moving all `WfLibraryRpc*.*` files under `Source/Library/Rpc` and updating the `VlppWorkflow_Library` item/filter files. `CompilerTest_LoadAndCompile` and `Build.ps1` are skipped for this task by request.
-- Task 2 succeeds when `IRpcSerializer` appears in reflected metadata, all wrapper and default ops constructors accept the serializer pointer, collection element values are serialized/deserialized at wrapper/ops boundaries, and the requested build/test subset passes with all current call sites passing `nullptr`.
-- Task 3 succeeds when generated `Wrapper_*_Json.txt` files contain `rpcops_IRpcSerializer`, its override methods delegate through `rpcjson_Serialize` and `rpcjson_Deserialize`, generated C++ artifacts compile, and the generator/runtime/generated-C++ unit tests pass.
+Task 1 succeeds when RPC generated C++ tests run through the JSON RPC operation path without changing the expected `IndexRpc.txt` semantics. The minimum verification is to run `CompilerTest_LoadAndCompile` once, then run `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` after the `TestCasesRpc.h` change.
+
+Task 2 succeeds when `TODO_RPC_GeneratedWrappers.md` explains generated wrapper APIs and JSON wrapper APIs for generated C++ users without relying on test-project-specific wording.
 
 # PROPOSALS
 
-- No.1 Extract byref collection wrappers to WfLibraryRpcWrappers [CONFIRMED]
-- No.2 Add reflected IRpcSerializer to byref collection wrappers [CONFIRMED]
-- No.3 Generate JSON RPC serializer factory [CONFIRMED]
+- No.1 Enable JSON RPC test path and preserve byval keep-alive across JSON serialization
 
-## No.1 Extract byref collection wrappers to WfLibraryRpcWrappers
+## No.1 Enable JSON RPC test path and preserve byval keep-alive across JSON serialization
 
 ### CODE CHANGE
 
-- Moved `WfLibraryRpc.h`, `WfLibraryRpcController.(h|cpp)`, and `WfLibraryRpcLifecycle.(h|cpp)` under `Source/Library/Rpc`.
-- Split byref collection wrapper declarations and default `IRpcListOps` / `IRpcListEventOps` implementation declarations into `Source/Library/Rpc/WfLibraryRpcWrappers.h`.
-- Moved the existing wrapper and default list ops implementation into `Source/Library/Rpc/WfLibraryRpcWrappers.cpp`, leaving `Source/Library/Rpc/WfLibraryRpc.cpp` as the interface translation unit.
-- Kept RPC interface definitions in `WfLibraryRpc.h`.
-- Updated library includes, the RPC test mock include, and `VlppWorkflow_Library.vcxitems(.filters)` so all `WfLibraryRpc*.*` project items live in the nested `Library\Rpc` solution explorer folder.
-
-### CONFIRMED
-
-The extraction is confirmed by building `Test/UnitTest/UnitTest.sln` through `copilotBuild.ps1` for `Debug|Win32` and `Debug|x64`, both succeeding with 0 warnings and 0 errors. The requested unit-test subset was then executed through `copilotExecute.ps1` for `LibraryTest`, `CompilerTest_GenerateMetadata`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on both `Debug|Win32` and `Debug|x64`; all 12 executions succeeded. `CompilerTest_LoadAndCompile` and `Build.ps1` were intentionally skipped for Task 1 as requested.
-
-## No.2 Add reflected IRpcSerializer to byref collection wrappers
-
-### CODE CHANGE
-
-- Added `IRpcSerializer` to `WfLibraryRpcWrappers.h` with `Serialize(Value):Value` and `Deserialize(Value):Value`, and registered it as `system::IRpcSerializer` in reflection metadata.
-- Added `IRpcSerializer*` constructor arguments and members to byref collection caller wrappers, `RpcCalleeListOps`, and `RpcCalleeListEventBridge`; current test call sites pass `nullptr`.
-- Serialized boxed collection element values before wrapper calls into `IRpcListOps`, and deserialized returned element values before unboxing them back to wrapper callers.
-- Deserialized incoming element values in `RpcCalleeListOps` before forwarding to the real collection, and serialized boxed element values returned by the default ops.
-- Added an internal `RpcLifecycleBase::RefToPtr(ref, serializer)` path so nested collection proxies such as enumerators, keys, and values can be constructed and tracked with the same serializer.
-- Regenerated reflection metadata and baselines to include `system::IRpcSerializer`.
-
-### CONFIRMED
-
-The serializer change is confirmed by building `Test/UnitTest/UnitTest.sln` through `copilotBuild.ps1` for `Debug|Win32` and `Debug|x64`, both succeeding with 0 warnings and 0 errors. The requested unit-test subset was executed through `copilotExecute.ps1` for `LibraryTest`, `CompilerTest_GenerateMetadata`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on both `Debug|Win32` and `Debug|x64`; all 12 executions succeeded. `CompilerTest_LoadAndCompile` and `Build.ps1` were intentionally skipped for Task 2 as requested.
-
-## No.3 Generate JSON RPC serializer factory
-
-### CODE CHANGE
-
-- Added `rpcops_IRpcSerializer` generation to RPC JSON metadata modules.
-- Generated `Serialize(value)` to return `rpcjson_Serialize(value)`.
-- Generated `Deserialize(value)` to cast the input to `system::JsonNode^` and return `rpcjson_Deserialize(...)`.
-- Regenerated RPC wrapper metadata, generated Workflow assembly dumps, and generated C++ RPC artifacts that now expose the serializer factory and implementation.
-
-### CONFIRMED
-
-The generator change is confirmed by running `CompilerTest_LoadAndCompile` for `Debug|x64`; it succeeded after regenerating the expected wrapper and generated C++ artifacts. `Test/UnitTest/UnitTest.sln` was then built through `copilotBuild.ps1` for `Debug|Win32` and `Debug|x64`, both succeeding with 0 warnings and 0 errors. The unit-test subset was executed through `copilotExecute.ps1` for `LibraryTest`, `CompilerTest_GenerateMetadata`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on both `Debug|Win32` and `Debug|x64`; all 12 executions succeeded. A final `CompilerTest_LoadAndCompile` `Debug|x64` run also succeeded.
+The proposed change switches the generated C++ RPC test harness to the JSON RPC operations and serializer, passes the serializer into list-operation bridges and byref collection wrappers, and updates generated JSON wrapper code so a boxed byval value can transfer its internal RPC keep-alive holder to the JSON node produced from it. The runtime helper for transferring this internal property is exposed through the reflected `IRpcLifecycle` static helper surface so generated Workflow wrapper code can call it.

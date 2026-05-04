@@ -454,6 +454,25 @@ namespace vl
 					return CopyType(type);
 				}
 
+				void AddRpcJsonTransferByvalKeepAlive(Ptr<WfBlockStatement> block, Ptr<WfExpression> source, Ptr<WfExpression> target)
+				{
+					AddStatement(block, CreateExpressionStatement(CreateCall(
+						CreateQualifiedExpression(L"system::IRpcLifecycle::RpcTransferByvalKeepAlive"),
+						source,
+						target
+						)));
+				}
+
+				WString AddUnknownRpcJsonSerializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> value)
+				{
+					auto valueName = AllocateRpcJsonTemp(context, L"jsonValue");
+					auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
+					AddStatement(block, CreateVariableStatement(valueName, CreatePredefinedType(WfPredefinedTypeName::Object), value));
+					AddStatement(block, CreateVariableStatement(resultName, CreateSharedType(L"system::JsonNode"), CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(valueName))));
+					AddRpcJsonTransferByvalKeepAlive(block, CreateReference(valueName), CreateReference(resultName));
+					return resultName;
+				}
+
 				WString AddKnownRpcJsonSerializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> value, WfType* type)
 				{
 					if (auto nullable = dynamic_cast<WfNullableType*>(type))
@@ -495,9 +514,7 @@ namespace vl
 
 					if (fullName == L"system::Object" || fullName == L"system::Interface")
 					{
-						auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
-						AddStatement(block, CreateVariableStatement(resultName, CreateSharedType(L"system::JsonNode"), CreateCall(CreateReference(L"rpcjson_Serialize"), value)));
-						return resultName;
+						return AddUnknownRpcJsonSerializeValue(context, block, value);
 					}
 
 					if (FindRpcJsonType(*context.enums, fullName))
@@ -561,9 +578,7 @@ namespace vl
 						return arrayName;
 					}
 
-					auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
-					AddStatement(block, CreateVariableStatement(resultName, CreateSharedType(L"system::JsonNode"), CreateCall(CreateReference(L"rpcjson_Serialize"), value)));
-					return resultName;
+					return AddUnknownRpcJsonSerializeValue(context, block, value);
 				}
 
 				WString AddKnownRpcJsonDeserializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> node, WfType* type)
@@ -1061,7 +1076,9 @@ namespace vl
 						auto serialize = CreateFunctionDeclaration(L"Serialize", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
 						serialize->arguments.Add(CreateFunctionArgument(L"value", CreatePredefinedType(WfPredefinedTypeName::Object)));
 						auto block = serialize->statement.Cast<WfBlockStatement>();
-						AddStatement(block, CreateReturn(CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"value"))));
+						AddStatement(block, CreateVariableStatement(L"result", CreateSharedType(L"system::JsonNode"), CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"value"))));
+						AddRpcJsonTransferByvalKeepAlive(block, CreateReference(L"value"), CreateReference(L"result"));
+						AddStatement(block, CreateReturn(CreateReference(L"result")));
 						newSerializer->declarations.Add(serialize);
 					}
 

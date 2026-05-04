@@ -13,6 +13,7 @@ namespace vl
 		public:
 			vint(*decideTypeIdCallback)(reflection::IDescriptable*) = nullptr;
 			void(*attachLocalEventsCallback)(RpcDualLifecycleMock*, rpc_controller::RpcObjectReference, reflection::IDescriptable*) = nullptr;
+			Ptr<rpc_controller::IRpcSerializer> serializer;
 			using RpcDualLifecycleMock::RpcDualLifecycleMock;
 
 			vint DecideTypeId(reflection::IDescriptable* obj)const override
@@ -27,6 +28,11 @@ namespace vl
 				if (!attachLocalEventsCallback) return;
 				if (ref.typeId < 0) return;
 				attachLocalEventsCallback(this, ref, obj);
+			}
+
+			Ptr<reflection::IDescriptable> RefToPtr(rpc_controller::RpcObjectReference ref)override
+			{
+				return rpc_controller::RpcLifecycleBase::RefToPtr(ref, serializer.Obj());
 			}
 		};
 	}
@@ -57,18 +63,20 @@ void RunRpcTestCase(
 	lc2->decideTypeIdCallback = decideTypeId;
 	lc1->attachLocalEventsCallback = attachLocalEvents;
 	lc2->attachLocalEventsCallback = attachLocalEvents;
+	lc1->serializer = instance.rpcops_IRpcSerializer();
+	lc2->serializer = instance.rpcops_IRpcSerializer();
 
-	auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj(), nullptr));
-	auto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj(), nullptr));
-	auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj(), nullptr));
-	auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj(), nullptr));
+	auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj(), lc1->serializer.Obj()));
+	auto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj(), lc1->serializer.Obj()));
+	auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj(), lc2->serializer.Obj()));
+	auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj(), lc2->serializer.Obj()));
 
-	auto oo1 = instance.rpcops_IRpcObjectOps(lc1.Obj());
-	auto oeo1 = instance.rpcops_IRpcObjectEventOps(lc1.Obj());
-	auto oo2 = instance.rpcops_IRpcObjectOps(lc2.Obj());
-	auto oeo2 = instance.rpcops_IRpcObjectEventOps(lc2.Obj());
-	auto ops1 = instance.rpcops_IOps_Create(lc1.Obj());
-	auto ops2 = instance.rpcops_IOps_Create(lc2.Obj());
+	auto oo1 = instance.rpcops_IRpcObjectOpsJson(lc1.Obj());
+	auto oeo1 = instance.rpcops_IRpcObjectEventOpsJson(lc1.Obj());
+	auto oo2 = instance.rpcops_IRpcObjectOpsJson(lc2.Obj());
+	auto oeo2 = instance.rpcops_IRpcObjectEventOpsJson(lc2.Obj());
+	auto ops1 = instance.rpcops_IOps_CreateJson(lc1.Obj());
+	auto ops2 = instance.rpcops_IOps_CreateJson(lc2.Obj());
 
 	lc1->GetController()->Register(oo1, oeo1, lo1, leo1);
 	lc2->GetController()->Register(oo2, oeo2, lo2, leo2);
