@@ -8,6 +8,10 @@ You should complete tasks one by one.
 
 ## Task 1
 
+I have tried `Build.ps1 Workflow`, everything was good until the last test project `RuntimeTest`, figure it out.
+
+## Task 2
+
 I would like you to perform a refactoring, to remove these 3 functions from `Sys` reflection registration:
 - `RpcGetSerializedArgument`
 - `RpcSerializeEventArgument`
@@ -47,7 +51,7 @@ So those elements still alive after calling `_lc.Dispatcher.SendToClient_ObjectO
 Then I believe even when you don't call `system::Sys::RpcTransferByvalKeepAlive` everything should still be fine.
 You need to verify this.
 
-## Task 2
+## Task 3
 
 You are going to create `TODO_RPC_GeneratedWrappers.md` to the following sections:
 - Describe when to call generated functions and what do they do. Another section for generated functions about JSON serialization.
@@ -59,7 +63,7 @@ Assume the reader is one who want to use generated C++ version from Workflow, wi
 - `TestCasesRpc.h`.
 But do not mention anything specific to test projects.
 
-## Task 3
+## Task 4
 
 In `Wrapper_*.txt` and `Wrapper_*_Json.txt`, there are a lot of "in function variable" which have types.
 Variable types could be omitted if they are inside a function.
