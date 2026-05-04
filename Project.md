@@ -71,6 +71,7 @@ The correct order to run them is:
   - If the RPC metadata generation logic has changed, this comparison will fail. This is expected.
 
 When generated files are expected to change, baseline comparison will fail. You need to override baseline files with generated files, and run the test projects again.
+
 ### Workflow Test Samples
 
 `Test/Resources/Index*.txt` is an index of all files in `Test/Resources/*/`, here are all important sample categories:
@@ -90,6 +91,12 @@ When generated files are expected to change, baseline comparison will fail. You 
   - Avoid using any reflection features.
   - The only exception are type reflection registration files for workflow generated types, they are referenced in `Generated_Reflection(Rpc)?.vcxitems` with preprocessor applied.
 
+### Debugging Workflow Sample Compile Errors
+
+When any test sample fail in `CompilerTest_LoadAndCompile`, one of the reason will be the sample itself has illegal Workflow script.
+To address this issue, you can look for `Test/Generated/Workflow(32|64)/Parsing.CATEGORY.SAMPLE.txt`.
+Compile errors will appear in this file.
+
 ### Debugging RuntimeTest Project
 
 The Many test cases load binary files compiled from `CompileTest_LoadAndCompile` and run it with a Workflow virtual machine.
@@ -98,6 +105,11 @@ To have a big picture of instructions, you can find Test\Generated\Workflow(32|6
 along with the `Printed` section in Test\Generated\Workflow(32|64)\Parsing.CATEGORY.SAMPLE.txt,
 it maps instruction to source code.
 The `Printed` section logs desugar-ed workflow script input.
+
+### General Debugging Tips
+
+When a test project fails, you are strongly recommended to restart it with a debugger.
+Except that when you are able to see Workflow compile errors in `Test/Generated/Workflow(32|64)/Parsing.CATEGORY.SAMPLE.txt`, you can skip the debugging if you don't need it.
 
 ### Code Generation Tools
 
