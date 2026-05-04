@@ -539,7 +539,9 @@ func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
     {
         override func Serialize(value : object) : (object)
         {
-            return rpcjson_Serialize(value);
+            var result : system::JsonNode^ = rpcjson_Serialize(value);
+            system::Sys::RpcTransferByvalKeepAlive(value, result);
+            return result;
         }
 
         override func Deserialize(value : object) : (object)
@@ -562,13 +564,15 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcCollectionDict__InByval__PropByval__IService_GetList:
                 {
                     var target : RpcCollectionDict::InByval::PropByval::IService^ = (cast (RpcCollectionDict::InByval::PropByval::IService^) _lc.RefToPtr(ref));
-                    var jsonNode0 : system::JsonNode^ = rpcjson_Serialize(system::IRpcLifecycle::RpcBoxByval(target.GetList(), _lc));
-                    return jsonNode0;
+                    var jsonValue0 : object = system::IRpcLifecycle::RpcBoxByval(target.GetList(), _lc);
+                    var jsonNode1 : system::JsonNode^ = rpcjson_Serialize(jsonValue0);
+                    system::Sys::RpcTransferByvalKeepAlive(jsonValue0, jsonNode1);
+                    return jsonNode1;
                 }
                 case rpcmethod_RpcCollectionDict__InByval__PropByval__IService_SetList:
                 {
                     var target : RpcCollectionDict::InByval::PropByval::IService^ = (cast (RpcCollectionDict::InByval::PropByval::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : object = rpcjson_Deserialize((cast (system::JsonNode^) arguments[0]));
+                    var jsonValue0 : object = rpcjson_Deserialize((cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0)));
                     target.SetList((cast (::system::String[::system::Int32]) system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc)));
                     return null;
                 }
@@ -654,8 +658,10 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Coll
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            var jsonNode0 : system::JsonNode^ = rpcjson_Serialize(system::IRpcLifecycle::RpcBoxByval(arg_<value>, _lc));
-            arguments.Set(0, jsonNode0);
+            var jsonValue0 : object = system::IRpcLifecycle::RpcBoxByval(arg_<value>, _lc);
+            var jsonNode1 : system::JsonNode^ = rpcjson_Serialize(jsonValue0);
+            system::Sys::RpcTransferByvalKeepAlive(jsonValue0, jsonNode1);
+            arguments.Set(0, jsonNode1);
             _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcCollectionDict__InByval__PropByval__IService_SetList, arguments);
         }
     };

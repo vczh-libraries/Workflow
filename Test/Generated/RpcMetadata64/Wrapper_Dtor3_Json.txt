@@ -539,7 +539,9 @@ func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
     {
         override func Serialize(value : object) : (object)
         {
-            return rpcjson_Serialize(value);
+            var result : system::JsonNode^ = rpcjson_Serialize(value);
+            system::Sys::RpcTransferByvalKeepAlive(value, result);
+            return result;
         }
 
         override func Deserialize(value : object) : (object)
@@ -562,15 +564,19 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcDtor3Test__IContainer_GetValue:
                 {
                     var target : RpcDtor3Test::IContainer^ = (cast (RpcDtor3Test::IContainer^) _lc.RefToPtr(ref));
-                    var jsonNode0 : system::JsonNode^ = rpcjson_Serialize(system::IRpcLifecycle::RpcBoxByval(target.GetValue(), _lc));
-                    return jsonNode0;
+                    var jsonValue0 : object = system::IRpcLifecycle::RpcBoxByval(target.GetValue(), _lc);
+                    var jsonNode1 : system::JsonNode^ = rpcjson_Serialize(jsonValue0);
+                    system::Sys::RpcTransferByvalKeepAlive(jsonValue0, jsonNode1);
+                    return jsonNode1;
                 }
                 case rpcmethod_RpcDtor3Test__IService_ContainValue:
                 {
                     var target : RpcDtor3Test::IService^ = (cast (RpcDtor3Test::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : object = rpcjson_Deserialize((cast (system::JsonNode^) arguments[0]));
-                    var jsonNode1 : system::JsonNode^ = rpcjson_Serialize(system::IRpcLifecycle::RpcBoxByval(target.ContainValue((system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::RpcDtor3Test::IValue^))), _lc));
-                    return jsonNode1;
+                    var jsonValue0 : object = rpcjson_Deserialize((cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0)));
+                    var jsonValue1 : object = system::IRpcLifecycle::RpcBoxByval(target.ContainValue((system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::RpcDtor3Test::IValue^))), _lc);
+                    var jsonNode2 : system::JsonNode^ = rpcjson_Serialize(jsonValue1);
+                    system::Sys::RpcTransferByvalKeepAlive(jsonValue1, jsonNode2);
+                    return jsonNode2;
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -654,11 +660,13 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Dtor
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            var jsonNode0 : system::JsonNode^ = rpcjson_Serialize(system::IRpcLifecycle::RpcBoxByval(arg_value, _lc));
-            arguments.Set(0, jsonNode0);
+            var jsonValue0 : object = system::IRpcLifecycle::RpcBoxByval(arg_value, _lc);
+            var jsonNode1 : system::JsonNode^ = rpcjson_Serialize(jsonValue0);
+            system::Sys::RpcTransferByvalKeepAlive(jsonValue0, jsonNode1);
+            arguments.Set(0, jsonNode1);
             var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtor3Test__IService_ContainValue, arguments));
-            var jsonValue1 : object = rpcjson_Deserialize(jsonResult);
-            return (system::IRpcLifecycle::RpcUnboxByval(jsonValue1, _lc) as (::RpcDtor3Test::IContainer^));
+            var jsonValue2 : object = rpcjson_Deserialize(jsonResult);
+            return (system::IRpcLifecycle::RpcUnboxByval(jsonValue2, _lc) as (::RpcDtor3Test::IContainer^));
         }
     };
 }

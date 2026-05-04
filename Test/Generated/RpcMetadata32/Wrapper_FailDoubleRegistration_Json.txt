@@ -539,7 +539,9 @@ func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
     {
         override func Serialize(value : object) : (object)
         {
-            return rpcjson_Serialize(value);
+            var result : system::JsonNode^ = rpcjson_Serialize(value);
+            system::Sys::RpcTransferByvalKeepAlive(value, result);
+            return result;
         }
 
         override func Deserialize(value : object) : (object)
@@ -569,10 +571,12 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcFailDoubleRegistrationTest__IService_SetObject:
                 {
                     var target : RpcFailDoubleRegistrationTest::IService^ = (cast (RpcFailDoubleRegistrationTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : object = rpcjson_Deserialize((cast (system::JsonNode^) arguments[0]));
-                    var jsonValue1 : ::system::Int32 = (cast (::system::Int32) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[1])).content.value);
-                    var jsonNode2 : system::JsonNode^ = rpcjson_Serialize(system::IRpcLifecycle::RpcBoxByval(target.SetObject((system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::RpcFailDoubleRegistrationTest::IObject^)), jsonValue1), _lc));
-                    return jsonNode2;
+                    var jsonValue0 : object = rpcjson_Deserialize((cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0)));
+                    var jsonValue1 : ::system::Int32 = (cast (::system::Int32) (cast (system::JsonNumber^) (cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 1))).content.value);
+                    var jsonValue2 : object = system::IRpcLifecycle::RpcBoxByval(target.SetObject((system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::RpcFailDoubleRegistrationTest::IObject^)), jsonValue1), _lc);
+                    var jsonNode3 : system::JsonNode^ = rpcjson_Serialize(jsonValue2);
+                    system::Sys::RpcTransferByvalKeepAlive(jsonValue2, jsonNode3);
+                    return jsonNode3;
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -656,14 +660,16 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Fail
         {
             var arguments : system::Array^ = {};
             arguments.Resize(2);
-            var jsonNode0 : system::JsonNode^ = rpcjson_Serialize(system::IRpcLifecycle::RpcBoxByval(arg_obj, _lc));
-            arguments.Set(0, jsonNode0);
-            var jsonNumber1 : system::JsonNumber^ = new (system::JsonNumber^)();
-            (jsonNumber1.content = {value : (cast (string) arg_index);});
-            arguments.Set(1, jsonNumber1);
+            var jsonValue0 : object = system::IRpcLifecycle::RpcBoxByval(arg_obj, _lc);
+            var jsonNode1 : system::JsonNode^ = rpcjson_Serialize(jsonValue0);
+            system::Sys::RpcTransferByvalKeepAlive(jsonValue0, jsonNode1);
+            arguments.Set(0, jsonNode1);
+            var jsonNumber2 : system::JsonNumber^ = new (system::JsonNumber^)();
+            (jsonNumber2.content = {value : (cast (string) arg_index);});
+            arguments.Set(1, jsonNumber2);
             var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcFailDoubleRegistrationTest__IService_SetObject, arguments));
-            var jsonValue2 : object = rpcjson_Deserialize(jsonResult);
-            return (system::IRpcLifecycle::RpcUnboxByval(jsonValue2, _lc) as (::RpcFailDoubleRegistrationTest::IObject^));
+            var jsonValue3 : object = rpcjson_Deserialize(jsonResult);
+            return (system::IRpcLifecycle::RpcUnboxByval(jsonValue3, _lc) as (::RpcFailDoubleRegistrationTest::IObject^));
         }
     };
 }

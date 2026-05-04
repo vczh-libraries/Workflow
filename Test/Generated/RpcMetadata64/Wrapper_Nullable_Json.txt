@@ -539,7 +539,9 @@ func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
     {
         override func Serialize(value : object) : (object)
         {
-            return rpcjson_Serialize(value);
+            var result : system::JsonNode^ = rpcjson_Serialize(value);
+            system::Sys::RpcTransferByvalKeepAlive(value, result);
+            return result;
         }
 
         override func Deserialize(value : object) : (object)
@@ -570,13 +572,13 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 {
                     var target : RpcNullable::IService^ = (cast (RpcNullable::IService^) _lc.RefToPtr(ref));
                     var jsonValue0 : ::system::String? = null;
-                    var jsonLiteral1 : system::JsonLiteral^ = ((cast (system::JsonNode^) arguments[0]) as (system::JsonLiteral^));
+                    var jsonLiteral1 : system::JsonLiteral^ = ((cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0)) as (system::JsonLiteral^));
                     if ((jsonLiteral1 is null or (jsonLiteral1.value != system::JsonLiteralValue::Null)))
                     {
-                        var jsonValue2 : ::system::String = (cast (::system::String) (cast (system::JsonString^) (cast (system::JsonNode^) arguments[0])).content.value);
+                        var jsonValue2 : ::system::String = (cast (::system::String) (cast (system::JsonString^) (cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0))).content.value);
                         (jsonValue0 = jsonValue2);
                     }
-                    var jsonValue3 : object = rpcjson_Deserialize((cast (system::JsonNode^) arguments[1]));
+                    var jsonValue3 : object = rpcjson_Deserialize((cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 1)));
                     var jsonString4 : system::JsonString^ = new (system::JsonString^)();
                     (jsonString4.content = {value : (cast (string) target.Print(jsonValue0, (system::IRpcLifecycle::RpcUnboxByval(jsonValue3, _lc) as (::RpcNullable::IValue^))));});
                     return jsonString4;
@@ -677,11 +679,13 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Null
                 (jsonNode0 = jsonString2);
             }
             arguments.Set(0, jsonNode0);
-            var jsonNode3 : system::JsonNode^ = rpcjson_Serialize(system::IRpcLifecycle::RpcBoxByval(arg_v, _lc));
-            arguments.Set(1, jsonNode3);
+            var jsonValue3 : object = system::IRpcLifecycle::RpcBoxByval(arg_v, _lc);
+            var jsonNode4 : system::JsonNode^ = rpcjson_Serialize(jsonValue3);
+            system::Sys::RpcTransferByvalKeepAlive(jsonValue3, jsonNode4);
+            arguments.Set(1, jsonNode4);
             var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcNullable__IService_Print, arguments));
-            var jsonValue4 : ::system::String = (cast (::system::String) (cast (system::JsonString^) jsonResult).content.value);
-            return jsonValue4;
+            var jsonValue5 : ::system::String = (cast (::system::String) (cast (system::JsonString^) jsonResult).content.value);
+            return jsonValue5;
         }
     };
 }

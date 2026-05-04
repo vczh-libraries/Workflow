@@ -539,7 +539,9 @@ func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
     {
         override func Serialize(value : object) : (object)
         {
-            return rpcjson_Serialize(value);
+            var result : system::JsonNode^ = rpcjson_Serialize(value);
+            system::Sys::RpcTransferByvalKeepAlive(value, result);
+            return result;
         }
 
         override func Deserialize(value : object) : (object)
@@ -562,8 +564,10 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcDtorTest__IService_MakeValue:
                 {
                     var target : RpcDtorTest::IService^ = (cast (RpcDtorTest::IService^) _lc.RefToPtr(ref));
-                    var jsonNode0 : system::JsonNode^ = rpcjson_Serialize(system::IRpcLifecycle::RpcBoxByval(target.MakeValue(), _lc));
-                    return jsonNode0;
+                    var jsonValue0 : object = system::IRpcLifecycle::RpcBoxByval(target.MakeValue(), _lc);
+                    var jsonNode1 : system::JsonNode^ = rpcjson_Serialize(jsonValue0);
+                    system::Sys::RpcTransferByvalKeepAlive(jsonValue0, jsonNode1);
+                    return jsonNode1;
                 }
                 default:
                 raise "Unknown RPC method id.";

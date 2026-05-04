@@ -186,7 +186,7 @@ func rpclistener_RpcEvent__IService(lc : system::IRpcLifecycle*, ref : system::R
         return;
         var arguments : system::Array^ = {};
         arguments.Resize(1);
-        arguments.Set(0, (cast (object) arg0));
+        arguments.Set(0, system::Sys::RpcSerializeEventArgument(lc, (cast (object) arg0)));
         lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcEvent__IService_SomethingHappened, arguments);
     });
 }

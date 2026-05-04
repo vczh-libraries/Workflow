@@ -633,7 +633,9 @@ func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
     {
         override func Serialize(value : object) : (object)
         {
-            return rpcjson_Serialize(value);
+            var result : system::JsonNode^ = rpcjson_Serialize(value);
+            system::Sys::RpcTransferByvalKeepAlive(value, result);
+            return result;
         }
 
         override func Deserialize(value : object) : (object)
@@ -656,7 +658,7 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessBool:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::Boolean = ((cast (system::JsonLiteral^) (cast (system::JsonNode^) arguments[0])).value == system::JsonLiteralValue::True);
+                    var jsonValue0 : ::system::Boolean = ((cast (system::JsonLiteral^) (cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0))).value == system::JsonLiteralValue::True);
                     var jsonLiteral1 : system::JsonLiteral^ = new (system::JsonLiteral^)();
                     if (target.ProcessBool(jsonValue0))
                     (jsonLiteral1.value = system::JsonLiteralValue::True);
@@ -667,7 +669,7 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessDouble:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::Double = (cast (::system::Double) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
+                    var jsonValue0 : ::system::Double = (cast (::system::Double) (cast (system::JsonNumber^) (cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0))).content.value);
                     var jsonNumber1 : system::JsonNumber^ = new (system::JsonNumber^)();
                     (jsonNumber1.content = {value : (cast (string) target.ProcessDouble(jsonValue0));});
                     return jsonNumber1;
@@ -675,14 +677,14 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessEnum:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::RpcPrimitiveTest::Season = rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season((cast (system::JsonNode^) arguments[0]));
+                    var jsonValue0 : ::RpcPrimitiveTest::Season = rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season((cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0)));
                     var jsonNode1 : system::JsonNode^ = rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(target.ProcessEnum(jsonValue0));
                     return jsonNode1;
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessFloat:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::Single = (cast (::system::Single) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
+                    var jsonValue0 : ::system::Single = (cast (::system::Single) (cast (system::JsonNumber^) (cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0))).content.value);
                     var jsonNumber1 : system::JsonNumber^ = new (system::JsonNumber^)();
                     (jsonNumber1.content = {value : (cast (string) target.ProcessFloat(jsonValue0));});
                     return jsonNumber1;
@@ -690,7 +692,7 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessInt:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::Int32 = (cast (::system::Int32) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
+                    var jsonValue0 : ::system::Int32 = (cast (::system::Int32) (cast (system::JsonNumber^) (cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0))).content.value);
                     var jsonNumber1 : system::JsonNumber^ = new (system::JsonNumber^)();
                     (jsonNumber1.content = {value : (cast (string) target.ProcessInt(jsonValue0));});
                     return jsonNumber1;
@@ -698,7 +700,7 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessString:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::String = (cast (::system::String) (cast (system::JsonString^) (cast (system::JsonNode^) arguments[0])).content.value);
+                    var jsonValue0 : ::system::String = (cast (::system::String) (cast (system::JsonString^) (cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0))).content.value);
                     var jsonString1 : system::JsonString^ = new (system::JsonString^)();
                     (jsonString1.content = {value : (cast (string) target.ProcessString(jsonValue0));});
                     return jsonString1;
@@ -706,14 +708,14 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessStruct:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::RpcPrimitiveTest::Point = rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point((cast (system::JsonNode^) arguments[0]));
+                    var jsonValue0 : ::RpcPrimitiveTest::Point = rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point((cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0)));
                     var jsonNode1 : system::JsonNode^ = rpcjson_Serialize_Struct_RpcPrimitiveTest__Point(target.ProcessStruct(jsonValue0));
                     return jsonNode1;
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessUInt:
                 {
                     var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::UInt32 = (cast (::system::UInt32) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
+                    var jsonValue0 : ::system::UInt32 = (cast (::system::UInt32) (cast (system::JsonNumber^) (cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0))).content.value);
                     var jsonNumber1 : system::JsonNumber^ = new (system::JsonNumber^)();
                     (jsonNumber1.content = {value : (cast (string) target.ProcessUInt(jsonValue0));});
                     return jsonNumber1;

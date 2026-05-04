@@ -539,7 +539,9 @@ func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
     {
         override func Serialize(value : object) : (object)
         {
-            return rpcjson_Serialize(value);
+            var result : system::JsonNode^ = rpcjson_Serialize(value);
+            system::Sys::RpcTransferByvalKeepAlive(value, result);
+            return result;
         }
 
         override func Deserialize(value : object) : (object)
@@ -562,7 +564,7 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 case rpcmethod_RpcServiceWrapperTest__IService_Self:
                 {
                     var target : RpcServiceWrapperTest::IService^ = (cast (RpcServiceWrapperTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : object = rpcjson_Deserialize((cast (system::JsonNode^) arguments[0]));
+                    var jsonValue0 : object = rpcjson_Deserialize((cast (system::JsonNode^) system::Sys::RpcGetSerializedArgument(arguments, 0)));
                     var jsonLiteral1 : system::JsonLiteral^ = new (system::JsonLiteral^)();
                     if (target.Self((system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::RpcServiceWrapperTest::IService^))))
                     (jsonLiteral1.value = system::JsonLiteralValue::True);
@@ -643,11 +645,13 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Serv
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            var jsonNode0 : system::JsonNode^ = rpcjson_Serialize(system::IRpcLifecycle::RpcBoxByval(arg_obj, _lc));
-            arguments.Set(0, jsonNode0);
+            var jsonValue0 : object = system::IRpcLifecycle::RpcBoxByval(arg_obj, _lc);
+            var jsonNode1 : system::JsonNode^ = rpcjson_Serialize(jsonValue0);
+            system::Sys::RpcTransferByvalKeepAlive(jsonValue0, jsonNode1);
+            arguments.Set(0, jsonNode1);
             var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcServiceWrapperTest__IService_Self, arguments));
-            var jsonValue1 : ::system::Boolean = ((cast (system::JsonLiteral^) jsonResult).value == system::JsonLiteralValue::True);
-            return jsonValue1;
+            var jsonValue2 : ::system::Boolean = ((cast (system::JsonLiteral^) jsonResult).value == system::JsonLiteralValue::True);
+            return jsonValue2;
         }
     };
 }

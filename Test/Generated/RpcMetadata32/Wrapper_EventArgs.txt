@@ -187,8 +187,8 @@ func rpclistener_RpcEventArgs__IService(lc : system::IRpcLifecycle*, ref : syste
         return;
         var arguments : system::Array^ = {};
         arguments.Resize(2);
-        arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg0, lc));
-        arguments.Set(1, system::IRpcLifecycle::RpcBoxByref(arg1, lc));
+        arguments.Set(0, system::Sys::RpcSerializeEventArgument(lc, system::IRpcLifecycle::RpcBoxByval(arg0, lc)));
+        arguments.Set(1, system::Sys::RpcSerializeEventArgument(lc, system::IRpcLifecycle::RpcBoxByref(arg1, lc)));
         lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcEventArgs__IService_SomethingHappened, arguments);
     });
 }
