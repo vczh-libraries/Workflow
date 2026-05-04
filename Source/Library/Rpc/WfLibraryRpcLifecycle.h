@@ -106,7 +106,7 @@ namespace vl
 			void											SetIdMap(const collections::Dictionary<WString, vint>& _idMap);
 			void											RegisterWrapperFactory(UniversalWrapperFactory factory);
 			void											SetSerializer(Ptr<IRpcSerializer> _serializer);
-			IRpcSerializer*									GetSerializer();
+			IRpcSerializer*									GetSerializer() override;
 
 			// IRpcLifecycle
 

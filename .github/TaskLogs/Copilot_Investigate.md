@@ -101,3 +101,28 @@ You are going to remove all of them to keep them clean, unless any specific chan
 Task 1 is fixed by changing only the reflected Workflow entry point shape for byval boxing: generated Workflow code can pass any strongly typed byval value as `system::Object`, avoiding reflection-time interface pointer unboxing for aggregated wrappers. The native `Ptr<IDescriptable>` overload is preserved for existing C++ callers, and the byref boxing/unboxing helpers continue to accept interfaces only.
 
 The wrapper lifetime tracker now follows the aggregation root before reading or writing the internal tracker property. Wrapper detection uses metadata type information instead of aggregation casting when no wrapper pointer is needed, avoiding the same ambiguous-cast pattern during byval serialization.
+
+- Task 2 removed the three RPC helper functions from the reflected `Sys` surface: `RpcGetSerializedArgument`, `RpcSerializeEventArgument`, and `RpcTransferByvalKeepAlive`.
+- JSON wrapper generation now reads serialized arguments directly from the `arguments` array.
+- Event listener generation now boxes event values first, then checks `lc.Serializer` once and serializes `arguments` in place when a serializer exists.
+- The byval keep-alive transfer call was removed from JSON serialization paths. Runtime verification passed for both x64 and Win32, confirming the boxed value remains alive across the blocking RPC dispatch without the helper.
+- The native helper declarations and definitions were removed after regenerating stale generated outputs, leaving no generated or source references to the removed helper names.
+
+# TEST
+
+- [x] [CONFIRMED] `.\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform x64` completed successfully.
+- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Executable CompilerTest_GenerateMetadata -Platform x64` completed successfully.
+- [x] [CONFIRMED] `.\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform Win32` completed successfully.
+- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Executable CompilerTest_GenerateMetadata -Platform Win32` completed successfully.
+- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Executable CompilerTest_LoadAndCompile -Platform x64` completed successfully.
+- [x] [CONFIRMED] `.\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform x64` completed successfully after removing temporary native compatibility helpers.
+- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Executable RuntimeTest -Platform x64` completed successfully with 4/4 files and 257/257 test cases passed.
+- [x] [CONFIRMED] `.\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform Win32` completed successfully after removing temporary native compatibility helpers.
+- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Executable RuntimeTest -Platform Win32` completed successfully with 4/4 files and 257/257 test cases passed.
+- [x] [CONFIRMED] `git grep -n "RpcGetSerializedArgument\|RpcSerializeEventArgument\|RpcTransferByvalKeepAlive" -- Source Test/Generated Test/SourceCppGenRpc Test/Resources` found no generated or runtime helper references.
+
+# PROPOSALS
+
+## COMPLETED
+
+Task 2 is complete. The generated code now carries the old helper behavior at the call site where needed: direct serialized-argument indexing for incoming JSON calls, in-place event argument serialization guarded by `lc.Serializer`, and no explicit byval keep-alive transfer. Reflection metadata no longer exposes the removed `Sys` functions.

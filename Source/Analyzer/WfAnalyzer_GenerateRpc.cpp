@@ -614,6 +614,14 @@ namespace vl
 					return statement;
 				}
 
+				Ptr<WfStatement> CreateRpcWhile(Ptr<WfExpression> condition, Ptr<WfStatement> body)
+				{
+					auto statement = Ptr(new WfWhileStatement);
+					statement->condition = condition;
+					statement->statement = body;
+					return statement;
+				}
+
 				Ptr<WfForEachStatement> CreateForEach(const WString& name, Ptr<WfExpression> collection, Ptr<WfStatement> body)
 				{
 					auto statement = Ptr(new WfForEachStatement);
@@ -1493,6 +1501,32 @@ namespace vl
 					return interfaceDecl;
 				}
 
+				void AddRpcSerializeEventArguments(Ptr<WfBlockStatement> block)
+				{
+					AddStatement(block, CreateVariableStatement(L"rpcSerializer", CreateRawType(L"system::IRpcSerializer"), CreateMember(CreateReference(L"lc"), L"Serializer")));
+					auto serializeBranch = CreateBlock();
+					AddStatement(serializeBranch, CreateVariableStatement(L"rpcArgumentIndex", CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(0)));
+
+					auto loopBody = CreateBlock();
+					AddStatement(loopBody, CreateExpressionStatement(CreateCall(
+						CreateMember(CreateReference(L"arguments"), L"Set"),
+						CreateReference(L"rpcArgumentIndex"),
+						CreateCall(
+							CreateMember(CreateReference(L"rpcSerializer"), L"Serialize"),
+							CreateIndex(CreateReference(L"arguments"), CreateReference(L"rpcArgumentIndex"))
+							)
+						)));
+					AddStatement(loopBody, CreateExpressionStatement(CreateAssign(
+						CreateReference(L"rpcArgumentIndex"),
+						CreateBinary(WfBinaryOperator::Add, CreateReference(L"rpcArgumentIndex"), CreateInt(1))
+						)));
+					AddStatement(serializeBranch, CreateRpcWhile(
+						CreateBinary(WfBinaryOperator::LT, CreateReference(L"rpcArgumentIndex"), CreateMember(CreateReference(L"arguments"), L"Count")),
+						loopBody
+						));
+					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(L"rpcSerializer")), serializeBranch));
+				}
+
 				Ptr<WfDeclaration> GenerateListenerFactory(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces)
 				{
 					List<const RpcEventModel*> events;
@@ -1532,12 +1566,12 @@ namespace vl
 							AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(
 								CreateMember(CreateReference(L"arguments"), L"Set"),
 								CreateInt(i),
-								CreateCall(
-									CreateQualifiedExpression(L"system::Sys::RpcSerializeEventArgument"),
-									CreateReference(L"lc"),
-									CreateRpcBoxExpression(paramModel.typeInfo, paramModel.byref, CreateReference(paramModel.name), CreateReference(L"lc"))
-									)
+								CreateRpcBoxExpression(paramModel.typeInfo, paramModel.byref, CreateReference(paramModel.name), CreateReference(L"lc"))
 								)));
+						}
+						if (eventModel->params.Count() > 0)
+						{
+							AddRpcSerializeEventArguments(lambdaBody);
 						}
 						AddStatement(
 							lambdaBody,

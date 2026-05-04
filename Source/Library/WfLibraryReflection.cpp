@@ -193,6 +193,7 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ClientId)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Dispatcher)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Controller)
+				CLASS_MEMBER_PROPERTY_READONLY_FAST(Serializer)
 				CLASS_MEMBER_METHOD(RefToPtr, { L"ref" })
 				CLASS_MEMBER_METHOD(PtrToRef, { L"obj" })
 				CLASS_MEMBER_METHOD(LocalObjectHold, { L"ref" _ L"remoteClientId" })
@@ -266,9 +267,6 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_STATIC_METHOD(LoremIpsumSentence, { L"bestLength" })
 				CLASS_MEMBER_STATIC_METHOD(LoremIpsumParagraph, { L"bestLength" })
 				CLASS_MEMBER_STATIC_METHOD(ReverseEnumerable, { L"value" })
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcSerializeEventArgument, { L"lc" _ L"value" }, Value(*)(vl::rpc_controller::IRpcLifecycle*, const Value&), vl::rpc_controller::RpcSerializeEventArgument)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcTransferByvalKeepAlive, { L"source" _ L"target" }, void(*)(const Value&, const Value&), vl::rpc_controller::RpcTransferByvalKeepAlive)
-				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcGetSerializedArgument, { L"arguments" _ L"index" }, Value(*)(vl::Ptr<vl::reflection::description::IValueArray>, vint), vl::rpc_controller::RpcGetSerializedArgument)
 #pragma push_macro("CompareString")
 #if defined CompareString
 #undef CompareString

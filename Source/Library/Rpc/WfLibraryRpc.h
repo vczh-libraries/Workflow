@@ -15,6 +15,8 @@ namespace vl
 {
 	namespace rpc_controller
 	{
+		class IRpcSerializer;
+
 		constexpr vint RpcTypeId_NotFound = -100;
 		constexpr vint RpcClientId_Invalid = -1;
 		constexpr vint RpcObjectId_Invalid = -1;
@@ -147,6 +149,7 @@ namespace vl
 			virtual vint							GetClientId() = 0;
 			virtual IRpcDispatcher*					GetDispatcher() = 0;
 			virtual IRpcController*					GetController() = 0;
+			virtual IRpcSerializer*					GetSerializer() = 0;
 			virtual Ptr<reflection::IDescriptable>	RefToPtr(RpcObjectReference ref) = 0;
 			virtual RpcObjectReference				PtrToRef(Ptr<reflection::IDescriptable> obj) = 0;
 			virtual void							LocalObjectHold(RpcObjectReference ref, vint remoteClientId) = 0;
@@ -172,8 +175,6 @@ namespace vl
 		reflection::description::Value						RpcBoxByval		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
 		reflection::description::Value						RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
 		Ptr<reflection::IDescriptable>						RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
-		void												RpcTransferByvalKeepAlive(const reflection::description::Value& source, const reflection::description::Value& target);
-		reflection::description::Value						RpcGetSerializedArgument(Ptr<reflection::description::IValueArray> arguments, vint index);
 	}
 }
 

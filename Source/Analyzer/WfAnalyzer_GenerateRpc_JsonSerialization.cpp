@@ -454,21 +454,9 @@ namespace vl
 					return CopyType(type);
 				}
 
-				void AddRpcJsonTransferByvalKeepAlive(Ptr<WfBlockStatement> block, Ptr<WfExpression> source, Ptr<WfExpression> target)
-				{
-					AddStatement(block, CreateExpressionStatement(CreateCall(
-						CreateQualifiedExpression(L"system::Sys::RpcTransferByvalKeepAlive"),
-						source,
-						target
-						)));
-				}
-
 				Ptr<WfExpression> CreateRpcJsonSerializedArgument(vint index)
 				{
-					return CreateCall(
-						CreateQualifiedExpression(L"system::Sys::RpcGetSerializedArgument"),
-						CreateReference(L"arguments"),
-						CreateInt(index));
+					return CreateIndex(CreateReference(L"arguments"), CreateInt(index));
 				}
 
 				WString AddUnknownRpcJsonSerializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> value)
@@ -477,7 +465,6 @@ namespace vl
 					auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
 					AddStatement(block, CreateVariableStatement(valueName, CreatePredefinedType(WfPredefinedTypeName::Object), value));
 					AddStatement(block, CreateVariableStatement(resultName, CreateSharedType(L"system::JsonNode"), CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(valueName))));
-					AddRpcJsonTransferByvalKeepAlive(block, CreateReference(valueName), CreateReference(resultName));
 					return resultName;
 				}
 
@@ -1085,7 +1072,6 @@ namespace vl
 						serialize->arguments.Add(CreateFunctionArgument(L"value", CreatePredefinedType(WfPredefinedTypeName::Object)));
 						auto block = serialize->statement.Cast<WfBlockStatement>();
 						AddStatement(block, CreateVariableStatement(L"result", CreateSharedType(L"system::JsonNode"), CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"value"))));
-						AddRpcJsonTransferByvalKeepAlive(block, CreateReference(L"value"), CreateReference(L"result"));
 						AddStatement(block, CreateReturn(CreateReference(L"result")));
 						newSerializer->declarations.Add(serialize);
 					}
