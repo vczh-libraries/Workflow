@@ -2047,6 +2047,119 @@ ValidateModuleRPC
 				}
 			}
 
+			namespace rpc_metadata_copying
+			{
+				using namespace collections;
+				using namespace reflection;
+				using namespace reflection::description;
+
+				class ClearExistingTypesVisitor : public empty_visitor::DeclarationVisitor
+				{
+				private:
+					List<WString>			fragments;
+					bool					removeDeclaration = false;
+
+					WString GetFullName(const WString& name)
+					{
+						WString fullName;
+						for (auto fragment : fragments)
+						{
+							if (fullName != L"")
+							{
+								fullName += L"::";
+							}
+							fullName += fragment;
+						}
+
+						if (fullName != L"")
+						{
+							fullName += L"::";
+						}
+						fullName += name;
+						return fullName;
+					}
+
+					bool IsExistingType(const WString& name)
+					{
+						return reflection::description::GetTypeDescriptor(GetFullName(name)) != nullptr;
+					}
+
+					void VisitNestedType(const WString& name, List<Ptr<WfDeclaration>>& declarations)
+					{
+						if (IsExistingType(name))
+						{
+							removeDeclaration = true;
+							return;
+						}
+
+						fragments.Add(name);
+						Clear(declarations);
+						fragments.RemoveAt(fragments.Count() - 1);
+						removeDeclaration = false;
+					}
+
+				protected:
+					void Dispatch(WfVirtualCfeDeclaration* node)override
+					{
+						removeDeclaration = false;
+					}
+
+					void Dispatch(WfVirtualCseDeclaration* node)override
+					{
+						removeDeclaration = false;
+					}
+
+				public:
+					void Clear(List<Ptr<WfDeclaration>>& declarations)
+					{
+						for (vint i = 0; i < declarations.Count();)
+						{
+							removeDeclaration = false;
+							declarations[i]->Accept(this);
+							if (removeDeclaration)
+							{
+								declarations.RemoveAt(i);
+							}
+							else
+							{
+								i++;
+							}
+						}
+					}
+
+					void Visit(WfNamespaceDeclaration* node)override
+					{
+						fragments.Add(node->name.value);
+						Clear(node->declarations);
+						fragments.RemoveAt(fragments.Count() - 1);
+						removeDeclaration = false;
+					}
+
+					void Visit(WfClassDeclaration* node)override
+					{
+						VisitNestedType(node->name.value, node->declarations);
+					}
+
+					void Visit(WfEnumDeclaration* node)override
+					{
+						removeDeclaration = IsExistingType(node->name.value);
+					}
+
+					void Visit(WfStructDeclaration* node)override
+					{
+						removeDeclaration = IsExistingType(node->name.value);
+					}
+				};
+			}
+
+			Ptr<WfModule> CopyAndClearRpcMetadata(Ptr<WfModule> module)
+			{
+				auto copiedModule = CopyModule(module, false);
+				rpc_metadata_copying::ClearExistingTypesVisitor visitor;
+				visitor.Clear(copiedModule->declarations);
+				return copiedModule;
+			}
+
 		}
 	}
 }

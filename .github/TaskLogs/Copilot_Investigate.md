@@ -153,3 +153,21 @@ Task 2 verification:
 - Debug Win32 solution build passed with 0 warnings and 0 errors.
 - `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug x64.
 - `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug Win32.
+
+### CODE CHANGE
+
+Task 3:
+- Added `CopyAndClearRpcMetadata` to the RPC analyzer API.
+- Implemented metadata copying with `CopyModule`, then recursively removed copied type declarations whose full names already exist in the reflection environment.
+- Added `VerifyRpcMetadata` to `TestRpcCompile.cpp`, recompiling copied metadata immediately after `CompileRpcSample` and asserting the regenerated metadata module prints identically.
+
+### TASK 3 CONFIRMED
+
+Task 3 verification:
+- `git diff --check` passed.
+- Debug x64 solution build passed after fixing the qualified `GetTypeDescriptor` call.
+- `CompilerTest_LoadAndCompile` passed on Debug x64 after adding `VerifyRpcMetadata`.
+- Debug Win32 solution build passed with 0 warnings and 0 errors.
+- `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug x64.
+- `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug Win32.
+- No generated files were modified by Task 3 verification; only the analyzer, RPC compile test, and task log changed.

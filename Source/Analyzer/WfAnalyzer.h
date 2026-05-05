@@ -550,6 +550,7 @@ RPC Analyzing
 
 			extern void										PopulateAttributesOnTypeDescriptors(WfLexicalScopeManager* manager);
 			extern void										ValidateModuleRPC(WfLexicalScopeManager* manager, Ptr<WfModule> module);
+			extern Ptr<WfModule>							CopyAndClearRpcMetadata(Ptr<WfModule> module);
 			extern WString									GenerateDtsFromRpcMetadata(WfLexicalScopeManager* manager);
 			extern Ptr<WfModule>							GenerateModuleRpc(WfLexicalScopeManager* manager, WString assemblyName);
 			extern Ptr<WfModule>							GenerateModuleRpcJson(WfLexicalScopeManager* manager, WString assemblyName);

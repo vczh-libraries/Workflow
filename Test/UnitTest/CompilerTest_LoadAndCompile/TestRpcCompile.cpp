@@ -146,6 +146,33 @@ static void CompileRpcSample(WfLexicalScopeManager& manager, const WString& item
 	TEST_ASSERT(manager.errors.Count() == 0);
 }
 
+static WString PrintModule(Ptr<WfModule> module)
+{
+	return GenerateToStream([&](StreamWriter& writer)
+	{
+		WfPrint(module, L"", writer);
+	});
+}
+
+static void VerifyRpcMetadata(WfLexicalScopeManager& manager)
+{
+	auto metadataModule = manager.rpcMetadata->metadataModule;
+	auto expectedMetadata = PrintModule(metadataModule);
+
+	manager.Clear(true, true);
+	auto copiedModule = CopyAndClearRpcMetadata(metadataModule);
+	TEST_ASSERT(copiedModule);
+
+	manager.AddModule(copiedModule);
+	manager.Rebuild(true);
+	TEST_ASSERT(manager.errors.Count() == 0);
+	TEST_ASSERT(manager.rpcMetadata);
+	TEST_ASSERT(manager.rpcMetadata->metadataModule);
+
+	auto actualMetadata = PrintModule(manager.rpcMetadata->metadataModule);
+	TEST_ASSERT(expectedMetadata == actualMetadata);
+}
+
 static void LinkRpcSample(WfLexicalScopeManager& manager, const WString& itemName, const WString& sample, Ptr<WfModule> wrapperModule, Ptr<WfModule> wrapperJsonModule)
 {
 	manager.Clear(true, true);
@@ -190,6 +217,7 @@ TEST_FILE
 				Ptr<WfModule> wrapperJsonModule;
 
 				CompileRpcSample(manager, itemName, sample, wrapperModule, wrapperJsonModule);
+				VerifyRpcMetadata(manager);
 				{
 					auto typeFullNames = Ptr(new List<WString>());
 					SortRpcTypeFullNamesLeafFirst(
