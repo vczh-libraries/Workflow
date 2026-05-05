@@ -17,12 +17,5 @@ You should complete tasks one by one.
 
 ## Task 1
 
-- In `rpcjson_Serialize` and `rpcjson_Deserialize` for serializable custom primitive types, it should serializelike enum but the second element is string.
-  - Need to inject a serializable struct to `CppTypes.(h|cpp)`.
-  - Need to update the .d.ts file as well.
-- In order to test it, you are going to add serialization to `Point` in `CppTypes.(h|cpp)` so that it could be `cast string` to like `123,456`.
-- In sample `Rpc/PrimitiveTypes` to add a function for `Point`, and print it.
-- In this way `Point` is used, so you can verify two things:
-  - `Point` is defined outside and workflow code generation for RPC still handle it.
-  - In JSON serialization it is serialized to `[type,string]` instead of `{"$":...}`.
-  - You will be able to know if you have done it right by reading at the generated .d.ts file.
+In `CppTypes.(h|cpp)` there is already a reflectable `Point` struct. I would like you to update `Rpc/PrimitiveTypes.txt` to use it.
+This is a test to ensure, even when RPC references types introduced by C++ it is still working.

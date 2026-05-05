@@ -68,8 +68,7 @@ export type UnknownType_PrimitiveSchema =
 
 3) struct types
 
-Serializable struct types: `["struct::type::full::name", string]`
-Otherwise: `{ "$": "struct::type::full::name", strong-type-version-of-this-struct...}`
+`{ "$": "struct::type::full::name", strong-type-version-of-this-struct...}`
 
 4) collection types
 
