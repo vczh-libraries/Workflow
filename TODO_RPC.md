@@ -25,6 +25,10 @@
   - Make sure arguments are serialized to expected JSON representation.
     - Make a `RpcDualDispatcherJson` to record all JSON objects, code gen ts files and create a npm project to build against the schema, just like VlppParser2.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
-- Document RPC.
+- Document RPC
+  - use `TODO_RPC_(Definition|Json|GeneratedWrappers).md`
+  - how to start up
 - Document compiler process.
 - Document AST building helper functions.
+  - Refactor is needed to scan if some functions in RPC code generation is duplicating those in `WfAnalyzer.h`.
+- Document Workflow best practices, language features and syntax sugars are invented to keep the code clean, prefer them.
