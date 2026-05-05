@@ -43,6 +43,7 @@ namespace YourFavoriteNamespace // use RpcEventArgs
 module Rpc;
 using system::*;
 using RpcWrapperTest::*;
+using YourFavoriteNamespace::*;
 
 var s = "";
 

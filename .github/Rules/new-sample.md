@@ -1,7 +1,7 @@
 # Guideline of Adding New Workflow Sample
 
-This instruction focuses on adding `Test\Resource\Codegen\*.txt` and `Test\Resource\Rpc\*.txt`.
-Each sample should have an index in `Test\Resource\Index(Codegen|Rpc).txt`, keeping this file sorted.
+This instruction focuses on adding `Test\Resources\Codegen\*.txt` and `Test\Resources\Rpc\*.txt`.
+Each sample should have an index in `Test\Resources\Index(Codegen|Rpc).txt`, keeping this file sorted.
 
 ## Common Instructions
 
@@ -26,14 +26,14 @@ func main():string
 }
 ```
 
-Calculations are performed and the result returns from `main`. In `Test\Resource\IndexCodegen.txt`, the expected result of the sample should be written down. And the script goes through the following process:
+Calculations are performed and the result returns from `main`. In `Test\Resources\IndexCodegen.txt`, the expected result of the sample should be written down. And the script goes through the following process:
 - It is compiled in `CompilerTest_LoadAndCompile`'s `TestCodegen.cpp`, producing log files, Workflow binary and C++ source files.
 - The Workflow binary will be loaded in `RuntimeTest`'s `TestRuntime.cpp`, which runs the `main` function and compare the result against `IndexCodegen.txt`.
 - Generate C++ source files should be added to `Generated_Cpp` and `Generated_Reflection` projects, and they will be picked up by `CppTest`, `CppTest_Metaonly` and `CppTest_Reflection` projects. They do the same thing to run the `main` function against `IndexCodegen.txt`, but everything is generated in `TestCases.cpp`.
 
 ## Rpc Sample
 
-A `Rpc` sample is a pair of Workflow scripts. `Test\Resource\Rpc\SAMPLE.txt` contains only RPC definitions and is used for RPC metadata/wrapper generation:
+A `Rpc` sample is a pair of Workflow scripts. `Test\Resources\Rpc\SAMPLE.txt` contains only RPC definitions and is used for RPC metadata/wrapper generation:
 
 ```Workflow
 module Rpc;
@@ -49,7 +49,7 @@ namespace YourFavoriteNamespace
 }
 ```
 
-`Test\Resource\Rpc\SAMPLE_Test.txt` contains the executable test logic:
+`Test\Resources\Rpc\SAMPLE_Test.txt` contains the executable test logic:
 
 ```Workflow
 module Rpc;
@@ -71,7 +71,7 @@ func clientMain(lc : IRpcLifecycle*) : string
 }
 ```
 
-Calculations are performed and the result returns from `clientMain`. In `Test\Resource\IndexRpc.txt`, the expected result of the sample should be written down under `SAMPLE` only; do not add `SAMPLE_Test` to the index. Both files should be added to `CompilerTest_LoadAndCompile` under `Resource Files\Rpc`. The scripts go through the following process:
+Calculations are performed and the result returns from `clientMain`. In `Test\Resources\IndexRpc.txt`, the expected result of the sample should be written down under `SAMPLE` only; do not add `SAMPLE_Test` to the index. Both files should be added to `CompilerTest_LoadAndCompile` under `Resource Files\Rpc`. The scripts go through the following process:
 - `SAMPLE.txt` is compiled in `CompilerTest_LoadAndCompile`'s `TestRpcCompile.cpp` to produce RPC metadata and wrappers.
 - `SAMPLE.txt`, `SAMPLE_Test.txt`, and the generated wrappers are linked in `TestRpcCompile.cpp`, producing log files, Workflow binary and C++ source files.
 - The Workflow binary will be loaded in `RuntimeTest`'s `TestRpc.cpp`, which initializes the Rpc environment, calls `serviceMain` followed by `clientMain` and compare the result of `clientMain` against `IndexRpc.txt`.

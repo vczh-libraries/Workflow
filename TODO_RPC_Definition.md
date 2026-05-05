@@ -1,4 +1,3 @@
-@ -1,335 +0,0 @@
 # Workflow Interface Based RPC (Attribute Definition)
 
 ## Attributes
@@ -156,7 +155,7 @@ All types below count as serializable types, but serialization itself is optiona
 
 The RPC runtime has three local concepts and one cross-client concept:
 
-- `IRpcLifeCycle` owns object/reference conversion for one client.
+- `IRpcLifecycle` owns object/reference conversion for one client.
 - `IRpcController` owns local objects, local wrappers, local ops, and local suppression state for one client.
 - `IRpcOperations` exposes the local client's list, object, list-event, and object-event operation objects.
 - `IRpcDispatcher` is the only object that knows how to send a message from one client to another client.
@@ -169,7 +168,7 @@ Lifecycle and controller implementations should not use another lifecycle's obje
 
 `IRpcObjectOps::RegisterService` remains the generated validation and registration hook. It validates that the type id exists and represents an `@rpc:Ctor` interface, converts the service object to a `RpcObjectReference` through the current lifecycle, and calls `IRpcDispatcher::RegisterService(typeId, ref)`.
 
-`IRpcObjectOps::RequestService` should not exist. There should be only one service lookup authority. `IRpcLifeCycle::RequestService(fullName)` resolves `fullName` to `typeId`, asks `IRpcDispatcher::RequestService(typeId)` for the ref, and then calls `RefToPtr(ref)`.
+`IRpcObjectOps::RequestService` should not exist. There should be only one service lookup authority. `IRpcLifecycle::RequestService(fullName)` resolves `fullName` to `typeId`, asks `IRpcDispatcher::RequestService(typeId)` for the ref, and then calls `RefToPtr(ref)`.
 
 `RefToPtr(ref)` uses `ref.clientId` to decide whether the ref belongs to the current client:
 

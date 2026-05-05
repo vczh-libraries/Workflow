@@ -192,3 +192,20 @@ Task 4 verification:
 - Debug Win32 solution build passed with 0 warnings and 0 errors.
 - `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug x64.
 - `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug Win32.
+
+### CODE CHANGE
+
+Task 5:
+- Reviewed `TODO_RPC_Definition.md`, `TODO_RPC_Sample.md`, `Project.md`, `.github\Rules\new-sample.md`, and `.github\Rules\new-sample-rpc.md` against `TODO_RPC_Tasks.md` and the implemented RPC metadata/sample split behavior.
+- Removed an accidental patch hunk marker from `TODO_RPC_Definition.md`.
+- Normalized the remaining `IRpcLifeCycle` spelling in `TODO_RPC_Definition.md` to `IRpcLifecycle`.
+- Added the missing `using YourFavoriteNamespace::*;` line to the split `TODO_RPC_Sample.md` test template.
+- Corrected stale `Test\Resource` paths in `.github\Rules\new-sample.md` to `Test\Resources`.
+
+### TASK 5 CONFIRMED
+
+Task 5 verification:
+- Confirmed `TODO_RPC_Definition.md` documents generated `@rpc:IdString(string)` and `@rpc:IdNumber(int)` attributes and user-authored ignore behavior.
+- Confirmed `TODO_RPC_Sample.md`, `Project.md`, `.github\Rules\new-sample.md`, and `.github\Rules\new-sample-rpc.md` document the `Rpc/SAMPLE.txt` plus `Rpc/SAMPLE_Test.txt` split, `IndexRpc.txt` base-sample indexing, and `Resource Files\Rpc` inclusion.
+- `git diff --check` passed.
+- `CompilerTest_LoadAndCompile` passed on Debug x64.
