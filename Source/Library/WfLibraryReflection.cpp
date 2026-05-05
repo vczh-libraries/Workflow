@@ -213,6 +213,8 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcCopyByval, { L"trivial" _ L"lc" }, Value(*)(const Value&, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcCopyByval)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcBoxByval, { L"trivial" _ L"lc" }, Value(*)(const Value&, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcBoxByval)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcUnboxByval, { L"serializable" _ L"lc" }, vl::Ptr<vl::reflection::IDescriptable>(*)(const Value&, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcUnboxByval)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(JsonSerializePredefinedTypes, { L"value" _ L"rpcjson_Serialize" }, vl::Ptr<vl::glr::json::JsonNode>(*)(const Value&, const vl::rpc_controller::RpcJsonSerializeCallback&), vl::rpc_controller::JsonSerializePredefinedTypes)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(JsonDeserializePredefinedTypes, { L"value" _ L"rpcjson_Deserialize" }, Value(*)(const Value&, const vl::rpc_controller::RpcJsonDeserializeCallback&), vl::rpc_controller::JsonDeserializePredefinedTypes)
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifecycle)
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcWrapperBase)

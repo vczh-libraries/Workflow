@@ -275,6 +275,12 @@ interface system::IRpcLifecycle : system::Interface {
     function GetController() : system::IRpcController*;
     function GetDispatcher() : system::IRpcDispatcher*;
     function GetSerializer() : system::IRpcSerializer*;
+    @InvokeTemplate:::vl::rpc_controller::JsonDeserializePredefinedTypes($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::JsonDeserializePredefinedTypes)
+    static function JsonDeserializePredefinedTypes(value : system::Object, rpcjson_Deserialize : system::Function<system::Object, system::JsonNode^>^) : system::Object;
+    @InvokeTemplate:::vl::rpc_controller::JsonSerializePredefinedTypes($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::JsonSerializePredefinedTypes)
+    static function JsonSerializePredefinedTypes(value : system::Object, rpcjson_Serialize : system::Function<system::JsonNode^, system::Object>^) : system::JsonNode^;
     function LocalObjectHold(ref : system::RpcObjectReference, remoteClientId : system::Int64) : system::Void;
     function LocalObjectUnhold(ref : system::RpcObjectReference, remoteClientId : system::Int64) : system::Void;
     function PtrToRef(obj : system::Interface^) : system::RpcObjectReference;

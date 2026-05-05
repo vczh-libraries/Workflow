@@ -2,50 +2,53 @@
 
 # PROBLEM DESCRIPTION
 
-The RPC byval return path releases collections of interfaces too early when JSON serialization is enabled. `CppTest*` crashes for `Rpc:Collection_Interface_InByref_OutByval` because JSON serialization converts returned interface elements into transport values before the caller has created wrappers. `RuntimeTest` does not hit the crash because JSON serialization is not enabled for that path.
+You should complete tasks one by one.
+`General Instruction` is for each tasks, which means, during doing each task:
+- you have to run unit test to make sure your change works.
+- If you can't fix a runtime issue within a few rounds of guess-and-edit, you need to debug the process.
+- I am a fan of crash early. When something should happen, it should just happen, do not play a game like "what if it is not the case" and silently covers the issue. One example is that, if an object should not be null, then we should just use it, if a nullable object should not be null, we should just cast it. No test is performed in this case, using it will crash if it is null, and we know there is a problem. Fix the actual problem instead of doing "error tolerance".
+- you have to follow complete instructions in `.github\Rules\verify-and-commit.md` to properly finish any task, before doing the next task.
 
-The requested fix is to address this at the interface/protocol level:
+## Task 1
 
-- Add `system::RpcByvalReturnValue` with `value : object` and `slot : int`.
-- Only use `RpcByvalReturnValue` when a method return value is marked with `@rpc:Byval`.
-- Have generated `rpcops_IRpcObjectOps` and `rpcops_IRpcObjectOpsJson` allocate incremental slots, cache recursive copies of byval return collections in `_byvalReturnValues`, and return `RpcByvalReturnValue`.
-- Add `IRpcObjectOps::EndInvokeMethod(slot : int)` so caller-side generated wrappers can release the cached copied collection after deserializing and unboxing the return value.
-- Add `IRpcLifecycle::RpcCopyByval` to recursively copy nested collections before boxing or JSON serialization.
-- Remove the old `RpcByvalKeepAliveProperty` and `RpcByvalKeepAlive` construction.
-- Update outdated RPC design notes, especially the generated-wrapper and JSON return descriptions, and add a byval return lifecycle section to `TODO_RPC_Definition.md`.
+- In `rpcjson_Serialize` and `rpcjson_Deserialize`, after all custom types are processed, the rest should be given to C++ written functions.
+  - Such functions accept function pointer of `rpcjson_Serialize` and `rpcjson_Deserialize` so that they could handle byref collection properly.
+  - `func IRpcLifecycle::JsonSerializePredefinedTypes(value : object, rpcjson_Serialize : func (value) : (system::JsonNode^))`
+  - `func IRpcLifecycle::JsonDeserializePredefinedTypes(value : object, rpcjson_Deserialize : func (system::JsonNode^) : (value))`
+  - The above functions will be put in `WfLibraryRpcJson.(h|cpp)` in `Test/Source/Library/Rpc`, but registered as static members to `IRpcLifecycle`.
+  - The above functions handle `UnknownType_PrimitiveSchema` in `TODO_RPC_JSON.md`, as well as byref collection serialization.
+  - Code generation of `rpcjson_Serialize` and `rpcjson_Deserialize` can know skip these types, avoid repeating code in all these sample outputs.
 
 # UPDATES
 
-- Reproduced the JSON-enabled crash in `CppTest` x64 at `Rpc:Collection_Interface_InByref_OutByval` with `RpcLifecycleBase::RefToPtr(RpcObjectReference)#Object not registered.`
-- Added reflected `system::RpcByvalReturnValue`, `IRpcObjectOps::EndInvokeMethod`, and `IRpcLifecycle::RpcCopyByval`.
-- Reworked native byval copying/boxing so `RpcCopyByval` recursively copies collection layers and `RpcBoxByval` recursively boxes the copied collection without any keep-alive property.
-- Updated generated non-JSON and JSON object ops to cache copied byval return collections by slot and return `RpcByvalReturnValue`.
-- Updated generated caller-side ops to cast byval return results directly to `RpcByvalReturnValue^`, deserialize/unbox `value`, call `EndInvokeMethod(slot)`, and return the local result.
-- Regenerated reflection metadata and RPC wrapper outputs after changing the reflected API.
-- Updated the RPC documentation to describe slot-based byval return cleanup.
-
 # TEST
 
-- [x] [CONFIRMED] Reproduced the original x64 `CppTest` failure in `Rpc:Collection_Interface_InByref_OutByval`: `RpcLifecycleBase::RefToPtr(RpcObjectReference)#Object not registered.`
-- [x] [CONFIRMED] `.\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform x64` completed successfully after regenerated outputs and source fixes.
-- [x] [CONFIRMED] `.\.github\Scripts\copilotBuild.ps1 -Configuration Debug -Platform Win32` completed successfully after regenerated outputs and source fixes.
-- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable LibraryTest -Configuration Debug -Platform x64` completed successfully with 2/2 files and 14/14 test cases passed.
-- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable LibraryTest -Configuration Debug -Platform Win32` completed successfully with 2/2 files and 14/14 test cases passed.
-- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_GenerateMetadata -Configuration Debug -Platform x64` completed successfully.
-- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_GenerateMetadata -Configuration Debug -Platform Win32` completed successfully.
-- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CompilerTest_LoadAndCompile -Configuration Debug -Platform x64` completed successfully after both metadata architectures were regenerated.
-- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform x64` completed successfully with 4/4 files and 257/257 test cases passed.
-- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable RuntimeTest -Configuration Debug -Platform Win32` completed successfully with 4/4 files and 257/257 test cases passed.
-- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest -Configuration Debug -Platform x64` completed successfully with 2/2 files and 223/223 test cases passed.
-- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest -Configuration Debug -Platform Win32` completed successfully with 2/2 files and 223/223 test cases passed.
-- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Metaonly -Configuration Debug -Platform x64` completed successfully with 2/2 files and 223/223 test cases passed.
-- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Metaonly -Configuration Debug -Platform Win32` completed successfully with 2/2 files and 223/223 test cases passed.
-- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform x64` completed successfully with 2/2 files and 223/223 test cases passed.
-- [x] [CONFIRMED] `.\.github\Scripts\copilotExecute.ps1 -Mode UnitTest -Executable CppTest_Reflection -Configuration Debug -Platform Win32` completed successfully with 2/2 files and 223/223 test cases passed.
-- [x] [CONFIRMED] `git grep -n "RpcByvalKeepAlive\|ByvalKeepAlive\|RpcTransferByvalKeepAlive" -- Source Test/Generated Test/SourceCppGenRpc Test/Resources TODO_RPC_Json.md TODO_RPC_GeneratedWrappers.md TODO_RPC_Definition.md` found no tracked references.
+- Add C++ helpers registered as static members on `system::IRpcLifecycle` and update generated `rpcjson_Serialize` / `rpcjson_Deserialize` to delegate predefined primitives and unknown collection schemas to them after generated enum and struct cases.
+- Regenerate RPC C++ samples by running `CompilerTest_LoadAndCompile`; success criteria:
+  - Generated unknown JSON serialization functions keep custom enum/struct cases but no longer repeat primitive and collection fallback blocks.
+  - Existing RPC JSON samples, especially byref collection paths, still pass in `RuntimeTest` and `CppTest*`.
+  - Reflection metadata updates include the two new static members on `IRpcLifecycle`.
 
 # PROPOSALS
 
-## COMPLETED
+- No.1 Move predefined unknown JSON schemas into reflected C++ helpers
 
-The root cause is fixed by making byval collection returns a two-step protocol. The callee returns transport data plus a slot, while the callee-side object ops keeps a recursive copy of the real returned collection alive under that slot. The caller converts the transport data into the real return value first, then explicitly calls `EndInvokeMethod(slot)` to release the callee cache. This preserves interface elements across JSON serialization and avoids special keep-alive attachment on serialized values.
+## No.1 Move predefined unknown JSON schemas into reflected C++ helpers
+
+### CODE CHANGE
+
+Add `WfLibraryRpcJson.h` and `WfLibraryRpcJson.cpp` under `Source/Library/Rpc` with static helper functions for predefined primitive and unknown collection JSON schemas. Register them as static external methods on `IRpcLifecycle`, then change the RPC JSON generator so only custom enum and struct cases remain generated before delegating to the helpers.
+
+### RESULT
+
+Implemented `IRpcLifecycle::JsonSerializePredefinedTypes` and `IRpcLifecycle::JsonDeserializePredefinedTypes` in C++ and registered them as static methods. Updated RPC JSON code generation to keep generated custom enum/struct handling and delegate predefined primitives plus unknown list/map schemas to the C++ helpers using recursive callbacks.
+
+Verification completed:
+- Debug x64 build passed.
+- Debug Win32 build passed.
+- `LibraryTest` passed on x64 and Win32.
+- `CompilerTest_GenerateMetadata` passed on x64 and Win32.
+- `CompilerTest_LoadAndCompile` passed on x64.
+- Regenerated source build passed on x64 and Win32.
+- `RuntimeTest` passed on x64 and Win32.
+- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on x64 and Win32.
