@@ -59,6 +59,7 @@ namespace vl
 				Ptr<WfStatement> CreateTryFinally(Ptr<WfStatement> protectedStatement, Ptr<WfStatement> finallyStatement);
 				Ptr<WfVariableDeclaration> CreateVariableDeclaration(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression);
 				Ptr<WfStatement> CreateVariableStatement(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression);
+				Ptr<WfStatement> CreateInferredVariableStatement(const WString& name, Ptr<WfExpression> expression);
 				Ptr<WfStatement> CreateIf(Ptr<WfExpression> condition, Ptr<WfStatement> trueBranch, Ptr<WfStatement> falseBranch = nullptr);
 				Ptr<WfForEachStatement> CreateForEach(const WString& name, Ptr<WfExpression> collection, Ptr<WfStatement> body);
 				Ptr<WfBlockStatement> CreateBlock();
@@ -386,7 +387,7 @@ namespace vl
 				WString AddRpcJsonLiteral(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, const WString& literal)
 				{
 					auto nodeName = AllocateRpcJsonTemp(context, L"jsonLiteral");
-					AddStatement(block, CreateVariableStatement(nodeName, CreateSharedType(L"system::JsonLiteral"), CreateNewClass(CreateSharedType(L"system::JsonLiteral"))));
+					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateSharedType(L"system::JsonLiteral"))));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"value"), CreateQualifiedExpression(L"system::JsonLiteralValue::" + literal))));
 					return nodeName;
 				}
@@ -394,7 +395,7 @@ namespace vl
 				WString AddRpcJsonBooleanLiteral(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> value)
 				{
 					auto nodeName = AllocateRpcJsonTemp(context, L"jsonLiteral");
-					AddStatement(block, CreateVariableStatement(nodeName, CreateSharedType(L"system::JsonLiteral"), CreateNewClass(CreateSharedType(L"system::JsonLiteral"))));
+					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateSharedType(L"system::JsonLiteral"))));
 					AddStatement(block, CreateIf(
 						value,
 						CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"value"), CreateQualifiedExpression(L"system::JsonLiteralValue::True"))),
@@ -405,7 +406,7 @@ namespace vl
 				WString AddRpcJsonString(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> value)
 				{
 					auto nodeName = AllocateRpcJsonTemp(context, L"jsonString");
-					AddStatement(block, CreateVariableStatement(nodeName, CreateSharedType(L"system::JsonString"), CreateNewClass(CreateSharedType(L"system::JsonString"))));
+					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateSharedType(L"system::JsonString"))));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"content"), CreateRpcJsonToken(value))));
 					return nodeName;
 				}
@@ -413,7 +414,7 @@ namespace vl
 				WString AddRpcJsonNumber(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> value)
 				{
 					auto nodeName = AllocateRpcJsonTemp(context, L"jsonNumber");
-					AddStatement(block, CreateVariableStatement(nodeName, CreateSharedType(L"system::JsonNumber"), CreateNewClass(CreateSharedType(L"system::JsonNumber"))));
+					AddStatement(block, CreateInferredVariableStatement(nodeName, CreateNewClass(CreateSharedType(L"system::JsonNumber"))));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(nodeName), L"content"), CreateRpcJsonToken(value))));
 					return nodeName;
 				}
@@ -426,7 +427,7 @@ namespace vl
 				void AddRpcJsonObjectField(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> object, const WString& fieldName, Ptr<WfExpression> value)
 				{
 					auto fieldVar = AllocateRpcJsonTemp(context, L"jsonField");
-					AddStatement(block, CreateVariableStatement(fieldVar, CreateSharedType(L"system::JsonObjectField"), CreateNewClass(CreateSharedType(L"system::JsonObjectField"))));
+					AddStatement(block, CreateInferredVariableStatement(fieldVar, CreateNewClass(CreateSharedType(L"system::JsonObjectField"))));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(fieldVar), L"name"), CreateRpcJsonToken(CreateString(fieldName)))));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(fieldVar), L"value"), value)));
 					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(object, L"fields"), L"Add"), CreateReference(fieldVar))));
@@ -484,8 +485,8 @@ namespace vl
 				{
 					auto valueName = AllocateRpcJsonTemp(context, L"jsonValue");
 					auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
-					AddStatement(block, CreateVariableStatement(valueName, CreatePredefinedType(WfPredefinedTypeName::Object), value));
-					AddStatement(block, CreateVariableStatement(resultName, CreateSharedType(L"system::JsonNode"), CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(valueName))));
+					AddStatement(block, CreateInferredVariableStatement(valueName, value));
+					AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(valueName))));
 					return resultName;
 				}
 
@@ -524,7 +525,7 @@ namespace vl
 					if (fullName == L"system::JsonNode")
 					{
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
-						AddStatement(block, CreateVariableStatement(resultName, CreateSharedType(L"system::JsonNode"), value));
+						AddStatement(block, CreateInferredVariableStatement(resultName, value));
 						return resultName;
 					}
 
@@ -536,21 +537,21 @@ namespace vl
 					if (FindRpcJsonType(*context.enums, fullName))
 					{
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
-						AddStatement(block, CreateVariableStatement(resultName, CreateSharedType(L"system::JsonNode"), CreateCall(CreateReference(GetRpcJsonSerializeEnumFunctionName(fullName)), value)));
+						AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(GetRpcJsonSerializeEnumFunctionName(fullName)), value)));
 						return resultName;
 					}
 
 					if (FindRpcJsonType(*context.structs, fullName))
 					{
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonNode");
-						AddStatement(block, CreateVariableStatement(resultName, CreateSharedType(L"system::JsonNode"), CreateCall(CreateReference(GetRpcJsonSerializeStructFunctionName(fullName)), value)));
+						AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(GetRpcJsonSerializeStructFunctionName(fullName)), value)));
 						return resultName;
 					}
 
 					if (auto enumerable = dynamic_cast<WfEnumerableType*>(type))
 					{
 						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
-						AddStatement(block, CreateVariableStatement(arrayName, CreateSharedType(L"system::JsonArray"), CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateSharedType(L"system::JsonArray"))));
 						auto forBlock = CreateBlock();
 						auto itemNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateReference(L"item"), enumerable->element.Obj());
 						AddRpcJsonArrayItem(forBlock, arrayName, CreateReference(itemNode));
@@ -561,12 +562,12 @@ namespace vl
 					if (auto map = dynamic_cast<WfMapType*>(type))
 					{
 						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
-						AddStatement(block, CreateVariableStatement(arrayName, CreateSharedType(L"system::JsonArray"), CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateSharedType(L"system::JsonArray"))));
 						auto forBlock = CreateBlock();
 						if (map->key)
 						{
 							auto pairName = AllocateRpcJsonTemp(context, L"jsonArray");
-							AddStatement(forBlock, CreateVariableStatement(pairName, CreateSharedType(L"system::JsonArray"), CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+							AddStatement(forBlock, CreateInferredVariableStatement(pairName, CreateNewClass(CreateSharedType(L"system::JsonArray"))));
 							auto keyNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateReference(L"key"), map->key.Obj());
 							AddRpcJsonArrayItem(forBlock, pairName, CreateReference(keyNode));
 							auto valueNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateIndex(value, CreateReference(L"key")), map->value.Obj());
@@ -586,7 +587,7 @@ namespace vl
 					if (auto observable = dynamic_cast<WfObservableListType*>(type))
 					{
 						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
-						AddStatement(block, CreateVariableStatement(arrayName, CreateSharedType(L"system::JsonArray"), CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateSharedType(L"system::JsonArray"))));
 						auto forBlock = CreateBlock();
 						auto itemNode = AddKnownRpcJsonSerializeValue(context, forBlock, CreateReference(L"item"), observable->element.Obj());
 						AddRpcJsonArrayItem(forBlock, arrayName, CreateReference(itemNode));
@@ -604,7 +605,7 @@ namespace vl
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
 						auto literalName = AllocateRpcJsonTemp(context, L"jsonLiteral");
 						AddStatement(block, CreateVariableStatement(resultName, CopyType(type), CreateNull()));
-						AddStatement(block, CreateVariableStatement(literalName, CreateSharedType(L"system::JsonLiteral"), CreateWeakCast(CreateSharedType(L"system::JsonLiteral"), CopyExpression(node, true))));
+						AddStatement(block, CreateInferredVariableStatement(literalName, CreateWeakCast(CreateSharedType(L"system::JsonLiteral"), CopyExpression(node, true))));
 						auto assignBranch = CreateBlock();
 						auto valueName = AddKnownRpcJsonDeserializeValue(context, assignBranch, node, nullable->element.Obj());
 						AddStatement(assignBranch, CreateExpressionStatement(CreateAssign(CreateReference(resultName), CreateReference(valueName))));
@@ -636,35 +637,35 @@ namespace vl
 						default:
 							CHECK_FAIL(L"Internal error: Unknown primitive kind.");
 						}
-						AddStatement(block, CreateVariableStatement(resultName, CopyType(type), value));
+						AddStatement(block, CreateInferredVariableStatement(resultName, value));
 						return resultName;
 					}
 
 					if (fullName == L"system::JsonNode")
 					{
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-						AddStatement(block, CreateVariableStatement(resultName, CopyType(type), node));
+						AddStatement(block, CreateInferredVariableStatement(resultName, node));
 						return resultName;
 					}
 
 					if (fullName == L"system::Object" || fullName == L"system::Interface")
 					{
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-						AddStatement(block, CreateVariableStatement(resultName, CopyType(type), CreateCall(CreateReference(L"rpcjson_Deserialize"), node)));
+						AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(L"rpcjson_Deserialize"), node)));
 						return resultName;
 					}
 
 					if (FindRpcJsonType(*context.enums, fullName))
 					{
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-						AddStatement(block, CreateVariableStatement(resultName, CopyType(type), CreateCall(CreateReference(GetRpcJsonDeserializeEnumFunctionName(fullName)), node)));
+						AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(GetRpcJsonDeserializeEnumFunctionName(fullName)), node)));
 						return resultName;
 					}
 
 					if (FindRpcJsonType(*context.structs, fullName))
 					{
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-						AddStatement(block, CreateVariableStatement(resultName, CopyType(type), CreateCall(CreateReference(GetRpcJsonDeserializeStructFunctionName(fullName)), node)));
+						AddStatement(block, CreateInferredVariableStatement(resultName, CreateCall(CreateReference(GetRpcJsonDeserializeStructFunctionName(fullName)), node)));
 						return resultName;
 					}
 
@@ -673,7 +674,7 @@ namespace vl
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
 						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
 						AddStatement(block, CreateVariableStatement(resultName, CreateWritableRpcJsonCollectionType(type), CreateConstructor()));
-						AddStatement(block, CreateVariableStatement(arrayName, CreateSharedType(L"system::JsonArray"), CreateCast(CreateSharedType(L"system::JsonArray"), node)));
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateCast(CreateSharedType(L"system::JsonArray"), node)));
 						auto forBlock = CreateBlock();
 						auto itemValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateReference(L"item"), enumerable->element.Obj());
 						AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(resultName), L"Add"), CreateReference(itemValue))));
@@ -686,12 +687,12 @@ namespace vl
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
 						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
 						AddStatement(block, CreateVariableStatement(resultName, CreateWritableRpcJsonCollectionType(type), CreateConstructor()));
-						AddStatement(block, CreateVariableStatement(arrayName, CreateSharedType(L"system::JsonArray"), CreateCast(CreateSharedType(L"system::JsonArray"), node)));
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateCast(CreateSharedType(L"system::JsonArray"), node)));
 						auto forBlock = CreateBlock();
 						if (map->key)
 						{
 							auto pairName = AllocateRpcJsonTemp(context, L"jsonArray");
-							AddStatement(forBlock, CreateVariableStatement(pairName, CreateSharedType(L"system::JsonArray"), CreateCast(CreateSharedType(L"system::JsonArray"), CreateReference(L"item"))));
+							AddStatement(forBlock, CreateInferredVariableStatement(pairName, CreateCast(CreateSharedType(L"system::JsonArray"), CreateReference(L"item"))));
 							auto keyValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateJsonArrayItem(pairName, 0), map->key.Obj());
 							auto itemValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateJsonArrayItem(pairName, 1), map->value.Obj());
 							AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(resultName), L"Set"), CreateReference(keyValue), CreateReference(itemValue))));
@@ -710,7 +711,7 @@ namespace vl
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
 						auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
 						AddStatement(block, CreateVariableStatement(resultName, CreateWritableRpcJsonCollectionType(type), CreateConstructor()));
-						AddStatement(block, CreateVariableStatement(arrayName, CreateSharedType(L"system::JsonArray"), CreateCast(CreateSharedType(L"system::JsonArray"), node)));
+						AddStatement(block, CreateInferredVariableStatement(arrayName, CreateCast(CreateSharedType(L"system::JsonArray"), node)));
 						auto forBlock = CreateBlock();
 						auto itemValue = AddKnownRpcJsonDeserializeValue(context, forBlock, CreateReference(L"item"), observable->element.Obj());
 						AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(resultName), L"Add"), CreateReference(itemValue))));
@@ -719,7 +720,7 @@ namespace vl
 					}
 
 					auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-					AddStatement(block, CreateVariableStatement(resultName, CopyType(type), CreateCast(CopyType(type), CreateCall(CreateReference(L"rpcjson_Deserialize"), node))));
+					AddStatement(block, CreateInferredVariableStatement(resultName, CreateCast(CopyType(type), CreateCall(CreateReference(L"rpcjson_Deserialize"), node))));
 					return resultName;
 				}
 
@@ -727,7 +728,7 @@ namespace vl
 				{
 					auto arrayName = AllocateRpcJsonTemp(context, L"jsonArray");
 					auto keywordNode = AddRpcJsonString(block, context, CreateString(keyword));
-					AddStatement(block, CreateVariableStatement(arrayName, CreateSharedType(L"system::JsonArray"), CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+					AddStatement(block, CreateInferredVariableStatement(arrayName, CreateNewClass(CreateSharedType(L"system::JsonArray"))));
 					AddRpcJsonArrayItem(block, arrayName, CreateReference(keywordNode));
 					AddRpcJsonArrayItem(block, arrayName, valueNode);
 					AddStatement(block, CreateReturn(CreateReference(arrayName)));
@@ -770,7 +771,7 @@ namespace vl
 					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonSerializeStructFunctionName(structModel.fullName), CreateSharedType(L"system::JsonNode"), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"value", CopyType(structModel.type.Obj())));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-					AddStatement(block, CreateVariableStatement(L"object", CreateSharedType(L"system::JsonObject"), CreateNewClass(CreateSharedType(L"system::JsonObject"))));
+					AddStatement(block, CreateInferredVariableStatement(L"object", CreateNewClass(CreateSharedType(L"system::JsonObject"))));
 					AddRpcJsonStructFields(context, block, structModel, L"object", L"value");
 					AddStatement(block, CreateReturn(CreateReference(L"object")));
 					return functionDecl;
@@ -781,7 +782,7 @@ namespace vl
 					auto functionDecl = CreateFunctionDeclaration(GetRpcJsonDeserializeStructFunctionName(structModel.fullName), CopyType(structModel.type.Obj()), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"node", CreateSharedType(L"system::JsonNode")));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
-					AddStatement(block, CreateVariableStatement(L"object", CreateSharedType(L"system::JsonObject"), CreateCast(CreateSharedType(L"system::JsonObject"), CreateReference(L"node"))));
+					AddStatement(block, CreateInferredVariableStatement(L"object", CreateCast(CreateSharedType(L"system::JsonObject"), CreateReference(L"node"))));
 					auto constructor = CreateConstructor();
 					for (auto&& field : *structModel.fields.Obj())
 					{
@@ -789,18 +790,18 @@ namespace vl
 						auto fieldValue = AddKnownRpcJsonDeserializeValue(context, block, CreateReference(fieldNode), field.type.Obj());
 						constructor->arguments.Add(CreateConstructorArgument(CreateReference(field.name), CreateReference(fieldValue)));
 					}
-					AddStatement(block, CreateReturn(CreateInfer(constructor, CopyType(structModel.type.Obj()))));
+					AddStatement(block, CreateReturn(constructor));
 					return functionDecl;
 				}
 
 				void AddUnknownSerializeCollectionCase(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const WString& varName, const WString& typeFullName, const WString& keyword)
 				{
-					AddStatement(block, CreateVariableStatement(varName, CreateSharedType(typeFullName), CreateWeakCast(CreateSharedType(typeFullName), CreateReference(L"value"))));
+					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(CreateSharedType(typeFullName), CreateReference(L"value"))));
 					auto trueBranch = CreateBlock();
-					AddStatement(trueBranch, CreateVariableStatement(L"object", CreateSharedType(L"system::JsonObject"), CreateNewClass(CreateSharedType(L"system::JsonObject"))));
+					AddStatement(trueBranch, CreateInferredVariableStatement(L"object", CreateNewClass(CreateSharedType(L"system::JsonObject"))));
 					auto keywordNode = AddRpcJsonString(trueBranch, context, CreateString(keyword));
 					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"$", CreateReference(keywordNode));
-					AddStatement(trueBranch, CreateVariableStatement(L"values", CreateSharedType(L"system::JsonArray"), CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+					AddStatement(trueBranch, CreateInferredVariableStatement(L"values", CreateNewClass(CreateSharedType(L"system::JsonArray"))));
 					auto forBlock = CreateBlock();
 					AddRpcJsonArrayItem(forBlock, L"values", CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"item")));
 					AddStatement(trueBranch, CreateForEach(L"item", CreateReference(varName), forBlock));
@@ -811,12 +812,12 @@ namespace vl
 
 				void AddUnknownSerializeMapCase(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, const WString& varName, const WString& typeFullName)
 				{
-					AddStatement(block, CreateVariableStatement(varName, CreateSharedType(typeFullName), CreateWeakCast(CreateSharedType(typeFullName), CreateReference(L"value"))));
+					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(CreateSharedType(typeFullName), CreateReference(L"value"))));
 					auto trueBranch = CreateBlock();
-					AddStatement(trueBranch, CreateVariableStatement(L"object", CreateSharedType(L"system::JsonObject"), CreateNewClass(CreateSharedType(L"system::JsonObject"))));
+					AddStatement(trueBranch, CreateInferredVariableStatement(L"object", CreateNewClass(CreateSharedType(L"system::JsonObject"))));
 					auto keywordNode = AddRpcJsonString(trueBranch, context, CreateString(L"map"));
 					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"$", CreateReference(keywordNode));
-					AddStatement(trueBranch, CreateVariableStatement(L"values", CreateSharedType(L"system::JsonArray"), CreateNewClass(CreateSharedType(L"system::JsonArray"))));
+					AddStatement(trueBranch, CreateInferredVariableStatement(L"values", CreateNewClass(CreateSharedType(L"system::JsonArray"))));
 					auto forBlock = CreateBlock();
 					AddRpcJsonArrayItem(forBlock, L"values", CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"key")));
 					AddRpcJsonArrayItem(forBlock, L"values", CreateCall(CreateReference(L"rpcjson_Serialize"), CreateCall(CreateMember(CreateReference(varName), L"Get"), CreateReference(L"key"))));
@@ -835,7 +836,7 @@ namespace vl
 
 					auto varName = L"value_" + MangleRpcFullName(primitive.fullName);
 					auto nullableType = CreateNullableType(primitive.fullName);
-					AddStatement(block, CreateVariableStatement(varName, CopyType(nullableType.Obj()), CreateWeakCast(nullableType, CreateReference(L"value"))));
+					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(nullableType, CreateReference(L"value"))));
 					auto trueBranch = CreateBlock();
 					auto varValue = CreateCast(CreateTopQualifiedType(primitive.fullName), CreateReference(varName));
 					WString nodeName;
@@ -859,10 +860,10 @@ namespace vl
 					auto varName = L"value_" + MangleRpcFullName(enumModel.fullName);
 					auto nullableType = Ptr(new WfNullableType);
 					nullableType->element = CopyType(enumModel.type.Obj());
-					AddStatement(block, CreateVariableStatement(varName, CopyType(nullableType.Obj()), CreateWeakCast(nullableType, CreateReference(L"value"))));
+					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(nullableType, CreateReference(L"value"))));
 					auto trueBranch = CreateBlock();
 					auto valueNode = AllocateRpcJsonTemp(context, L"jsonNode");
-					AddStatement(trueBranch, CreateVariableStatement(valueNode, CreateSharedType(L"system::JsonNode"), CreateCall(CreateReference(GetRpcJsonSerializeEnumFunctionName(enumModel.fullName)), CreateCast(CopyType(enumModel.type.Obj()), CreateReference(varName)))));
+					AddStatement(trueBranch, CreateInferredVariableStatement(valueNode, CreateCall(CreateReference(GetRpcJsonSerializeEnumFunctionName(enumModel.fullName)), CreateCast(CopyType(enumModel.type.Obj()), CreateReference(varName)))));
 					AddRpcJsonUnknownTupleReturn(context, trueBranch, enumModel.fullName, CreateReference(valueNode));
 					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
 				}
@@ -872,13 +873,13 @@ namespace vl
 					auto varName = L"value_" + MangleRpcFullName(structModel.fullName);
 					auto nullableType = Ptr(new WfNullableType);
 					nullableType->element = CopyType(structModel.type.Obj());
-					AddStatement(block, CreateVariableStatement(varName, CopyType(nullableType.Obj()), CreateWeakCast(nullableType, CreateReference(L"value"))));
+					AddStatement(block, CreateInferredVariableStatement(varName, CreateWeakCast(nullableType, CreateReference(L"value"))));
 					auto trueBranch = CreateBlock();
-					AddStatement(trueBranch, CreateVariableStatement(L"object", CreateSharedType(L"system::JsonObject"), CreateNewClass(CreateSharedType(L"system::JsonObject"))));
+					AddStatement(trueBranch, CreateInferredVariableStatement(L"object", CreateNewClass(CreateSharedType(L"system::JsonObject"))));
 					auto keywordNode = AddRpcJsonString(trueBranch, context, CreateString(structModel.fullName));
 					AddRpcJsonObjectField(trueBranch, context, CreateReference(L"object"), L"$", CreateReference(keywordNode));
 					auto varValueName = AllocateRpcJsonTemp(context, L"value");
-					AddStatement(trueBranch, CreateVariableStatement(varValueName, CopyType(structModel.type.Obj()), CreateCast(CopyType(structModel.type.Obj()), CreateReference(varName))));
+					AddStatement(trueBranch, CreateInferredVariableStatement(varValueName, CreateCast(CopyType(structModel.type.Obj()), CreateReference(varName))));
 					AddRpcJsonStructFields(context, trueBranch, structModel, L"object", varValueName);
 					AddStatement(trueBranch, CreateReturn(CreateReference(L"object")));
 					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(varName)), trueBranch));
@@ -900,7 +901,7 @@ namespace vl
 					AddStatement(block, CreateReturn(CreateCall(
 						CreateQualifiedExpression(L"system::IRpcLifecycle::JsonSerializePredefinedTypes"),
 						CreateReference(L"value"),
-						CreateInfer(CreateReference(L"rpcjson_Serialize"), CreateRpcJsonSerializeCallbackType()))));
+						CreateReference(L"rpcjson_Serialize"))));
 					return functionDecl;
 				}
 
@@ -939,7 +940,7 @@ namespace vl
 					auto block = CreateBlock();
 					AddStatement(block, CreateVariableStatement(L"result", CreateSharedType(variableType), CreateConstructor()));
 					auto valuesNode = AddRpcJsonObjectFieldLookup(block, context, CreateReference(L"object"), L"values");
-					AddStatement(block, CreateVariableStatement(L"values", CreateSharedType(L"system::JsonArray"), CreateCast(CreateSharedType(L"system::JsonArray"), CreateReference(valuesNode))));
+					AddStatement(block, CreateInferredVariableStatement(L"values", CreateCast(CreateSharedType(L"system::JsonArray"), CreateReference(valuesNode))));
 					auto forBlock = CreateBlock();
 					AddStatement(forBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Add"), CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"item")))));
 					AddStatement(block, CreateForEach(L"item", CreateMember(CreateReference(L"values"), L"items"), forBlock));
@@ -952,8 +953,8 @@ namespace vl
 					auto block = CreateBlock();
 					AddStatement(block, CreateVariableStatement(L"result", CreateSharedType(L"system::Dictionary"), CreateConstructor()));
 					auto valuesNode = AddRpcJsonObjectFieldLookup(block, context, CreateReference(L"object"), L"values");
-					AddStatement(block, CreateVariableStatement(L"values", CreateSharedType(L"system::JsonArray"), CreateCast(CreateSharedType(L"system::JsonArray"), CreateReference(valuesNode))));
-					AddStatement(block, CreateVariableStatement(L"index", CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(0)));
+					AddStatement(block, CreateInferredVariableStatement(L"values", CreateCast(CreateSharedType(L"system::JsonArray"), CreateReference(valuesNode))));
+					AddStatement(block, CreateInferredVariableStatement(L"index", CreateInt(0)));
 					auto whileBlock = CreateBlock();
 					AddStatement(whileBlock, CreateExpressionStatement(CreateCall(
 						CreateMember(CreateReference(L"result"), L"Set"),
@@ -973,9 +974,9 @@ namespace vl
 
 					if (context.enums->Count() > 0)
 					{
-						AddStatement(block, CreateVariableStatement(L"array", CreateSharedType(L"system::JsonArray"), CreateWeakCast(CreateSharedType(L"system::JsonArray"), CreateReference(L"node"))));
+						AddStatement(block, CreateInferredVariableStatement(L"array", CreateWeakCast(CreateSharedType(L"system::JsonArray"), CreateReference(L"node"))));
 						auto arrayBranch = CreateBlock();
-						AddStatement(arrayBranch, CreateVariableStatement(L"keyword", CreatePredefinedType(WfPredefinedTypeName::String), CreateJsonArrayItemContent(L"array", 0, L"system::JsonString")));
+						AddStatement(arrayBranch, CreateInferredVariableStatement(L"keyword", CreateJsonArrayItemContent(L"array", 0, L"system::JsonString")));
 						auto arraySwitch = Ptr(new WfSwitchStatement);
 						arraySwitch->expression = CreateReference(L"keyword");
 						for (auto&& enumModel : *context.enums)
@@ -986,10 +987,10 @@ namespace vl
 						AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(L"array")), arrayBranch));
 					}
 
-					AddStatement(block, CreateVariableStatement(L"object", CreateSharedType(L"system::JsonObject"), CreateWeakCast(CreateSharedType(L"system::JsonObject"), CreateReference(L"node"))));
+					AddStatement(block, CreateInferredVariableStatement(L"object", CreateWeakCast(CreateSharedType(L"system::JsonObject"), CreateReference(L"node"))));
 					auto objectBranch = CreateBlock();
 					auto keywordNode = AddRpcJsonObjectFieldLookup(objectBranch, context, CreateReference(L"object"), L"$");
-					AddStatement(objectBranch, CreateVariableStatement(L"keyword", CreatePredefinedType(WfPredefinedTypeName::String), CreateMember(CreateMember(CreateCast(CreateSharedType(L"system::JsonString"), CreateReference(keywordNode)), L"content"), L"value")));
+					AddStatement(objectBranch, CreateInferredVariableStatement(L"keyword", CreateMember(CreateMember(CreateCast(CreateSharedType(L"system::JsonString"), CreateReference(keywordNode)), L"content"), L"value")));
 					auto objectSwitch = Ptr(new WfSwitchStatement);
 					objectSwitch->expression = CreateReference(L"keyword");
 					for (auto&& structModel : *context.structs)
@@ -1001,7 +1002,7 @@ namespace vl
 					AddStatement(block, CreateReturn(CreateCall(
 						CreateQualifiedExpression(L"system::IRpcLifecycle::JsonDeserializePredefinedTypes"),
 						CreateReference(L"node"),
-						CreateInfer(CreateReference(L"rpcjson_Deserialize"), CreateRpcJsonDeserializeCallbackType()))));
+						CreateReference(L"rpcjson_Deserialize"))));
 					return functionDecl;
 				}
 
@@ -1042,7 +1043,7 @@ namespace vl
 						auto serialize = CreateFunctionDeclaration(L"Serialize", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
 						serialize->arguments.Add(CreateFunctionArgument(L"value", CreatePredefinedType(WfPredefinedTypeName::Object)));
 						auto block = serialize->statement.Cast<WfBlockStatement>();
-						AddStatement(block, CreateVariableStatement(L"result", CreateSharedType(L"system::JsonNode"), CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"value"))));
+						AddStatement(block, CreateInferredVariableStatement(L"result", CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"value"))));
 						AddStatement(block, CreateReturn(CreateReference(L"result")));
 						newSerializer->declarations.Add(serialize);
 					}
@@ -1145,7 +1146,7 @@ namespace vl
 				Ptr<WfStatement> BuildInvokeMethodBranchJson(WfLexicalScopeManager* manager, const RpcInterfaceModel& interfaceModel, const RpcMethodModel& methodModel)
 				{
 					auto block = CreateBlock();
-					AddStatement(block, CreateVariableStatement(L"target", CreateSharedType(interfaceModel.fullName), CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
+					AddStatement(block, CreateInferredVariableStatement(L"target", CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
 
 					List<Ptr<WfExpression>> arguments;
 					vint tempIndex = 0;
@@ -1178,10 +1179,10 @@ namespace vl
 						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
 						if (IsRpcByvalReturn(methodModel))
 						{
-							AddStatement(block, CreateVariableStatement(L"copiedReturnValue", CreatePredefinedType(WfPredefinedTypeName::Object), CreateRpcCopyByvalExpression(invoke, CreateReference(L"_lc"))));
+							AddStatement(block, CreateInferredVariableStatement(L"copiedReturnValue", CreateRpcCopyByvalExpression(invoke, CreateReference(L"_lc"))));
 							auto transferValue = CreateRpcJsonTransferExpression(methodModel.returnTypeInfo, methodModel.returnByref, CreateReference(L"copiedReturnValue"), CreateReference(L"_lc"));
 							auto nodeName = AddRpcJsonSerializeValue(manager, tempIndex, block, transferValue, transferType.Obj());
-							AddRpcByvalReturnValue(block, CreateCast(CreatePredefinedType(WfPredefinedTypeName::Object), CreateReference(nodeName)), CreateReference(L"copiedReturnValue"));
+							AddRpcByvalReturnValue(block, CreateReference(nodeName), CreateReference(L"copiedReturnValue"));
 						}
 						else
 						{
@@ -1196,7 +1197,7 @@ namespace vl
 				Ptr<WfStatement> BuildInvokeEventBranchJson(WfLexicalScopeManager* manager, const RpcInterfaceModel& interfaceModel, const RpcEventModel& eventModel)
 				{
 					auto block = CreateBlock();
-					AddStatement(block, CreateVariableStatement(L"target", CreateSharedType(interfaceModel.fullName), CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
+					AddStatement(block, CreateInferredVariableStatement(L"target", CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
 
 					auto invoke = Ptr(new WfCallExpression);
 					invoke->function = CreateMember(CreateReference(L"target"), eventModel.name);
@@ -1357,21 +1358,18 @@ namespace vl
 					}
 					else if (IsRpcByvalReturn(methodModel))
 					{
-						AddStatement(block, CreateVariableStatement(L"objectOps", CreateRawType(L"system::IRpcObjectOps"), CreateRpcOpsObjectOps()));
+						AddStatement(block, CreateInferredVariableStatement(L"objectOps", CreateRpcOpsObjectOps()));
 						auto invoke = CreateRpcOpsObjectInvoke(methodModel, CreateReference(L"objectOps"));
-						AddStatement(block, CreateVariableStatement(
+						AddStatement(block, CreateInferredVariableStatement(
 							L"byvalReturnValue",
-							CreateSharedType(L"system::RpcByvalReturnValue"),
 							CreateCast(CreateSharedType(L"system::RpcByvalReturnValue"), invoke)));
-						AddStatement(block, CreateVariableStatement(
+						AddStatement(block, CreateInferredVariableStatement(
 							L"jsonResult",
-							CreateSharedType(L"system::JsonNode"),
 							CreateCast(CreateSharedType(L"system::JsonNode"), CreateMember(CreateReference(L"byvalReturnValue"), L"value"))));
 						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
 						auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, CreateReference(L"jsonResult"), transferType.Obj());
-						AddStatement(block, CreateVariableStatement(
+						AddStatement(block, CreateInferredVariableStatement(
 							L"result",
-							CopyType(methodModel.returnType.Obj()),
 							IsSharedInterfaceType(methodModel.returnTypeInfo)
 								? CreateRpcUnboxExpression(methodModel.returnTypeInfo, methodModel.returnType, methodModel.returnByref, CreateReference(valueName), CreateReference(L"_lc"))
 								: CreateReference(valueName)));
@@ -1383,7 +1381,7 @@ namespace vl
 					else
 					{
 						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
-						AddStatement(block, CreateVariableStatement(L"jsonResult", CreateSharedType(L"system::JsonNode"), CreateCast(CreateSharedType(L"system::JsonNode"), invoke)));
+						AddStatement(block, CreateInferredVariableStatement(L"jsonResult", CreateCast(CreateSharedType(L"system::JsonNode"), invoke)));
 						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
 						auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, CreateReference(L"jsonResult"), transferType.Obj());
 						if (IsSharedInterfaceType(methodModel.returnTypeInfo))

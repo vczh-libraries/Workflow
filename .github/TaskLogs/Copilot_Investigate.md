@@ -11,44 +11,61 @@ You should complete tasks one by one.
 
 ## Task 1
 
-- In `rpcjson_Serialize` and `rpcjson_Deserialize`, after all custom types are processed, the rest should be given to C++ written functions.
-  - Such functions accept function pointer of `rpcjson_Serialize` and `rpcjson_Deserialize` so that they could handle byref collection properly.
-  - `func IRpcLifecycle::JsonSerializePredefinedTypes(value : object, rpcjson_Serialize : func (value) : (system::JsonNode^))`
-  - `func IRpcLifecycle::JsonDeserializePredefinedTypes(value : object, rpcjson_Deserialize : func (system::JsonNode^) : (value))`
-  - The above functions will be put in `WfLibraryRpcJson.(h|cpp)` in `Test/Source/Library/Rpc`, but registered as static members to `IRpcLifecycle`.
-  - The above functions handle `UnknownType_PrimitiveSchema` in `TODO_RPC_JSON.md`, as well as byref collection serialization.
-  - Code generation of `rpcjson_Serialize` and `rpcjson_Deserialize` can know skip these types, avoid repeating code in all these sample outputs.
+- In `Wrapper_*.txt` and `Wrapper_*_Json.txt`, there are a lot of "in function variable" which have types, local variable types should be omitted when possible.
+  - Precisely tell for each variable, is its type can be omitted?
+    - If can, omit its type in the variable declaration.
+    - Otherwise, just keep it.
+  - DO NOT use `infer` or any other way to move the type from the variable to its initializer expression, that's even worse.
+- There are also some `of` expression doing type inferring. If implicit type conversion work at that place, inferring is not needed.
+  - Precisely tell for each `infer` expression, is type inferring unnecessary?
+    - If unnecessary, remove the `infer` part from the expression.
+    - Otherwise, just keep it.
+  - DO NOT use casting just to replace the `infer` with other thing that still has a type, that's even worse
+- Check all strong cast `cast` and weak cast `as`, if implicit type conversion work at that place, casting is not needed.
+- Prefer `var v : T = e;` over `var v = e over T;` if `T` cannot avoid.
+- The goal is to not write types in Workflow as much as you can. But we know not all types can be avoided. So you need to do it case by case.
 
 # UPDATES
 
+- Confirmed the relevant generated outputs are produced from `Source/Analyzer/WfAnalyzer_GenerateRpc*.cpp`, so the fix belongs in the generators.
+- Regenerated RPC wrappers with `CompilerTest_LoadAndCompile`.
+- Text sweep after regeneration found no remaining `of`, `null of (...)`, or `cast (object)` in `Test/Generated/RpcMetadata32/Wrapper_*.txt` or `Test/Generated/RpcMetadata64/Wrapper_*.txt`.
+
 # TEST
 
-- Add C++ helpers registered as static members on `system::IRpcLifecycle` and update generated `rpcjson_Serialize` / `rpcjson_Deserialize` to delegate predefined primitives and unknown collection schemas to them after generated enum and struct cases.
-- Regenerate RPC C++ samples by running `CompilerTest_LoadAndCompile`; success criteria:
-  - Generated unknown JSON serialization functions keep custom enum/struct cases but no longer repeat primitive and collection fallback blocks.
-  - Existing RPC JSON samples, especially byref collection paths, still pass in `RuntimeTest` and `CppTest*`.
-  - Reflection metadata updates include the two new static members on `IRpcLifecycle`.
+- Update the RPC wrapper generators instead of editing `Test/Generated` directly, because `Wrapper_*.txt` and `Wrapper_*_Json.txt` are generated outputs.
+- Regenerate wrappers with `CompilerTest_LoadAndCompile`; success criteria:
+  - Local variables whose initializer has an explicit type, such as `new T`, `cast T`, `as T`, typed function calls, member access, and default `int` literals, print without `: T`.
+  - Local variables whose initializer needs an expected type, such as `null` or `{}`, keep `var v : T = e;`.
+  - Struct constructor `of T` expressions are removed only where the function return type supplies the expected type.
+  - Callback `of func(...)` expressions are removed only if overload resolution accepts the bare function reference.
+  - Strong and weak casts remain where they are required to downcast, unbox, perform numeric/string conversions, select event/interface members, or make a nullable conversion explicit.
+- Run generated wrapper tests: build Debug x64 and Win32, run `CompilerTest_LoadAndCompile`, then run `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on x64 and Win32. Run additional required unit tests from `Project.md` according to `verify-and-commit.md`.
 
 # PROPOSALS
 
-- No.1 Move predefined unknown JSON schemas into reflected C++ helpers
+- [CONFIRMED] No.1 Omit local variable types at generation sites where the initializer already carries the type
 
-## No.1 Move predefined unknown JSON schemas into reflected C++ helpers
+## No.1 Omit local variable types at generation sites where the initializer already carries the type
 
 ### CODE CHANGE
 
-Add `WfLibraryRpcJson.h` and `WfLibraryRpcJson.cpp` under `Source/Library/Rpc` with static helper functions for predefined primitive and unknown collection JSON schemas. Register them as static external methods on `IRpcLifecycle`, then change the RPC JSON generator so only custom enum and struct cases remain generated before delegating to the helpers.
+- Added inferred local variable generation for RPC wrapper locals where the initializer already determines the type (`new T`, casts, typed calls/member values, and integer literals).
+- Kept explicit local variable types for `null` and `{}` initializers, because those require expected types in Workflow.
+- Removed redundant JSON wrapper `of` expressions for struct constructor returns and recursive JSON callback function references after confirming the return type/call target supplies the expected type.
+- Removed redundant object boxing casts where the expression is already accepted by implicit conversion.
+- Kept casts/as expressions that still perform downcasts, interface extraction, unboxing, nullable conversion, or JSON node conversion.
+- Changed typed cached-property fields from `null of (T)` to `null`, preserving the field type while avoiding a redundant infer expression.
 
 ### RESULT
 
-Implemented `IRpcLifecycle::JsonSerializePredefinedTypes` and `IRpcLifecycle::JsonDeserializePredefinedTypes` in C++ and registered them as static methods. Updated RPC JSON code generation to keep generated custom enum/struct handling and delegate predefined primitives plus unknown list/map schemas to the C++ helpers using recursive callbacks.
+Implemented in the RPC wrapper generators and regenerated generated wrapper/assembly text outputs.
 
 Verification completed:
 - Debug x64 build passed.
 - Debug Win32 build passed.
-- `LibraryTest` passed on x64 and Win32.
-- `CompilerTest_GenerateMetadata` passed on x64 and Win32.
-- `CompilerTest_LoadAndCompile` passed on x64.
-- Regenerated source build passed on x64 and Win32.
-- `RuntimeTest` passed on x64 and Win32.
-- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on x64 and Win32.
+- `CompilerTest_LoadAndCompile` passed on x64: 6/6 files, 699/699 cases.
+- `LibraryTest` passed on x64 and Win32: 2/2 files, 14/14 cases.
+- `CompilerTest_GenerateMetadata` passed on x64 and Win32: 1/1 files, 2/2 cases.
+- `RuntimeTest` passed on x64 and Win32: 4/4 files, 257/257 cases.
+- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on x64 and Win32: each 2/2 files, 223/223 cases.

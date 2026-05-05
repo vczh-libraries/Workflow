@@ -597,6 +597,11 @@ namespace vl
 					return statement;
 				}
 
+				Ptr<WfStatement> CreateInferredVariableStatement(const WString& name, Ptr<WfExpression> expression)
+				{
+					return CreateVariableStatement(name, nullptr, expression);
+				}
+
 				Ptr<WfStatement> CreateIf(Ptr<WfExpression> condition, Ptr<WfStatement> trueBranch, Ptr<WfStatement> falseBranch = nullptr)
 				{
 					auto statement = Ptr(new WfIfStatement);
@@ -704,7 +709,25 @@ namespace vl
 					{
 						return CreateLifecycleHelperCall(byref ? L"RpcBoxByref" : L"RpcBoxByval", value, lifecycle);
 					}
-					return CreateCast(CreatePredefinedType(WfPredefinedTypeName::Object), value);
+					return value;
+				}
+
+				Ptr<WfExpression> CreateRpcCachedPropertyInitialValue(const RpcPropertyModel& propertyModel)
+				{
+					if (!propertyModel.typeInfo)
+					{
+						return CreateNull();
+					}
+
+					switch (propertyModel.typeInfo->GetDecorator())
+					{
+					case ITypeInfo::RawPtr:
+					case ITypeInfo::SharedPtr:
+					case ITypeInfo::Nullable:
+						return CreateNull();
+					default:
+						return CreateDefaultValue(propertyModel.typeInfo);
+					}
 				}
 
 				Ptr<WfExpression> CreateRpcUnboxExpression(ITypeInfo* typeInfo, Ptr<WfType> type, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle)
@@ -760,7 +783,7 @@ namespace vl
 
 				void AddRpcByvalReturnValue(Ptr<WfBlockStatement> block, Ptr<WfExpression> value, Ptr<WfExpression> copiedValue)
 				{
-					AddStatement(block, CreateVariableStatement(L"byvalReturnValue", CreateSharedType(L"system::RpcByvalReturnValue"), CreateNewClass(CreateSharedType(L"system::RpcByvalReturnValue"))));
+					AddStatement(block, CreateInferredVariableStatement(L"byvalReturnValue", CreateNewClass(CreateSharedType(L"system::RpcByvalReturnValue"))));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"byvalReturnValue"), L"value"), value)));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"byvalReturnValue"), L"slot"), CreateReference(L"_slot"))));
 					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_byvalReturnValues"), L"Set"), CreateReference(L"_slot"), copiedValue)));
@@ -1150,7 +1173,7 @@ namespace vl
 				Ptr<WfStatement> BuildInvokeMethodBranch(const RpcInterfaceModel& interfaceModel, const RpcMethodModel& methodModel)
 				{
 					auto block = CreateBlock();
-					AddStatement(block, CreateVariableStatement(L"target", CreateSharedType(interfaceModel.fullName), CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
+					AddStatement(block, CreateInferredVariableStatement(L"target", CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
 
 					List<Ptr<WfExpression>> arguments;
 					for (vint i = 0; i < methodModel.params.Count(); i++)
@@ -1177,8 +1200,8 @@ namespace vl
 					{
 						if (IsRpcByvalReturn(methodModel))
 						{
-							AddStatement(block, CreateVariableStatement(L"copiedReturnValue", CreatePredefinedType(WfPredefinedTypeName::Object), CreateRpcCopyByvalExpression(invoke, CreateReference(L"_lc"))));
-							AddStatement(block, CreateVariableStatement(L"boxedReturnValue", CreatePredefinedType(WfPredefinedTypeName::Object), CreateRpcBoxExpression(methodModel.returnTypeInfo, methodModel.returnByref, CreateReference(L"copiedReturnValue"), CreateReference(L"_lc"))));
+							AddStatement(block, CreateInferredVariableStatement(L"copiedReturnValue", CreateRpcCopyByvalExpression(invoke, CreateReference(L"_lc"))));
+							AddStatement(block, CreateInferredVariableStatement(L"boxedReturnValue", CreateRpcBoxExpression(methodModel.returnTypeInfo, methodModel.returnByref, CreateReference(L"copiedReturnValue"), CreateReference(L"_lc"))));
 							AddRpcByvalReturnValue(block, CreateReference(L"boxedReturnValue"), CreateReference(L"copiedReturnValue"));
 						}
 						else
@@ -1192,7 +1215,7 @@ namespace vl
 				Ptr<WfStatement> BuildInvokeEventBranch(const RpcInterfaceModel& interfaceModel, const RpcEventModel& eventModel)
 				{
 					auto block = CreateBlock();
-					AddStatement(block, CreateVariableStatement(L"target", CreateSharedType(interfaceModel.fullName), CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
+					AddStatement(block, CreateInferredVariableStatement(L"target", CreateCast(CreateSharedType(interfaceModel.fullName), CreateCall(CreateMember(CreateReference(L"_lc"), L"RefToPtr"), CreateReference(L"ref")))));
 
 					auto invoke = Ptr(new WfCallExpression);
 					invoke->function = CreateMember(CreateReference(L"target"), eventModel.name);
@@ -1543,9 +1566,9 @@ namespace vl
 
 				void AddRpcSerializeEventArguments(Ptr<WfBlockStatement> block)
 				{
-					AddStatement(block, CreateVariableStatement(L"rpcSerializer", CreateRawType(L"system::IRpcSerializer"), CreateMember(CreateReference(L"lc"), L"Serializer")));
+					AddStatement(block, CreateInferredVariableStatement(L"rpcSerializer", CreateMember(CreateReference(L"lc"), L"Serializer")));
 					auto serializeBranch = CreateBlock();
-					AddStatement(serializeBranch, CreateVariableStatement(L"rpcArgumentIndex", CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(0)));
+					AddStatement(serializeBranch, CreateInferredVariableStatement(L"rpcArgumentIndex", CreateInt(0)));
 
 					auto loopBody = CreateBlock();
 					AddStatement(loopBody, CreateExpressionStatement(CreateCall(
@@ -1784,15 +1807,13 @@ namespace vl
 					}
 					else if (IsRpcByvalReturn(methodModel))
 					{
-						AddStatement(block, CreateVariableStatement(L"objectOps", CreateRawType(L"system::IRpcObjectOps"), CreateRpcOpsObjectOps()));
+						AddStatement(block, CreateInferredVariableStatement(L"objectOps", CreateRpcOpsObjectOps()));
 						auto invoke = CreateRpcOpsObjectInvoke(methodModel, CreateReference(L"objectOps"));
-						AddStatement(block, CreateVariableStatement(
+						AddStatement(block, CreateInferredVariableStatement(
 							L"byvalReturnValue",
-							CreateSharedType(L"system::RpcByvalReturnValue"),
 							CreateCast(CreateSharedType(L"system::RpcByvalReturnValue"), invoke)));
-						AddStatement(block, CreateVariableStatement(
+						AddStatement(block, CreateInferredVariableStatement(
 							L"result",
-							CopyType(methodModel.returnType.Obj()),
 							CreateRpcUnboxExpression(
 								methodModel.returnTypeInfo,
 								methodModel.returnType,
@@ -1894,7 +1915,7 @@ namespace vl
 					{
 						if (propertyModel.cached)
 						{
-							proxyExpr->declarations.Add(CreateVariableDeclaration(GetPropertyCacheValueName(propertyModel), CopyType(propertyModel.type.Obj()), propertyModel.typeInfo ? CreateDefaultValue(propertyModel.typeInfo) : CreateNull()));
+							proxyExpr->declarations.Add(CreateVariableDeclaration(GetPropertyCacheValueName(propertyModel), CopyType(propertyModel.type.Obj()), CreateRpcCachedPropertyInitialValue(propertyModel)));
 							proxyExpr->declarations.Add(CreateVariableDeclaration(GetPropertyCacheAvailableName(propertyModel), CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
 						}
 					}
@@ -2013,7 +2034,7 @@ namespace vl
 						proxyExpr->declarations.Add(methodDecl);
 					}
 
-					AddStatement(block, CreateVariableStatement(L"proxy", CreateSharedType(wrapperInterfaceFullName), proxyExpr));
+					AddStatement(block, CreateInferredVariableStatement(L"proxy", proxyExpr));
 					AddStatement(
 						block,
 						CreateExpressionStatement(
