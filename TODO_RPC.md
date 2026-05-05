@@ -19,8 +19,19 @@
   - Interface inheritance.
 - Generate JSON from "RPC metadata in Workflow syntax".
   - Review JSON related constructions.
+  - In `rpcjson_Serialize` and `rpcjson_Deserialize`, after all custom types are processed, the rest should be given to C++ written functions.
+    - Such functions accept function pointer of `rpcjson_Serialize` and `rpcjson_Deserialize` so that they could handle byref collection properly.
+    - `func IRpcLifecycle::JsonSerialize(value : object, rpcjson_Serialize : func (value) : (system::JsonNode^))`
+    - `func IRpcLifecycle::JsonDeserialize(value : object, rpcjson_Deserialize : func (system::JsonNode^) : (value))`
+    - The above functions will be put in `WfLibraryRpcJson.(h|cpp)` in `Test/Source/Library/Rpc`, but registered as static members to `IRpcLifecycle`.
+    - The above functions handle `UnknownType_PrimitiveSchema` in `TODO_RPC_JSON.md`, as well as byref collection serialization.
+    - Code generation of `rpcjson_Serialize` and `rpcjson_Deserialize` can know skip these types, avoid repeating code in all these sample outputs.
   - In `Wrapper_*.txt` and `Wrapper_*_Json.txt`, there are a lot of "in function variable" which have types, local variable types should be omitted when possible.
+  - In `rpcjson_Serialize` and `rpcjson_Deserialize` for serializable custom primitive types, it should serialize like enum but the second element is string.
+    - Need to inject a serializable struct to `CppTypes.(h|cpp)`.
+    - Need to update the .d.ts file as well.
   - Make sure arguments are serialized to expected JSON representation.
+    - Make a `RpcDualDispatcherJson` to record all JSON objects, code gen ts files and create a npm project to build against the schema, just like VlppParser2.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
 - Document RPC.
 - Document compiler process.

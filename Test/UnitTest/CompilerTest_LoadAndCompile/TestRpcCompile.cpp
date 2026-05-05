@@ -225,16 +225,16 @@ TEST_FILE
 			WString itemName, itemResult;
 			if (!DecodeRpcName(rpcLine, itemName, itemResult)) continue;
 
-				TEST_CASE(itemName)
-				{
-					TEST_PRINT(itemName);
-					auto sample = LoadSample(L"Rpc", itemName);
-					Ptr<WfModule> wrapperModule;
-					Ptr<WfModule> wrapperJsonModule;
+			TEST_CASE(itemName)
+			{
+				TEST_PRINT(itemName);
+				auto sample = LoadSample(L"Rpc", itemName);
+				Ptr<WfModule> wrapperModule;
+				Ptr<WfModule> wrapperJsonModule;
 
-					manager.Clear(true, true);
-					{
-						auto module = ParseModule(sample, GetWorkflowParser());
+				manager.Clear(true, true);
+				{
+					auto module = ParseModule(sample, GetWorkflowParser());
 					TEST_ASSERT(module);
 					TEST_ASSERT(manager.errors.Count() == 0);
 
