@@ -171,3 +171,24 @@ Task 3 verification:
 - `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug x64.
 - `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug Win32.
 - No generated files were modified by Task 3 verification; only the analyzer, RPC compile test, and task log changed.
+
+### CODE CHANGE
+
+Task 4:
+- Split all 120 RPC samples into `Rpc/SAMPLE.txt` definition files and `Rpc/SAMPLE_Test.txt` executable test files.
+- Updated `TestRpcCompile.cpp` so `CompileRpcSample` compiles only the definition module, while `LinkRpcSample` loads the definition module, test module, and generated wrappers.
+- Added the new `*_Test.txt` files to `CompilerTest_LoadAndCompile.vcxproj` and `.filters` under `Resource Files\Rpc`.
+- Updated `Project.md`, `TODO_RPC_Sample.md`, `.github\Rules\new-sample.md`, and `.github\Rules\new-sample-rpc.md` to document the RPC sample split and indexing rules.
+- Regenerated RPC parse logs and generated C++/reflection outputs affected by the split source comments and separate test module parsing.
+
+### TASK 4 CONFIRMED
+
+Task 4 verification:
+- Structural checks confirmed 120 RPC definition files, 120 matching `*_Test.txt` files, no missing pairs, no executable globals in definition files, and no `@rpc` attributes in test files.
+- `CompilerTest_LoadAndCompile.vcxproj` and `.filters` each contain 120 `*_Test.txt` entries.
+- `git diff --check` passed.
+- Debug x64 solution build passed with 0 warnings and 0 errors.
+- `CompilerTest_LoadAndCompile` passed on Debug x64 after the split.
+- Debug Win32 solution build passed with 0 warnings and 0 errors.
+- `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug x64.
+- `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug Win32.

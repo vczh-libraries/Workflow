@@ -33,7 +33,7 @@ Calculations are performed and the result returns from `main`. In `Test\Resource
 
 ## Rpc Sample
 
-A `Rpc` sample is a Workflow script following the pattern:
+A `Rpc` sample is a pair of Workflow scripts. `Test\Resource\Rpc\SAMPLE.txt` contains only RPC definitions and is used for RPC metadata/wrapper generation:
 
 ```Workflow
 module Rpc;
@@ -47,8 +47,16 @@ namespace YourFavoriteNamespace
 	{
 	}
 }
+```
 
-func serviceMain(lc : IRpcLifeCycle*) : void
+`Test\Resource\Rpc\SAMPLE_Test.txt` contains the executable test logic:
+
+```Workflow
+module Rpc;
+using system::*;
+using YourFavoriteNamespace::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
 {
 	var service = new (YourFavoriteNamespace::IService^)
 	{
@@ -56,14 +64,15 @@ func serviceMain(lc : IRpcLifeCycle*) : void
 	lc.RegisterService("YourFavoriteNamespace::IService", service);
 }
 
-func clientMain(lc : IRpcLifeCycle*) : string
+func clientMain(lc : IRpcLifecycle*) : string
 {
 	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
 	return "Test Result";
 }
 ```
 
-Calculations are performed and the result returns from `clientMain`. In `Test\Resource\IndexRpc.txt`, the expected result of the sample should be written down. And the script goes through the following process:
-- It is compiled in `CompilerTest_LoadAndCompile`'s `TestRpcCompile.cpp`, producing log files, Workflow binary and C++ source files.
+Calculations are performed and the result returns from `clientMain`. In `Test\Resource\IndexRpc.txt`, the expected result of the sample should be written down under `SAMPLE` only; do not add `SAMPLE_Test` to the index. Both files should be added to `CompilerTest_LoadAndCompile` under `Resource Files\Rpc`. The scripts go through the following process:
+- `SAMPLE.txt` is compiled in `CompilerTest_LoadAndCompile`'s `TestRpcCompile.cpp` to produce RPC metadata and wrappers.
+- `SAMPLE.txt`, `SAMPLE_Test.txt`, and the generated wrappers are linked in `TestRpcCompile.cpp`, producing log files, Workflow binary and C++ source files.
 - The Workflow binary will be loaded in `RuntimeTest`'s `TestRpc.cpp`, which initializes the Rpc environment, calls `serviceMain` followed by `clientMain` and compare the result of `clientMain` against `IndexRpc.txt`.
 - Generate C++ source files should be added to `Generated_CppRpc` and `Generated_ReflectionRpc` projects, and they will be picked up by `CppTest`, `CppTest_Metaonly` and `CppTest_Reflection` projects. They do the same thing to run the `clientMain` function against `IndexCodegen.txt`, but everything is generated in `TestCasesRpc.cpp`.

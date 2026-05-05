@@ -1,0 +1,62 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+
+
+var xsService : int[] = {};
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcCollection::Default::IService^)
+  {
+    override func DoList(xs : int[]) : int[]
+    {
+      var xsObj : object = xs;
+      if ((xsObj as (system::IRpcWrapperBase^) is not null))
+      {
+        raise "Parameter xs should be a copied local object in serviceMain";
+      }
+
+      xsService = xs;
+      xs.Add(4);
+      return xs;
+    }
+  };
+  lc.RegisterService("RpcCollection::Default::IService", serviceObj);
+}
+
+func Print(xs : int[]) : string
+{
+  var result = "";
+  for (x in xs)
+  {
+    result = $"$(result)$(x)";
+  }
+  return result;
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var xsOrigin = {1 2 3};
+  var service = cast (RpcCollection::Default::IService^) lc.RequestService("RpcCollection::Default::IService");
+  var xs = service.DoList(xsOrigin);
+  var xsObj : object = xs;
+
+  if (xs == xsOrigin)
+  {
+    raise "Return value xs should be a copied local object in clientMain";
+  }
+
+  if ((xsObj as (system::IRpcWrapperBase^) is not null))
+  {
+    raise "Return value xs should be a copied local object in clientMain";
+  }
+
+  var xsClient = xs;
+  xs.Add(5);
+
+  return
+    $"[$(Print(xsOrigin))]" &
+    $"[$(Print(xsService))]" &
+    $"[$(Print(xsClient))]";
+}
