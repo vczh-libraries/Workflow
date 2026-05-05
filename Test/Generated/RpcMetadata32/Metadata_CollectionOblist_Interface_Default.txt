@@ -7,19 +7,27 @@ namespace RpcCollectionOblist
         namespace Default
         {
             @rpc:Interface
+            @rpc:IdString("RpcCollectionOblist::Interface::Default::IValue")
+            @rpc:IdNumber(2)
             interface IValue
             {
                 @rpc:Dynamic
                 prop Value : ::system::String{GetValue}
 
+                @rpc:IdString("RpcCollectionOblist::Interface::Default::IValue.GetValue")
+                @rpc:IdNumber(3)
                 func GetValue() : (::system::String);
             }
 
             @rpc:Interface
             @rpc:Ctor
+            @rpc:IdString("RpcCollectionOblist::Interface::Default::IService")
+            @rpc:IdNumber(0)
             interface IService
             {
                 @rpc:Byref
+                @rpc:IdString("RpcCollectionOblist::Interface::Default::IService.DoList")
+                @rpc:IdNumber(1)
                 func DoList(@rpc:Byref xs : observe ::RpcCollectionOblist::Interface::Default::IValue^[]) : (observe ::RpcCollectionOblist::Interface::Default::IValue^[]);
             }
         }

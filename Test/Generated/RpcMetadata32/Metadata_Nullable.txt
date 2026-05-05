@@ -3,18 +3,26 @@
 namespace RpcNullable
 {
     @rpc:Interface
+    @rpc:IdString("RpcNullable::IValue")
+    @rpc:IdNumber(2)
     interface IValue
     {
         @rpc:Cached
         prop Value : ::system::String{GetValue}
 
+        @rpc:IdString("RpcNullable::IValue.GetValue")
+        @rpc:IdNumber(3)
         func GetValue() : (::system::String);
     }
 
     @rpc:Interface
     @rpc:Ctor
+    @rpc:IdString("RpcNullable::IService")
+    @rpc:IdNumber(0)
     interface IService
     {
+        @rpc:IdString("RpcNullable::IService.Print")
+        @rpc:IdNumber(1)
         func Print(value : ::system::String?, v : ::RpcNullable::IValue^) : (::system::String);
     }
 }

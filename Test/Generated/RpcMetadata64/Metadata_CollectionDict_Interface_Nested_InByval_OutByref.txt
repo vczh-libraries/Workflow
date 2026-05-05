@@ -11,19 +11,27 @@ namespace RpcCollectionDict
                 namespace OutByref
                 {
                     @rpc:Interface
+                    @rpc:IdString("RpcCollectionDict::Interface::Nested::InByval::OutByref::IValue")
+                    @rpc:IdNumber(2)
                     interface IValue
                     {
                         @rpc:Dynamic
                         prop Value : ::system::String{GetValue}
 
+                        @rpc:IdString("RpcCollectionDict::Interface::Nested::InByval::OutByref::IValue.GetValue")
+                        @rpc:IdNumber(3)
                         func GetValue() : (::system::String);
                     }
 
                     @rpc:Interface
                     @rpc:Ctor
+                    @rpc:IdString("RpcCollectionDict::Interface::Nested::InByval::OutByref::IService")
+                    @rpc:IdNumber(0)
                     interface IService
                     {
                         @rpc:Byref
+                        @rpc:IdString("RpcCollectionDict::Interface::Nested::InByval::OutByref::IService.DoList")
+                        @rpc:IdNumber(1)
                         func DoList(@rpc:Byval xs : ::RpcCollectionDict::Interface::Nested::InByval::OutByref::IValue^[::system::Int64][::system::Int64]) : (::RpcCollectionDict::Interface::Nested::InByval::OutByref::IValue^[::system::Int64][::system::Int64]);
                     }
                 }

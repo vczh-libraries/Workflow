@@ -9,19 +9,27 @@ namespace RpcCollectionOblist
             namespace OutByref
             {
                 @rpc:Interface
+                @rpc:IdString("RpcCollectionOblist::Interface::InByval::OutByref::IValue")
+                @rpc:IdNumber(2)
                 interface IValue
                 {
                     @rpc:Dynamic
                     prop Value : ::system::String{GetValue}
 
+                    @rpc:IdString("RpcCollectionOblist::Interface::InByval::OutByref::IValue.GetValue")
+                    @rpc:IdNumber(3)
                     func GetValue() : (::system::String);
                 }
 
                 @rpc:Interface
                 @rpc:Ctor
+                @rpc:IdString("RpcCollectionOblist::Interface::InByval::OutByref::IService")
+                @rpc:IdNumber(0)
                 interface IService
                 {
                     @rpc:Byref
+                    @rpc:IdString("RpcCollectionOblist::Interface::InByval::OutByref::IService.DoList")
+                    @rpc:IdNumber(1)
                     func DoList(@rpc:Byval xs : observe ::RpcCollectionOblist::Interface::InByval::OutByref::IValue^[]) : (observe ::RpcCollectionOblist::Interface::InByval::OutByref::IValue^[]);
                 }
             }

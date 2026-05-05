@@ -9,16 +9,22 @@ namespace RpcCollectionDict
             namespace PropByref
             {
                 @rpc:Interface
+                @rpc:IdString("RpcCollectionDict::Interface::InByref::PropByref::IValue")
+                @rpc:IdNumber(3)
                 interface IValue
                 {
                     @rpc:Dynamic
                     prop Value : ::system::String{GetValue}
 
+                    @rpc:IdString("RpcCollectionDict::Interface::InByref::PropByref::IValue.GetValue")
+                    @rpc:IdNumber(4)
                     func GetValue() : (::system::String);
                 }
 
                 @rpc:Interface
                 @rpc:Ctor
+                @rpc:IdString("RpcCollectionDict::Interface::InByref::PropByref::IService")
+                @rpc:IdNumber(0)
                 interface IService
                 {
                     @rpc:Byref
@@ -26,8 +32,12 @@ namespace RpcCollectionDict
                     prop List : ::RpcCollectionDict::Interface::InByref::PropByref::IValue^[::system::Int32]{GetList, SetList}
 
                     @rpc:Byref
+                    @rpc:IdString("RpcCollectionDict::Interface::InByref::PropByref::IService.GetList")
+                    @rpc:IdNumber(1)
                     func GetList() : (::RpcCollectionDict::Interface::InByref::PropByref::IValue^[::system::Int32]);
 
+                    @rpc:IdString("RpcCollectionDict::Interface::InByref::PropByref::IService.SetList")
+                    @rpc:IdNumber(2)
                     func SetList(@rpc:Byref <value> : ::RpcCollectionDict::Interface::InByref::PropByref::IValue^[::system::Int32]) : (::system::Void);
                 }
             }

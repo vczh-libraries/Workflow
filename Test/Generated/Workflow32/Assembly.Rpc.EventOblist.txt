@@ -3,8 +3,8 @@ Global Variables:
 ========================================================
 s
 rpctype_RpcEventOblist__IService
-rpcmethod_RpcEventOblist__IService_SetList
 rpcmethod_RpcEventOblist__IService_ModifyHeldList
+rpcmethod_RpcEventOblist__IService_SetList
 rpcmethod_RpcEventOblist__IService_WatchHeldList
 
 ========================================================
@@ -483,12 +483,12 @@ Instructions:
 3    :     StoreGlobalVar: var = 1(rpctype_RpcEventOblist__IService)
 //  1
 4    :     LoadValue     : value = <I4, 1>
-//  var rpcmethod_RpcEventOblist__IService_SetList : int = 1;
-5    :     StoreGlobalVar: var = 2(rpcmethod_RpcEventOblist__IService_SetList)
+//  var rpcmethod_RpcEventOblist__IService_ModifyHeldList : int = 1;
+5    :     StoreGlobalVar: var = 2(rpcmethod_RpcEventOblist__IService_ModifyHeldList)
 //  2
 6    :     LoadValue     : value = <I4, 2>
-//  var rpcmethod_RpcEventOblist__IService_ModifyHeldList : int = 2;
-7    :     StoreGlobalVar: var = 3(rpcmethod_RpcEventOblist__IService_ModifyHeldList)
+//  var rpcmethod_RpcEventOblist__IService_SetList : int = 2;
+7    :     StoreGlobalVar: var = 3(rpcmethod_RpcEventOblist__IService_SetList)
 //  3
 8    :     LoadValue     : value = <I4, 3>
 //  var rpcmethod_RpcEventOblist__IService_WatchHeldList : int = 3;
@@ -811,25 +811,25 @@ Instructions:
 168  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
 //  result.Set("RpcEventOblist::IService", 0);
 169  :     Pop           
-//  "RpcEventOblist::IService.SetList"
-170  :     LoadValue     : value = <String, RpcEventOblist::IService.SetList>
+//  "RpcEventOblist::IService.ModifyHeldList"
+170  :     LoadValue     : value = <String, RpcEventOblist::IService.ModifyHeldList>
 //  1
 171  :     LoadValue     : value = <I4, 1>
 //  result
 172  :     LoadLocalVar  : var = 0(result)
-//  result.Set("RpcEventOblist::IService.SetList", 1)
+//  result.Set("RpcEventOblist::IService.ModifyHeldList", 1)
 173  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  result.Set("RpcEventOblist::IService.SetList", 1);
+//  result.Set("RpcEventOblist::IService.ModifyHeldList", 1);
 174  :     Pop           
-//  "RpcEventOblist::IService.ModifyHeldList"
-175  :     LoadValue     : value = <String, RpcEventOblist::IService.ModifyHeldList>
+//  "RpcEventOblist::IService.SetList"
+175  :     LoadValue     : value = <String, RpcEventOblist::IService.SetList>
 //  2
 176  :     LoadValue     : value = <I4, 2>
 //  result
 177  :     LoadLocalVar  : var = 0(result)
-//  result.Set("RpcEventOblist::IService.ModifyHeldList", 2)
+//  result.Set("RpcEventOblist::IService.SetList", 2)
 178  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  result.Set("RpcEventOblist::IService.ModifyHeldList", 2);
+//  result.Set("RpcEventOblist::IService.SetList", 2);
 179  :     Pop           
 //  "RpcEventOblist::IService.WatchHeldList"
 180  :     LoadValue     : value = <String, RpcEventOblist::IService.WatchHeldList>
@@ -974,7 +974,7 @@ Instructions:
 //  <switch>2
 250  :     LoadLocalVar  : var = 3(<switch>2)
 //  rpcmethod_RpcEventOblist__IService_ModifyHeldList
-251  :     LoadGlobalVar : var = 3(rpcmethod_RpcEventOblist__IService_ModifyHeldList)
+251  :     LoadGlobalVar : var = 2(rpcmethod_RpcEventOblist__IService_ModifyHeldList)
 //  (<switch>2 == rpcmethod_RpcEventOblist__IService_ModifyHeldList of (::system::Int32))
 252  :     CompareValue  
 //  if ((<switch>2 == rpcmethod_RpcEventOblist__IService_ModifyHeldList of (::system::Int32)))
@@ -1006,7 +1006,7 @@ Instructions:
 //  <switch>2
 266  :     LoadLocalVar  : var = 3(<switch>2)
 //  rpcmethod_RpcEventOblist__IService_SetList
-267  :     LoadGlobalVar : var = 2(rpcmethod_RpcEventOblist__IService_SetList)
+267  :     LoadGlobalVar : var = 3(rpcmethod_RpcEventOblist__IService_SetList)
 //  (<switch>2 == rpcmethod_RpcEventOblist__IService_SetList of (::system::Int32))
 268  :     CompareValue  
 //  if ((<switch>2 == rpcmethod_RpcEventOblist__IService_SetList of (::system::Int32)))
@@ -1310,7 +1310,7 @@ Instructions:
 //  ref
 418  :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcEventOblist__IService_ModifyHeldList
-419  :     LoadGlobalVar : var = 3(rpcmethod_RpcEventOblist__IService_ModifyHeldList)
+419  :     LoadGlobalVar : var = 2(rpcmethod_RpcEventOblist__IService_ModifyHeldList)
 //  arguments
 420  :     LoadLocalVar  : var = 1(arguments)
 //  ref
@@ -1364,7 +1364,7 @@ Instructions:
 //  ref
 445  :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcEventOblist__IService_SetList
-446  :     LoadGlobalVar : var = 2(rpcmethod_RpcEventOblist__IService_SetList)
+446  :     LoadGlobalVar : var = 3(rpcmethod_RpcEventOblist__IService_SetList)
 //  arguments
 447  :     LoadLocalVar  : var = 2(arguments)
 //  ref
@@ -2744,7 +2744,7 @@ Instructions:
 //  <switch>6
 1135 :     LoadLocalVar  : var = 3(<switch>6)
 //  rpcmethod_RpcEventOblist__IService_ModifyHeldList
-1136 :     LoadGlobalVar : var = 3(rpcmethod_RpcEventOblist__IService_ModifyHeldList)
+1136 :     LoadGlobalVar : var = 2(rpcmethod_RpcEventOblist__IService_ModifyHeldList)
 //  (<switch>6 == rpcmethod_RpcEventOblist__IService_ModifyHeldList of (::system::Int32))
 1137 :     CompareValue  
 //  if ((<switch>6 == rpcmethod_RpcEventOblist__IService_ModifyHeldList of (::system::Int32)))
@@ -2776,7 +2776,7 @@ Instructions:
 //  <switch>6
 1151 :     LoadLocalVar  : var = 3(<switch>6)
 //  rpcmethod_RpcEventOblist__IService_SetList
-1152 :     LoadGlobalVar : var = 2(rpcmethod_RpcEventOblist__IService_SetList)
+1152 :     LoadGlobalVar : var = 3(rpcmethod_RpcEventOblist__IService_SetList)
 //  (<switch>6 == rpcmethod_RpcEventOblist__IService_SetList of (::system::Int32))
 1153 :     CompareValue  
 //  if ((<switch>6 == rpcmethod_RpcEventOblist__IService_SetList of (::system::Int32)))
@@ -3086,7 +3086,7 @@ Instructions:
 //  ref
 1306 :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcEventOblist__IService_ModifyHeldList
-1307 :     LoadGlobalVar : var = 3(rpcmethod_RpcEventOblist__IService_ModifyHeldList)
+1307 :     LoadGlobalVar : var = 2(rpcmethod_RpcEventOblist__IService_ModifyHeldList)
 //  arguments
 1308 :     LoadLocalVar  : var = 1(arguments)
 //  ref
@@ -3146,7 +3146,7 @@ Instructions:
 //  ref
 1336 :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcEventOblist__IService_SetList
-1337 :     LoadGlobalVar : var = 2(rpcmethod_RpcEventOblist__IService_SetList)
+1337 :     LoadGlobalVar : var = 3(rpcmethod_RpcEventOblist__IService_SetList)
 //  arguments
 1338 :     LoadLocalVar  : var = 2(arguments)
 //  ref

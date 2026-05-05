@@ -3,16 +3,24 @@
 namespace RpcDtor2Test
 {
     @rpc:Interface
+    @rpc:IdString("RpcDtor2Test::IValue")
+    @rpc:IdNumber(3)
     interface IValue
     {
     }
 
     @rpc:Interface
     @rpc:Ctor
+    @rpc:IdString("RpcDtor2Test::IService")
+    @rpc:IdNumber(0)
     interface IService
     {
+        @rpc:IdString("RpcDtor2Test::IService.MakeValue")
+        @rpc:IdNumber(1)
         func MakeValue() : (::RpcDtor2Test::IValue^);
 
+        @rpc:IdString("RpcDtor2Test::IService.ReviewValue")
+        @rpc:IdNumber(2)
         func ReviewValue(value : ::RpcDtor2Test::IValue^) : (::RpcDtor2Test::IValue^);
     }
 }

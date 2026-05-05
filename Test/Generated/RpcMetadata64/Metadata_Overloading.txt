@@ -3,26 +3,42 @@
 namespace RpcOverloadingTest
 {
     @rpc:Interface
+    @rpc:IdString("RpcOverloadingTest::IStringRepresentable")
+    @rpc:IdNumber(6)
     interface IStringRepresentable
     {
         @rpc:Dynamic
         prop StringValue : ::system::String{GetStringValue}
 
+        @rpc:IdString("RpcOverloadingTest::IStringRepresentable.GetStringValue")
+        @rpc:IdNumber(7)
         func GetStringValue() : (::system::String);
     }
 
     @rpc:Interface
     @rpc:Ctor
+    @rpc:IdString("RpcOverloadingTest::IService")
+    @rpc:IdNumber(0)
     interface IService
     {
+        @rpc:IdString("RpcOverloadingTest::IService.ToString(value).1")
+        @rpc:IdNumber(1)
         func ToString(value : ::system::Boolean) : (::system::String);
 
+        @rpc:IdString("RpcOverloadingTest::IService.ToString(value).2")
+        @rpc:IdNumber(2)
         func ToString(value : ::system::String) : (::system::String);
 
+        @rpc:IdString("RpcOverloadingTest::IService.ToString(value).3")
+        @rpc:IdNumber(3)
         func ToString(value : ::RpcOverloadingTest::IStringRepresentable^) : (::system::String);
 
+        @rpc:IdString("RpcOverloadingTest::IService.ToString(value1,value2,value3,value4)")
+        @rpc:IdNumber(4)
         func ToString(value1 : ::system::Int64, value2 : ::system::Boolean, value3 : ::system::String, value4 : ::RpcOverloadingTest::IStringRepresentable^) : (::system::String);
 
+        @rpc:IdString("RpcOverloadingTest::IService.ToStringInt")
+        @rpc:IdNumber(5)
         func ToStringInt(value : ::system::Int64) : (::system::String);
     }
 }

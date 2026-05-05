@@ -8,6 +8,8 @@ namespace RpcCollectionOblist
         {
             @rpc:Interface
             @rpc:Ctor
+            @rpc:IdString("RpcCollectionOblist::InByref::PropByref::IService")
+            @rpc:IdNumber(0)
             interface IService
             {
                 @rpc:Byref
@@ -15,8 +17,12 @@ namespace RpcCollectionOblist
                 prop List : observe ::system::Int64[]{GetList, SetList}
 
                 @rpc:Byref
+                @rpc:IdString("RpcCollectionOblist::InByref::PropByref::IService.GetList")
+                @rpc:IdNumber(1)
                 func GetList() : (observe ::system::Int64[]);
 
+                @rpc:IdString("RpcCollectionOblist::InByref::PropByref::IService.SetList")
+                @rpc:IdNumber(2)
                 func SetList(@rpc:Byref <value> : observe ::system::Int64[]) : (::system::Void);
             }
         }

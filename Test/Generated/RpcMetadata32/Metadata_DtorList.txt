@@ -3,20 +3,32 @@
 namespace RpcDtorList
 {
     @rpc:Interface
+    @rpc:IdString("RpcDtorList::IValue")
+    @rpc:IdNumber(5)
     interface IValue
     {
     }
 
     @rpc:Interface
     @rpc:Ctor
+    @rpc:IdString("RpcDtorList::IService")
+    @rpc:IdNumber(0)
     interface IService
     {
+        @rpc:IdString("RpcDtorList::IService.Clear")
+        @rpc:IdNumber(1)
         func Clear() : (::system::Void);
 
+        @rpc:IdString("RpcDtorList::IService.Hold")
+        @rpc:IdNumber(2)
         func Hold() : (::system::Void);
 
+        @rpc:IdString("RpcDtorList::IService.Set")
+        @rpc:IdNumber(3)
         func Set(@rpc:Byref xs : ::RpcDtorList::IValue^[]) : (::system::Void);
 
+        @rpc:IdString("RpcDtorList::IService.Unhold")
+        @rpc:IdNumber(4)
         func Unhold() : (::system::Void);
     }
 }

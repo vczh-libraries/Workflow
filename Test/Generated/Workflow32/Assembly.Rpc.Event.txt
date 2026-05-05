@@ -4,8 +4,8 @@ Global Variables:
 s
 rpctype_RpcEvent__IService
 rpcmethod_RpcEvent__IService_MakeItHappen
-rpcmethod_RpcEvent__IService_Watch
 rpcevent_RpcEvent__IService_SomethingHappened
+rpcmethod_RpcEvent__IService_Watch
 
 ========================================================
 Functions:
@@ -475,12 +475,12 @@ Instructions:
 5    :     StoreGlobalVar: var = 2(rpcmethod_RpcEvent__IService_MakeItHappen)
 //  2
 6    :     LoadValue     : value = <I4, 2>
-//  var rpcmethod_RpcEvent__IService_Watch : int = 2;
-7    :     StoreGlobalVar: var = 3(rpcmethod_RpcEvent__IService_Watch)
+//  var rpcevent_RpcEvent__IService_SomethingHappened : int = 2;
+7    :     StoreGlobalVar: var = 3(rpcevent_RpcEvent__IService_SomethingHappened)
 //  3
 8    :     LoadValue     : value = <I4, 3>
-//  var rpcevent_RpcEvent__IService_SomethingHappened : int = 3;
-9    :     StoreGlobalVar: var = 4(rpcevent_RpcEvent__IService_SomethingHappened)
+//  var rpcmethod_RpcEvent__IService_Watch : int = 3;
+9    :     StoreGlobalVar: var = 4(rpcmethod_RpcEvent__IService_Watch)
 10   :     LoadValue     : value = <null>
 11   :     Return        
 //  ""
@@ -681,25 +681,25 @@ Instructions:
 109  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
 //  result.Set("RpcEvent::IService.MakeItHappen", 1);
 110  :     Pop           
-//  "RpcEvent::IService.Watch"
-111  :     LoadValue     : value = <String, RpcEvent::IService.Watch>
+//  "RpcEvent::IService.SomethingHappened"
+111  :     LoadValue     : value = <String, RpcEvent::IService.SomethingHappened>
 //  2
 112  :     LoadValue     : value = <I4, 2>
 //  result
 113  :     LoadLocalVar  : var = 0(result)
-//  result.Set("RpcEvent::IService.Watch", 2)
+//  result.Set("RpcEvent::IService.SomethingHappened", 2)
 114  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  result.Set("RpcEvent::IService.Watch", 2);
+//  result.Set("RpcEvent::IService.SomethingHappened", 2);
 115  :     Pop           
-//  "RpcEvent::IService.SomethingHappened"
-116  :     LoadValue     : value = <String, RpcEvent::IService.SomethingHappened>
+//  "RpcEvent::IService.Watch"
+116  :     LoadValue     : value = <String, RpcEvent::IService.Watch>
 //  3
 117  :     LoadValue     : value = <I4, 3>
 //  result
 118  :     LoadLocalVar  : var = 0(result)
-//  result.Set("RpcEvent::IService.SomethingHappened", 3)
+//  result.Set("RpcEvent::IService.Watch", 3)
 119  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  result.Set("RpcEvent::IService.SomethingHappened", 3);
+//  result.Set("RpcEvent::IService.Watch", 3);
 120  :     Pop           
 //  result
 121  :     LoadLocalVar  : var = 0(result)
@@ -866,7 +866,7 @@ Instructions:
 //  <switch>2
 202  :     LoadLocalVar  : var = 3(<switch>2)
 //  rpcmethod_RpcEvent__IService_Watch
-203  :     LoadGlobalVar : var = 3(rpcmethod_RpcEvent__IService_Watch)
+203  :     LoadGlobalVar : var = 4(rpcmethod_RpcEvent__IService_Watch)
 //  (<switch>2 == rpcmethod_RpcEvent__IService_Watch of (::system::Int32))
 204  :     CompareValue  
 //  if ((<switch>2 == rpcmethod_RpcEvent__IService_Watch of (::system::Int32)))
@@ -1036,7 +1036,7 @@ Instructions:
 //  <switch>3
 287  :     LoadLocalVar  : var = 3(<switch>3)
 //  rpcevent_RpcEvent__IService_SomethingHappened
-288  :     LoadGlobalVar : var = 4(rpcevent_RpcEvent__IService_SomethingHappened)
+288  :     LoadGlobalVar : var = 3(rpcevent_RpcEvent__IService_SomethingHappened)
 //  (<switch>3 == rpcevent_RpcEvent__IService_SomethingHappened of (::system::Int32))
 289  :     CompareValue  
 //  if ((<switch>3 == rpcevent_RpcEvent__IService_SomethingHappened of (::system::Int32)))
@@ -1194,7 +1194,7 @@ Instructions:
 //  ref
 366  :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcEvent__IService_Watch
-367  :     LoadGlobalVar : var = 3(rpcmethod_RpcEvent__IService_Watch)
+367  :     LoadGlobalVar : var = 4(rpcmethod_RpcEvent__IService_Watch)
 //  arguments
 368  :     LoadLocalVar  : var = 1(arguments)
 //  ref
@@ -1240,7 +1240,7 @@ Instructions:
 //  ref
 389  :     LoadLocalVar  : var = 0(ref)
 //  rpcevent_RpcEvent__IService_SomethingHappened
-390  :     LoadGlobalVar : var = 4(rpcevent_RpcEvent__IService_SomethingHappened)
+390  :     LoadGlobalVar : var = 3(rpcevent_RpcEvent__IService_SomethingHappened)
 //  arguments
 391  :     LoadLocalVar  : var = 2(arguments)
 //  _lc
@@ -1284,7 +1284,7 @@ Instructions:
 //  ref
 411  :     LoadCapturedVar: var = 1(<captured>ref)
 //  rpcevent_RpcEvent__IService_SomethingHappened
-412  :     LoadGlobalVar : var = 4(rpcevent_RpcEvent__IService_SomethingHappened)
+412  :     LoadGlobalVar : var = 3(rpcevent_RpcEvent__IService_SomethingHappened)
 //  lc
 413  :     LoadCapturedVar: var = 0(<captured>lc)
 //  lc.Controller
@@ -1396,7 +1396,7 @@ Instructions:
 //  ref
 467  :     LoadCapturedVar: var = 1(<captured>ref)
 //  rpcevent_RpcEvent__IService_SomethingHappened
-468  :     LoadGlobalVar : var = 4(rpcevent_RpcEvent__IService_SomethingHappened)
+468  :     LoadGlobalVar : var = 3(rpcevent_RpcEvent__IService_SomethingHappened)
 //  arguments
 469  :     LoadLocalVar  : var = 1(arguments)
 //  lc
@@ -2790,7 +2790,7 @@ Instructions:
 //  <switch>7
 1164 :     LoadLocalVar  : var = 3(<switch>7)
 //  rpcmethod_RpcEvent__IService_Watch
-1165 :     LoadGlobalVar : var = 3(rpcmethod_RpcEvent__IService_Watch)
+1165 :     LoadGlobalVar : var = 4(rpcmethod_RpcEvent__IService_Watch)
 //  (<switch>7 == rpcmethod_RpcEvent__IService_Watch of (::system::Int32))
 1166 :     CompareValue  
 //  if ((<switch>7 == rpcmethod_RpcEvent__IService_Watch of (::system::Int32)))
@@ -2960,7 +2960,7 @@ Instructions:
 //  <switch>8
 1249 :     LoadLocalVar  : var = 3(<switch>8)
 //  rpcevent_RpcEvent__IService_SomethingHappened
-1250 :     LoadGlobalVar : var = 4(rpcevent_RpcEvent__IService_SomethingHappened)
+1250 :     LoadGlobalVar : var = 3(rpcevent_RpcEvent__IService_SomethingHappened)
 //  (<switch>8 == rpcevent_RpcEvent__IService_SomethingHappened of (::system::Int32))
 1251 :     CompareValue  
 //  if ((<switch>8 == rpcevent_RpcEvent__IService_SomethingHappened of (::system::Int32)))
@@ -3128,7 +3128,7 @@ Instructions:
 //  ref
 1333 :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcEvent__IService_Watch
-1334 :     LoadGlobalVar : var = 3(rpcmethod_RpcEvent__IService_Watch)
+1334 :     LoadGlobalVar : var = 4(rpcmethod_RpcEvent__IService_Watch)
 //  arguments
 1335 :     LoadLocalVar  : var = 1(arguments)
 //  ref
@@ -3194,7 +3194,7 @@ Instructions:
 //  ref
 1366 :     LoadLocalVar  : var = 0(ref)
 //  rpcevent_RpcEvent__IService_SomethingHappened
-1367 :     LoadGlobalVar : var = 4(rpcevent_RpcEvent__IService_SomethingHappened)
+1367 :     LoadGlobalVar : var = 3(rpcevent_RpcEvent__IService_SomethingHappened)
 //  arguments
 1368 :     LoadLocalVar  : var = 2(arguments)
 //  _lc

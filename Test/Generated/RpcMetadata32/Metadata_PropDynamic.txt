@@ -4,17 +4,27 @@ namespace RpcPropDynamic
 {
     @rpc:Interface
     @rpc:Ctor
+    @rpc:IdString("RpcPropDynamic::IService")
+    @rpc:IdNumber(0)
     interface IService
     {
         @rpc:Dynamic
         prop Value : ::system::String{GetValue : ValueChanged}
 
+        @rpc:IdString("RpcPropDynamic::IService.ValueChanged")
+        @rpc:IdNumber(4)
         event ValueChanged();
 
+        @rpc:IdString("RpcPropDynamic::IService.GetValue")
+        @rpc:IdNumber(1)
         func GetValue() : (::system::String);
 
+        @rpc:IdString("RpcPropDynamic::IService.SetValue")
+        @rpc:IdNumber(2)
         func SetValue(value : ::system::String) : (::system::Void);
 
+        @rpc:IdString("RpcPropDynamic::IService.Signal")
+        @rpc:IdNumber(3)
         func Signal() : (::system::Void);
     }
 }

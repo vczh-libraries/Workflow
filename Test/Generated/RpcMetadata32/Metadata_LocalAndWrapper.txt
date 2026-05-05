@@ -3,21 +3,31 @@
 namespace RpcWrapperTest
 {
     @rpc:Interface
+    @rpc:IdString("RpcWrapperTest::IObj1")
+    @rpc:IdNumber(0)
     interface IObj1
     {
     }
 
     @rpc:Interface
+    @rpc:IdString("RpcWrapperTest::IObj2")
+    @rpc:IdNumber(1)
     interface IObj2
     {
     }
 
     @rpc:Interface
     @rpc:Ctor
+    @rpc:IdString("RpcWrapperTest::IService")
+    @rpc:IdNumber(2)
     interface IService
     {
+        @rpc:IdString("RpcWrapperTest::IService.Exchange1")
+        @rpc:IdNumber(3)
         func Exchange1(o : ::RpcWrapperTest::IObj1^) : (::RpcWrapperTest::IObj2^);
 
+        @rpc:IdString("RpcWrapperTest::IService.Exchange2")
+        @rpc:IdNumber(4)
         func Exchange2(o : ::RpcWrapperTest::IObj2^) : (::RpcWrapperTest::IObj1^);
     }
 }

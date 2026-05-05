@@ -7,24 +7,34 @@ namespace RpcCollection
         namespace PropDefault
         {
             @rpc:Interface
+            @rpc:IdString("RpcCollection::Interface::PropDefault::IValue")
+            @rpc:IdNumber(3)
             interface IValue
             {
                 @rpc:Dynamic
                 prop Value : ::system::String{GetValue}
 
+                @rpc:IdString("RpcCollection::Interface::PropDefault::IValue.GetValue")
+                @rpc:IdNumber(4)
                 func GetValue() : (::system::String);
             }
 
             @rpc:Interface
             @rpc:Ctor
+            @rpc:IdString("RpcCollection::Interface::PropDefault::IService")
+            @rpc:IdNumber(0)
             interface IService
             {
                 @rpc:Dynamic
                 prop List : ::RpcCollection::Interface::PropDefault::IValue^[]{GetList, SetList}
 
                 @rpc:Byref
+                @rpc:IdString("RpcCollection::Interface::PropDefault::IService.GetList")
+                @rpc:IdNumber(1)
                 func GetList() : (::RpcCollection::Interface::PropDefault::IValue^[]);
 
+                @rpc:IdString("RpcCollection::Interface::PropDefault::IService.SetList")
+                @rpc:IdNumber(2)
                 func SetList(@rpc:Byref <value> : ::RpcCollection::Interface::PropDefault::IValue^[]) : (::system::Void);
             }
         }

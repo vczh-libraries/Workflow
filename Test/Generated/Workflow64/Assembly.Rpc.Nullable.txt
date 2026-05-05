@@ -2,10 +2,10 @@
 Global Variables:
 ========================================================
 s
-rpctype_RpcNullable__IValue
 rpctype_RpcNullable__IService
-rpcmethod_RpcNullable__IValue_GetValue
 rpcmethod_RpcNullable__IService_Print
+rpctype_RpcNullable__IValue
+rpcmethod_RpcNullable__IValue_GetValue
 
 ========================================================
 Functions:
@@ -460,20 +460,20 @@ Instructions:
 1    :     StoreGlobalVar: var = 0(s)
 //  0
 2    :     LoadValue     : value = <I8, 0>
-//  var rpctype_RpcNullable__IValue : int = 0;
-3    :     StoreGlobalVar: var = 1(rpctype_RpcNullable__IValue)
+//  var rpctype_RpcNullable__IService : int = 0;
+3    :     StoreGlobalVar: var = 1(rpctype_RpcNullable__IService)
 //  1
 4    :     LoadValue     : value = <I8, 1>
-//  var rpctype_RpcNullable__IService : int = 1;
-5    :     StoreGlobalVar: var = 2(rpctype_RpcNullable__IService)
+//  var rpcmethod_RpcNullable__IService_Print : int = 1;
+5    :     StoreGlobalVar: var = 2(rpcmethod_RpcNullable__IService_Print)
 //  2
 6    :     LoadValue     : value = <I8, 2>
-//  var rpcmethod_RpcNullable__IValue_GetValue : int = 2;
-7    :     StoreGlobalVar: var = 3(rpcmethod_RpcNullable__IValue_GetValue)
+//  var rpctype_RpcNullable__IValue : int = 2;
+7    :     StoreGlobalVar: var = 3(rpctype_RpcNullable__IValue)
 //  3
 8    :     LoadValue     : value = <I8, 3>
-//  var rpcmethod_RpcNullable__IService_Print : int = 3;
-9    :     StoreGlobalVar: var = 4(rpcmethod_RpcNullable__IService_Print)
+//  var rpcmethod_RpcNullable__IValue_GetValue : int = 3;
+9    :     StoreGlobalVar: var = 4(rpcmethod_RpcNullable__IValue_GetValue)
 10   :     LoadValue     : value = <null>
 11   :     Return        
 //  new (RpcNullable::IService^)
@@ -656,45 +656,45 @@ Instructions:
 100  :     NewDictionary : stackPatternCount = 0
 //  var result : int[string] = {};
 101  :     StoreLocalVar : var = 0(result)
-//  "RpcNullable::IValue"
-102  :     LoadValue     : value = <String, RpcNullable::IValue>
+//  "RpcNullable::IService"
+102  :     LoadValue     : value = <String, RpcNullable::IService>
 //  0
 103  :     LoadValue     : value = <I8, 0>
 //  result
 104  :     LoadLocalVar  : var = 0(result)
-//  result.Set("RpcNullable::IValue", 0)
+//  result.Set("RpcNullable::IService", 0)
 105  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  result.Set("RpcNullable::IValue", 0);
+//  result.Set("RpcNullable::IService", 0);
 106  :     Pop           
-//  "RpcNullable::IService"
-107  :     LoadValue     : value = <String, RpcNullable::IService>
+//  "RpcNullable::IService.Print"
+107  :     LoadValue     : value = <String, RpcNullable::IService.Print>
 //  1
 108  :     LoadValue     : value = <I8, 1>
 //  result
 109  :     LoadLocalVar  : var = 0(result)
-//  result.Set("RpcNullable::IService", 1)
+//  result.Set("RpcNullable::IService.Print", 1)
 110  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  result.Set("RpcNullable::IService", 1);
+//  result.Set("RpcNullable::IService.Print", 1);
 111  :     Pop           
-//  "RpcNullable::IValue.GetValue"
-112  :     LoadValue     : value = <String, RpcNullable::IValue.GetValue>
+//  "RpcNullable::IValue"
+112  :     LoadValue     : value = <String, RpcNullable::IValue>
 //  2
 113  :     LoadValue     : value = <I8, 2>
 //  result
 114  :     LoadLocalVar  : var = 0(result)
-//  result.Set("RpcNullable::IValue.GetValue", 2)
+//  result.Set("RpcNullable::IValue", 2)
 115  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  result.Set("RpcNullable::IValue.GetValue", 2);
+//  result.Set("RpcNullable::IValue", 2);
 116  :     Pop           
-//  "RpcNullable::IService.Print"
-117  :     LoadValue     : value = <String, RpcNullable::IService.Print>
+//  "RpcNullable::IValue.GetValue"
+117  :     LoadValue     : value = <String, RpcNullable::IValue.GetValue>
 //  3
 118  :     LoadValue     : value = <I8, 3>
 //  result
 119  :     LoadLocalVar  : var = 0(result)
-//  result.Set("RpcNullable::IService.Print", 3)
+//  result.Set("RpcNullable::IValue.GetValue", 3)
 120  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  result.Set("RpcNullable::IService.Print", 3);
+//  result.Set("RpcNullable::IValue.GetValue", 3);
 121  :     Pop           
 //  result
 122  :     LoadLocalVar  : var = 0(result)
@@ -739,7 +739,7 @@ Instructions:
 //  <switch>0
 142  :     LoadLocalVar  : var = 1(<switch>0)
 //  rpctype_RpcNullable__IValue
-143  :     LoadGlobalVar : var = 1(rpctype_RpcNullable__IValue)
+143  :     LoadGlobalVar : var = 3(rpctype_RpcNullable__IValue)
 //  (<switch>0 == rpctype_RpcNullable__IValue of (::system::Int64))
 144  :     CompareValue  
 //  if ((<switch>0 == rpctype_RpcNullable__IValue of (::system::Int64)))
@@ -755,7 +755,7 @@ Instructions:
 //  <switch>0
 150  :     LoadLocalVar  : var = 1(<switch>0)
 //  rpctype_RpcNullable__IService
-151  :     LoadGlobalVar : var = 2(rpctype_RpcNullable__IService)
+151  :     LoadGlobalVar : var = 1(rpctype_RpcNullable__IService)
 //  (<switch>0 == rpctype_RpcNullable__IService of (::system::Int64))
 152  :     CompareValue  
 //  if ((<switch>0 == rpctype_RpcNullable__IService of (::system::Int64)))
@@ -783,7 +783,7 @@ Instructions:
 //  <switch>1
 164  :     LoadLocalVar  : var = 1(<switch>1)
 //  rpctype_RpcNullable__IService
-165  :     LoadGlobalVar : var = 2(rpctype_RpcNullable__IService)
+165  :     LoadGlobalVar : var = 1(rpctype_RpcNullable__IService)
 //  (<switch>1 == rpctype_RpcNullable__IService of (::system::Int64))
 166  :     CompareValue  
 //  if ((<switch>1 == rpctype_RpcNullable__IService of (::system::Int64)))
@@ -845,7 +845,7 @@ Instructions:
 //  <switch>2
 195  :     LoadLocalVar  : var = 3(<switch>2)
 //  rpcmethod_RpcNullable__IValue_GetValue
-196  :     LoadGlobalVar : var = 3(rpcmethod_RpcNullable__IValue_GetValue)
+196  :     LoadGlobalVar : var = 4(rpcmethod_RpcNullable__IValue_GetValue)
 //  (<switch>2 == rpcmethod_RpcNullable__IValue_GetValue of (::system::Int64))
 197  :     CompareValue  
 //  if ((<switch>2 == rpcmethod_RpcNullable__IValue_GetValue of (::system::Int64)))
@@ -873,7 +873,7 @@ Instructions:
 //  <switch>2
 209  :     LoadLocalVar  : var = 3(<switch>2)
 //  rpcmethod_RpcNullable__IService_Print
-210  :     LoadGlobalVar : var = 4(rpcmethod_RpcNullable__IService_Print)
+210  :     LoadGlobalVar : var = 2(rpcmethod_RpcNullable__IService_Print)
 //  (<switch>2 == rpcmethod_RpcNullable__IService_Print of (::system::Int64))
 211  :     CompareValue  
 //  if ((<switch>2 == rpcmethod_RpcNullable__IService_Print of (::system::Int64)))
@@ -1155,7 +1155,7 @@ Instructions:
 //  ref
 350  :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcNullable__IValue_GetValue
-351  :     LoadGlobalVar : var = 3(rpcmethod_RpcNullable__IValue_GetValue)
+351  :     LoadGlobalVar : var = 4(rpcmethod_RpcNullable__IValue_GetValue)
 //  arguments
 352  :     LoadLocalVar  : var = 1(arguments)
 //  ref
@@ -1219,7 +1219,7 @@ Instructions:
 //  ref
 382  :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcNullable__IService_Print
-383  :     LoadGlobalVar : var = 4(rpcmethod_RpcNullable__IService_Print)
+383  :     LoadGlobalVar : var = 2(rpcmethod_RpcNullable__IService_Print)
 //  arguments
 384  :     LoadLocalVar  : var = 3(arguments)
 //  ref
@@ -1575,7 +1575,7 @@ Instructions:
 //  <switch>4
 560  :     LoadLocalVar  : var = 3(<switch>4)
 //  rpctype_RpcNullable__IValue
-561  :     LoadGlobalVar : var = 1(rpctype_RpcNullable__IValue)
+561  :     LoadGlobalVar : var = 3(rpctype_RpcNullable__IValue)
 //  (<switch>4 == rpctype_RpcNullable__IValue of (::system::Int64))
 562  :     CompareValue  
 //  if ((<switch>4 == rpctype_RpcNullable__IValue of (::system::Int64)))
@@ -1599,7 +1599,7 @@ Instructions:
 //  <switch>4
 572  :     LoadLocalVar  : var = 3(<switch>4)
 //  rpctype_RpcNullable__IService
-573  :     LoadGlobalVar : var = 2(rpctype_RpcNullable__IService)
+573  :     LoadGlobalVar : var = 1(rpctype_RpcNullable__IService)
 //  (<switch>4 == rpctype_RpcNullable__IService of (::system::Int64))
 574  :     CompareValue  
 //  if ((<switch>4 == rpctype_RpcNullable__IService of (::system::Int64)))
@@ -2703,7 +2703,7 @@ Instructions:
 //  <switch>6
 1124 :     LoadLocalVar  : var = 3(<switch>6)
 //  rpcmethod_RpcNullable__IValue_GetValue
-1125 :     LoadGlobalVar : var = 3(rpcmethod_RpcNullable__IValue_GetValue)
+1125 :     LoadGlobalVar : var = 4(rpcmethod_RpcNullable__IValue_GetValue)
 //  (<switch>6 == rpcmethod_RpcNullable__IValue_GetValue of (::system::Int64))
 1126 :     CompareValue  
 //  if ((<switch>6 == rpcmethod_RpcNullable__IValue_GetValue of (::system::Int64)))
@@ -2751,7 +2751,7 @@ Instructions:
 //  <switch>6
 1148 :     LoadLocalVar  : var = 3(<switch>6)
 //  rpcmethod_RpcNullable__IService_Print
-1149 :     LoadGlobalVar : var = 4(rpcmethod_RpcNullable__IService_Print)
+1149 :     LoadGlobalVar : var = 2(rpcmethod_RpcNullable__IService_Print)
 //  (<switch>6 == rpcmethod_RpcNullable__IService_Print of (::system::Int64))
 1150 :     CompareValue  
 //  if ((<switch>6 == rpcmethod_RpcNullable__IService_Print of (::system::Int64)))
@@ -3121,7 +3121,7 @@ Instructions:
 //  ref
 1333 :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcNullable__IValue_GetValue
-1334 :     LoadGlobalVar : var = 3(rpcmethod_RpcNullable__IValue_GetValue)
+1334 :     LoadGlobalVar : var = 4(rpcmethod_RpcNullable__IValue_GetValue)
 //  arguments
 1335 :     LoadLocalVar  : var = 1(arguments)
 //  ref
@@ -3283,7 +3283,7 @@ Instructions:
 //  ref
 1414 :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcNullable__IService_Print
-1415 :     LoadGlobalVar : var = 4(rpcmethod_RpcNullable__IService_Print)
+1415 :     LoadGlobalVar : var = 2(rpcmethod_RpcNullable__IService_Print)
 //  arguments
 1416 :     LoadLocalVar  : var = 3(arguments)
 //  ref

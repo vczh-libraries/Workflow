@@ -3,23 +3,33 @@
 namespace RpcDtor3Test
 {
     @rpc:Interface
+    @rpc:IdString("RpcDtor3Test::IContainer")
+    @rpc:IdNumber(0)
     interface IContainer
     {
         @rpc:Dynamic
         prop Value : ::RpcDtor3Test::IValue^{GetValue}
 
+        @rpc:IdString("RpcDtor3Test::IContainer.GetValue")
+        @rpc:IdNumber(1)
         func GetValue() : (::RpcDtor3Test::IValue^);
     }
 
     @rpc:Interface
+    @rpc:IdString("RpcDtor3Test::IValue")
+    @rpc:IdNumber(4)
     interface IValue
     {
     }
 
     @rpc:Interface
     @rpc:Ctor
+    @rpc:IdString("RpcDtor3Test::IService")
+    @rpc:IdNumber(2)
     interface IService
     {
+        @rpc:IdString("RpcDtor3Test::IService.ContainValue")
+        @rpc:IdNumber(3)
         func ContainValue(value : ::RpcDtor3Test::IValue^) : (::RpcDtor3Test::IContainer^);
     }
 }

@@ -4,12 +4,20 @@ namespace RpcEvent
 {
     @rpc:Interface
     @rpc:Ctor
+    @rpc:IdString("RpcEvent::IService")
+    @rpc:IdNumber(0)
     interface IService
     {
+        @rpc:IdString("RpcEvent::IService.SomethingHappened")
+        @rpc:IdNumber(2)
         event SomethingHappened(::system::String);
 
+        @rpc:IdString("RpcEvent::IService.MakeItHappen")
+        @rpc:IdNumber(1)
         func MakeItHappen() : (::system::Void);
 
+        @rpc:IdString("RpcEvent::IService.Watch")
+        @rpc:IdNumber(3)
         func Watch() : (::system::Void);
     }
 }

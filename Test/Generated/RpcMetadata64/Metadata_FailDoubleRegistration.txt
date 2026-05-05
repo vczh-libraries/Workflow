@@ -3,18 +3,26 @@
 namespace RpcFailDoubleRegistrationTest
 {
     @rpc:Interface
+    @rpc:IdString("RpcFailDoubleRegistrationTest::IObject")
+    @rpc:IdNumber(0)
     interface IObject
     {
         @rpc:Dynamic
         prop Name : ::system::String{GetName}
 
+        @rpc:IdString("RpcFailDoubleRegistrationTest::IObject.GetName")
+        @rpc:IdNumber(1)
         func GetName() : (::system::String);
     }
 
     @rpc:Interface
     @rpc:Ctor
+    @rpc:IdString("RpcFailDoubleRegistrationTest::IService")
+    @rpc:IdNumber(2)
     interface IService
     {
+        @rpc:IdString("RpcFailDoubleRegistrationTest::IService.SetObject")
+        @rpc:IdNumber(3)
         func SetObject(obj : ::RpcFailDoubleRegistrationTest::IObject^, index : ::system::Int64) : (::RpcFailDoubleRegistrationTest::IObject^);
     }
 }

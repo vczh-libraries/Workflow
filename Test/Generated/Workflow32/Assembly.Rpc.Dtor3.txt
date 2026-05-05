@@ -3,10 +3,10 @@ Global Variables:
 ========================================================
 s
 rpctype_RpcDtor3Test__IContainer
-rpctype_RpcDtor3Test__IValue
-rpctype_RpcDtor3Test__IService
 rpcmethod_RpcDtor3Test__IContainer_GetValue
+rpctype_RpcDtor3Test__IService
 rpcmethod_RpcDtor3Test__IService_ContainValue
+rpctype_RpcDtor3Test__IValue
 
 ========================================================
 Functions:
@@ -505,20 +505,20 @@ Instructions:
 3    :     StoreGlobalVar: var = 1(rpctype_RpcDtor3Test__IContainer)
 //  1
 4    :     LoadValue     : value = <I4, 1>
-//  var rpctype_RpcDtor3Test__IValue : int = 1;
-5    :     StoreGlobalVar: var = 2(rpctype_RpcDtor3Test__IValue)
+//  var rpcmethod_RpcDtor3Test__IContainer_GetValue : int = 1;
+5    :     StoreGlobalVar: var = 2(rpcmethod_RpcDtor3Test__IContainer_GetValue)
 //  2
 6    :     LoadValue     : value = <I4, 2>
 //  var rpctype_RpcDtor3Test__IService : int = 2;
 7    :     StoreGlobalVar: var = 3(rpctype_RpcDtor3Test__IService)
 //  3
 8    :     LoadValue     : value = <I4, 3>
-//  var rpcmethod_RpcDtor3Test__IContainer_GetValue : int = 3;
-9    :     StoreGlobalVar: var = 4(rpcmethod_RpcDtor3Test__IContainer_GetValue)
+//  var rpcmethod_RpcDtor3Test__IService_ContainValue : int = 3;
+9    :     StoreGlobalVar: var = 4(rpcmethod_RpcDtor3Test__IService_ContainValue)
 //  4
 10   :     LoadValue     : value = <I4, 4>
-//  var rpcmethod_RpcDtor3Test__IService_ContainValue : int = 4;
-11   :     StoreGlobalVar: var = 5(rpcmethod_RpcDtor3Test__IService_ContainValue)
+//  var rpctype_RpcDtor3Test__IValue : int = 4;
+11   :     StoreGlobalVar: var = 5(rpctype_RpcDtor3Test__IValue)
 12   :     LoadValue     : value = <null>
 13   :     Return        
 //  new (RpcDtor3Test::IService^)
@@ -949,15 +949,15 @@ Instructions:
 226  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
 //  result.Set("RpcDtor3Test::IContainer", 0);
 227  :     Pop           
-//  "RpcDtor3Test::IValue"
-228  :     LoadValue     : value = <String, RpcDtor3Test::IValue>
+//  "RpcDtor3Test::IContainer.GetValue"
+228  :     LoadValue     : value = <String, RpcDtor3Test::IContainer.GetValue>
 //  1
 229  :     LoadValue     : value = <I4, 1>
 //  result
 230  :     LoadLocalVar  : var = 0(result)
-//  result.Set("RpcDtor3Test::IValue", 1)
+//  result.Set("RpcDtor3Test::IContainer.GetValue", 1)
 231  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  result.Set("RpcDtor3Test::IValue", 1);
+//  result.Set("RpcDtor3Test::IContainer.GetValue", 1);
 232  :     Pop           
 //  "RpcDtor3Test::IService"
 233  :     LoadValue     : value = <String, RpcDtor3Test::IService>
@@ -969,25 +969,25 @@ Instructions:
 236  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
 //  result.Set("RpcDtor3Test::IService", 2);
 237  :     Pop           
-//  "RpcDtor3Test::IContainer.GetValue"
-238  :     LoadValue     : value = <String, RpcDtor3Test::IContainer.GetValue>
+//  "RpcDtor3Test::IService.ContainValue"
+238  :     LoadValue     : value = <String, RpcDtor3Test::IService.ContainValue>
 //  3
 239  :     LoadValue     : value = <I4, 3>
 //  result
 240  :     LoadLocalVar  : var = 0(result)
-//  result.Set("RpcDtor3Test::IContainer.GetValue", 3)
+//  result.Set("RpcDtor3Test::IService.ContainValue", 3)
 241  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  result.Set("RpcDtor3Test::IContainer.GetValue", 3);
+//  result.Set("RpcDtor3Test::IService.ContainValue", 3);
 242  :     Pop           
-//  "RpcDtor3Test::IService.ContainValue"
-243  :     LoadValue     : value = <String, RpcDtor3Test::IService.ContainValue>
+//  "RpcDtor3Test::IValue"
+243  :     LoadValue     : value = <String, RpcDtor3Test::IValue>
 //  4
 244  :     LoadValue     : value = <I4, 4>
 //  result
 245  :     LoadLocalVar  : var = 0(result)
-//  result.Set("RpcDtor3Test::IService.ContainValue", 4)
+//  result.Set("RpcDtor3Test::IValue", 4)
 246  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  result.Set("RpcDtor3Test::IService.ContainValue", 4);
+//  result.Set("RpcDtor3Test::IValue", 4);
 247  :     Pop           
 //  result
 248  :     LoadLocalVar  : var = 0(result)
@@ -1048,7 +1048,7 @@ Instructions:
 //  <switch>0
 276  :     LoadLocalVar  : var = 1(<switch>0)
 //  rpctype_RpcDtor3Test__IValue
-277  :     LoadGlobalVar : var = 2(rpctype_RpcDtor3Test__IValue)
+277  :     LoadGlobalVar : var = 5(rpctype_RpcDtor3Test__IValue)
 //  (<switch>0 == rpctype_RpcDtor3Test__IValue of (::system::Int32))
 278  :     CompareValue  
 //  if ((<switch>0 == rpctype_RpcDtor3Test__IValue of (::system::Int32)))
@@ -1154,7 +1154,7 @@ Instructions:
 //  <switch>2
 329  :     LoadLocalVar  : var = 3(<switch>2)
 //  rpcmethod_RpcDtor3Test__IContainer_GetValue
-330  :     LoadGlobalVar : var = 4(rpcmethod_RpcDtor3Test__IContainer_GetValue)
+330  :     LoadGlobalVar : var = 2(rpcmethod_RpcDtor3Test__IContainer_GetValue)
 //  (<switch>2 == rpcmethod_RpcDtor3Test__IContainer_GetValue of (::system::Int32))
 331  :     CompareValue  
 //  if ((<switch>2 == rpcmethod_RpcDtor3Test__IContainer_GetValue of (::system::Int32)))
@@ -1188,7 +1188,7 @@ Instructions:
 //  <switch>2
 346  :     LoadLocalVar  : var = 3(<switch>2)
 //  rpcmethod_RpcDtor3Test__IService_ContainValue
-347  :     LoadGlobalVar : var = 5(rpcmethod_RpcDtor3Test__IService_ContainValue)
+347  :     LoadGlobalVar : var = 4(rpcmethod_RpcDtor3Test__IService_ContainValue)
 //  (<switch>2 == rpcmethod_RpcDtor3Test__IService_ContainValue of (::system::Int32))
 348  :     CompareValue  
 //  if ((<switch>2 == rpcmethod_RpcDtor3Test__IService_ContainValue of (::system::Int32)))
@@ -1456,7 +1456,7 @@ Instructions:
 //  ref
 480  :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcDtor3Test__IContainer_GetValue
-481  :     LoadGlobalVar : var = 4(rpcmethod_RpcDtor3Test__IContainer_GetValue)
+481  :     LoadGlobalVar : var = 2(rpcmethod_RpcDtor3Test__IContainer_GetValue)
 //  arguments
 482  :     LoadLocalVar  : var = 1(arguments)
 //  ref
@@ -1516,7 +1516,7 @@ Instructions:
 //  ref
 510  :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcDtor3Test__IService_ContainValue
-511  :     LoadGlobalVar : var = 5(rpcmethod_RpcDtor3Test__IService_ContainValue)
+511  :     LoadGlobalVar : var = 4(rpcmethod_RpcDtor3Test__IService_ContainValue)
 //  arguments
 512  :     LoadLocalVar  : var = 2(arguments)
 //  ref
@@ -1980,7 +1980,7 @@ Instructions:
 //  <switch>4
 742  :     LoadLocalVar  : var = 3(<switch>4)
 //  rpctype_RpcDtor3Test__IValue
-743  :     LoadGlobalVar : var = 2(rpctype_RpcDtor3Test__IValue)
+743  :     LoadGlobalVar : var = 5(rpctype_RpcDtor3Test__IValue)
 //  (<switch>4 == rpctype_RpcDtor3Test__IValue of (::system::Int32))
 744  :     CompareValue  
 //  if ((<switch>4 == rpctype_RpcDtor3Test__IValue of (::system::Int32)))
@@ -3108,7 +3108,7 @@ Instructions:
 //  <switch>6
 1306 :     LoadLocalVar  : var = 3(<switch>6)
 //  rpcmethod_RpcDtor3Test__IContainer_GetValue
-1307 :     LoadGlobalVar : var = 4(rpcmethod_RpcDtor3Test__IContainer_GetValue)
+1307 :     LoadGlobalVar : var = 2(rpcmethod_RpcDtor3Test__IContainer_GetValue)
 //  (<switch>6 == rpcmethod_RpcDtor3Test__IContainer_GetValue of (::system::Int32))
 1308 :     CompareValue  
 //  if ((<switch>6 == rpcmethod_RpcDtor3Test__IContainer_GetValue of (::system::Int32)))
@@ -3152,7 +3152,7 @@ Instructions:
 //  <switch>6
 1328 :     LoadLocalVar  : var = 3(<switch>6)
 //  rpcmethod_RpcDtor3Test__IService_ContainValue
-1329 :     LoadGlobalVar : var = 5(rpcmethod_RpcDtor3Test__IService_ContainValue)
+1329 :     LoadGlobalVar : var = 4(rpcmethod_RpcDtor3Test__IService_ContainValue)
 //  (<switch>6 == rpcmethod_RpcDtor3Test__IService_ContainValue of (::system::Int32))
 1330 :     CompareValue  
 //  if ((<switch>6 == rpcmethod_RpcDtor3Test__IService_ContainValue of (::system::Int32)))
@@ -3438,7 +3438,7 @@ Instructions:
 //  ref
 1471 :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcDtor3Test__IContainer_GetValue
-1472 :     LoadGlobalVar : var = 4(rpcmethod_RpcDtor3Test__IContainer_GetValue)
+1472 :     LoadGlobalVar : var = 2(rpcmethod_RpcDtor3Test__IContainer_GetValue)
 //  arguments
 1473 :     LoadLocalVar  : var = 1(arguments)
 //  ref
@@ -3520,7 +3520,7 @@ Instructions:
 //  ref
 1512 :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcDtor3Test__IService_ContainValue
-1513 :     LoadGlobalVar : var = 5(rpcmethod_RpcDtor3Test__IService_ContainValue)
+1513 :     LoadGlobalVar : var = 4(rpcmethod_RpcDtor3Test__IService_ContainValue)
 //  arguments
 1514 :     LoadLocalVar  : var = 2(arguments)
 //  ref

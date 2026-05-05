@@ -11,16 +11,22 @@ namespace RpcCollection
                 namespace PropByval
                 {
                     @rpc:Interface
+                    @rpc:IdString("RpcCollection::Interface::Nested::InByval::PropByval::IValue")
+                    @rpc:IdNumber(3)
                     interface IValue
                     {
                         @rpc:Dynamic
                         prop Value : ::system::Int64{GetValue}
 
+                        @rpc:IdString("RpcCollection::Interface::Nested::InByval::PropByval::IValue.GetValue")
+                        @rpc:IdNumber(4)
                         func GetValue() : (::system::Int64);
                     }
 
                     @rpc:Interface
                     @rpc:Ctor
+                    @rpc:IdString("RpcCollection::Interface::Nested::InByval::PropByval::IService")
+                    @rpc:IdNumber(0)
                     interface IService
                     {
                         @rpc:Byval
@@ -28,8 +34,12 @@ namespace RpcCollection
                         prop List : ::RpcCollection::Interface::Nested::InByval::PropByval::IValue^[][::system::Int64]{GetList, SetList}
 
                         @rpc:Byval
+                        @rpc:IdString("RpcCollection::Interface::Nested::InByval::PropByval::IService.GetList")
+                        @rpc:IdNumber(1)
                         func GetList() : (::RpcCollection::Interface::Nested::InByval::PropByval::IValue^[][::system::Int64]);
 
+                        @rpc:IdString("RpcCollection::Interface::Nested::InByval::PropByval::IService.SetList")
+                        @rpc:IdNumber(2)
                         func SetList(@rpc:Byval <value> : ::RpcCollection::Interface::Nested::InByval::PropByval::IValue^[][::system::Int64]) : (::system::Void);
                     }
                 }

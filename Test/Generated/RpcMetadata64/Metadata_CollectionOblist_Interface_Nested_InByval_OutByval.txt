@@ -11,19 +11,27 @@ namespace RpcCollectionOblist
                 namespace OutByval
                 {
                     @rpc:Interface
+                    @rpc:IdString("RpcCollectionOblist::Interface::Nested::InByval::OutByval::IValue")
+                    @rpc:IdNumber(2)
                     interface IValue
                     {
                         @rpc:Dynamic
                         prop Value : ::system::Int64{GetValue}
 
+                        @rpc:IdString("RpcCollectionOblist::Interface::Nested::InByval::OutByval::IValue.GetValue")
+                        @rpc:IdNumber(3)
                         func GetValue() : (::system::Int64);
                     }
 
                     @rpc:Interface
                     @rpc:Ctor
+                    @rpc:IdString("RpcCollectionOblist::Interface::Nested::InByval::OutByval::IService")
+                    @rpc:IdNumber(0)
                     interface IService
                     {
                         @rpc:Byval
+                        @rpc:IdString("RpcCollectionOblist::Interface::Nested::InByval::OutByval::IService.DoList")
+                        @rpc:IdNumber(1)
                         func DoList(@rpc:Byval xs : observe ::RpcCollectionOblist::Interface::Nested::InByval::OutByval::IValue^[][::system::Int64]) : (observe ::RpcCollectionOblist::Interface::Nested::InByval::OutByval::IValue^[][::system::Int64]);
                     }
                 }

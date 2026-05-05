@@ -3,27 +3,41 @@
 namespace RpcPropDefaultInterface
 {
     @rpc:Interface
+    @rpc:IdString("RpcPropDefaultInterface::IValue")
+    @rpc:IdNumber(5)
     interface IValue
     {
         @rpc:Dynamic
         prop Value : ::system::String{GetValue}
 
+        @rpc:IdString("RpcPropDefaultInterface::IValue.GetValue")
+        @rpc:IdNumber(6)
         func GetValue() : (::system::String);
     }
 
     @rpc:Interface
     @rpc:Ctor
+    @rpc:IdString("RpcPropDefaultInterface::IService")
+    @rpc:IdNumber(0)
     interface IService
     {
         @rpc:Cached
         prop Value : ::RpcPropDefaultInterface::IValue^{GetValue : ValueChanged}
 
+        @rpc:IdString("RpcPropDefaultInterface::IService.ValueChanged")
+        @rpc:IdNumber(4)
         event ValueChanged();
 
+        @rpc:IdString("RpcPropDefaultInterface::IService.GetValue")
+        @rpc:IdNumber(1)
         func GetValue() : (::RpcPropDefaultInterface::IValue^);
 
+        @rpc:IdString("RpcPropDefaultInterface::IService.SetValue")
+        @rpc:IdNumber(2)
         func SetValue(value : ::RpcPropDefaultInterface::IValue^) : (::system::Void);
 
+        @rpc:IdString("RpcPropDefaultInterface::IService.Signal")
+        @rpc:IdNumber(3)
         func Signal() : (::system::Void);
     }
 }

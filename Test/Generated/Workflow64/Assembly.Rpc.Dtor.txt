@@ -2,9 +2,9 @@
 Global Variables:
 ========================================================
 s
-rpctype_RpcDtorTest__IValue
 rpctype_RpcDtorTest__IService
 rpcmethod_RpcDtorTest__IService_MakeValue
+rpctype_RpcDtorTest__IValue
 
 ========================================================
 Functions:
@@ -408,16 +408,16 @@ Instructions:
 1    :     StoreGlobalVar: var = 0(s)
 //  0
 2    :     LoadValue     : value = <I8, 0>
-//  var rpctype_RpcDtorTest__IValue : int = 0;
-3    :     StoreGlobalVar: var = 1(rpctype_RpcDtorTest__IValue)
+//  var rpctype_RpcDtorTest__IService : int = 0;
+3    :     StoreGlobalVar: var = 1(rpctype_RpcDtorTest__IService)
 //  1
 4    :     LoadValue     : value = <I8, 1>
-//  var rpctype_RpcDtorTest__IService : int = 1;
-5    :     StoreGlobalVar: var = 2(rpctype_RpcDtorTest__IService)
+//  var rpcmethod_RpcDtorTest__IService_MakeValue : int = 1;
+5    :     StoreGlobalVar: var = 2(rpcmethod_RpcDtorTest__IService_MakeValue)
 //  2
 6    :     LoadValue     : value = <I8, 2>
-//  var rpcmethod_RpcDtorTest__IService_MakeValue : int = 2;
-7    :     StoreGlobalVar: var = 3(rpcmethod_RpcDtorTest__IService_MakeValue)
+//  var rpctype_RpcDtorTest__IValue : int = 2;
+7    :     StoreGlobalVar: var = 3(rpctype_RpcDtorTest__IValue)
 8    :     LoadValue     : value = <null>
 9    :     Return        
 //  new (RpcDtorTest::IService^)
@@ -634,35 +634,35 @@ Instructions:
 115  :     NewDictionary : stackPatternCount = 0
 //  var result : int[string] = {};
 116  :     StoreLocalVar : var = 0(result)
-//  "RpcDtorTest::IValue"
-117  :     LoadValue     : value = <String, RpcDtorTest::IValue>
+//  "RpcDtorTest::IService"
+117  :     LoadValue     : value = <String, RpcDtorTest::IService>
 //  0
 118  :     LoadValue     : value = <I8, 0>
 //  result
 119  :     LoadLocalVar  : var = 0(result)
-//  result.Set("RpcDtorTest::IValue", 0)
+//  result.Set("RpcDtorTest::IService", 0)
 120  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  result.Set("RpcDtorTest::IValue", 0);
+//  result.Set("RpcDtorTest::IService", 0);
 121  :     Pop           
-//  "RpcDtorTest::IService"
-122  :     LoadValue     : value = <String, RpcDtorTest::IService>
+//  "RpcDtorTest::IService.MakeValue"
+122  :     LoadValue     : value = <String, RpcDtorTest::IService.MakeValue>
 //  1
 123  :     LoadValue     : value = <I8, 1>
 //  result
 124  :     LoadLocalVar  : var = 0(result)
-//  result.Set("RpcDtorTest::IService", 1)
+//  result.Set("RpcDtorTest::IService.MakeValue", 1)
 125  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  result.Set("RpcDtorTest::IService", 1);
+//  result.Set("RpcDtorTest::IService.MakeValue", 1);
 126  :     Pop           
-//  "RpcDtorTest::IService.MakeValue"
-127  :     LoadValue     : value = <String, RpcDtorTest::IService.MakeValue>
+//  "RpcDtorTest::IValue"
+127  :     LoadValue     : value = <String, RpcDtorTest::IValue>
 //  2
 128  :     LoadValue     : value = <I8, 2>
 //  result
 129  :     LoadLocalVar  : var = 0(result)
-//  result.Set("RpcDtorTest::IService.MakeValue", 2)
+//  result.Set("RpcDtorTest::IValue", 2)
 130  :     InvokeMethod  : methodInfo = Set<system::Dictionary>, stackPatternCount = 2
-//  result.Set("RpcDtorTest::IService.MakeValue", 2);
+//  result.Set("RpcDtorTest::IValue", 2);
 131  :     Pop           
 //  result
 132  :     LoadLocalVar  : var = 0(result)
@@ -707,7 +707,7 @@ Instructions:
 //  <switch>0
 152  :     LoadLocalVar  : var = 1(<switch>0)
 //  rpctype_RpcDtorTest__IValue
-153  :     LoadGlobalVar : var = 1(rpctype_RpcDtorTest__IValue)
+153  :     LoadGlobalVar : var = 3(rpctype_RpcDtorTest__IValue)
 //  (<switch>0 == rpctype_RpcDtorTest__IValue of (::system::Int64))
 154  :     CompareValue  
 //  if ((<switch>0 == rpctype_RpcDtorTest__IValue of (::system::Int64)))
@@ -723,7 +723,7 @@ Instructions:
 //  <switch>0
 160  :     LoadLocalVar  : var = 1(<switch>0)
 //  rpctype_RpcDtorTest__IService
-161  :     LoadGlobalVar : var = 2(rpctype_RpcDtorTest__IService)
+161  :     LoadGlobalVar : var = 1(rpctype_RpcDtorTest__IService)
 //  (<switch>0 == rpctype_RpcDtorTest__IService of (::system::Int64))
 162  :     CompareValue  
 //  if ((<switch>0 == rpctype_RpcDtorTest__IService of (::system::Int64)))
@@ -751,7 +751,7 @@ Instructions:
 //  <switch>1
 174  :     LoadLocalVar  : var = 1(<switch>1)
 //  rpctype_RpcDtorTest__IService
-175  :     LoadGlobalVar : var = 2(rpctype_RpcDtorTest__IService)
+175  :     LoadGlobalVar : var = 1(rpctype_RpcDtorTest__IService)
 //  (<switch>1 == rpctype_RpcDtorTest__IService of (::system::Int64))
 176  :     CompareValue  
 //  if ((<switch>1 == rpctype_RpcDtorTest__IService of (::system::Int64)))
@@ -813,7 +813,7 @@ Instructions:
 //  <switch>2
 205  :     LoadLocalVar  : var = 3(<switch>2)
 //  rpcmethod_RpcDtorTest__IService_MakeValue
-206  :     LoadGlobalVar : var = 3(rpcmethod_RpcDtorTest__IService_MakeValue)
+206  :     LoadGlobalVar : var = 2(rpcmethod_RpcDtorTest__IService_MakeValue)
 //  (<switch>2 == rpcmethod_RpcDtorTest__IService_MakeValue of (::system::Int64))
 207  :     CompareValue  
 //  if ((<switch>2 == rpcmethod_RpcDtorTest__IService_MakeValue of (::system::Int64)))
@@ -1063,7 +1063,7 @@ Instructions:
 //  ref
 330  :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcDtorTest__IService_MakeValue
-331  :     LoadGlobalVar : var = 3(rpcmethod_RpcDtorTest__IService_MakeValue)
+331  :     LoadGlobalVar : var = 2(rpcmethod_RpcDtorTest__IService_MakeValue)
 //  arguments
 332  :     LoadLocalVar  : var = 1(arguments)
 //  ref
@@ -1357,7 +1357,7 @@ Instructions:
 //  <switch>4
 477  :     LoadLocalVar  : var = 3(<switch>4)
 //  rpctype_RpcDtorTest__IValue
-478  :     LoadGlobalVar : var = 1(rpctype_RpcDtorTest__IValue)
+478  :     LoadGlobalVar : var = 3(rpctype_RpcDtorTest__IValue)
 //  (<switch>4 == rpctype_RpcDtorTest__IValue of (::system::Int64))
 479  :     CompareValue  
 //  if ((<switch>4 == rpctype_RpcDtorTest__IValue of (::system::Int64)))
@@ -1381,7 +1381,7 @@ Instructions:
 //  <switch>4
 489  :     LoadLocalVar  : var = 3(<switch>4)
 //  rpctype_RpcDtorTest__IService
-490  :     LoadGlobalVar : var = 2(rpctype_RpcDtorTest__IService)
+490  :     LoadGlobalVar : var = 1(rpctype_RpcDtorTest__IService)
 //  (<switch>4 == rpctype_RpcDtorTest__IService of (::system::Int64))
 491  :     CompareValue  
 //  if ((<switch>4 == rpctype_RpcDtorTest__IService of (::system::Int64)))
@@ -2485,7 +2485,7 @@ Instructions:
 //  <switch>6
 1041 :     LoadLocalVar  : var = 3(<switch>6)
 //  rpcmethod_RpcDtorTest__IService_MakeValue
-1042 :     LoadGlobalVar : var = 3(rpcmethod_RpcDtorTest__IService_MakeValue)
+1042 :     LoadGlobalVar : var = 2(rpcmethod_RpcDtorTest__IService_MakeValue)
 //  (<switch>6 == rpcmethod_RpcDtorTest__IService_MakeValue of (::system::Int64))
 1043 :     CompareValue  
 //  if ((<switch>6 == rpcmethod_RpcDtorTest__IService_MakeValue of (::system::Int64)))
@@ -2745,7 +2745,7 @@ Instructions:
 //  ref
 1171 :     LoadLocalVar  : var = 0(ref)
 //  rpcmethod_RpcDtorTest__IService_MakeValue
-1172 :     LoadGlobalVar : var = 3(rpcmethod_RpcDtorTest__IService_MakeValue)
+1172 :     LoadGlobalVar : var = 2(rpcmethod_RpcDtorTest__IService_MakeValue)
 //  arguments
 1173 :     LoadLocalVar  : var = 1(arguments)
 //  ref

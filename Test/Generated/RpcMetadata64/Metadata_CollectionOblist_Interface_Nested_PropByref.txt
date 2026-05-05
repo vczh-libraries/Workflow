@@ -11,16 +11,22 @@ namespace RpcCollectionOblist
                 namespace PropByref
                 {
                     @rpc:Interface
+                    @rpc:IdString("RpcCollectionOblist::Interface::Nested::InByref::PropByref::IValue")
+                    @rpc:IdNumber(3)
                     interface IValue
                     {
                         @rpc:Dynamic
                         prop Value : ::system::Int64{GetValue}
 
+                        @rpc:IdString("RpcCollectionOblist::Interface::Nested::InByref::PropByref::IValue.GetValue")
+                        @rpc:IdNumber(4)
                         func GetValue() : (::system::Int64);
                     }
 
                     @rpc:Interface
                     @rpc:Ctor
+                    @rpc:IdString("RpcCollectionOblist::Interface::Nested::InByref::PropByref::IService")
+                    @rpc:IdNumber(0)
                     interface IService
                     {
                         @rpc:Byref
@@ -28,8 +34,12 @@ namespace RpcCollectionOblist
                         prop List : observe ::RpcCollectionOblist::Interface::Nested::InByref::PropByref::IValue^[][::system::Int64]{GetList, SetList}
 
                         @rpc:Byref
+                        @rpc:IdString("RpcCollectionOblist::Interface::Nested::InByref::PropByref::IService.GetList")
+                        @rpc:IdNumber(1)
                         func GetList() : (observe ::RpcCollectionOblist::Interface::Nested::InByref::PropByref::IValue^[][::system::Int64]);
 
+                        @rpc:IdString("RpcCollectionOblist::Interface::Nested::InByref::PropByref::IService.SetList")
+                        @rpc:IdNumber(2)
                         func SetList(@rpc:Byref <value> : observe ::RpcCollectionOblist::Interface::Nested::InByref::PropByref::IValue^[][::system::Int64]) : (::system::Void);
                     }
                 }
