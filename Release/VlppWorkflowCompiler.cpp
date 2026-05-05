@@ -10425,6 +10425,30 @@ namespace vl
 					return CreateReference(WString::Unmanaged(prefix) + MangleRpcFullName(fullName));
 				}
 
+				vint GetRpcId(WfLexicalScopeManager* manager, const WString& fullName)
+				{
+					auto id = manager->rpcMetadata->orderedIds.IndexOf(fullName);
+					CHECK_ERROR(id != -1, L"RPC metadata ID list does not contain a generated RPC full name.");
+					return id;
+				}
+
+				const wchar_t* GetRpcConstantPrefix(WfLexicalScopeManager* manager, const WString& fullName)
+				{
+					if (manager->rpcMetadata->typeNames.Keys().Contains(fullName))
+					{
+						return L"rpctype_";
+					}
+					if (manager->rpcMetadata->methodNames.Keys().Contains(fullName))
+					{
+						return L"rpcmethod_";
+					}
+					if (manager->rpcMetadata->eventNames.Keys().Contains(fullName))
+					{
+						return L"rpcevent_";
+					}
+					CHECK_FAIL(L"RPC metadata ID list contains an unknown generated RPC full name.");
+				}
+
 				void AddIdLookupEntry(Ptr<WfConstructorExpression> expression, Ptr<WfExpression> key, Ptr<WfExpression> value)
 				{
 					expression->arguments.Add(CreateConstructorArgument(key, value));
@@ -10433,37 +10457,7 @@ namespace vl
 				void CollectMangledNames(WfLexicalScopeManager* manager)
 				{
 					Dictionary<WString, WString> mangledNames;
-					for (auto fullName : manager->rpcMetadata->typeFullNames)
-					{
-						auto mangled = MangleRpcFullName(fullName);
-						auto index = mangledNames.Keys().IndexOf(mangled);
-						if (index != -1 && mangledNames.Values()[index] != fullName)
-						{
-							manager->errors.Add(WfErrors::RpcMangledNameConflict(FindRpcDeclaration(manager, fullName), mangled, mangledNames.Values()[index], fullName));
-							return;
-						}
-						if (index == -1)
-						{
-							mangledNames.Add(mangled, fullName);
-						}
-					}
-
-					for (auto fullName : manager->rpcMetadata->methodFullNames)
-					{
-						auto mangled = MangleRpcFullName(fullName);
-						auto index = mangledNames.Keys().IndexOf(mangled);
-						if (index != -1 && mangledNames.Values()[index] != fullName)
-						{
-							manager->errors.Add(WfErrors::RpcMangledNameConflict(FindRpcDeclaration(manager, fullName), mangled, mangledNames.Values()[index], fullName));
-							return;
-						}
-						if (index == -1)
-						{
-							mangledNames.Add(mangled, fullName);
-						}
-					}
-
-					for (auto fullName : manager->rpcMetadata->eventFullNames)
+					for (auto fullName : manager->rpcMetadata->orderedIds)
 					{
 						auto mangled = MangleRpcFullName(fullName);
 						auto index = mangledNames.Keys().IndexOf(mangled);
@@ -10482,8 +10476,6 @@ namespace vl
 				List<RpcInterfaceModel> BuildInterfaceModels(WfLexicalScopeManager* manager)
 				{
 					List<RpcInterfaceModel> interfaces;
-					auto typeCount = manager->rpcMetadata->typeFullNames.Count();
-					auto methodCount = manager->rpcMetadata->methodFullNames.Count();
 					auto rpcByrefAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Byref>();
 					auto rpcCachedAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Cached>();
 					auto rpcDynamicAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Dynamic>();
@@ -10515,7 +10507,7 @@ namespace vl
 						RpcInterfaceModel interfaceModel;
 						interfaceModel.fullName = typeFullName;
 						interfaceModel.interfaceName = fragments[fragments.Count() - 1];
-						interfaceModel.typeId = manager->rpcMetadata->typeFullNames.IndexOf(typeFullName);
+						interfaceModel.typeId = GetRpcId(manager, typeFullName);
 						interfaceModel.ctor = HasRpcAttribute(interfaceDecl->attributes, L"Ctor");
 						interfaceModel.interfaceDecl = interfaceDecl;
 						auto typeDescriptor = FindRpcTypeDescriptor(manager, typeFullName);
@@ -10650,7 +10642,7 @@ namespace vl
 								RpcMethodModel methodModel;
 								methodModel.fullName = methodFullName;
 								methodModel.name = methodDecl->name.value;
-								methodModel.methodId = typeCount + manager->rpcMetadata->methodFullNames.IndexOf(methodFullName);
+								methodModel.methodId = GetRpcId(manager, methodFullName);
 								methodModel.returnType = CopyType(methodDecl->returnType.Obj());
 								auto methodInfo = FindRpcMethodInfo(manager, interfaceDecl, methodDecl.Obj(), typeDescriptor);
 								if (methodInfo)
@@ -10720,7 +10712,7 @@ namespace vl
 								RpcEventModel eventModel;
 								eventModel.fullName = eventFullName;
 								eventModel.name = eventDecl->name.value;
-								eventModel.eventId = typeCount + methodCount + manager->rpcMetadata->eventFullNames.IndexOf(eventFullName);
+								eventModel.eventId = GetRpcId(manager, eventFullName);
 
 								ITypeInfo* handlerGenericType = nullptr;
 								if (typeDescriptor)
@@ -11766,17 +11758,10 @@ namespace vl
 				auto opsInterfaceName = GetRpcOpsInterfaceName(assemblyName);
 
 				vint id = 0;
-				for (auto fullName : manager->rpcMetadata->typeFullNames)
+				for (auto fullName : manager->rpcMetadata->orderedIds)
 				{
-					module->declarations.Add(CreateVariableDeclaration(L"rpctype_" + MangleRpcFullName(fullName), CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(id++)));
-				}
-				for (auto fullName : manager->rpcMetadata->methodFullNames)
-				{
-					module->declarations.Add(CreateVariableDeclaration(L"rpcmethod_" + MangleRpcFullName(fullName), CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(id++)));
-				}
-				for (auto fullName : manager->rpcMetadata->eventFullNames)
-				{
-					module->declarations.Add(CreateVariableDeclaration(L"rpcevent_" + MangleRpcFullName(fullName), CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(id++)));
+					auto name = WString::Unmanaged(GetRpcConstantPrefix(manager, fullName)) + MangleRpcFullName(fullName);
+					module->declarations.Add(CreateVariableDeclaration(name, CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(id++)));
 				}
 
 				{
@@ -11784,15 +11769,7 @@ namespace vl
 					auto block = getIds->statement.Cast<WfBlockStatement>();
 					AddStatement(block, CreateVariableStatement(L"result", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::String), CreatePredefinedType(WfPredefinedTypeName::Int)), CreateConstructor()));
 					id = 0;
-					for (auto fullName : manager->rpcMetadata->typeFullNames)
-					{
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
-					}
-					for (auto fullName : manager->rpcMetadata->methodFullNames)
-					{
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
-					}
-					for (auto fullName : manager->rpcMetadata->eventFullNames)
+					for (auto fullName : manager->rpcMetadata->orderedIds)
 					{
 						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
 					}
@@ -15611,6 +15588,27 @@ ValidateModuleRPC_Ast
 					return attribute;
 				}
 
+				Ptr<WfAttribute> CreateRpcAttribute(const WString& name, Ptr<WfExpression> value)
+				{
+					auto attribute = CreateRpcAttribute(name);
+					attribute->value = value;
+					return attribute;
+				}
+
+				Ptr<WfExpression> CreateRpcStringLiteral(const WString& value)
+				{
+					auto expression = Ptr(new WfStringExpression);
+					expression->value.value = value;
+					return expression;
+				}
+
+				Ptr<WfExpression> CreateRpcIntegerLiteral(vint value)
+				{
+					auto expression = Ptr(new WfIntegerExpression);
+					expression->value.value = itow(value);
+					return expression;
+				}
+
 				void EnsureRpcAttribute(List<Ptr<WfAttribute>>& attributes, const WString& name)
 				{
 					if (!HasRpcAttribute(attributes, name.Buffer()))
@@ -16170,6 +16168,11 @@ ValidateModuleRPC_Reflection
 ValidateModuleRPC_GenerateMetadata
 ***********************************************************************/
 
+				bool IsGeneratedRpcIdAttribute(const WString& category, const WString& name)
+				{
+					return category == L"rpc" && (name == L"IdString" || name == L"IdNumber");
+				}
+
 				void GenerateAttributesFromBag(IAttributeBag* bag, List<Ptr<WfAttribute>>& attributes)
 				{
 					if (!bag) return;
@@ -16197,7 +16200,43 @@ ValidateModuleRPC_GenerateMetadata
 						auto attr = Ptr(new WfAttribute);
 						attr->category.value = WString::CopyFrom(afterAtt, vint(underscore - afterAtt));
 						attr->name.value = underscore + 1;
+						if (IsGeneratedRpcIdAttribute(attr->category.value, attr->name.value))
+						{
+							continue;
+						}
 						attributes.Add(attr);
+					}
+				}
+
+				void AddOrderedRpcId(WfRpcMetadata* metadata, const WString& fullName)
+				{
+					if (!metadata->orderedIds.Contains(fullName))
+					{
+						metadata->orderedIds.Add(fullName);
+					}
+				}
+
+				void AddGeneratedRpcIdAttributes(WfRpcMetadata* metadata, const WString& fullName, List<Ptr<WfAttribute>>& attributes)
+				{
+					auto id = metadata->orderedIds.IndexOf(fullName);
+					CHECK_ERROR(id != -1, L"RPC metadata ID list does not contain a generated RPC full name.");
+					attributes.Add(CreateRpcAttribute(L"IdString", CreateRpcStringLiteral(fullName)));
+					attributes.Add(CreateRpcAttribute(L"IdNumber", CreateRpcIntegerLiteral(id)));
+				}
+
+				void AddGeneratedRpcIdAttributes(WfRpcMetadata* metadata)
+				{
+					for (vint i = 0; i < metadata->typeNames.Count(); i++)
+					{
+						AddGeneratedRpcIdAttributes(metadata, metadata->typeNames.Keys()[i], metadata->typeNames.Values()[i]->attributes);
+					}
+					for (vint i = 0; i < metadata->methodNames.Count(); i++)
+					{
+						AddGeneratedRpcIdAttributes(metadata, metadata->methodNames.Keys()[i], metadata->methodNames.Values()[i]->attributes);
+					}
+					for (vint i = 0; i < metadata->eventNames.Count(); i++)
+					{
+						AddGeneratedRpcIdAttributes(metadata, metadata->eventNames.Keys()[i], metadata->eventNames.Values()[i]->attributes);
 					}
 				}
 
@@ -16892,6 +16931,7 @@ ValidateModuleRPC_GenerateMetadata
 							{
 								manager->rpcMetadata->typeNames.Add(typeFullName, decl.Obj());
 								manager->rpcMetadata->typeFullNames.Add(typeFullName);
+								AddOrderedRpcId(manager->rpcMetadata.Obj(), typeFullName);
 							}
 
 							auto sourceDecl = FindRpcInterfaceDeclaration(manager, td);
@@ -17041,6 +17081,7 @@ ValidateModuleRPC_GenerateMetadata
 									{
 										manager->rpcMetadata->methodNames.Add(finalName, generatedMethod);
 										manager->rpcMetadata->methodFullNames.Add(finalName);
+										AddOrderedRpcId(manager->rpcMetadata.Obj(), finalName);
 									}
 								}
 							}
@@ -17057,10 +17098,13 @@ ValidateModuleRPC_GenerateMetadata
 								{
 									manager->rpcMetadata->eventNames.Add(finalName, generatedEvent);
 									manager->rpcMetadata->eventFullNames.Add(finalName);
+									AddOrderedRpcId(manager->rpcMetadata.Obj(), finalName);
 								}
 							}
 						}
 					}
+
+					AddGeneratedRpcIdAttributes(manager->rpcMetadata.Obj());
 
 					for (auto decl : rootDeclarations)
 					{
@@ -17259,6 +17303,119 @@ ValidateModuleRPC
 						manager->rpcMetadata->dts = GenerateDtsFromRpcMetadata(manager);
 					}
 				}
+			}
+
+			namespace rpc_metadata_copying
+			{
+				using namespace collections;
+				using namespace reflection;
+				using namespace reflection::description;
+
+				class ClearExistingTypesVisitor : public empty_visitor::DeclarationVisitor
+				{
+				private:
+					List<WString>			fragments;
+					bool					removeDeclaration = false;
+
+					WString GetFullName(const WString& name)
+					{
+						WString fullName;
+						for (auto fragment : fragments)
+						{
+							if (fullName != L"")
+							{
+								fullName += L"::";
+							}
+							fullName += fragment;
+						}
+
+						if (fullName != L"")
+						{
+							fullName += L"::";
+						}
+						fullName += name;
+						return fullName;
+					}
+
+					bool IsExistingType(const WString& name)
+					{
+						return reflection::description::GetTypeDescriptor(GetFullName(name)) != nullptr;
+					}
+
+					void VisitNestedType(const WString& name, List<Ptr<WfDeclaration>>& declarations)
+					{
+						if (IsExistingType(name))
+						{
+							removeDeclaration = true;
+							return;
+						}
+
+						fragments.Add(name);
+						Clear(declarations);
+						fragments.RemoveAt(fragments.Count() - 1);
+						removeDeclaration = false;
+					}
+
+				protected:
+					void Dispatch(WfVirtualCfeDeclaration* node)override
+					{
+						removeDeclaration = false;
+					}
+
+					void Dispatch(WfVirtualCseDeclaration* node)override
+					{
+						removeDeclaration = false;
+					}
+
+				public:
+					void Clear(List<Ptr<WfDeclaration>>& declarations)
+					{
+						for (vint i = 0; i < declarations.Count();)
+						{
+							removeDeclaration = false;
+							declarations[i]->Accept(this);
+							if (removeDeclaration)
+							{
+								declarations.RemoveAt(i);
+							}
+							else
+							{
+								i++;
+							}
+						}
+					}
+
+					void Visit(WfNamespaceDeclaration* node)override
+					{
+						fragments.Add(node->name.value);
+						Clear(node->declarations);
+						fragments.RemoveAt(fragments.Count() - 1);
+						removeDeclaration = false;
+					}
+
+					void Visit(WfClassDeclaration* node)override
+					{
+						VisitNestedType(node->name.value, node->declarations);
+					}
+
+					void Visit(WfEnumDeclaration* node)override
+					{
+						removeDeclaration = IsExistingType(node->name.value);
+					}
+
+					void Visit(WfStructDeclaration* node)override
+					{
+						removeDeclaration = IsExistingType(node->name.value);
+					}
+				};
+			}
+
+			Ptr<WfModule> CopyAndClearRpcMetadata(Ptr<WfModule> module)
+			{
+				auto copiedModule = CopyModule(module, false);
+				rpc_metadata_copying::ClearExistingTypesVisitor visitor;
+				visitor.Clear(copiedModule->declarations);
+				return copiedModule;
 			}
 
 		}

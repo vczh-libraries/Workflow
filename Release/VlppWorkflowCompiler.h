@@ -5048,6 +5048,7 @@ Scope Manager
 				vl::collections::List<vl::WString>												typeFullNames;
 				vl::collections::List<vl::WString>												methodFullNames;
 				vl::collections::List<vl::WString>												eventFullNames;
+				vl::collections::SortedList<vl::WString>											orderedIds;
 			};
 
 			/// <summary>
@@ -5407,10 +5408,14 @@ RPC Analyzing
 					collections::List<RpcMethodModel>							methods;
 					collections::List<RpcEventModel>							events;
 				};
+
+				extern WString													MangleRpcFullName(const WString& fullName);
+				extern reflection::description::ITypeDescriptor*				FindRpcTypeDescriptor(WfLexicalScopeManager* manager, const WString& fullName);
 			}
 
 			extern void										PopulateAttributesOnTypeDescriptors(WfLexicalScopeManager* manager);
 			extern void										ValidateModuleRPC(WfLexicalScopeManager* manager, Ptr<WfModule> module);
+			extern Ptr<WfModule>							CopyAndClearRpcMetadata(Ptr<WfModule> module);
 			extern WString									GenerateDtsFromRpcMetadata(WfLexicalScopeManager* manager);
 			extern Ptr<WfModule>							GenerateModuleRpc(WfLexicalScopeManager* manager, WString assemblyName);
 			extern Ptr<WfModule>							GenerateModuleRpcJson(WfLexicalScopeManager* manager, WString assemblyName);
