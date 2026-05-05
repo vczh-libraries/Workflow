@@ -9,10 +9,16 @@ You should complete tasks one by one.
 
 ## Task 1
 
-- In `rpcjson_Serialize` and `rpcjson_Deserialize`, after all custom types are processed, the rest should be given to C++ written functions.
-  - Such functions accept function pointer of `rpcjson_Serialize` and `rpcjson_Deserialize` so that they could handle byref collection properly.
-  - `func IRpcLifecycle::JsonSerializePredefinedTypes(value : object, rpcjson_Serialize : func (value) : (system::JsonNode^))`
-  - `func IRpcLifecycle::JsonDeserializePredefinedTypes(value : object, rpcjson_Deserialize : func (system::JsonNode^) : (value))`
-  - The above functions will be put in `WfLibraryRpcJson.(h|cpp)` in `Test/Source/Library/Rpc`, but registered as static members to `IRpcLifecycle`.
-  - The above functions handle `UnknownType_PrimitiveSchema` in `TODO_RPC_JSON.md`, as well as byref collection serialization.
-  - Code generation of `rpcjson_Serialize` and `rpcjson_Deserialize` can know skip these types, avoid repeating code in all these sample outputs.
+- In `Wrapper_*.txt` and `Wrapper_*_Json.txt`, there are a lot of "in function variable" which have types, local variable types should be omitted when possible.
+  - Precisely tell for each variable, is its type can be omitted?
+    - If can, omit its type in the variable declaration.
+    - Otherwise, just keep it.
+  - DO NOT use `infer` or any other way to move the type from the variable to its initializer expression, that's even worse.
+- There are also some `of` expression doing type inferring. If implicit type conversion work at that place, inferring is not needed.
+  - Precisely tell for each `infer` expression, is type inferring unnecessary?
+    - If unnecessary, remove the `infer` part from the expression.
+    - Otherwise, just keep it.
+  - DO NOT use casting just to replace the `infer` with other thing that still has a type, that's even worse
+- Check all strong cast `cast` and weak cast `as`, if implicit type conversion work at that place, casting is not needed.
+- Prefer `var v : T = e;` over `var v = e over T;` if `T` cannot avoid.
+- The goal is to not write types in Workflow as much as you can. But we know not all types can be avoided. So you need to do it case by case.
