@@ -123,11 +123,11 @@ namespace vl_workflow_global
 	public:
 
 		::vl::Ptr<::vl::reflection::description::IValueList> xsService;
-		::vl::vint rpctype_RpcCollection__Interface__InByref__PropByref__IValue = 0;
 		::vl::vint rpctype_RpcCollection__Interface__InByref__PropByref__IService = 0;
-		::vl::vint rpcmethod_RpcCollection__Interface__InByref__PropByref__IValue_GetValue = 0;
 		::vl::vint rpcmethod_RpcCollection__Interface__InByref__PropByref__IService_GetList = 0;
 		::vl::vint rpcmethod_RpcCollection__Interface__InByref__PropByref__IService_SetList = 0;
+		::vl::vint rpctype_RpcCollection__Interface__InByref__PropByref__IValue = 0;
+		::vl::vint rpcmethod_RpcCollection__Interface__InByref__PropByref__IValue_GetValue = 0;
 
 		::vl::Ptr<::RpcCollection::Interface::InByref::PropByref::IValue> MakeValue(::vl::vint value);
 		::vl::Ptr<::RpcCollection::Interface::InByref::PropByref::IValue> MakeValue(const ::vl::WString& value);

@@ -38,11 +38,11 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionDict_Interface_PropD
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.xsService = ::vl::reflection::description::IValueDictionary::Create();
-		instance.rpctype_RpcCollectionDict__Interface__PropDefault__IValue = static_cast<::vl::vint64_t>(0L);
-		instance.rpctype_RpcCollectionDict__Interface__PropDefault__IService = static_cast<::vl::vint64_t>(1L);
-		instance.rpcmethod_RpcCollectionDict__Interface__PropDefault__IValue_GetValue = static_cast<::vl::vint64_t>(2L);
-		instance.rpcmethod_RpcCollectionDict__Interface__PropDefault__IService_GetList = static_cast<::vl::vint64_t>(3L);
-		instance.rpcmethod_RpcCollectionDict__Interface__PropDefault__IService_SetList = static_cast<::vl::vint64_t>(4L);
+		instance.rpctype_RpcCollectionDict__Interface__PropDefault__IService = static_cast<::vl::vint64_t>(0L);
+		instance.rpcmethod_RpcCollectionDict__Interface__PropDefault__IService_GetList = static_cast<::vl::vint64_t>(1L);
+		instance.rpcmethod_RpcCollectionDict__Interface__PropDefault__IService_SetList = static_cast<::vl::vint64_t>(2L);
+		instance.rpctype_RpcCollectionDict__Interface__PropDefault__IValue = static_cast<::vl::vint64_t>(3L);
+		instance.rpcmethod_RpcCollectionDict__Interface__PropDefault__IValue_GetValue = static_cast<::vl::vint64_t>(4L);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.xsService = nullptr;
@@ -162,11 +162,11 @@ Global Functions
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> Rpc_CollectionDict_Interface_PropDefault::rpc_GetIds()
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::PropDefault::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(0L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::PropDefault::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(1L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::PropDefault::IValue.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::PropDefault::IService.GetList")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(3L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::PropDefault::IService.SetList")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::PropDefault::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(0L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::PropDefault::IService.GetList")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(1L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::PropDefault::IService.SetList")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::PropDefault::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(3L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::PropDefault::IValue.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)));
 		return result;
 	}
 

@@ -39,10 +39,10 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Dtor3)
 
 		instance.s = ::vl::WString::Unmanaged(L"");
 		instance.rpctype_RpcDtor3Test__IContainer = static_cast<::vl::vint>(0);
-		instance.rpctype_RpcDtor3Test__IValue = static_cast<::vl::vint>(1);
+		instance.rpcmethod_RpcDtor3Test__IContainer_GetValue = static_cast<::vl::vint>(1);
 		instance.rpctype_RpcDtor3Test__IService = static_cast<::vl::vint>(2);
-		instance.rpcmethod_RpcDtor3Test__IContainer_GetValue = static_cast<::vl::vint>(3);
-		instance.rpcmethod_RpcDtor3Test__IService_ContainValue = static_cast<::vl::vint>(4);
+		instance.rpcmethod_RpcDtor3Test__IService_ContainValue = static_cast<::vl::vint>(3);
+		instance.rpctype_RpcDtor3Test__IValue = static_cast<::vl::vint>(4);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -118,10 +118,10 @@ Global Functions
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtor3Test::IContainer")), ::vl::__vwsn::Box(static_cast<::vl::vint>(0)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtor3Test::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(1)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtor3Test::IContainer.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(1)));
 		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtor3Test::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint>(2)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtor3Test::IContainer.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(3)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtor3Test::IService.ContainValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(4)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtor3Test::IService.ContainValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(3)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtor3Test::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(4)));
 		return result;
 	}
 

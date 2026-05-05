@@ -111,12 +111,12 @@ namespace vl_workflow_global
 	public:
 
 		::vl::WString s;
-		::vl::vint64_t rpctype_RpcDtorPropCachedListVByref__IValue = 0;
 		::vl::vint64_t rpctype_RpcDtorPropCachedListVByref__IService = 0;
 		::vl::vint64_t rpcmethod_RpcDtorPropCachedListVByref__IService_GetValue = 0;
 		::vl::vint64_t rpcmethod_RpcDtorPropCachedListVByref__IService_SetValue = 0;
 		::vl::vint64_t rpcmethod_RpcDtorPropCachedListVByref__IService_Signal = 0;
 		::vl::vint64_t rpcevent_RpcDtorPropCachedListVByref__IService_ValueChanged = 0;
+		::vl::vint64_t rpctype_RpcDtorPropCachedListVByref__IValue = 0;
 
 		::vl::Ptr<::RpcDtorPropCachedListVByref::IValue> MakeValue(const ::vl::WString& value);
 		::vl::Ptr<::vl::reflection::description::IValueList> MakeValues(const ::vl::WString& value);

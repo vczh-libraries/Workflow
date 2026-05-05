@@ -115,10 +115,10 @@ namespace vl_workflow_global
 	public:
 
 		::vl::Ptr<::vl::reflection::description::IValueList> xsService;
-		::vl::vint64_t rpctype_RpcCollection__Interface__Default__IValue = 0;
 		::vl::vint64_t rpctype_RpcCollection__Interface__Default__IService = 0;
-		::vl::vint64_t rpcmethod_RpcCollection__Interface__Default__IValue_GetValue = 0;
 		::vl::vint64_t rpcmethod_RpcCollection__Interface__Default__IService_DoList = 0;
+		::vl::vint64_t rpctype_RpcCollection__Interface__Default__IValue = 0;
+		::vl::vint64_t rpcmethod_RpcCollection__Interface__Default__IValue_GetValue = 0;
 
 		::vl::Ptr<::RpcCollection::Interface::Default::IValue> MakeValue(::vl::vint64_t value);
 		::vl::Ptr<::RpcCollection::Interface::Default::IValue> MakeValue(const ::vl::WString& value);

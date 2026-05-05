@@ -111,14 +111,14 @@ namespace vl_workflow_global
 	public:
 
 		::vl::WString s;
-		::vl::vint64_t rpctype_RpcOverloadingTest__IStringRepresentable = 0;
 		::vl::vint64_t rpctype_RpcOverloadingTest__IService = 0;
-		::vl::vint64_t rpcmethod_RpcOverloadingTest__IStringRepresentable_GetStringValue = 0;
-		::vl::vint64_t rpcmethod_RpcOverloadingTest__IService_ToStringInt = 0;
 		::vl::vint64_t rpcmethod_RpcOverloadingTest__IService_ToString_value__1 = 0;
 		::vl::vint64_t rpcmethod_RpcOverloadingTest__IService_ToString_value__2 = 0;
 		::vl::vint64_t rpcmethod_RpcOverloadingTest__IService_ToString_value__3 = 0;
 		::vl::vint64_t rpcmethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_ = 0;
+		::vl::vint64_t rpcmethod_RpcOverloadingTest__IService_ToStringInt = 0;
+		::vl::vint64_t rpctype_RpcOverloadingTest__IStringRepresentable = 0;
+		::vl::vint64_t rpcmethod_RpcOverloadingTest__IStringRepresentable_GetStringValue = 0;
 
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);

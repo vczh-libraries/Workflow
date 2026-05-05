@@ -38,14 +38,14 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_PrimitiveTypes)
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.rpctype_RpcPrimitiveTest__IService = static_cast<::vl::vint64_t>(0L);
-		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessInt = static_cast<::vl::vint64_t>(1L);
-		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessUInt = static_cast<::vl::vint64_t>(2L);
-		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessFloat = static_cast<::vl::vint64_t>(3L);
-		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessDouble = static_cast<::vl::vint64_t>(4L);
-		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessString = static_cast<::vl::vint64_t>(5L);
-		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessBool = static_cast<::vl::vint64_t>(6L);
-		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessEnum = static_cast<::vl::vint64_t>(7L);
-		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessStruct = static_cast<::vl::vint64_t>(8L);
+		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessBool = static_cast<::vl::vint64_t>(1L);
+		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessDouble = static_cast<::vl::vint64_t>(2L);
+		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessEnum = static_cast<::vl::vint64_t>(3L);
+		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessFloat = static_cast<::vl::vint64_t>(4L);
+		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessInt = static_cast<::vl::vint64_t>(5L);
+		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessString = static_cast<::vl::vint64_t>(6L);
+		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessStruct = static_cast<::vl::vint64_t>(7L);
+		instance.rpcmethod_RpcPrimitiveTest__IService_ProcessUInt = static_cast<::vl::vint64_t>(8L);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_PrimitiveTypes)
@@ -84,14 +84,14 @@ Global Functions
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(0L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessInt")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(1L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessUInt")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessFloat")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(3L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessDouble")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessString")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(5L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessBool")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(6L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessEnum")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(7L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessStruct")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(8L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessBool")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(1L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessDouble")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessEnum")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(3L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessFloat")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessInt")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(5L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessString")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(6L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessStruct")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(7L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService.ProcessUInt")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(8L)));
 		return result;
 	}
 

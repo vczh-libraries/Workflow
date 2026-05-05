@@ -89,8 +89,8 @@ namespace vl_workflow_global
 		::vl::WString s;
 		::vl::vint32_t rpctype_RpcEvent__IService = 0;
 		::vl::vint32_t rpcmethod_RpcEvent__IService_MakeItHappen = 0;
-		::vl::vint32_t rpcmethod_RpcEvent__IService_Watch = 0;
 		::vl::vint32_t rpcevent_RpcEvent__IService_SomethingHappened = 0;
+		::vl::vint32_t rpcmethod_RpcEvent__IService_Watch = 0;
 
 		void ServiceSomethingHappened(const ::vl::WString& something);
 		void ClientSomethingHappened(const ::vl::WString& something);

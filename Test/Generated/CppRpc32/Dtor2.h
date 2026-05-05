@@ -102,10 +102,10 @@ namespace vl_workflow_global
 	public:
 
 		::vl::WString s;
-		::vl::vint32_t rpctype_RpcDtor2Test__IValue = 0;
 		::vl::vint32_t rpctype_RpcDtor2Test__IService = 0;
 		::vl::vint32_t rpcmethod_RpcDtor2Test__IService_MakeValue = 0;
 		::vl::vint32_t rpcmethod_RpcDtor2Test__IService_ReviewValue = 0;
+		::vl::vint32_t rpctype_RpcDtor2Test__IValue = 0;
 
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);

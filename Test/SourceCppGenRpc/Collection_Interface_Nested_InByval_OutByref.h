@@ -127,10 +127,10 @@ namespace vl_workflow_global
 	public:
 
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> xsService;
-		::vl::vint rpctype_RpcCollection__Interface__Nested__InByval__OutByref__IValue = 0;
 		::vl::vint rpctype_RpcCollection__Interface__Nested__InByval__OutByref__IService = 0;
-		::vl::vint rpcmethod_RpcCollection__Interface__Nested__InByval__OutByref__IValue_GetValue = 0;
 		::vl::vint rpcmethod_RpcCollection__Interface__Nested__InByval__OutByref__IService_DoList = 0;
+		::vl::vint rpctype_RpcCollection__Interface__Nested__InByval__OutByref__IValue = 0;
+		::vl::vint rpcmethod_RpcCollection__Interface__Nested__InByval__OutByref__IValue_GetValue = 0;
 
 		::vl::Ptr<::RpcCollection::Interface::Nested::InByval::OutByref::IValue> MakeValue(::vl::vint value);
 		void CheckValue(::vl::Ptr<::RpcCollection::Interface::Nested::InByval::OutByref::IValue> value, bool shouldBeWrapper, const ::vl::WString& name);

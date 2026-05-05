@@ -106,8 +106,8 @@ namespace vl_workflow_global
 		::vl::Ptr<::vl::reflection::description::IValueList> held;
 		::vl::WString s;
 		::vl::vint rpctype_RpcFailDoubleRegistrationTest__IObject = 0;
-		::vl::vint rpctype_RpcFailDoubleRegistrationTest__IService = 0;
 		::vl::vint rpcmethod_RpcFailDoubleRegistrationTest__IObject_GetName = 0;
+		::vl::vint rpctype_RpcFailDoubleRegistrationTest__IService = 0;
 		::vl::vint rpcmethod_RpcFailDoubleRegistrationTest__IService_SetObject = 0;
 
 		::vl::Ptr<::RpcFailDoubleRegistrationTest::IObject> MakeObject(const ::vl::WString& name);

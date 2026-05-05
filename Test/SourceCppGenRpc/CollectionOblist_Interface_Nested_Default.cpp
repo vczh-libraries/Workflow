@@ -38,10 +38,10 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionOblist_Interface_Nes
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.xsService = ::vl::reflection::description::IValueDictionary::Create();
-		instance.rpctype_RpcCollectionOblist__Interface__Nested__Default__IValue = static_cast<::vl::vint>(0);
-		instance.rpctype_RpcCollectionOblist__Interface__Nested__Default__IService = static_cast<::vl::vint>(1);
-		instance.rpcmethod_RpcCollectionOblist__Interface__Nested__Default__IValue_GetValue = static_cast<::vl::vint>(2);
-		instance.rpcmethod_RpcCollectionOblist__Interface__Nested__Default__IService_DoList = static_cast<::vl::vint>(3);
+		instance.rpctype_RpcCollectionOblist__Interface__Nested__Default__IService = static_cast<::vl::vint>(0);
+		instance.rpcmethod_RpcCollectionOblist__Interface__Nested__Default__IService_DoList = static_cast<::vl::vint>(1);
+		instance.rpctype_RpcCollectionOblist__Interface__Nested__Default__IValue = static_cast<::vl::vint>(2);
+		instance.rpcmethod_RpcCollectionOblist__Interface__Nested__Default__IValue_GetValue = static_cast<::vl::vint>(3);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.xsService = nullptr;
@@ -159,10 +159,10 @@ Global Functions
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> Rpc_CollectionOblist_Interface_Nested_Default::rpc_GetIds()
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionOblist::Interface::Nested::Default::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(0)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionOblist::Interface::Nested::Default::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint>(1)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionOblist::Interface::Nested::Default::IValue.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(2)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionOblist::Interface::Nested::Default::IService.DoList")), ::vl::__vwsn::Box(static_cast<::vl::vint>(3)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionOblist::Interface::Nested::Default::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint>(0)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionOblist::Interface::Nested::Default::IService.DoList")), ::vl::__vwsn::Box(static_cast<::vl::vint>(1)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionOblist::Interface::Nested::Default::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(2)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionOblist::Interface::Nested::Default::IValue.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(3)));
 		return result;
 	}
 

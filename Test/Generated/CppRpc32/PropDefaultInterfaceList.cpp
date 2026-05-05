@@ -38,13 +38,13 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_PropDefaultInterfaceList)
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Unmanaged(L"");
-		instance.rpctype_RpcPropDefaultInterfaceList__IValue = static_cast<::vl::vint32_t>(0);
-		instance.rpctype_RpcPropDefaultInterfaceList__IService = static_cast<::vl::vint32_t>(1);
-		instance.rpcmethod_RpcPropDefaultInterfaceList__IValue_GetValue = static_cast<::vl::vint32_t>(2);
-		instance.rpcmethod_RpcPropDefaultInterfaceList__IService_GetValue = static_cast<::vl::vint32_t>(3);
-		instance.rpcmethod_RpcPropDefaultInterfaceList__IService_SetValue = static_cast<::vl::vint32_t>(4);
-		instance.rpcmethod_RpcPropDefaultInterfaceList__IService_Signal = static_cast<::vl::vint32_t>(5);
-		instance.rpcevent_RpcPropDefaultInterfaceList__IService_ValueChanged = static_cast<::vl::vint32_t>(6);
+		instance.rpctype_RpcPropDefaultInterfaceList__IService = static_cast<::vl::vint32_t>(0);
+		instance.rpcmethod_RpcPropDefaultInterfaceList__IService_GetValue = static_cast<::vl::vint32_t>(1);
+		instance.rpcmethod_RpcPropDefaultInterfaceList__IService_SetValue = static_cast<::vl::vint32_t>(2);
+		instance.rpcmethod_RpcPropDefaultInterfaceList__IService_Signal = static_cast<::vl::vint32_t>(3);
+		instance.rpcevent_RpcPropDefaultInterfaceList__IService_ValueChanged = static_cast<::vl::vint32_t>(4);
+		instance.rpctype_RpcPropDefaultInterfaceList__IValue = static_cast<::vl::vint32_t>(5);
+		instance.rpcmethod_RpcPropDefaultInterfaceList__IValue_GetValue = static_cast<::vl::vint32_t>(6);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -174,13 +174,13 @@ Global Functions
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> Rpc_PropDefaultInterfaceList::rpc_GetIds()
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterfaceList::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(0)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterfaceList::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(1)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterfaceList::IValue.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(2)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterfaceList::IService.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(3)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterfaceList::IService.SetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(4)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterfaceList::IService.Signal")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(5)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterfaceList::IService.ValueChanged")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(6)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterfaceList::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(0)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterfaceList::IService.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(1)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterfaceList::IService.SetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(2)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterfaceList::IService.Signal")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(3)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterfaceList::IService.ValueChanged")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(4)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterfaceList::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(5)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterfaceList::IValue.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(6)));
 		return result;
 	}
 

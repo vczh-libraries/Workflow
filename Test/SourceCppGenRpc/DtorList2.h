@@ -106,12 +106,12 @@ namespace vl_workflow_global
 	public:
 
 		::vl::WString s;
-		::vl::vint rpctype_RpcDtorList2__IValue = 0;
 		::vl::vint rpctype_RpcDtorList2__IService = 0;
-		::vl::vint rpcmethod_RpcDtorList2__IService_Make = 0;
 		::vl::vint rpcmethod_RpcDtorList2__IService_Clear = 0;
 		::vl::vint rpcmethod_RpcDtorList2__IService_Hold = 0;
+		::vl::vint rpcmethod_RpcDtorList2__IService_Make = 0;
 		::vl::vint rpcmethod_RpcDtorList2__IService_Unhold = 0;
+		::vl::vint rpctype_RpcDtorList2__IValue = 0;
 
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::RpcDtorList2::IValue> MakeValue();

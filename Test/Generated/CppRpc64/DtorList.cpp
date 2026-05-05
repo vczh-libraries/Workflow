@@ -38,12 +38,12 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_DtorList)
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Unmanaged(L"");
-		instance.rpctype_RpcDtorList__IValue = static_cast<::vl::vint64_t>(0L);
-		instance.rpctype_RpcDtorList__IService = static_cast<::vl::vint64_t>(1L);
-		instance.rpcmethod_RpcDtorList__IService_Set = static_cast<::vl::vint64_t>(2L);
-		instance.rpcmethod_RpcDtorList__IService_Clear = static_cast<::vl::vint64_t>(3L);
-		instance.rpcmethod_RpcDtorList__IService_Hold = static_cast<::vl::vint64_t>(4L);
-		instance.rpcmethod_RpcDtorList__IService_Unhold = static_cast<::vl::vint64_t>(5L);
+		instance.rpctype_RpcDtorList__IService = static_cast<::vl::vint64_t>(0L);
+		instance.rpcmethod_RpcDtorList__IService_Clear = static_cast<::vl::vint64_t>(1L);
+		instance.rpcmethod_RpcDtorList__IService_Hold = static_cast<::vl::vint64_t>(2L);
+		instance.rpcmethod_RpcDtorList__IService_Set = static_cast<::vl::vint64_t>(3L);
+		instance.rpcmethod_RpcDtorList__IService_Unhold = static_cast<::vl::vint64_t>(4L);
+		instance.rpctype_RpcDtorList__IValue = static_cast<::vl::vint64_t>(5L);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -135,12 +135,12 @@ Global Functions
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> Rpc_DtorList::rpc_GetIds()
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorList::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(0L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorList::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(1L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorList::IService.Set")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorList::IService.Clear")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(3L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorList::IService.Hold")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorList::IService.Unhold")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(5L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorList::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(0L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorList::IService.Clear")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(1L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorList::IService.Hold")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorList::IService.Set")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(3L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorList::IService.Unhold")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorList::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(5L)));
 		return result;
 	}
 

@@ -38,14 +38,14 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Overloading)
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Unmanaged(L"");
-		instance.rpctype_RpcOverloadingTest__IStringRepresentable = static_cast<::vl::vint>(0);
-		instance.rpctype_RpcOverloadingTest__IService = static_cast<::vl::vint>(1);
-		instance.rpcmethod_RpcOverloadingTest__IStringRepresentable_GetStringValue = static_cast<::vl::vint>(2);
-		instance.rpcmethod_RpcOverloadingTest__IService_ToStringInt = static_cast<::vl::vint>(3);
-		instance.rpcmethod_RpcOverloadingTest__IService_ToString_value__1 = static_cast<::vl::vint>(4);
-		instance.rpcmethod_RpcOverloadingTest__IService_ToString_value__2 = static_cast<::vl::vint>(5);
-		instance.rpcmethod_RpcOverloadingTest__IService_ToString_value__3 = static_cast<::vl::vint>(6);
-		instance.rpcmethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_ = static_cast<::vl::vint>(7);
+		instance.rpctype_RpcOverloadingTest__IService = static_cast<::vl::vint>(0);
+		instance.rpcmethod_RpcOverloadingTest__IService_ToString_value__1 = static_cast<::vl::vint>(1);
+		instance.rpcmethod_RpcOverloadingTest__IService_ToString_value__2 = static_cast<::vl::vint>(2);
+		instance.rpcmethod_RpcOverloadingTest__IService_ToString_value__3 = static_cast<::vl::vint>(3);
+		instance.rpcmethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_ = static_cast<::vl::vint>(4);
+		instance.rpcmethod_RpcOverloadingTest__IService_ToStringInt = static_cast<::vl::vint>(5);
+		instance.rpctype_RpcOverloadingTest__IStringRepresentable = static_cast<::vl::vint>(6);
+		instance.rpcmethod_RpcOverloadingTest__IStringRepresentable_GetStringValue = static_cast<::vl::vint>(7);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -81,14 +81,14 @@ Global Functions
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> Rpc_Overloading::rpc_GetIds()
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IStringRepresentable")), ::vl::__vwsn::Box(static_cast<::vl::vint>(0)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint>(1)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IStringRepresentable.GetStringValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(2)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IService.ToStringInt")), ::vl::__vwsn::Box(static_cast<::vl::vint>(3)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IService.ToString(value).1")), ::vl::__vwsn::Box(static_cast<::vl::vint>(4)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IService.ToString(value).2")), ::vl::__vwsn::Box(static_cast<::vl::vint>(5)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IService.ToString(value).3")), ::vl::__vwsn::Box(static_cast<::vl::vint>(6)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IService.ToString(value1,value2,value3,value4)")), ::vl::__vwsn::Box(static_cast<::vl::vint>(7)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint>(0)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IService.ToString(value).1")), ::vl::__vwsn::Box(static_cast<::vl::vint>(1)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IService.ToString(value).2")), ::vl::__vwsn::Box(static_cast<::vl::vint>(2)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IService.ToString(value).3")), ::vl::__vwsn::Box(static_cast<::vl::vint>(3)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IService.ToString(value1,value2,value3,value4)")), ::vl::__vwsn::Box(static_cast<::vl::vint>(4)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IService.ToStringInt")), ::vl::__vwsn::Box(static_cast<::vl::vint>(5)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IStringRepresentable")), ::vl::__vwsn::Box(static_cast<::vl::vint>(6)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IStringRepresentable.GetStringValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(7)));
 		return result;
 	}
 

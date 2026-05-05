@@ -121,10 +121,10 @@ namespace vl_workflow_global
 	public:
 
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> xsService;
-		::vl::vint rpctype_RpcCollectionOblist__Interface__InByref__OutByref__IValue = 0;
 		::vl::vint rpctype_RpcCollectionOblist__Interface__InByref__OutByref__IService = 0;
-		::vl::vint rpcmethod_RpcCollectionOblist__Interface__InByref__OutByref__IValue_GetValue = 0;
 		::vl::vint rpcmethod_RpcCollectionOblist__Interface__InByref__OutByref__IService_DoList = 0;
+		::vl::vint rpctype_RpcCollectionOblist__Interface__InByref__OutByref__IValue = 0;
+		::vl::vint rpcmethod_RpcCollectionOblist__Interface__InByref__OutByref__IValue_GetValue = 0;
 
 		::vl::Ptr<::RpcCollectionOblist::Interface::InByref::OutByref::IValue> MakeValue(::vl::vint value);
 		::vl::Ptr<::RpcCollectionOblist::Interface::InByref::OutByref::IValue> MakeValue(const ::vl::WString& value);

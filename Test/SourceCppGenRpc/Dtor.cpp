@@ -38,9 +38,9 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Dtor)
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Unmanaged(L"Not Deleted");
-		instance.rpctype_RpcDtorTest__IValue = static_cast<::vl::vint>(0);
-		instance.rpctype_RpcDtorTest__IService = static_cast<::vl::vint>(1);
-		instance.rpcmethod_RpcDtorTest__IService_MakeValue = static_cast<::vl::vint>(2);
+		instance.rpctype_RpcDtorTest__IService = static_cast<::vl::vint>(0);
+		instance.rpcmethod_RpcDtorTest__IService_MakeValue = static_cast<::vl::vint>(1);
+		instance.rpctype_RpcDtorTest__IValue = static_cast<::vl::vint>(2);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -86,9 +86,9 @@ Global Functions
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> Rpc_Dtor::rpc_GetIds()
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(0)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint>(1)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IService.MakeValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(2)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint>(0)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IService.MakeValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(1)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(2)));
 		return result;
 	}
 

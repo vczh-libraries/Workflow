@@ -41,8 +41,8 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_FailDoubleRegistration)
 		instance.held = ::vl::reflection::description::IValueList::Create();
 		instance.s = ::vl::WString::Unmanaged(L"");
 		instance.rpctype_RpcFailDoubleRegistrationTest__IObject = static_cast<::vl::vint64_t>(0L);
-		instance.rpctype_RpcFailDoubleRegistrationTest__IService = static_cast<::vl::vint64_t>(1L);
-		instance.rpcmethod_RpcFailDoubleRegistrationTest__IObject_GetName = static_cast<::vl::vint64_t>(2L);
+		instance.rpcmethod_RpcFailDoubleRegistrationTest__IObject_GetName = static_cast<::vl::vint64_t>(1L);
+		instance.rpctype_RpcFailDoubleRegistrationTest__IService = static_cast<::vl::vint64_t>(2L);
 		instance.rpcmethod_RpcFailDoubleRegistrationTest__IService_SetObject = static_cast<::vl::vint64_t>(3L);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
@@ -102,8 +102,8 @@ Global Functions
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcFailDoubleRegistrationTest::IObject")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(0L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcFailDoubleRegistrationTest::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(1L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcFailDoubleRegistrationTest::IObject.GetName")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcFailDoubleRegistrationTest::IObject.GetName")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(1L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcFailDoubleRegistrationTest::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)));
 		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcFailDoubleRegistrationTest::IService.SetObject")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(3L)));
 		return result;
 	}

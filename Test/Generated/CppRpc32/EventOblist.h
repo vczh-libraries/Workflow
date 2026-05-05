@@ -87,8 +87,8 @@ namespace vl_workflow_global
 
 		::vl::WString s;
 		::vl::vint32_t rpctype_RpcEventOblist__IService = 0;
-		::vl::vint32_t rpcmethod_RpcEventOblist__IService_SetList = 0;
 		::vl::vint32_t rpcmethod_RpcEventOblist__IService_ModifyHeldList = 0;
+		::vl::vint32_t rpcmethod_RpcEventOblist__IService_SetList = 0;
 		::vl::vint32_t rpcmethod_RpcEventOblist__IService_WatchHeldList = 0;
 
 		void RecordItemChanged(const ::vl::WString& handler, ::vl::vint32_t index, ::vl::vint32_t oldCount, ::vl::vint32_t newCount);

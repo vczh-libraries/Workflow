@@ -38,10 +38,10 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionDict_Interface_Neste
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.xsService = ::vl::reflection::description::IValueDictionary::Create();
-		instance.rpctype_RpcCollectionDict__Interface__Nested__Default__IValue = static_cast<::vl::vint64_t>(0L);
-		instance.rpctype_RpcCollectionDict__Interface__Nested__Default__IService = static_cast<::vl::vint64_t>(1L);
-		instance.rpcmethod_RpcCollectionDict__Interface__Nested__Default__IValue_GetValue = static_cast<::vl::vint64_t>(2L);
-		instance.rpcmethod_RpcCollectionDict__Interface__Nested__Default__IService_DoList = static_cast<::vl::vint64_t>(3L);
+		instance.rpctype_RpcCollectionDict__Interface__Nested__Default__IService = static_cast<::vl::vint64_t>(0L);
+		instance.rpcmethod_RpcCollectionDict__Interface__Nested__Default__IService_DoList = static_cast<::vl::vint64_t>(1L);
+		instance.rpctype_RpcCollectionDict__Interface__Nested__Default__IValue = static_cast<::vl::vint64_t>(2L);
+		instance.rpcmethod_RpcCollectionDict__Interface__Nested__Default__IValue_GetValue = static_cast<::vl::vint64_t>(3L);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.xsService = nullptr;
@@ -161,10 +161,10 @@ Global Functions
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> Rpc_CollectionDict_Interface_Nested_Default::rpc_GetIds()
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::Nested::Default::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(0L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::Nested::Default::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(1L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::Nested::Default::IValue.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::Nested::Default::IService.DoList")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(3L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::Nested::Default::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(0L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::Nested::Default::IService.DoList")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(1L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::Nested::Default::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::Nested::Default::IValue.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(3L)));
 		return result;
 	}
 

@@ -122,10 +122,10 @@ namespace vl_workflow_global
 
 		::vl::WString s;
 		::vl::vint rpctype_RpcDtor3Test__IContainer = 0;
-		::vl::vint rpctype_RpcDtor3Test__IValue = 0;
-		::vl::vint rpctype_RpcDtor3Test__IService = 0;
 		::vl::vint rpcmethod_RpcDtor3Test__IContainer_GetValue = 0;
+		::vl::vint rpctype_RpcDtor3Test__IService = 0;
 		::vl::vint rpcmethod_RpcDtor3Test__IService_ContainValue = 0;
+		::vl::vint rpctype_RpcDtor3Test__IValue = 0;
 
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::RpcDtor3Test::IValue> MakeValue();

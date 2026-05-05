@@ -90,8 +90,8 @@ namespace vl_workflow_global
 		::vl::Ptr<::vl::reflection::description::IValueList> receivedXs;
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> receivedYs;
 		::vl::vint32_t rpctype_RpcEventArgs__IService = 0;
-		::vl::vint32_t rpcmethod_RpcEventArgs__IService_MakeItHappen = 0;
 		::vl::vint32_t rpcmethod_RpcEventArgs__IService_AddElement = 0;
+		::vl::vint32_t rpcmethod_RpcEventArgs__IService_MakeItHappen = 0;
 		::vl::vint32_t rpcevent_RpcEventArgs__IService_SomethingHappened = 0;
 
 		void Print(::vl::Ptr<::vl::reflection::description::IValueList> values);

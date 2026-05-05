@@ -113,13 +113,13 @@ namespace vl_workflow_global
 	public:
 
 		::vl::WString s;
-		::vl::vint rpctype_RpcPropDefaultInterfaceList__IValue = 0;
 		::vl::vint rpctype_RpcPropDefaultInterfaceList__IService = 0;
-		::vl::vint rpcmethod_RpcPropDefaultInterfaceList__IValue_GetValue = 0;
 		::vl::vint rpcmethod_RpcPropDefaultInterfaceList__IService_GetValue = 0;
 		::vl::vint rpcmethod_RpcPropDefaultInterfaceList__IService_SetValue = 0;
 		::vl::vint rpcmethod_RpcPropDefaultInterfaceList__IService_Signal = 0;
 		::vl::vint rpcevent_RpcPropDefaultInterfaceList__IService_ValueChanged = 0;
+		::vl::vint rpctype_RpcPropDefaultInterfaceList__IValue = 0;
+		::vl::vint rpcmethod_RpcPropDefaultInterfaceList__IValue_GetValue = 0;
 
 		void ClientValueChanged();
 		::vl::Ptr<::RpcPropDefaultInterfaceList::IValue> MakeValue(const ::vl::WString& value);

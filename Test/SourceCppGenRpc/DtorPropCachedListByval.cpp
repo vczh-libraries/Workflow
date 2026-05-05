@@ -38,12 +38,12 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_DtorPropCachedListByval)
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Unmanaged(L"");
-		instance.rpctype_RpcDtorPropCachedListByval__IValue = static_cast<::vl::vint>(0);
-		instance.rpctype_RpcDtorPropCachedListByval__IService = static_cast<::vl::vint>(1);
-		instance.rpcmethod_RpcDtorPropCachedListByval__IService_GetValue = static_cast<::vl::vint>(2);
-		instance.rpcmethod_RpcDtorPropCachedListByval__IService_SetValue = static_cast<::vl::vint>(3);
-		instance.rpcmethod_RpcDtorPropCachedListByval__IService_Signal = static_cast<::vl::vint>(4);
-		instance.rpcevent_RpcDtorPropCachedListByval__IService_ValueChanged = static_cast<::vl::vint>(5);
+		instance.rpctype_RpcDtorPropCachedListByval__IService = static_cast<::vl::vint>(0);
+		instance.rpcmethod_RpcDtorPropCachedListByval__IService_GetValue = static_cast<::vl::vint>(1);
+		instance.rpcmethod_RpcDtorPropCachedListByval__IService_SetValue = static_cast<::vl::vint>(2);
+		instance.rpcmethod_RpcDtorPropCachedListByval__IService_Signal = static_cast<::vl::vint>(3);
+		instance.rpcevent_RpcDtorPropCachedListByval__IService_ValueChanged = static_cast<::vl::vint>(4);
+		instance.rpctype_RpcDtorPropCachedListByval__IValue = static_cast<::vl::vint>(5);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -105,12 +105,12 @@ Global Functions
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> Rpc_DtorPropCachedListByval::rpc_GetIds()
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCachedListByval::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(0)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCachedListByval::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint>(1)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCachedListByval::IService.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(2)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCachedListByval::IService.SetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(3)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCachedListByval::IService.Signal")), ::vl::__vwsn::Box(static_cast<::vl::vint>(4)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCachedListByval::IService.ValueChanged")), ::vl::__vwsn::Box(static_cast<::vl::vint>(5)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCachedListByval::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint>(0)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCachedListByval::IService.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(1)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCachedListByval::IService.SetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(2)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCachedListByval::IService.Signal")), ::vl::__vwsn::Box(static_cast<::vl::vint>(3)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCachedListByval::IService.ValueChanged")), ::vl::__vwsn::Box(static_cast<::vl::vint>(4)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCachedListByval::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint>(5)));
 		return result;
 	}
 

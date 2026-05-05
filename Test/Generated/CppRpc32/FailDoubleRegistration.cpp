@@ -41,8 +41,8 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_FailDoubleRegistration)
 		instance.held = ::vl::reflection::description::IValueList::Create();
 		instance.s = ::vl::WString::Unmanaged(L"");
 		instance.rpctype_RpcFailDoubleRegistrationTest__IObject = static_cast<::vl::vint32_t>(0);
-		instance.rpctype_RpcFailDoubleRegistrationTest__IService = static_cast<::vl::vint32_t>(1);
-		instance.rpcmethod_RpcFailDoubleRegistrationTest__IObject_GetName = static_cast<::vl::vint32_t>(2);
+		instance.rpcmethod_RpcFailDoubleRegistrationTest__IObject_GetName = static_cast<::vl::vint32_t>(1);
+		instance.rpctype_RpcFailDoubleRegistrationTest__IService = static_cast<::vl::vint32_t>(2);
 		instance.rpcmethod_RpcFailDoubleRegistrationTest__IService_SetObject = static_cast<::vl::vint32_t>(3);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
@@ -102,8 +102,8 @@ Global Functions
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcFailDoubleRegistrationTest::IObject")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(0)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcFailDoubleRegistrationTest::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(1)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcFailDoubleRegistrationTest::IObject.GetName")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(2)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcFailDoubleRegistrationTest::IObject.GetName")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(1)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcFailDoubleRegistrationTest::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(2)));
 		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcFailDoubleRegistrationTest::IService.SetObject")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(3)));
 		return result;
 	}

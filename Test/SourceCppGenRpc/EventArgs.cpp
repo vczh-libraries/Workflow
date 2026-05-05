@@ -41,8 +41,8 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_EventArgs)
 		instance.receivedXs = ::vl::Ptr<::vl::reflection::description::IValueList>();
 		instance.receivedYs = ::vl::Ptr<::vl::reflection::description::IValueObservableList>();
 		instance.rpctype_RpcEventArgs__IService = static_cast<::vl::vint>(0);
-		instance.rpcmethod_RpcEventArgs__IService_MakeItHappen = static_cast<::vl::vint>(1);
-		instance.rpcmethod_RpcEventArgs__IService_AddElement = static_cast<::vl::vint>(2);
+		instance.rpcmethod_RpcEventArgs__IService_AddElement = static_cast<::vl::vint>(1);
+		instance.rpcmethod_RpcEventArgs__IService_MakeItHappen = static_cast<::vl::vint>(2);
 		instance.rpcevent_RpcEventArgs__IService_SomethingHappened = static_cast<::vl::vint>(3);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
@@ -114,8 +114,8 @@ Global Functions
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventArgs::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint>(0)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventArgs::IService.MakeItHappen")), ::vl::__vwsn::Box(static_cast<::vl::vint>(1)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventArgs::IService.AddElement")), ::vl::__vwsn::Box(static_cast<::vl::vint>(2)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventArgs::IService.AddElement")), ::vl::__vwsn::Box(static_cast<::vl::vint>(1)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventArgs::IService.MakeItHappen")), ::vl::__vwsn::Box(static_cast<::vl::vint>(2)));
 		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventArgs::IService.SomethingHappened")), ::vl::__vwsn::Box(static_cast<::vl::vint>(3)));
 		return result;
 	}

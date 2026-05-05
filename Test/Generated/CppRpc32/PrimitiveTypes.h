@@ -111,14 +111,14 @@ namespace vl_workflow_global
 	public:
 
 		::vl::vint32_t rpctype_RpcPrimitiveTest__IService = 0;
-		::vl::vint32_t rpcmethod_RpcPrimitiveTest__IService_ProcessInt = 0;
-		::vl::vint32_t rpcmethod_RpcPrimitiveTest__IService_ProcessUInt = 0;
-		::vl::vint32_t rpcmethod_RpcPrimitiveTest__IService_ProcessFloat = 0;
-		::vl::vint32_t rpcmethod_RpcPrimitiveTest__IService_ProcessDouble = 0;
-		::vl::vint32_t rpcmethod_RpcPrimitiveTest__IService_ProcessString = 0;
 		::vl::vint32_t rpcmethod_RpcPrimitiveTest__IService_ProcessBool = 0;
+		::vl::vint32_t rpcmethod_RpcPrimitiveTest__IService_ProcessDouble = 0;
 		::vl::vint32_t rpcmethod_RpcPrimitiveTest__IService_ProcessEnum = 0;
+		::vl::vint32_t rpcmethod_RpcPrimitiveTest__IService_ProcessFloat = 0;
+		::vl::vint32_t rpcmethod_RpcPrimitiveTest__IService_ProcessInt = 0;
+		::vl::vint32_t rpcmethod_RpcPrimitiveTest__IService_ProcessString = 0;
 		::vl::vint32_t rpcmethod_RpcPrimitiveTest__IService_ProcessStruct = 0;
+		::vl::vint32_t rpcmethod_RpcPrimitiveTest__IService_ProcessUInt = 0;
 
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);

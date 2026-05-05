@@ -103,10 +103,10 @@ namespace vl_workflow_global
 	public:
 
 		::vl::WString s;
-		::vl::vint64_t rpctype_RpcNullable__IValue = 0;
 		::vl::vint64_t rpctype_RpcNullable__IService = 0;
-		::vl::vint64_t rpcmethod_RpcNullable__IValue_GetValue = 0;
 		::vl::vint64_t rpcmethod_RpcNullable__IService_Print = 0;
+		::vl::vint64_t rpctype_RpcNullable__IValue = 0;
+		::vl::vint64_t rpcmethod_RpcNullable__IValue_GetValue = 0;
 
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);

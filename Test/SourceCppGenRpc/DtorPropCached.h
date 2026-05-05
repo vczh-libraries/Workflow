@@ -111,12 +111,12 @@ namespace vl_workflow_global
 	public:
 
 		::vl::WString s;
-		::vl::vint rpctype_RpcDtorPropCached__IValue = 0;
 		::vl::vint rpctype_RpcDtorPropCached__IService = 0;
 		::vl::vint rpcmethod_RpcDtorPropCached__IService_GetValue = 0;
 		::vl::vint rpcmethod_RpcDtorPropCached__IService_SetValue = 0;
 		::vl::vint rpcmethod_RpcDtorPropCached__IService_Signal = 0;
 		::vl::vint rpcevent_RpcDtorPropCached__IService_ValueChanged = 0;
+		::vl::vint rpctype_RpcDtorPropCached__IValue = 0;
 
 		::vl::Ptr<::RpcDtorPropCached::IValue> MakeValue(const ::vl::WString& value);
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
