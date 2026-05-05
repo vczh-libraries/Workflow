@@ -88,3 +88,12 @@ Scan
 And write the new knowledge about `*_Test.txt` in it.
 
 This might affect generated files so full test should run.
+
+## Task 5
+
+This is a verification task, make sure all mentiond documents:
+- `TODO_RPC_Definition.md`
+- `TODO_RPC_Sample.md`
+- `Project.md`
+- `new-sample.md` and `new-sample-rpc.md`
+Are property changed. If they are not changed, you should review the original instruction `TODO_RPC_Tasks.md` with the implementation (you might want to just scan the file or read git commits), and fix them.
