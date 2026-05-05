@@ -6,6 +6,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "VlppOS.h"
 #include "Vlpp.h"
 #include "VlppRegex.h"
+#include "VlppGlrParser.h"
 
 /***********************************************************************
 .\WFLIBRARYPREDEFINED.H
@@ -683,10 +684,12 @@ namespace vl
 			static T* Unbox(const reflection::description::Value& value)
 			{
 				if (value.IsNull()) return nullptr;
-				if (auto converted = dynamic_cast<T*>(value.GetRawPtr())) return converted;
+				auto rawPtr = value.GetRawPtr();
+				if (!rawPtr) return nullptr;
+				if (auto converted = dynamic_cast<T*>(rawPtr)) return converted;
 				try
 				{
-					return value.GetRawPtr()->SafeAggregationCast<T>();
+					return rawPtr->SafeAggregationCast<T>();
 				}
 				catch (const Exception&)
 				{
@@ -701,10 +704,12 @@ namespace vl
 			static Ptr<T> Unbox(const reflection::description::Value& value)
 			{
 				if (value.IsNull()) return nullptr;
-				if (auto converted = dynamic_cast<T*>(value.GetRawPtr())) return Ptr(converted);
+				auto rawPtr = value.GetRawPtr();
+				if (!rawPtr) return nullptr;
+				if (auto converted = dynamic_cast<T*>(rawPtr)) return Ptr(converted);
 				try
 				{
-					return Ptr(value.GetRawPtr()->SafeAggregationCast<T>());
+					return Ptr(rawPtr->SafeAggregationCast<T>());
 				}
 				catch (const Exception&)
 				{
@@ -903,8 +908,9 @@ namespace vl
 
 #endif
 
+
 /***********************************************************************
-.\WFLIBRARYRPC.H
+.\RPC\WFLIBRARYRPC.H
 ***********************************************************************/
 /***********************************************************************
 Vczh Library++ 3.0
@@ -922,6 +928,8 @@ namespace vl
 {
 	namespace rpc_controller
 	{
+		class IRpcSerializer;
+
 		constexpr vint RpcTypeId_NotFound = -100;
 		constexpr vint RpcClientId_Invalid = -1;
 		constexpr vint RpcObjectId_Invalid = -1;
@@ -935,6 +943,15 @@ namespace vl
 			auto operator<=>(const RpcObjectReference&) const = default;
 		};
 
+		class RpcByvalReturnValue
+			: public Object
+			, public reflection::Description<RpcByvalReturnValue>
+		{
+		public:
+			reflection::description::Value	value;
+			vint							slot = -1;
+		};
+
 		inline constexpr vint				RpcTypeId_IValueEnumerable = -1;
 		inline constexpr vint				RpcTypeId_IValueEnumerator = -2;
 		inline constexpr vint				RpcTypeId_IValueArray = -3;
@@ -942,7 +959,7 @@ namespace vl
 		inline constexpr vint				RpcTypeId_IValueObservableList = -5;
 		inline constexpr vint				RpcTypeId_IValueDictionary = -6;
 		inline constexpr vint				RpcTypeId_IValueReadonlyList = -7;
-		
+
 /***********************************************************************
 * Interfaces (Operations)
 ***********************************************************************/
@@ -982,6 +999,7 @@ namespace vl
 		{
 		public:
 			virtual reflection::description::Value					InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments) = 0;
+			virtual void											EndInvokeMethod(vint slot) = 0;
 			virtual void											ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold) = 0;
 			virtual void											RegisterService(vint typeId, Ptr<reflection::IDescriptable> service) = 0;
 		};
@@ -1001,7 +1019,7 @@ namespace vl
 		public:
 			virtual void											InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments) = 0;
 		};
-		
+
 /***********************************************************************
 * Interfaces (Lifecycle)
 ***********************************************************************/
@@ -1054,6 +1072,7 @@ namespace vl
 			virtual vint							GetClientId() = 0;
 			virtual IRpcDispatcher*					GetDispatcher() = 0;
 			virtual IRpcController*					GetController() = 0;
+			virtual IRpcSerializer*					GetSerializer() = 0;
 			virtual Ptr<reflection::IDescriptable>	RefToPtr(RpcObjectReference ref) = 0;
 			virtual RpcObjectReference				PtrToRef(Ptr<reflection::IDescriptable> obj) = 0;
 			virtual void							LocalObjectHold(RpcObjectReference ref, vint remoteClientId) = 0;
@@ -1069,19 +1088,300 @@ namespace vl
 		public:
 			virtual void							DisconnectFromLifecycle() = 0;
 		};
-		
+
+/***********************************************************************
+* Helpers
+***********************************************************************/
+
+		RpcObjectReference									RpcBoxByref		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
+		Ptr<reflection::IDescriptable>						RpcUnboxByref	(RpcObjectReference serializable, IRpcLifecycle* lc);
+		reflection::description::Value						RpcCopyByval	(const reflection::description::Value& trivial, IRpcLifecycle* lc);
+		reflection::description::Value						RpcBoxByval		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
+		reflection::description::Value						RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
+		Ptr<reflection::IDescriptable>						RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\RPC\WFLIBRARYRPCCONTROLLER.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Framework::RPC
+
+Interfaces:
+***********************************************************************/
+
+#ifndef VCZH_WORKFLOW_LIBRARY_RPC_CONTROLLER
+#define VCZH_WORKFLOW_LIBRARY_RPC_CONTROLLER
+
+
+namespace vl
+{
+	namespace rpc_controller
+	{
+		struct RpcEventSuppressionKey
+		{
+			RpcObjectReference					ref;
+			vint								eventId = 0;
+
+			auto operator<=>(const RpcEventSuppressionKey&) const = default;
+		};
+
+		class RpcControllerDefault : public Object, public IRpcController
+		{
+		protected:
+			Ptr<IRpcObjectOps>									objectCallback;
+			Ptr<IRpcObjectEventOps>								eventCallback;
+			Ptr<IRpcListOps>									listCallback;
+			Ptr<IRpcListEventOps>								listEventCallback;
+			collections::Dictionary<RpcEventSuppressionKey, vint>				eventSuppressedFlags;
+			collections::Dictionary<RpcObjectReference, vint>					itemChangedSuppressedFlags;
+
+			template<typename TKey>
+			static void											SetSuppressedFlag(collections::Dictionary<TKey, vint>& flags, const TKey& key, bool suppressed);
+
+			template<typename TKey>
+			static bool											GetSuppressedFlag(const collections::Dictionary<TKey, vint>& flags, const TKey& key);
+
+		public:
+
+			RpcControllerDefault();
+			~RpcControllerDefault();
+
+			void												Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback);
+
+			// IRpcController
+
+			IRpcListOps*										GetListOps()override;
+			IRpcObjectOps*										GetObjectOps()override;
+			IRpcListEventOps*									GetListEventOps()override;
+			IRpcObjectEventOps*									GetObjectEventOps()override;
+
+			void												Finalize()override;
+			void												SetEventSuppressedFlag(RpcObjectReference ref, vint eventId, bool suppressed)override;
+			bool												GetEventSuppressedFlag(RpcObjectReference ref, vint eventId)override;
+			void												SetItemChangedSuppressedFlag(RpcObjectReference ref, bool suppressed)override;
+			bool												GetItemChangedSuppressedFlag(RpcObjectReference ref)override;
+		};
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\RPC\WFLIBRARYRPCJSON.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Framework::RPC
+
+JSON Helpers:
+***********************************************************************/
+
+#ifndef VCZH_WORKFLOW_LIBRARY_RPC_JSON
+#define VCZH_WORKFLOW_LIBRARY_RPC_JSON
+
+
+namespace vl
+{
+	namespace rpc_controller
+	{
+		using RpcJsonSerializeCallback = Func<Ptr<glr::json::JsonNode>(const reflection::description::Value&)>;
+		using RpcJsonDeserializeCallback = Func<reflection::description::Value(Ptr<glr::json::JsonNode>)>;
+
+		Ptr<glr::json::JsonNode>					JsonSerializePredefinedTypes(const reflection::description::Value& value, const RpcJsonSerializeCallback& rpcjson_Serialize);
+		reflection::description::Value				JsonDeserializePredefinedTypes(const reflection::description::Value& value, const RpcJsonDeserializeCallback& rpcjson_Deserialize);
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\RPC\WFLIBRARYRPCLIFECYCLE.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Framework::RPC
+
+Lifecycle:
+***********************************************************************/
+
+#ifndef VCZH_WORKFLOW_LIBRARY_RPC_LIFECYCLE
+#define VCZH_WORKFLOW_LIBRARY_RPC_LIFECYCLE
+
+
+namespace vl
+{
+	namespace rpc_controller
+	{
+		class IRpcSerializer;
+		class RpcLifecycleBase;
+
+		class RpcLocalObjectTracker : public Object
+		{
+			friend class RpcLifecycleBase;
+		private:
+			RpcLifecycleBase*								lifecycle = nullptr;
+			RpcObjectReference								ref;
+		public:
+			RpcLocalObjectTracker(RpcLifecycleBase* lc, RpcObjectReference r);
+			~RpcLocalObjectTracker();
+			void											Attach(RpcLifecycleBase* lc, RpcObjectReference r);
+			void											Detach();
+			RpcObjectReference								GetRef() const { return ref; }
+			vint											GetClientId() const { return ref.clientId; }
+			RpcLifecycleBase*								GetLifecycle() const { return lifecycle; }
+			bool											IsTracked() const { return lifecycle != nullptr; }
+		};
+
+		class RpcWrapperTracker : public Object
+		{
+			friend class RpcLifecycleBase;
+		private:
+			RpcLifecycleBase*								lifecycle = nullptr;
+			RpcObjectReference								ref;
+		public:
+			RpcWrapperTracker(RpcLifecycleBase* lc, RpcObjectReference r);
+			~RpcWrapperTracker();
+			void											Detach();
+			RpcObjectReference								GetRef() const { return ref; }
+			RpcLifecycleBase*								GetLifecycle() const { return lifecycle; }
+		};
+
+		struct RpcLocalObjectProperties : public Object
+		{
+			RpcObjectReference								ref;
+			collections::SortedList<vint>					interestedClients;
+			reflection::IDescriptable*						rawPtr = nullptr;
+			Ptr<reflection::IDescriptable>					ownedPtr;
+			Ptr<EventHandler>								eventHandler;
+		};
+
+		class RpcLifecycleBase : public Object, public IRpcLifecycle
+		{
+			friend class RpcLocalObjectTracker;
+			friend class RpcWrapperTracker;
+		public:
+			using UniversalWrapperFactory = Func<Ptr<IRpcWrapperBase>(RpcObjectReference, IRpcLifecycle*)>;
+		private:
+			struct RpcWrapperProperties
+			{
+				reflection::DescriptableObject*				root = nullptr;
+				IRpcWrapperBase*							proxy = nullptr;
+			};
+			using LocalProperties = collections::Dictionary<vint, Ptr<RpcLocalObjectProperties>>;
+			using WrapperProperties = collections::Dictionary<RpcObjectReference, RpcWrapperProperties>;
+		private:
+			RpcControllerDefault							controller;
+			vint											clientId = RpcClientId_Invalid;
+			vint											nextObjectId = RpcObjectId_Invalid;
+			LocalProperties									localObjectProperties;
+			static WString									InternalProperty_LocalObjectTracker;
+			static WString									InternalProperty_WrapperTracker;
+			UniversalWrapperFactory							universalWrapperFactory;
+			WrapperProperties								wrapperProperties;
+
+			void											TrackWrapper(reflection::DescriptableObject* root, IRpcWrapperBase* proxy, RpcObjectReference ref);
+			void											UntrackWrapper(RpcObjectReference ref);
+			bool											TryGetTrackedWrapperRef(reflection::DescriptableObject* obj, RpcObjectReference& ref)const;
+			IRpcWrapperBase*								GetTrackedWrapper(RpcObjectReference ref)const;
+			void											TrackLocalObject(RpcObjectReference ref, reflection::IDescriptable* obj);
+			void											UntrackLocalObject(RpcObjectReference ref, bool clearInternalProperty);
+			void											RemoveLocalObject(RpcObjectReference ref, bool clearInternalProperty);
+			bool											IsTracked(vint objectId)const;
+			Ptr<reflection::IDescriptable>					CreateCallerProxy(RpcObjectReference ref, IRpcSerializer* serializer);
+			void											DisconnectWrappersForFinalize();
+		protected:
+			IRpcDispatcher*									dispatcher = nullptr;
+			collections::Dictionary<WString, vint>			idMap;
+			Ptr<IRpcSerializer>								serializer;
+
+			virtual vint									DecideTypeId(reflection::IDescriptable* obj)const;
+			virtual void									AttachLocalObjectEvents(RpcObjectReference ref, reflection::IDescriptable* obj) = 0;
+		public:
+			RpcLifecycleBase(vint _clientId);
+			~RpcLifecycleBase();
+
+			void											SetIdMap(const collections::Dictionary<WString, vint>& _idMap);
+			void											RegisterWrapperFactory(UniversalWrapperFactory factory);
+			void											SetSerializer(Ptr<IRpcSerializer> _serializer);
+			IRpcSerializer*									GetSerializer() override;
+
+			// IRpcLifecycle
+
+			void											Finalize()override;
+			vint											GetClientId()override;
+			IRpcDispatcher*									GetDispatcher()override;
+			RpcControllerDefault*							GetController()override;
+			void											LocalObjectHold(RpcObjectReference ref, vint remoteClientId)override;
+			void											LocalObjectUnhold(RpcObjectReference ref, vint remoteClientId)override;
+			void											RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service)override;
+			Ptr<reflection::IDescriptable>					RequestService(const WString& fullName)override;
+			Ptr<reflection::IDescriptable>					RefToPtr(RpcObjectReference ref)override;
+			Ptr<reflection::IDescriptable>					RefToPtr(RpcObjectReference ref, IRpcSerializer* serializer);
+			RpcObjectReference								PtrToRef(Ptr<reflection::IDescriptable> obj)override;
+		};
+	}
+}
+
+#endif
+
+
+/***********************************************************************
+.\RPC\WFLIBRARYRPCWRAPPERS.H
+***********************************************************************/
+/***********************************************************************
+Vczh Library++ 3.0
+Developer: Zihan Chen(vczh)
+Framework::RPC
+
+Collection Wrappers:
+***********************************************************************/
+
+#ifndef VCZH_WORKFLOW_LIBRARY_RPC_WRAPPERS
+#define VCZH_WORKFLOW_LIBRARY_RPC_WRAPPERS
+
+
+namespace vl
+{
+	namespace rpc_controller
+	{
+
+/***********************************************************************
+* Serialization
+***********************************************************************/
+
+		class IRpcSerializer
+			: public virtual reflection::IDescriptable
+			, public reflection::Description<IRpcSerializer>
+		{
+		public:
+			virtual reflection::description::Value					Serialize(const reflection::description::Value& value) = 0;
+			virtual reflection::description::Value					Deserialize(const reflection::description::Value& value) = 0;
+		};
+
 /***********************************************************************
 * Collection Caller Wrappers
-**********************************************************************/
+***********************************************************************/
 
 		class RpcByrefEnumerator : public Object, public reflection::Description<RpcByrefEnumerator>, public reflection::description::IValueEnumerator, public virtual IRpcWrapperBase
 		{
 		private:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 			RpcObjectReference								ref;
 			vint											index = -1;
 		public:
-			RpcByrefEnumerator(IRpcLifecycle* lc, RpcObjectReference enumeratorRef);
+			RpcByrefEnumerator(IRpcLifecycle* lc, RpcObjectReference enumeratorRef, IRpcSerializer* _serializer);
 			~RpcByrefEnumerator();
 
 			void											DisconnectFromLifecycle()override;
@@ -1094,9 +1394,10 @@ namespace vl
 		{
 		private:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 			RpcObjectReference								ref;
 		public:
-			RpcByrefEnumerable(IRpcLifecycle* lc, RpcObjectReference enumerableRef);
+			RpcByrefEnumerable(IRpcLifecycle* lc, RpcObjectReference enumerableRef, IRpcSerializer* _serializer);
 			~RpcByrefEnumerable();
 
 			void											DisconnectFromLifecycle()override;
@@ -1107,9 +1408,10 @@ namespace vl
 		{
 		protected:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 			RpcObjectReference								ref;
 		public:
-			RpcByrefReadonlyList(IRpcLifecycle* lc, RpcObjectReference listRef);
+			RpcByrefReadonlyList(IRpcLifecycle* lc, RpcObjectReference listRef, IRpcSerializer* _serializer);
 			~RpcByrefReadonlyList();
 
 			void											DisconnectFromLifecycle()override;
@@ -1123,7 +1425,7 @@ namespace vl
 		class RpcByrefList : public RpcByrefReadonlyList, public reflection::Description<RpcByrefList>, public virtual reflection::description::IValueList
 		{
 		public:
-			RpcByrefList(IRpcLifecycle* lc, RpcObjectReference listRef);
+			RpcByrefList(IRpcLifecycle* lc, RpcObjectReference listRef, IRpcSerializer* _serializer);
 			~RpcByrefList()override;
 
 			Ptr<reflection::description::IValueEnumerator>	CreateEnumerator()override;
@@ -1143,9 +1445,10 @@ namespace vl
 		{
 		private:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 			RpcObjectReference								ref;
 		public:
-			RpcByrefArray(IRpcLifecycle* lc, RpcObjectReference arrayRef);
+			RpcByrefArray(IRpcLifecycle* lc, RpcObjectReference arrayRef, IRpcSerializer* _serializer);
 			~RpcByrefArray();
 
 			void											DisconnectFromLifecycle()override;
@@ -1162,9 +1465,10 @@ namespace vl
 		{
 		private:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 			RpcObjectReference								ref;
 		public:
-			RpcByrefObservableList(IRpcLifecycle* lc, RpcObjectReference listRef);
+			RpcByrefObservableList(IRpcLifecycle* lc, RpcObjectReference listRef, IRpcSerializer* _serializer);
 			~RpcByrefObservableList();
 
 			void											DisconnectFromLifecycle()override;
@@ -1185,9 +1489,10 @@ namespace vl
 		{
 		private:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 			RpcObjectReference								ref;
 		public:
-			RpcByrefDictionary(IRpcLifecycle* lc, RpcObjectReference dictRef);
+			RpcByrefDictionary(IRpcLifecycle* lc, RpcObjectReference dictRef, IRpcSerializer* _serializer);
 			~RpcByrefDictionary();
 
 			void												DisconnectFromLifecycle()override;
@@ -1208,9 +1513,10 @@ namespace vl
 		{
 		private:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 
 		public:
-			RpcCalleeListOps(IRpcLifecycle* lc);
+			RpcCalleeListOps(IRpcLifecycle* lc, IRpcSerializer* _serializer);
 
 			RpcObjectReference								EnumCreate(RpcObjectReference ref)override;
 			bool											EnumNext(RpcObjectReference enumerator)override;
@@ -1240,21 +1546,13 @@ namespace vl
 		{
 		private:
 			IRpcLifecycle*									lifecycle = nullptr;
+			IRpcSerializer*									serializer = nullptr;
 
 		public:
-			RpcCalleeListEventBridge(IRpcLifecycle* lc);
+			RpcCalleeListEventBridge(IRpcLifecycle* lc, IRpcSerializer* _serializer);
 
 			void											OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
 		};
-		
-/***********************************************************************
-* Helpers
-***********************************************************************/
-
-		reflection::description::Value						RpcBoxByref		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
-		reflection::description::Value						RpcUnboxByref	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
-		reflection::description::Value						RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
-		reflection::description::Value						RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
 	}
 }
 
@@ -1322,6 +1620,8 @@ Predefined Types
 			F(StateMachine)					\
 			F(Versioning)					\
 			F(vl::rpc_controller::RpcObjectReference)\
+			F(vl::rpc_controller::RpcByvalReturnValue)\
+			F(vl::rpc_controller::IRpcSerializer)\
 			F(vl::rpc_controller::IRpcListOps)\
 			F(vl::rpc_controller::IRpcListEventOps)\
 			F(vl::rpc_controller::IRpcObjectOps)\
@@ -1352,6 +1652,18 @@ Interface Implementation Proxy (Implement)
 
 #pragma warning(push)
 #pragma warning(disable:4250)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcSerializer)
+				vl::reflection::description::Value Serialize(const vl::reflection::description::Value& value)override
+				{
+					INVOKEGET_INTERFACE_PROXY(Serialize, value);
+				}
+
+				vl::reflection::description::Value Deserialize(const vl::reflection::description::Value& value)override
+				{
+					INVOKEGET_INTERFACE_PROXY(Deserialize, value);
+				}
+			END_INTERFACE_PROXY(vl::rpc_controller::IRpcSerializer)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcListOps)
 				vl::rpc_controller::RpcObjectReference EnumCreate(vl::rpc_controller::RpcObjectReference ref)override
@@ -1461,6 +1773,11 @@ Interface Implementation Proxy (Implement)
 					INVOKEGET_INTERFACE_PROXY(InvokeMethod, ref, methodId, arguments);
 				}
 
+				void EndInvokeMethod(vl::vint slot)override
+				{
+					INVOKE_INTERFACE_PROXY(EndInvokeMethod, slot);
+				}
+
 				void ObjectHold(vl::rpc_controller::RpcObjectReference ref, vl::vint remoteClientId, bool hold)override
 				{
 					INVOKE_INTERFACE_PROXY(ObjectHold, ref, remoteClientId, hold);
@@ -1534,202 +1851,6 @@ LoadPredefinedTypes
 
 			extern bool										WfLoadLibraryTypes();
 		}
-	}
-}
-
-#endif
-
-
-/***********************************************************************
-.\WFLIBRARYRPCCONTROLLER.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::RPC
-
-Interfaces:
-***********************************************************************/
-
-#ifndef VCZH_WORKFLOW_LIBRARY_RPC_CONTROLLER
-#define VCZH_WORKFLOW_LIBRARY_RPC_CONTROLLER
-
-
-namespace vl
-{
-	namespace rpc_controller
-	{
-		struct RpcEventSuppressionKey
-		{
-			RpcObjectReference					ref;
-			vint								eventId = 0;
-
-			auto operator<=>(const RpcEventSuppressionKey&) const = default;
-		};
-
-		class RpcControllerDefault : public Object, public IRpcController
-		{
-		protected:
-			Ptr<IRpcObjectOps>									objectCallback;
-			Ptr<IRpcObjectEventOps>								eventCallback;
-			Ptr<IRpcListOps>									listCallback;
-			Ptr<IRpcListEventOps>								listEventCallback;
-			collections::Dictionary<RpcEventSuppressionKey, vint>				eventSuppressedFlags;
-			collections::Dictionary<RpcObjectReference, vint>					itemChangedSuppressedFlags;
-
-			template<typename TKey>
-			static void											SetSuppressedFlag(collections::Dictionary<TKey, vint>& flags, const TKey& key, bool suppressed);
-
-			template<typename TKey>
-			static bool											GetSuppressedFlag(const collections::Dictionary<TKey, vint>& flags, const TKey& key);
-
-		public:
-
-			RpcControllerDefault();
-			~RpcControllerDefault();
-
-			void												Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback);
-
-			// IRpcController
-
-			IRpcListOps*										GetListOps()override;
-			IRpcObjectOps*										GetObjectOps()override;
-			IRpcListEventOps*									GetListEventOps()override;
-			IRpcObjectEventOps*									GetObjectEventOps()override;
-
-			void												Finalize()override;
-			void												SetEventSuppressedFlag(RpcObjectReference ref, vint eventId, bool suppressed)override;
-			bool												GetEventSuppressedFlag(RpcObjectReference ref, vint eventId)override;
-			void												SetItemChangedSuppressedFlag(RpcObjectReference ref, bool suppressed)override;
-			bool												GetItemChangedSuppressedFlag(RpcObjectReference ref)override;
-		};
-	}
-}
-
-#endif
-
-
-/***********************************************************************
-.\WFLIBRARYRPCLIFECYCLE.H
-***********************************************************************/
-/***********************************************************************
-Vczh Library++ 3.0
-Developer: Zihan Chen(vczh)
-Framework::RPC
-
-Lifecycle:
-***********************************************************************/
-
-#ifndef VCZH_WORKFLOW_LIBRARY_RPC_LIFECYCLE
-#define VCZH_WORKFLOW_LIBRARY_RPC_LIFECYCLE
-
-
-namespace vl
-{
-	namespace rpc_controller
-	{
-		class RpcLifecycleBase;
-
-		class RpcLocalObjectTracker : public Object
-		{
-			friend class RpcLifecycleBase;
-		private:
-			RpcLifecycleBase*								lifecycle = nullptr;
-			RpcObjectReference								ref;
-		public:
-			RpcLocalObjectTracker(RpcLifecycleBase* lc, RpcObjectReference r);
-			~RpcLocalObjectTracker();
-			void											Attach(RpcLifecycleBase* lc, RpcObjectReference r);
-			void											Detach();
-			RpcObjectReference								GetRef() const { return ref; }
-			vint											GetClientId() const { return ref.clientId; }
-			RpcLifecycleBase*								GetLifecycle() const { return lifecycle; }
-			bool											IsTracked() const { return lifecycle != nullptr; }
-		};
-
-		class RpcWrapperTracker : public Object
-		{
-			friend class RpcLifecycleBase;
-		private:
-			RpcLifecycleBase*								lifecycle = nullptr;
-			RpcObjectReference								ref;
-		public:
-			RpcWrapperTracker(RpcLifecycleBase* lc, RpcObjectReference r);
-			~RpcWrapperTracker();
-			void											Detach();
-			RpcObjectReference								GetRef() const { return ref; }
-			RpcLifecycleBase*								GetLifecycle() const { return lifecycle; }
-		};
-
-		struct RpcLocalObjectProperties : public Object
-		{
-			RpcObjectReference								ref;
-			collections::SortedList<vint>					interestedClients;
-			reflection::IDescriptable*						rawPtr = nullptr;
-			Ptr<reflection::IDescriptable>					ownedPtr;
-			Ptr<EventHandler>								eventHandler;
-		};
-
-		class RpcLifecycleBase : public Object, public IRpcLifecycle
-		{
-			friend class RpcLocalObjectTracker;
-			friend class RpcWrapperTracker;
-		public:
-			using UniversalWrapperFactory = Func<Ptr<IRpcWrapperBase>(RpcObjectReference, IRpcLifecycle*)>;
-		private:
-			struct RpcWrapperProperties
-			{
-				reflection::DescriptableObject*				root = nullptr;
-				IRpcWrapperBase*							proxy = nullptr;
-			};
-			using LocalProperties = collections::Dictionary<vint, Ptr<RpcLocalObjectProperties>>;
-			using WrapperProperties = collections::Dictionary<RpcObjectReference, RpcWrapperProperties>;
-		private:
-			RpcControllerDefault							controller;
-			vint											clientId = RpcClientId_Invalid;
-			vint											nextObjectId = RpcObjectId_Invalid;
-			LocalProperties									localObjectProperties;
-			static WString									InternalProperty_LocalObjectTracker;
-			static WString									InternalProperty_WrapperTracker;
-			UniversalWrapperFactory							universalWrapperFactory;
-			WrapperProperties								wrapperProperties;
-
-			void											TrackWrapper(reflection::DescriptableObject* root, IRpcWrapperBase* proxy, RpcObjectReference ref);
-			void											UntrackWrapper(RpcObjectReference ref);
-			bool											TryGetTrackedWrapperRef(reflection::DescriptableObject* obj, RpcObjectReference& ref)const;
-			IRpcWrapperBase*								GetTrackedWrapper(RpcObjectReference ref)const;
-			void											TrackLocalObject(RpcObjectReference ref, reflection::IDescriptable* obj);
-			void											UntrackLocalObject(RpcObjectReference ref, bool clearInternalProperty);
-			void											RemoveLocalObject(RpcObjectReference ref, bool clearInternalProperty);
-			bool											IsTracked(vint objectId)const;
-			Ptr<reflection::IDescriptable>					CreateCallerProxy(RpcObjectReference ref);
-			void											DisconnectWrappersForFinalize();
-		protected:
-			IRpcDispatcher*									dispatcher = nullptr;
-			collections::Dictionary<WString, vint>			idMap;
-
-			virtual vint									DecideTypeId(reflection::IDescriptable* obj)const;
-			virtual void									AttachLocalObjectEvents(RpcObjectReference ref, reflection::IDescriptable* obj) = 0;
-		public:
-			RpcLifecycleBase(vint _clientId);
-			~RpcLifecycleBase();
-
-			void											SetIdMap(const collections::Dictionary<WString, vint>& _idMap);
-			void											RegisterWrapperFactory(UniversalWrapperFactory factory);
-
-			// IRpcLifecycle
-
-			void											Finalize()override;
-			vint											GetClientId()override;
-			IRpcDispatcher*									GetDispatcher()override;
-			RpcControllerDefault*							GetController()override;
-			void											LocalObjectHold(RpcObjectReference ref, vint remoteClientId)override;
-			void											LocalObjectUnhold(RpcObjectReference ref, vint remoteClientId)override;
-			void											RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service)override;
-			Ptr<reflection::IDescriptable>					RequestService(const WString& fullName)override;
-			Ptr<reflection::IDescriptable>					RefToPtr(RpcObjectReference ref)override;
-			RpcObjectReference								PtrToRef(Ptr<reflection::IDescriptable> obj)override;
-		};
 	}
 }
 

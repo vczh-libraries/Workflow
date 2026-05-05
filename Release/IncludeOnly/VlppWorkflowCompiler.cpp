@@ -20,6 +20,8 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Analyzer\WfAnalyzer_ExpandStateMachine.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_ExpandStatement.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_GenerateRpc.cpp"
+#include "..\..\Source\Analyzer\WfAnalyzer_GenerateRpc_JsonDts.cpp"
+#include "..\..\Source\Analyzer\WfAnalyzer_GenerateRpc_JsonSerialization.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_Misc.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_SearchOrderedName.cpp"
 #include "..\..\Source\Analyzer\WfAnalyzer_TypeInfo.cpp"
