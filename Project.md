@@ -80,10 +80,6 @@ When generated files are expected to change, baseline comparison will fail. You 
 - `Runtime`: Compiled in `TestRuntimeCompile.cpp` and loaded in `TestRuntime.cpp`, testing against attribute metadata.
 - `Codegen`: Compiled in `TestCodegen.cpp` and executed in `TestRuntime.cpp`, testing against binary generation and virtual machine execution.
 - `Rpc`: Compiled in `TestRpcCompile.cpp` and executed in `TestRpc.cpp`, testing against RPC feature.
-  - Each `Rpc` sample is split into two files:
-    - `Rpc/SAMPLE.txt` contains only RPC definitions and is used to generate RPC metadata and wrappers.
-    - `Rpc/SAMPLE_Test.txt` contains the executable test logic, including globals, helpers, `serviceMain`, and `clientMain`; it is loaded together with `SAMPLE.txt` when linking the test assembly.
-  - Only `SAMPLE` appears in `IndexRpc.txt`; both files should be included under `Resource Files\Rpc` in `CompilerTest_LoadAndCompile`.
 - `Debugger`: Compiled and executed in `TestDebugger.cpp`, testing against Workflow virtual machine debugger feature.
 - Others: Compiled in `TestSamples.cpp`, test against the Workflow parser.
 

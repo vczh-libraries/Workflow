@@ -9,9 +9,6 @@ Workflow script syntax and semantic should be intuitive.
 During reading the sample, you should verify it with the goal of the task.
 Ensure all logs or exceptions in the sample accurately reflected the intention of the design.
 Ensure the expected result would be what users would expect.
-RPC samples are split into `SAMPLE.txt` and `SAMPLE_Test.txt`.
-Verify that `SAMPLE.txt` contains only RPC definitions required for metadata/wrapper generation, and that `SAMPLE_Test.txt` contains all executable logic such as globals, helper functions, `serviceMain`, and `clientMain`.
-Only `SAMPLE` should be listed in `IndexRpc.txt`; both files should be present in `CompilerTest_LoadAndCompile`'s `Resource Files\Rpc` folder.
 
 ## Restriction
 

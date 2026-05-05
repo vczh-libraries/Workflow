@@ -17,3 +17,50 @@ namespace RpcPropCached
     event ValueChanged();
   }
 }
+
+var s = "";
+
+func ClientValueChanged() : void
+{
+  s = $"$(s)[ValueChanged]";
+}
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcPropCached::IService^)
+  {
+    var _Value : string = "A";
+
+    override func GetValue() : string
+    {
+      return _Value;
+    }
+
+    override func SetValue(value : string) : void
+    {
+      _Value = value;
+    }
+
+    override func Signal() : void
+    {
+      ValueChanged();
+    }
+  };
+  lc.RegisterService("RpcPropCached::IService", serviceObj);
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (RpcPropCached::IService^) lc.RequestService("RpcPropCached::IService");
+  attach(service.ValueChanged, ClientValueChanged);
+
+  s = $"$(s)[$(service.Value)]";
+
+  service.SetValue("B");
+  s = $"$(s)[$(service.Value)]";
+
+  service.Signal();
+  s = $"$(s)[$(service.Value)]";
+
+  return s;
+}

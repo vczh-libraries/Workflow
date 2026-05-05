@@ -16,3 +16,48 @@ namespace RpcDtorTest
     func MakeValue() : IValue^;
   }
 }
+
+var s = "Not Deleted";
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcDtorTest::IService^)
+  {
+    override func MakeValue() : IValue^
+    {
+      return new (RpcDtorTest::IValue^)
+      {
+        delete
+        {
+          s = "Deleted";
+        }
+      };
+    }
+  };
+  lc.RegisterService("RpcDtorTest::IService", serviceObj);
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var obj = lc.RequestService("RpcDtorTest::IService");
+  if ((obj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "IService(obj) should be a wrapper object in clientMain";
+  }
+  var clientObj = cast (RpcDtorTest::IService^) obj;
+  var valueObj : object = clientObj.MakeValue();
+  if ((valueObj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "IValue(valueObj) should be a wrapper object in clientMain";
+  }
+  var value = cast (RpcDtorTest::IValue^) valueObj;
+  var wrapperObj = cast (system::IRpcWrapperBase^) valueObj;
+  wrapperObj = null;
+  var m = $"[$(s)]"; /* s should be "Not Deleted" */
+  value = null;
+  valueObj = null; /* valueObj also owns the same wrapper, so drop it before checking the final state */
+  m = $"$(m)[$(s)]"; /* s should be "Deleted" */
+  clientObj = null;
+  obj = null;
+  return m;
+}

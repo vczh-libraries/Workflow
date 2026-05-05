@@ -17,3 +17,56 @@ namespace RpcDtor2Test
     func ReviewValue(value : IValue^) : IValue^;
   }
 }
+
+var s = "Not Deleted";
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcDtor2Test::IService^)
+  {
+    override func MakeValue() : IValue^
+    {
+      return new (RpcDtor2Test::IValue^)
+      {
+        delete
+        {
+          s = "Deleted";
+        }
+      };
+    }
+
+    override func ReviewValue(value : IValue^) : IValue^
+    {
+      var valueObj : object = value;
+      if ((valueObj as (system::IRpcWrapperBase^) is not null))
+      {
+        raise "IValue(value) should be a local object in serviceMain";
+      }
+      return value;
+    }
+  };
+  lc.RegisterService("RpcDtor2Test::IService", serviceObj);
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var obj = lc.RequestService("RpcDtor2Test::IService");
+  var clientObj = cast (RpcDtor2Test::IService^) obj;
+  if ((obj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "IService(obj) should be a wrapper object in clientMain";
+  }
+  var value = clientObj.MakeValue();
+  var wrapperObj : object = clientObj.ReviewValue(value);
+  if ((wrapperObj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "IValue(wrapperObj) should be a wrapper object in clientMain";
+  }
+  wrapperObj = null;
+  var m = $"[$(s)]";
+  value = null;
+  m = $"$(m)[$(s)]";
+  clientObj = null;
+  obj = null;
+  return m;
+}

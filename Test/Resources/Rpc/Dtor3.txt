@@ -24,3 +24,111 @@ namespace RpcDtor3Test
     func ContainValue(value : IValue^) : IContainer^;
   }
 }
+
+var s = "";
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcDtor3Test::IService^)
+  {
+    override func ContainValue(value : IValue^) : IContainer^
+    {
+      var valueObj : object = value;
+      if ((valueObj as (system::IRpcWrapperBase^) is null))
+      {
+        raise "IValue(value) should be a wrapper object in serviceMain";
+      }
+      return new (RpcDtor3Test::IContainer^)
+      {
+        delete
+        {
+          s = $"$(s)[IContainer]";
+        }
+
+        override func GetValue() : IValue^
+        {
+          return value;
+        }
+      };
+    }
+  };
+  lc.RegisterService("RpcDtor3Test::IService", serviceObj);
+}
+
+func MakeValue() : IValue^
+{
+  return new (RpcDtor3Test::IValue^)
+  {
+    delete
+    {
+      s = $"$(s)[IValue]";
+    }
+  };
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var serviceObj = lc.RequestService("RpcDtor3Test::IService");
+  if ((serviceObj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "IService(service) should be a wrapper object in clientMain";
+  }
+  var service = cast (RpcDtor3Test::IService^) serviceObj;
+  {
+    s = $"$(s)[1]";
+    var container = service.ContainValue(MakeValue());
+    var containerObj : object = container;
+    if ((containerObj as (system::IRpcWrapperBase^) is null))
+    {
+      raise "IContainer(container) should be a wrapper object in clientMain";
+    }
+    containerObj = null;
+    var valueObj : object = container.Value;
+    if ((valueObj as (system::IRpcWrapperBase^) is not null))
+    {
+      raise "IValue(container.Value) should be a local object in clientMain";
+    }
+    valueObj = null;
+    container = null;
+    /*
+      At the moment, container wrapper is deleted.
+      ObjectHold will be called from client to service to free the real container.
+      The value wrapper in the real container will be deleted.
+      ObjectHold will be called from service to client to free the real value.
+      Destructor of IValue will be called before destructor of IContainer.
+    */
+    s = $"$(s)[2]";
+  }
+  {
+    var container = service.ContainValue(MakeValue());
+    var value = container.Value;
+    var containerObj : object = container;
+    if ((containerObj as (system::IRpcWrapperBase^) is null))
+    {
+      raise "IContainer(container) should be a wrapper object in clientMain";
+    }
+    containerObj = null;
+    var valueObj : object = value;
+    if ((valueObj as (system::IRpcWrapperBase^) is not null))
+    {
+      raise "IValue(value) should be a local object in clientMain";
+    }
+    valueObj = null;
+    container = null;
+    /*
+      At the moment, container wrapper is deleted.
+      ObjectHold will be called from client to service to free the real container.
+      The value wrapper in the real container will be deleted.
+      ObjectHold will be called from service to client to free the real value.
+      But the real value object is still held at client side.
+    */
+    s = $"$(s)[3]";
+    value = null;
+    /*
+      The real value object is supposed to be deleted now,
+      because the client side lifecycle is no longer holding it.
+    */
+    s = $"$(s)[4]";
+  }
+  return s;
+}

@@ -14,3 +14,63 @@ namespace RpcEventArgs
     func AddElement() : void;
   }
 }
+
+var s = "";
+var receivedXs : int[] = null;
+var receivedYs : observe int[] = null;
+
+func Print(values : int[]) : void
+{
+  for (x in values)
+  {
+    s = $"$(s)[$(x)]";
+  }
+}
+
+func Print(values : observe int[]) : void
+{
+  for (x in values)
+  {
+    s = $"$(s)[$(x)]";
+  }
+}
+
+func RecordSomethingHappened(_xs : int[], _ys : observe int[]) : void
+{
+  receivedXs = _xs;
+  receivedYs = _ys;
+}
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcEventArgs::IService^)
+  {
+    var xs : int[] = {1 2};
+    var ys : observe int[] = {3 4};
+
+    override func MakeItHappen() : void
+    {
+      SomethingHappened(xs, ys);
+    }
+
+    override func AddElement() : void
+    {
+      xs.Add(5);
+      ys.Add(6);
+    }
+  };
+  lc.RegisterService("RpcEventArgs::IService", serviceObj);
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (RpcEventArgs::IService^) lc.RequestService("RpcEventArgs::IService");
+  attach(service.SomethingHappened, RecordSomethingHappened);
+
+  service.MakeItHappen();
+  service.AddElement();
+  Print(receivedXs);
+  Print(receivedYs);
+
+  return s;
+}

@@ -6,12 +6,6 @@ Follow
 - `.github\Rules\verify-and-commit.md`
 to add new samples, indentation should be double spaces no matter how the code below is written:
 
-RPC samples are split into two files:
-- `Rpc\SAMPLE.txt` contains only RPC definitions.
-- `Rpc\SAMPLE_Test.txt` contains executable test logic, including globals, helpers, `serviceMain`, and `clientMain`.
-
-Only `SAMPLE` is added to `IndexRpc.txt`. Both files must appear in `CompilerTest_LoadAndCompile` under `Resource Files\Rpc`.
-
 ## Sample Rpc\EventArgs.txt
 
 ```Workflow
@@ -35,18 +29,10 @@ namespace YourFavoriteNamespace // use RpcEventArgs
     func Print(s : string?, v : IValue^) : string;
 	}
 }
-```
-
-## Sample Rpc\EventArgs_Test.txt
-
-```Workflow
-module Rpc;
-using system::*;
-using RpcWrapperTest::*;
 
 var s = "";
 
-func serviceMain(lc : IRpcLifecycle*) : void
+func serviceMain(lc : IRpcLifeCycle*) : void
 {
 	var serviceObj = new (YourFavoriteNamespace::IService^)
 	{
@@ -58,7 +44,7 @@ func serviceMain(lc : IRpcLifecycle*) : void
 	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
 }
 
-func clientMain(lc : IRpcLifecycle*) : string
+func clientMain(lc : IRpcLifeCycle*) : string
 {
 	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
 

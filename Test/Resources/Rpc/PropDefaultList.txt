@@ -17,3 +17,93 @@ namespace RpcPropDefaultList
     event ValueChanged();
   }
 }
+
+var s = "";
+
+func ClientValueChanged() : void
+{
+  s = $"$(s)[ValueChanged]";
+}
+
+func Print(xs : string[]) : string
+{
+  var result = "";
+  for (x in xs)
+  {
+    result = $"$(result)$(x)";
+  }
+  return result;
+}
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (IService^)
+  {
+    var _Value : string[] = {"A"};
+
+    override func GetValue() : string[]
+    {
+      return _Value;
+    }
+
+    override func SetValue(value : string[]) : void
+    {
+      var valueObj : object = value;
+      if ((valueObj as (system::IRpcWrapperBase^) is not null))
+      {
+        raise "Parameter value should be a copied local object in serviceMain";
+      }
+      _Value = value;
+    }
+
+    override func Signal() : void
+    {
+      ValueChanged();
+    }
+  };
+  lc.RegisterService("RpcPropDefaultList::IService", serviceObj);
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (IService^) lc.RequestService("RpcPropDefaultList::IService");
+  attach(service.ValueChanged, ClientValueChanged);
+
+  var valueA = service.Value;
+  var valueObj : object = valueA;
+  if ((valueObj as (system::IRpcWrapperBase^) is not null))
+  {
+    raise "service.Value before SetValue should be a copied local object in clientMain";
+  }
+  s = $"$(s)[$(Print(valueA))]";
+
+  var valueB : string[] = {"B" "C" "D"};
+  service.SetValue(valueB);
+
+  var valueCached = service.Value;
+  if (valueCached != valueA)
+  {
+    raise "Cached value should be the original local object in clientMain";
+  }
+  valueObj = valueCached;
+  if ((valueObj as (system::IRpcWrapperBase^) is not null))
+  {
+    raise "service.Value before ValueChanged should be a copied local object in clientMain";
+  }
+  s = $"$(s)[$(Print(valueCached))]";
+
+  service.Signal();
+  var value = service.Value;
+  if (value == valueB)
+  {
+    raise "Value should be a copied local object in clientMain";
+  }
+  valueObj = value;
+  if ((valueObj as (system::IRpcWrapperBase^) is not null))
+  {
+    raise "service.Value after ValueChanged should be a copied local object in clientMain";
+  }
+  s = $"$(s)[$(Print(value))]";
+
+  return s;
+}

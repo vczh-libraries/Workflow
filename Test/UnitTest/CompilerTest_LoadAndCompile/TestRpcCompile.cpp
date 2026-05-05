@@ -173,46 +173,21 @@ static void VerifyRpcMetadata(WfLexicalScopeManager& manager)
 	TEST_ASSERT(expectedMetadata == actualMetadata);
 }
 
-static Ptr<WfModule> MergeRpcSampleModulesForLog(Ptr<WfModule> definitionModule, Ptr<WfModule> testModule)
-{
-	auto module = Ptr(new WfModule);
-	module->moduleType = definitionModule->moduleType;
-	module->name = definitionModule->name;
-	for (auto path : definitionModule->paths)
-	{
-		module->paths.Add(path);
-	}
-	for (auto declaration : definitionModule->declarations)
-	{
-		module->declarations.Add(declaration);
-	}
-	for (auto declaration : testModule->declarations)
-	{
-		module->declarations.Add(declaration);
-	}
-	return module;
-}
-
-static void LinkRpcSample(WfLexicalScopeManager& manager, const WString& itemName, const WString& definitionSample, const WString& testSample, Ptr<WfModule> wrapperModule, Ptr<WfModule> wrapperJsonModule)
+static void LinkRpcSample(WfLexicalScopeManager& manager, const WString& itemName, const WString& sample, Ptr<WfModule> wrapperModule, Ptr<WfModule> wrapperJsonModule)
 {
 	manager.Clear(true, true);
 
-	auto definitionModule = ParseModule(definitionSample, GetWorkflowParser());
-	TEST_ASSERT(definitionModule);
-	TEST_ASSERT(manager.errors.Count() == 0);
-
-	auto testModule = ParseModule(testSample, GetWorkflowParser());
-	TEST_ASSERT(testModule);
+	auto module = ParseModule(sample, GetWorkflowParser());
+	TEST_ASSERT(module);
 	TEST_ASSERT(manager.errors.Count() == 0);
 	TEST_ASSERT(wrapperModule);
 	TEST_ASSERT(wrapperJsonModule);
 
-	manager.AddModule(definitionModule);
-	manager.AddModule(testModule);
+	manager.AddModule(module);
 	manager.AddModule(wrapperModule);
 	manager.AddModule(wrapperJsonModule);
 	manager.Rebuild(true, nullptr, false);
-	LogSampleParseResult(L"Rpc", itemName, definitionSample + L"\r\n" + testSample, MergeRpcSampleModulesForLog(definitionModule, testModule), &manager);
+	LogSampleParseResult(L"Rpc", itemName, sample, module, &manager);
 	TEST_ASSERT(manager.errors.Count() == 0);
 }
 
@@ -237,12 +212,11 @@ TEST_FILE
 			TEST_CASE(itemName)
 			{
 				TEST_PRINT(itemName);
-				auto definitionSample = LoadSample(L"Rpc", itemName);
-				auto testSample = LoadSample(L"Rpc", itemName + L"_Test");
+				auto sample = LoadSample(L"Rpc", itemName);
 				Ptr<WfModule> wrapperModule;
 				Ptr<WfModule> wrapperJsonModule;
 
-				CompileRpcSample(manager, itemName, definitionSample, wrapperModule, wrapperJsonModule);
+				CompileRpcSample(manager, itemName, sample, wrapperModule, wrapperJsonModule);
 				VerifyRpcMetadata(manager);
 				{
 					auto typeFullNames = Ptr(new List<WString>());
@@ -308,7 +282,7 @@ TEST_FILE
 					jsonWriter.WriteString(wrapperJsonString);
 				}
 
-				LinkRpcSample(manager, itemName, definitionSample, testSample, wrapperModule, wrapperJsonModule);
+				LinkRpcSample(manager, itemName, sample, wrapperModule, wrapperJsonModule);
 
 				auto assembly = GenerateAssembly(&manager);
 				TEST_ASSERT(assembly);
@@ -318,7 +292,7 @@ TEST_FILE
 					auto input = Ptr(new WfCppInput(MakeRpcCppAssemblyName(itemName)));
 					input->multiFile = WfCppFileSwitch::OnDemand;
 					input->reflection = WfCppFileSwitch::OnDemand;
-					input->comment = L"Source: ../Resources/Rpc/" + itemName + L".txt; ../Resources/Rpc/" + itemName + L"_Test.txt";
+					input->comment = L"Source: ../Resources/Rpc/" + itemName + L".txt";
 					input->includeFileName = itemName + L"Includes";
 					input->reflectionFileName = itemName + L"Reflection";
 					input->defaultFileName = itemName;

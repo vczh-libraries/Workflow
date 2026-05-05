@@ -21,3 +21,58 @@ namespace RpcCollectionOblist
     }
   }
 }
+
+var xsService : observe (observe int[])[] = {};
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcCollectionOblist::Nested::InByval::OutByref::IService^)
+  {
+    override func DoList(xs : observe (observe int[])[]) : observe (observe int[])[]
+    {
+      var xsObj : object = xs;
+      if ((xsObj as (system::IRpcWrapperBase^) is not null))
+      {
+        raise "Parameter xs should be a copied local object in serviceMain";
+      }
+
+      xsService = xs;
+      var ys = xs[0];
+      ys.Add(4);
+      return xs;
+    }
+  };
+  lc.RegisterService("RpcCollectionOblist::Nested::InByval::OutByref::IService", serviceObj);
+}
+
+func Print(xs : observe (observe int[])[]) : string
+{
+  var result = "";
+  for (x in xs[0])
+  {
+    result = $"$(result)$(x)";
+  }
+  return result;
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var xsOrigin : observe (observe int[])[] = {{1 2 3}};
+  var service = cast (RpcCollectionOblist::Nested::InByval::OutByref::IService^) lc.RequestService("RpcCollectionOblist::Nested::InByval::OutByref::IService");
+  var xs = service.DoList(xsOrigin);
+  var xsObj : object = xs;
+
+  if ((xsObj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "Return value xs should be a wrapper object in clientMain";
+  }
+
+  var xsClient = xs;
+  var ys = xs[0];
+  ys.Add(5);
+
+  return
+    $"[$(Print(xsOrigin))]" &
+    $"[$(Print(xsService))]" &
+    $"[$(Print(xsClient))]";
+}
