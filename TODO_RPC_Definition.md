@@ -3,15 +3,17 @@
 
 ## Attributes
 
-All attributes here do not have argument.
+All user-authored attributes here do not have arguments unless explicitly specified.
 
 - `@rpc:Interface` can be used on an interface.
   - `interface` in this document does not include generic interface: `$interface IDerivbed:IBased<TYPE>;`.
 - `@rpc:Ctor` can be used only when `@rpc:Interface` is on that type.
 - `@rpc:Byval` and `@rpc:Byref` on a property, method, parameter.
 - `@rpc:Cached` and `@rpc:Dynamic` on a property.
-- `@rpc:Id` on types, events and methods. This attribute will be generated in RPC Workflow metadata.
-  - This will be implemented in the future.
+- `@rpc:IdString(string)` and `@rpc:IdNumber(int)` on interfaces, events and methods.
+  - These attributes are generated into RPC Workflow metadata.
+  - User-authored `@rpc:IdString` and `@rpc:IdNumber` on RPC interfaces, methods and events are ignored when metadata is regenerated.
+  - `IdString` stores the generated full text id, and `IdNumber` stores the generated numeric id from the sorted RPC id list.
 
 ## Serializable Types
 

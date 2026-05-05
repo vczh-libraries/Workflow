@@ -66,6 +66,8 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_rpc_Byref, system::workflow_attributes::att_rpc_Byref)
 			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_rpc_Cached, system::workflow_attributes::att_rpc_Cached)
 			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_rpc_Dynamic, system::workflow_attributes::att_rpc_Dynamic)
+			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_rpc_IdString, system::workflow_attributes::att_rpc_IdString)
+			IMPL_TYPE_INFO_RENAME(vl::__vwsn::att_rpc_IdNumber, system::workflow_attributes::att_rpc_IdNumber)
 
 #endif
 
@@ -111,6 +113,14 @@ WfLoadLibraryTypes
 
 			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_rpc_Dynamic)
 			END_STRUCT_MEMBER(vl::__vwsn::att_rpc_Dynamic)
+
+			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_rpc_IdString)
+				STRUCT_MEMBER(argument)
+			END_STRUCT_MEMBER(vl::__vwsn::att_rpc_IdString)
+
+			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_rpc_IdNumber)
+				STRUCT_MEMBER(argument)
+			END_STRUCT_MEMBER(vl::__vwsn::att_rpc_IdNumber)
 
 			BEGIN_STRUCT_MEMBER(vl::rpc_controller::RpcObjectReference)
 				STRUCT_MEMBER(clientId)

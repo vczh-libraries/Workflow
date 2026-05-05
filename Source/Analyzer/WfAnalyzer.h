@@ -183,6 +183,7 @@ Scope Manager
 				vl::collections::List<vl::WString>												typeFullNames;
 				vl::collections::List<vl::WString>												methodFullNames;
 				vl::collections::List<vl::WString>												eventFullNames;
+				vl::collections::SortedList<vl::WString>											orderedIds;
 			};
 
 			/// <summary>

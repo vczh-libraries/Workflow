@@ -330,6 +330,27 @@ ValidateModuleRPC_Ast
 					return attribute;
 				}
 
+				Ptr<WfAttribute> CreateRpcAttribute(const WString& name, Ptr<WfExpression> value)
+				{
+					auto attribute = CreateRpcAttribute(name);
+					attribute->value = value;
+					return attribute;
+				}
+
+				Ptr<WfExpression> CreateRpcStringLiteral(const WString& value)
+				{
+					auto expression = Ptr(new WfStringExpression);
+					expression->value.value = value;
+					return expression;
+				}
+
+				Ptr<WfExpression> CreateRpcIntegerLiteral(vint value)
+				{
+					auto expression = Ptr(new WfIntegerExpression);
+					expression->value.value = itow(value);
+					return expression;
+				}
+
 				void EnsureRpcAttribute(List<Ptr<WfAttribute>>& attributes, const WString& name)
 				{
 					if (!HasRpcAttribute(attributes, name.Buffer()))
@@ -889,6 +910,11 @@ ValidateModuleRPC_Reflection
 ValidateModuleRPC_GenerateMetadata
 ***********************************************************************/
 
+				bool IsGeneratedRpcIdAttribute(const WString& category, const WString& name)
+				{
+					return category == L"rpc" && (name == L"IdString" || name == L"IdNumber");
+				}
+
 				void GenerateAttributesFromBag(IAttributeBag* bag, List<Ptr<WfAttribute>>& attributes)
 				{
 					if (!bag) return;
@@ -916,7 +942,43 @@ ValidateModuleRPC_GenerateMetadata
 						auto attr = Ptr(new WfAttribute);
 						attr->category.value = WString::CopyFrom(afterAtt, vint(underscore - afterAtt));
 						attr->name.value = underscore + 1;
+						if (IsGeneratedRpcIdAttribute(attr->category.value, attr->name.value))
+						{
+							continue;
+						}
 						attributes.Add(attr);
+					}
+				}
+
+				void AddOrderedRpcId(WfRpcMetadata* metadata, const WString& fullName)
+				{
+					if (!metadata->orderedIds.Contains(fullName))
+					{
+						metadata->orderedIds.Add(fullName);
+					}
+				}
+
+				void AddGeneratedRpcIdAttributes(WfRpcMetadata* metadata, const WString& fullName, List<Ptr<WfAttribute>>& attributes)
+				{
+					auto id = metadata->orderedIds.IndexOf(fullName);
+					CHECK_ERROR(id != -1, L"RPC metadata ID list does not contain a generated RPC full name.");
+					attributes.Add(CreateRpcAttribute(L"IdString", CreateRpcStringLiteral(fullName)));
+					attributes.Add(CreateRpcAttribute(L"IdNumber", CreateRpcIntegerLiteral(id)));
+				}
+
+				void AddGeneratedRpcIdAttributes(WfRpcMetadata* metadata)
+				{
+					for (vint i = 0; i < metadata->typeNames.Count(); i++)
+					{
+						AddGeneratedRpcIdAttributes(metadata, metadata->typeNames.Keys()[i], metadata->typeNames.Values()[i]->attributes);
+					}
+					for (vint i = 0; i < metadata->methodNames.Count(); i++)
+					{
+						AddGeneratedRpcIdAttributes(metadata, metadata->methodNames.Keys()[i], metadata->methodNames.Values()[i]->attributes);
+					}
+					for (vint i = 0; i < metadata->eventNames.Count(); i++)
+					{
+						AddGeneratedRpcIdAttributes(metadata, metadata->eventNames.Keys()[i], metadata->eventNames.Values()[i]->attributes);
 					}
 				}
 
@@ -1611,6 +1673,7 @@ ValidateModuleRPC_GenerateMetadata
 							{
 								manager->rpcMetadata->typeNames.Add(typeFullName, decl.Obj());
 								manager->rpcMetadata->typeFullNames.Add(typeFullName);
+								AddOrderedRpcId(manager->rpcMetadata.Obj(), typeFullName);
 							}
 
 							auto sourceDecl = FindRpcInterfaceDeclaration(manager, td);
@@ -1760,6 +1823,7 @@ ValidateModuleRPC_GenerateMetadata
 									{
 										manager->rpcMetadata->methodNames.Add(finalName, generatedMethod);
 										manager->rpcMetadata->methodFullNames.Add(finalName);
+										AddOrderedRpcId(manager->rpcMetadata.Obj(), finalName);
 									}
 								}
 							}
@@ -1776,10 +1840,13 @@ ValidateModuleRPC_GenerateMetadata
 								{
 									manager->rpcMetadata->eventNames.Add(finalName, generatedEvent);
 									manager->rpcMetadata->eventFullNames.Add(finalName);
+									AddOrderedRpcId(manager->rpcMetadata.Obj(), finalName);
 								}
 							}
 						}
 					}
+
+					AddGeneratedRpcIdAttributes(manager->rpcMetadata.Obj());
 
 					for (auto decl : rootDeclarations)
 					{

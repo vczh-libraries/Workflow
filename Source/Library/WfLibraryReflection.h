@@ -39,6 +39,8 @@ Predefined Types
 			F(vl::__vwsn::att_rpc_Byref)\
 			F(vl::__vwsn::att_rpc_Cached)\
 			F(vl::__vwsn::att_rpc_Dynamic)\
+			F(vl::__vwsn::att_rpc_IdString)\
+			F(vl::__vwsn::att_rpc_IdNumber)\
 
 #define WORKFLOW_LIBRARY_TYPES(F)\
 			F(Sys)							\

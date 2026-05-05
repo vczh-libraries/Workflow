@@ -495,6 +495,18 @@ namespace vl
 		{
 			auto operator<=>(const att_rpc_Dynamic&) const = default;
 		};
+
+		struct att_rpc_IdString
+		{
+			WString						argument;
+			auto operator<=>(const att_rpc_IdString&) const = default;
+		};
+
+		struct att_rpc_IdNumber
+		{
+			vint						argument = 0;
+			auto operator<=>(const att_rpc_IdNumber&) const = default;
+		};
 	}
 }
 

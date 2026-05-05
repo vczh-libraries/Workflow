@@ -134,3 +134,22 @@ Task 1 verification:
 - `CompilerTest_LoadAndCompile` passed both architecture passes, with 6/6 test files and 699/699 test cases each pass.
 - Running `CompilerTest_LoadAndCompile` did not modify any generated files; `git status` only showed the source, project metadata, and investigation log edits.
 - Debug Win32 solution build passed with 0 warnings and 0 errors.
+
+### CODE CHANGE
+
+Task 2:
+- Added `@rpc:IdString(string)` and `@rpc:IdNumber(int)` to the predefined Workflow attribute model and reflection registration.
+- Added `orderedIds` to `WfRpcMetadata` and populated it from validated RPC interface, method, and event full names.
+- Generated RPC metadata now filters any source/reflection `IdString` and `IdNumber` attributes, then appends generated `IdString` and `IdNumber` attributes from `orderedIds`.
+- RPC wrapper ID constants, interface/method/event models, and `rpc_GetIds` now derive numeric IDs from `orderedIds`.
+- Updated `TODO_RPC_Definition.md` to document the generated-only RPC ID attributes and the user-authored ignore behavior.
+- Regenerated reflection and RPC metadata/generated C++ baselines affected by the new attributes and ID ordering.
+
+### TASK 2 CONFIRMED
+
+Task 2 verification:
+- `git diff --check` passed.
+- Debug x64 solution build passed with 0 warnings and 0 errors.
+- Debug Win32 solution build passed with 0 warnings and 0 errors.
+- `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug x64.
+- `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug Win32.

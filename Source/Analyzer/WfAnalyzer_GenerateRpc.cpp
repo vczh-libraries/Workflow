@@ -796,6 +796,30 @@ namespace vl
 					return CreateReference(WString::Unmanaged(prefix) + MangleRpcFullName(fullName));
 				}
 
+				vint GetRpcId(WfLexicalScopeManager* manager, const WString& fullName)
+				{
+					auto id = manager->rpcMetadata->orderedIds.IndexOf(fullName);
+					CHECK_ERROR(id != -1, L"RPC metadata ID list does not contain a generated RPC full name.");
+					return id;
+				}
+
+				const wchar_t* GetRpcConstantPrefix(WfLexicalScopeManager* manager, const WString& fullName)
+				{
+					if (manager->rpcMetadata->typeNames.Keys().Contains(fullName))
+					{
+						return L"rpctype_";
+					}
+					if (manager->rpcMetadata->methodNames.Keys().Contains(fullName))
+					{
+						return L"rpcmethod_";
+					}
+					if (manager->rpcMetadata->eventNames.Keys().Contains(fullName))
+					{
+						return L"rpcevent_";
+					}
+					CHECK_FAIL(L"RPC metadata ID list contains an unknown generated RPC full name.");
+				}
+
 				void AddIdLookupEntry(Ptr<WfConstructorExpression> expression, Ptr<WfExpression> key, Ptr<WfExpression> value)
 				{
 					expression->arguments.Add(CreateConstructorArgument(key, value));
@@ -804,37 +828,7 @@ namespace vl
 				void CollectMangledNames(WfLexicalScopeManager* manager)
 				{
 					Dictionary<WString, WString> mangledNames;
-					for (auto fullName : manager->rpcMetadata->typeFullNames)
-					{
-						auto mangled = MangleRpcFullName(fullName);
-						auto index = mangledNames.Keys().IndexOf(mangled);
-						if (index != -1 && mangledNames.Values()[index] != fullName)
-						{
-							manager->errors.Add(WfErrors::RpcMangledNameConflict(FindRpcDeclaration(manager, fullName), mangled, mangledNames.Values()[index], fullName));
-							return;
-						}
-						if (index == -1)
-						{
-							mangledNames.Add(mangled, fullName);
-						}
-					}
-
-					for (auto fullName : manager->rpcMetadata->methodFullNames)
-					{
-						auto mangled = MangleRpcFullName(fullName);
-						auto index = mangledNames.Keys().IndexOf(mangled);
-						if (index != -1 && mangledNames.Values()[index] != fullName)
-						{
-							manager->errors.Add(WfErrors::RpcMangledNameConflict(FindRpcDeclaration(manager, fullName), mangled, mangledNames.Values()[index], fullName));
-							return;
-						}
-						if (index == -1)
-						{
-							mangledNames.Add(mangled, fullName);
-						}
-					}
-
-					for (auto fullName : manager->rpcMetadata->eventFullNames)
+					for (auto fullName : manager->rpcMetadata->orderedIds)
 					{
 						auto mangled = MangleRpcFullName(fullName);
 						auto index = mangledNames.Keys().IndexOf(mangled);
@@ -853,8 +847,6 @@ namespace vl
 				List<RpcInterfaceModel> BuildInterfaceModels(WfLexicalScopeManager* manager)
 				{
 					List<RpcInterfaceModel> interfaces;
-					auto typeCount = manager->rpcMetadata->typeFullNames.Count();
-					auto methodCount = manager->rpcMetadata->methodFullNames.Count();
 					auto rpcByrefAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Byref>();
 					auto rpcCachedAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Cached>();
 					auto rpcDynamicAttrTd = GetTypeDescriptor<vl::__vwsn::att_rpc_Dynamic>();
@@ -886,7 +878,7 @@ namespace vl
 						RpcInterfaceModel interfaceModel;
 						interfaceModel.fullName = typeFullName;
 						interfaceModel.interfaceName = fragments[fragments.Count() - 1];
-						interfaceModel.typeId = manager->rpcMetadata->typeFullNames.IndexOf(typeFullName);
+						interfaceModel.typeId = GetRpcId(manager, typeFullName);
 						interfaceModel.ctor = HasRpcAttribute(interfaceDecl->attributes, L"Ctor");
 						interfaceModel.interfaceDecl = interfaceDecl;
 						auto typeDescriptor = FindRpcTypeDescriptor(manager, typeFullName);
@@ -1021,7 +1013,7 @@ namespace vl
 								RpcMethodModel methodModel;
 								methodModel.fullName = methodFullName;
 								methodModel.name = methodDecl->name.value;
-								methodModel.methodId = typeCount + manager->rpcMetadata->methodFullNames.IndexOf(methodFullName);
+								methodModel.methodId = GetRpcId(manager, methodFullName);
 								methodModel.returnType = CopyType(methodDecl->returnType.Obj());
 								auto methodInfo = FindRpcMethodInfo(manager, interfaceDecl, methodDecl.Obj(), typeDescriptor);
 								if (methodInfo)
@@ -1091,7 +1083,7 @@ namespace vl
 								RpcEventModel eventModel;
 								eventModel.fullName = eventFullName;
 								eventModel.name = eventDecl->name.value;
-								eventModel.eventId = typeCount + methodCount + manager->rpcMetadata->eventFullNames.IndexOf(eventFullName);
+								eventModel.eventId = GetRpcId(manager, eventFullName);
 
 								ITypeInfo* handlerGenericType = nullptr;
 								if (typeDescriptor)
@@ -2137,17 +2129,10 @@ namespace vl
 				auto opsInterfaceName = GetRpcOpsInterfaceName(assemblyName);
 
 				vint id = 0;
-				for (auto fullName : manager->rpcMetadata->typeFullNames)
+				for (auto fullName : manager->rpcMetadata->orderedIds)
 				{
-					module->declarations.Add(CreateVariableDeclaration(L"rpctype_" + MangleRpcFullName(fullName), CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(id++)));
-				}
-				for (auto fullName : manager->rpcMetadata->methodFullNames)
-				{
-					module->declarations.Add(CreateVariableDeclaration(L"rpcmethod_" + MangleRpcFullName(fullName), CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(id++)));
-				}
-				for (auto fullName : manager->rpcMetadata->eventFullNames)
-				{
-					module->declarations.Add(CreateVariableDeclaration(L"rpcevent_" + MangleRpcFullName(fullName), CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(id++)));
+					auto name = WString::Unmanaged(GetRpcConstantPrefix(manager, fullName)) + MangleRpcFullName(fullName);
+					module->declarations.Add(CreateVariableDeclaration(name, CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(id++)));
 				}
 
 				{
@@ -2155,15 +2140,7 @@ namespace vl
 					auto block = getIds->statement.Cast<WfBlockStatement>();
 					AddStatement(block, CreateVariableStatement(L"result", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::String), CreatePredefinedType(WfPredefinedTypeName::Int)), CreateConstructor()));
 					id = 0;
-					for (auto fullName : manager->rpcMetadata->typeFullNames)
-					{
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
-					}
-					for (auto fullName : manager->rpcMetadata->methodFullNames)
-					{
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
-					}
-					for (auto fullName : manager->rpcMetadata->eventFullNames)
+					for (auto fullName : manager->rpcMetadata->orderedIds)
 					{
 						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
 					}
