@@ -24,28 +24,6 @@ static bool DecodeRpcName(const WString& rpcLine, WString& itemName, WString& it
 	return true;
 }
 
-static WString MangleRpcFullName(const WString& fullName)
-{
-	WString mangled;
-	for (vint i = 0; i < fullName.Length(); i++)
-	{
-		if (i + 1 < fullName.Length() && fullName[i] == L':' && fullName[i + 1] == L':')
-		{
-			mangled += L"__";
-			i++;
-		}
-		else if (fullName[i] == L'.')
-		{
-			mangled += L"_";
-		}
-		else
-		{
-			mangled += WString::FromChar(fullName[i]);
-		}
-	}
-	return mangled;
-}
-
 static WString MakeRpcCppAssemblyName(const WString& itemName)
 {
 	return L"Rpc_" + itemName;
@@ -60,24 +38,6 @@ struct RpcEventBridgeInfo : Object
 	List<WString>		argumentTypes;
 	List<WString>		argumentValueTypes;
 };
-
-static ITypeDescriptor* FindRpcTypeDescriptor(WfLexicalScopeManager& manager, const WString& fullName)
-{
-	for (auto [decl, index] : indexed(manager.declarationTypes.Keys()))
-	{
-		if (!manager.declarationTypes.Keys()[index].Cast<WfClassDeclaration>())
-		{
-			continue;
-		}
-
-		auto td = manager.declarationTypes.Values()[index].Obj();
-		if (td && td->GetTypeName() == fullName)
-		{
-			return td;
-		}
-	}
-	return nullptr;
-}
 
 static Ptr<List<Ptr<RpcEventBridgeInfo>>> CollectRpcEventBridgeInfos(WfLexicalScopeManager& manager, const WString& itemName)
 {
@@ -99,9 +59,9 @@ static Ptr<List<Ptr<RpcEventBridgeInfo>>> CollectRpcEventBridgeInfos(WfLexicalSc
 		auto bridgeInfo = Ptr(new RpcEventBridgeInfo);
 		bridgeInfo->interfaceFullName = eventFullName.Sub(0, delimiter);
 		bridgeInfo->eventName = eventFullName.Sub(delimiter + 1, eventFullName.Length() - delimiter - 1);
-		bridgeInfo->eventIdName = MangleRpcFullName(eventFullName);
+		bridgeInfo->eventIdName = rpc_generating::MangleRpcFullName(eventFullName);
 
-		auto td = FindRpcTypeDescriptor(manager, bridgeInfo->interfaceFullName);
+		auto td = rpc_generating::FindRpcTypeDescriptor(&manager, bridgeInfo->interfaceFullName);
 		CHECK_ERROR(td, L"CollectRpcEventBridgeInfos: Failed to find RPC interface type descriptor.");
 		auto eventInfo = td->GetEventByName(bridgeInfo->eventName, false);
 		CHECK_ERROR(eventInfo, L"CollectRpcEventBridgeInfos: Failed to find event metadata.");
@@ -128,7 +88,7 @@ static void SortRpcTypeFullNamesLeafFirst(WfLexicalScopeManager& manager, const 
 	Group<WString, WString> dependencyGroup;
 	for (auto typeFullName : typeFullNames)
 	{
-		auto td = FindRpcTypeDescriptor(manager, typeFullName);
+		auto td = rpc_generating::FindRpcTypeDescriptor(&manager, typeFullName);
 		if (!td)
 		{
 			continue;
@@ -163,6 +123,47 @@ static void SortRpcTypeFullNamesLeafFirst(WfLexicalScopeManager& manager, const 
 	}
 }
 
+static void CompileRpcSample(WfLexicalScopeManager& manager, const WString& itemName, const WString& sample, Ptr<WfModule>& wrapperModule, Ptr<WfModule>& wrapperJsonModule)
+{
+	manager.Clear(true, true);
+
+	auto module = ParseModule(sample, GetWorkflowParser());
+	TEST_ASSERT(module);
+	TEST_ASSERT(manager.errors.Count() == 0);
+
+	manager.AddModule(module);
+	manager.Rebuild(true);
+	TEST_ASSERT(manager.errors.Count() == 0);
+	TEST_ASSERT(manager.rpcMetadata);
+	TEST_ASSERT(manager.rpcMetadata->metadataModule);
+
+	wrapperModule = GenerateModuleRpc(&manager, MakeRpcCppAssemblyName(itemName));
+	TEST_ASSERT(wrapperModule);
+	TEST_ASSERT(manager.errors.Count() == 0);
+
+	wrapperJsonModule = GenerateModuleRpcJson(&manager, MakeRpcCppAssemblyName(itemName));
+	TEST_ASSERT(wrapperJsonModule);
+	TEST_ASSERT(manager.errors.Count() == 0);
+}
+
+static void LinkRpcSample(WfLexicalScopeManager& manager, const WString& itemName, const WString& sample, Ptr<WfModule> wrapperModule, Ptr<WfModule> wrapperJsonModule)
+{
+	manager.Clear(true, true);
+
+	auto module = ParseModule(sample, GetWorkflowParser());
+	TEST_ASSERT(module);
+	TEST_ASSERT(manager.errors.Count() == 0);
+	TEST_ASSERT(wrapperModule);
+	TEST_ASSERT(wrapperJsonModule);
+
+	manager.AddModule(module);
+	manager.AddModule(wrapperModule);
+	manager.AddModule(wrapperJsonModule);
+	manager.Rebuild(true, nullptr, false);
+	LogSampleParseResult(L"Rpc", itemName, sample, module, &manager);
+	TEST_ASSERT(manager.errors.Count() == 0);
+}
+
 TEST_FILE
 {
 	WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
@@ -188,25 +189,8 @@ TEST_FILE
 				Ptr<WfModule> wrapperModule;
 				Ptr<WfModule> wrapperJsonModule;
 
-				manager.Clear(true, true);
+				CompileRpcSample(manager, itemName, sample, wrapperModule, wrapperJsonModule);
 				{
-					auto module = ParseModule(sample, GetWorkflowParser());
-					TEST_ASSERT(module);
-					TEST_ASSERT(manager.errors.Count() == 0);
-
-					manager.AddModule(module);
-					manager.Rebuild(true);
-					TEST_ASSERT(manager.errors.Count() == 0);
-					TEST_ASSERT(manager.rpcMetadata && manager.rpcMetadata->metadataModule);
-
-					wrapperModule = GenerateModuleRpc(&manager, MakeRpcCppAssemblyName(itemName));
-					TEST_ASSERT(wrapperModule);
-					TEST_ASSERT(manager.errors.Count() == 0);
-
-					wrapperJsonModule = GenerateModuleRpcJson(&manager, MakeRpcCppAssemblyName(itemName));
-					TEST_ASSERT(wrapperJsonModule);
-					TEST_ASSERT(manager.errors.Count() == 0);
-
 					auto typeFullNames = Ptr(new List<WString>());
 					SortRpcTypeFullNamesLeafFirst(
 						manager,
@@ -270,19 +254,7 @@ TEST_FILE
 					jsonWriter.WriteString(wrapperJsonString);
 				}
 
-				manager.Clear(true, true);
-				{
-					auto module = ParseModule(sample, GetWorkflowParser());
-					TEST_ASSERT(module);
-					TEST_ASSERT(manager.errors.Count() == 0);
-
-					manager.AddModule(module);
-					manager.AddModule(wrapperModule);
-					manager.AddModule(wrapperJsonModule);
-					manager.Rebuild(true, nullptr, false);
-					LogSampleParseResult(L"Rpc", itemName, sample, module, &manager);
-					TEST_ASSERT(manager.errors.Count() == 0);
-				}
+				LinkRpcSample(manager, itemName, sample, wrapperModule, wrapperJsonModule);
 
 				auto assembly = GenerateAssembly(&manager);
 				TEST_ASSERT(assembly);
@@ -403,7 +375,7 @@ TEST_FILE
 						writer.WriteString(L"\t\t\tif (dynamic_cast<::");
 						writer.WriteString(fullName);
 						writer.WriteString(L"*>(obj)) return instance.rpctype_");
-						writer.WriteString(MangleRpcFullName(fullName));
+						writer.WriteString(rpc_generating::MangleRpcFullName(fullName));
 						writer.WriteLine(L";");
 					}
 				}

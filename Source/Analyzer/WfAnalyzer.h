@@ -542,6 +542,9 @@ RPC Analyzing
 					collections::List<RpcMethodModel>							methods;
 					collections::List<RpcEventModel>							events;
 				};
+
+				extern WString													MangleRpcFullName(const WString& fullName);
+				extern reflection::description::ITypeDescriptor*				FindRpcTypeDescriptor(WfLexicalScopeManager* manager, const WString& fullName);
 			}
 
 			extern void										PopulateAttributesOnTypeDescriptors(WfLexicalScopeManager* manager);
