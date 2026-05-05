@@ -27,6 +27,10 @@
     - The above functions handle `UnknownType_PrimitiveSchema` in `TODO_RPC_JSON.md`, as well as byref collection serialization.
     - Code generation of `rpcjson_Serialize` and `rpcjson_Deserialize` can know skip these types, avoid repeating code in all these sample outputs.
   - In `Wrapper_*.txt` and `Wrapper_*_Json.txt`, there are a lot of "in function variable" which have types, local variable types should be omitted when possible.
+    - Precisely tell for each variable, is its type can be omitted?
+      - If yes, omit its type in the variable declaration.
+      - If no, just keep it.
+    - DO NOT use `infer` or any other way to move the type from the variable to its initializer expression, that's even worse.
   - In `rpcjson_Serialize` and `rpcjson_Deserialize` for serializable custom primitive types, it should serialize like enum but the second element is string.
     - Need to inject a serializable struct to `CppTypes.(h|cpp)`.
     - Need to update the .d.ts file as well.
