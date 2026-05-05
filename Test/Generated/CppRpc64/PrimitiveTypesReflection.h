@@ -35,7 +35,6 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::RpcPrimitiveTest::IRpcWrapper_IService)
 			DECL_TYPE_INFO(::RpcPrimitiveTest::IService)
-			DECL_TYPE_INFO(::RpcPrimitiveTest::Point)
 			DECL_TYPE_INFO(::RpcPrimitiveTest::Season)
 			DECL_TYPE_INFO(::rpcops_IOps_Rpc_PrimitiveTypes)
 
@@ -66,7 +65,7 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY(ProcessString, value);
 				}
-				::RpcPrimitiveTest::Point ProcessStruct(::RpcPrimitiveTest::Point value) override
+				::test::Point ProcessStruct(::test::Point value) override
 				{
 					INVOKEGET_INTERFACE_PROXY(ProcessStruct, value);
 				}
@@ -101,7 +100,7 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcPrimitiveTest__IService_ProcessString, ref, arg_value);
 				}
-				::RpcPrimitiveTest::Point InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::RpcPrimitiveTest::Point arg_value) override
+				::test::Point InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::test::Point arg_value) override
 				{
 					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct, ref, arg_value);
 				}

@@ -53,22 +53,6 @@ namespace RpcPrimitiveTest
 {
 	using Season = ::__vwsn_enums::_RpcPrimitiveTest_Season;
 
-}
-namespace __vwsn_structs
-{
-	struct _RpcPrimitiveTest_Point
-	{
-		::vl::vint x = 0;
-		::vl::vint y = 0;
-
-		auto operator<=>(const _RpcPrimitiveTest_Point&) const = default;
-	};
-
-}
-namespace RpcPrimitiveTest
-{
-	using Point = ::__vwsn_structs::_RpcPrimitiveTest_Point;
-
 	class IService;
 	class IRpcWrapper_IService;
 }
@@ -89,7 +73,7 @@ namespace RpcPrimitiveTest
 		virtual ::vl::WString ProcessString(const ::vl::WString& value) = 0;
 		virtual bool ProcessBool(bool value) = 0;
 		virtual ::RpcPrimitiveTest::Season ProcessEnum(::RpcPrimitiveTest::Season value) = 0;
-		virtual ::RpcPrimitiveTest::Point ProcessStruct(::RpcPrimitiveTest::Point value) = 0;
+		virtual ::test::Point ProcessStruct(::test::Point value) = 0;
 	};
 
 	class IRpcWrapper_IService : public virtual ::RpcPrimitiveTest::IService, public virtual ::vl::rpc_controller::IRpcWrapperBase, public ::vl::reflection::Description<IRpcWrapper_IService>
@@ -112,7 +96,7 @@ public:
 	virtual float InvokeMethod_RpcPrimitiveTest__IService_ProcessFloat(::vl::rpc_controller::RpcObjectReference ref, float arg_value) = 0;
 	virtual ::vl::vint InvokeMethod_RpcPrimitiveTest__IService_ProcessInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint arg_value) = 0;
 	virtual ::vl::WString InvokeMethod_RpcPrimitiveTest__IService_ProcessString(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_value) = 0;
-	virtual ::RpcPrimitiveTest::Point InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::RpcPrimitiveTest::Point arg_value) = 0;
+	virtual ::test::Point InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::test::Point arg_value) = 0;
 	virtual ::vl::vuint InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vuint arg_value) = 0;
 };
 
@@ -148,8 +132,8 @@ namespace vl_workflow_global
 		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes> ops);
 		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(::RpcPrimitiveTest::Season value);
 		::RpcPrimitiveTest::Season rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season(::vl::Ptr<::vl::glr::json::JsonNode> node);
-		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_RpcPrimitiveTest__Point(::RpcPrimitiveTest::Point value);
-		::RpcPrimitiveTest::Point rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point(::vl::Ptr<::vl::glr::json::JsonNode> node);
+		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_test__Point(::test::Point value);
+		::test::Point rpcjson_Deserialize_Struct_test__Point(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_system__RpcObjectReference(::vl::rpc_controller::RpcObjectReference value);
 		::vl::rpc_controller::RpcObjectReference rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize(const ::vl::reflection::description::Value& value);
@@ -178,7 +162,7 @@ Closures
 		::vl::WString ProcessString(const ::vl::WString& value) override;
 		bool ProcessBool(bool value) override;
 		::RpcPrimitiveTest::Season ProcessEnum(::RpcPrimitiveTest::Season value) override;
-		::RpcPrimitiveTest::Point ProcessStruct(::RpcPrimitiveTest::Point value) override;
+		::test::Point ProcessStruct(::test::Point value) override;
 	};
 
 	class __vwsnc2_Rpc_PrimitiveTypes_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
@@ -216,7 +200,7 @@ Closures
 		float InvokeMethod_RpcPrimitiveTest__IService_ProcessFloat(::vl::rpc_controller::RpcObjectReference ref, float arg_value) override;
 		::vl::vint InvokeMethod_RpcPrimitiveTest__IService_ProcessInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint arg_value) override;
 		::vl::WString InvokeMethod_RpcPrimitiveTest__IService_ProcessString(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_value) override;
-		::RpcPrimitiveTest::Point InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::RpcPrimitiveTest::Point arg_value) override;
+		::test::Point InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::test::Point arg_value) override;
 		::vl::vuint InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vuint arg_value) override;
 	};
 
@@ -236,7 +220,7 @@ Closures
 		float ProcessFloat(float value) override;
 		::vl::vint ProcessInt(::vl::vint value) override;
 		::vl::WString ProcessString(const ::vl::WString& value) override;
-		::RpcPrimitiveTest::Point ProcessStruct(::RpcPrimitiveTest::Point value) override;
+		::test::Point ProcessStruct(::test::Point value) override;
 		::vl::vuint ProcessUInt(::vl::vuint value) override;
 	};
 
@@ -284,7 +268,7 @@ Closures
 		float InvokeMethod_RpcPrimitiveTest__IService_ProcessFloat(::vl::rpc_controller::RpcObjectReference ref, float arg_value) override;
 		::vl::vint InvokeMethod_RpcPrimitiveTest__IService_ProcessInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint arg_value) override;
 		::vl::WString InvokeMethod_RpcPrimitiveTest__IService_ProcessString(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_value) override;
-		::RpcPrimitiveTest::Point InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::RpcPrimitiveTest::Point arg_value) override;
+		::test::Point InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::test::Point arg_value) override;
 		::vl::vuint InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vuint arg_value) override;
 	};
 }

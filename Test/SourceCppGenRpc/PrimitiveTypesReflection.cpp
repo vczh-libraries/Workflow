@@ -32,7 +32,6 @@ namespace vl
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(RpcPrimitiveTest::IRpcWrapper_IService)
 			IMPL_CPP_TYPE_INFO(RpcPrimitiveTest::IService)
-			IMPL_CPP_TYPE_INFO(RpcPrimitiveTest::Point)
 			IMPL_CPP_TYPE_INFO(RpcPrimitiveTest::Season)
 			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_PrimitiveTypes)
 
@@ -56,11 +55,6 @@ namespace vl
 				CLASS_MEMBER_METHOD(ProcessStruct, { L"value" })
 				CLASS_MEMBER_METHOD(ProcessUInt, { L"value" })
 			END_INTERFACE_MEMBER(::RpcPrimitiveTest::IService)
-
-			BEGIN_STRUCT_MEMBER(::RpcPrimitiveTest::Point)
-				STRUCT_MEMBER(x)
-				STRUCT_MEMBER(y)
-			END_STRUCT_MEMBER(::RpcPrimitiveTest::Point)
 
 			BEGIN_ENUM_ITEM(::RpcPrimitiveTest::Season)
 				ENUM_CLASS_ITEM(Autumn)
@@ -89,7 +83,6 @@ namespace vl
 				{
 					ADD_TYPE_INFO(::RpcPrimitiveTest::IRpcWrapper_IService)
 					ADD_TYPE_INFO(::RpcPrimitiveTest::IService)
-					ADD_TYPE_INFO(::RpcPrimitiveTest::Point)
 					ADD_TYPE_INFO(::RpcPrimitiveTest::Season)
 					ADD_TYPE_INFO(::rpcops_IOps_Rpc_PrimitiveTypes)
 				}

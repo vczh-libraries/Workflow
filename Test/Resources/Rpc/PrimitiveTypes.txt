@@ -11,12 +11,6 @@ namespace RpcPrimitiveTest
     Winter = 3,
   }
 
-  struct Point
-  {
-    x : int;
-    y : int;
-  }
-
   @rpc:Interface
   @rpc:Ctor
   interface IService
@@ -28,7 +22,7 @@ namespace RpcPrimitiveTest
     func ProcessString(value : string) : string;
     func ProcessBool(value : bool) : bool;
     func ProcessEnum(value : Season) : Season;
-    func ProcessStruct(value : Point) : Point;
+    func ProcessStruct(value : test::Point) : test::Point;
   }
 }
 
@@ -71,10 +65,9 @@ func serviceMain(lc : IRpcLifecycle*) : void
       return value;
     }
 
-    override func ProcessStruct(value : RpcPrimitiveTest::Point) : RpcPrimitiveTest::Point
+    override func ProcessStruct(value : test::Point) : test::Point
     {
-      var result : RpcPrimitiveTest::Point = {x : (value.x + 10) y : (value.y + 20)};
-      return result;
+      return {x : (value.x + 10) y : (value.y + 20)};
     }
   };
   lc.RegisterService("RpcPrimitiveTest::IService", service);

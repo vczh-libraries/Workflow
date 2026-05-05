@@ -34,13 +34,13 @@ export type UnknownTypeSchema =
   | UnknownType_PrimitiveSchema
   | UnknownType_EnumSchema
   | UnknownType_List
-  | UnknownType_RpcPrimitiveTest_Point
+  | UnknownType_test_Point
   | UnknownType_system_RpcObjectReference
   ;
 
-export interface UnknownType_RpcPrimitiveTest_Point extends RpcPrimitiveTest_Point
+export interface UnknownType_test_Point extends test_Point
 {
-  "$": "RpcPrimitiveTest::Point";
+  "$": "test::Point";
 }
 
 export interface UnknownType_system_RpcObjectReference extends system_RpcObjectReference
@@ -58,7 +58,7 @@ export enum RpcPrimitiveTest_Season
   Winter = 3,
 }
 
-export interface RpcPrimitiveTest_Point
+export interface test_Point
 {
   x: number;
   y: number;

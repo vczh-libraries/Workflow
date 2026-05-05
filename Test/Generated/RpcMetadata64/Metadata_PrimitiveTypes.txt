@@ -10,12 +10,6 @@ namespace RpcPrimitiveTest
         Winter = 3,
     }
 
-    struct Point
-    {
-        x : ::system::Int64;
-        y : ::system::Int64;
-    }
-
     @rpc:Interface
     @rpc:Ctor
     interface IService
@@ -32,8 +26,17 @@ namespace RpcPrimitiveTest
 
         func ProcessString(value : ::system::String) : (::system::String);
 
-        func ProcessStruct(value : ::RpcPrimitiveTest::Point) : (::RpcPrimitiveTest::Point);
+        func ProcessStruct(value : ::test::Point) : (::test::Point);
 
         func ProcessUInt(value : ::system::UInt64) : (::system::UInt64);
+    }
+}
+
+namespace test
+{
+    struct Point
+    {
+        x : ::system::Int64;
+        y : ::system::Int64;
     }
 }

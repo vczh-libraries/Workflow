@@ -71,7 +71,7 @@ interface rpcops_IOps_Rpc_PrimitiveTypes
 
     func InvokeMethod_RpcPrimitiveTest__IService_ProcessString(ref : system::RpcObjectReference, arg_value : ::system::String) : (::system::String);
 
-    func InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(ref : system::RpcObjectReference, arg_value : ::RpcPrimitiveTest::Point) : (::RpcPrimitiveTest::Point);
+    func InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(ref : system::RpcObjectReference, arg_value : ::test::Point) : (::test::Point);
 
     func InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(ref : system::RpcObjectReference, arg_value : ::system::UInt32) : (::system::UInt32);
 }
@@ -123,7 +123,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessStruct:
                 {
                     var target = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    return target.ProcessStruct((cast (::RpcPrimitiveTest::Point) arguments[0]));
+                    return target.ProcessStruct((cast (::test::Point) arguments[0]));
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessUInt:
                 {
@@ -252,12 +252,12 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Primitiv
             return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments));
         }
 
-        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(ref : system::RpcObjectReference, arg_value : ::RpcPrimitiveTest::Point) : (::RpcPrimitiveTest::Point)
+        override func InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(ref : system::RpcObjectReference, arg_value : ::test::Point) : (::test::Point)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, arg_value);
-            return (cast (::RpcPrimitiveTest::Point) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
+            return (cast (::test::Point) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
         }
 
         override func InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(ref : system::RpcObjectReference, arg_value : ::system::UInt32) : (::system::UInt32)
@@ -343,7 +343,7 @@ func rpcwrapper_RpcPrimitiveTest__IService(lc : system::IRpcLifecycle*, proxyRef
             return _ops.InvokeMethod_RpcPrimitiveTest__IService_ProcessString(_ref, value);
         }
 
-        override func ProcessStruct(value : ::RpcPrimitiveTest::Point) : (::RpcPrimitiveTest::Point)
+        override func ProcessStruct(value : ::test::Point) : (::test::Point)
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";

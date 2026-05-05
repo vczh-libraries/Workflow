@@ -75,7 +75,7 @@ Global Functions
 		(result = (((result + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(::vl::__vwsn::This(service.Obj())->ProcessBool(true))) + ::vl::WString::Unmanaged(L"]")));
 		auto season = ::vl::__vwsn::This(service.Obj())->ProcessEnum(::RpcPrimitiveTest::Season::Autumn);
 		(result = (((result + ::vl::WString::Unmanaged(L"[")) + ((season == ::RpcPrimitiveTest::Season::Autumn) ? ::vl::WString::Unmanaged(L"Autumn") : ::vl::WString::Unmanaged(L"Wrong"))) + ::vl::WString::Unmanaged(L"]")));
-		auto pt = ::vl::__vwsn::This(service.Obj())->ProcessStruct([&](){ ::RpcPrimitiveTest::Point __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(3); __vwsn_temp__.y = static_cast<::vl::vint32_t>(7); return __vwsn_temp__; }());
+		auto pt = ::vl::__vwsn::This(service.Obj())->ProcessStruct([&](){ ::test::Point __vwsn_temp__; __vwsn_temp__.x = static_cast<::vl::vint32_t>(3); __vwsn_temp__.y = static_cast<::vl::vint32_t>(7); return __vwsn_temp__; }());
 		(result = (((((result + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::ToString(pt.x)) + ::vl::WString::Unmanaged(L",")) + ::vl::__vwsn::ToString(pt.y)) + ::vl::WString::Unmanaged(L"]")));
 		return result;
 	}
@@ -166,7 +166,7 @@ Global Functions
 		return static_cast<::RpcPrimitiveTest::Season>(::vl::__vwsn::Parse<::vl::vuint64_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(node.Obj())).Obj())->content.value));
 	}
 
-	::vl::Ptr<::vl::glr::json::JsonNode> Rpc_PrimitiveTypes::rpcjson_Serialize_Struct_RpcPrimitiveTest__Point(::RpcPrimitiveTest::Point value)
+	::vl::Ptr<::vl::glr::json::JsonNode> Rpc_PrimitiveTypes::rpcjson_Serialize_Struct_test__Point(::test::Point value)
 	{
 		auto object = ::vl::Ptr<::vl::glr::json::JsonObject>(new ::vl::glr::json::JsonObject());
 		auto jsonNumber1 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
@@ -184,7 +184,7 @@ Global Functions
 		return ::vl::Ptr<::vl::glr::json::JsonNode>(object);
 	}
 
-	::RpcPrimitiveTest::Point Rpc_PrimitiveTypes::rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point(::vl::Ptr<::vl::glr::json::JsonNode> node)
+	::test::Point Rpc_PrimitiveTypes::rpcjson_Deserialize_Struct_test__Point(::vl::Ptr<::vl::glr::json::JsonNode> node)
 	{
 		auto object = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(node.Obj()));
 		auto jsonFieldValue5 = ::vl::Ptr<::vl::glr::json::JsonNode>();
@@ -219,7 +219,7 @@ Global Functions
 		if ((! static_cast<bool>(jsonFieldValue8)))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"JSON object field not found: y"));
 		auto jsonValue10 = ::vl::__vwsn::Parse<::vl::vint32_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(jsonFieldValue8.Obj())).Obj())->content.value);
-		return [&](){ ::RpcPrimitiveTest::Point __vwsn_temp__; __vwsn_temp__.x = jsonValue7; __vwsn_temp__.y = jsonValue10; return __vwsn_temp__; }();
+		return [&](){ ::test::Point __vwsn_temp__; __vwsn_temp__.x = jsonValue7; __vwsn_temp__.y = jsonValue10; return __vwsn_temp__; }();
 	}
 
 	::vl::Ptr<::vl::glr::json::JsonNode> Rpc_PrimitiveTypes::rpcjson_Serialize_Struct_system__RpcObjectReference(::vl::rpc_controller::RpcObjectReference value)
@@ -313,17 +313,17 @@ Global Functions
 			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray27.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonNode26));
 			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray27);
 		}
-		auto value_RpcPrimitiveTest__Point = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::RpcPrimitiveTest::Point>>(value);
-		if (static_cast<bool>(value_RpcPrimitiveTest__Point))
+		auto value_test__Point = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::test::Point>>(value);
+		if (static_cast<bool>(value_test__Point))
 		{
 			auto object = ::vl::Ptr<::vl::glr::json::JsonObject>(new ::vl::glr::json::JsonObject());
 			auto jsonString29 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString29.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"RpcPrimitiveTest::Point"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonString29.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"test::Point"); return __vwsn_temp__; }());
 			auto jsonField30 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
 			(::vl::__vwsn::This(jsonField30.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
 			(::vl::__vwsn::This(jsonField30.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString29));
 			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField30));
-			auto value31 = value_RpcPrimitiveTest__Point.Value();
+			auto value31 = value_test__Point.Value();
 			auto jsonNumber32 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
 			(::vl::__vwsn::This(jsonNumber32.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value31.x); return __vwsn_temp__; }());
 			auto jsonField33 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
@@ -405,8 +405,8 @@ Global Functions
 			auto keyword = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(jsonFieldValue45.Obj())).Obj())->content.value;
 			{
 				auto __vwsn_switch_6 = keyword;
-				if ((__vwsn_switch_6 == ::vl::WString::Unmanaged(L"RpcPrimitiveTest::Point")))
-					return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point(::vl::Ptr<::vl::glr::json::JsonNode>(object)));
+				if ((__vwsn_switch_6 == ::vl::WString::Unmanaged(L"test::Point")))
+					return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Deserialize_Struct_test__Point(::vl::Ptr<::vl::glr::json::JsonNode>(object)));
 				else if ((__vwsn_switch_6 == ::vl::WString::Unmanaged(L"system::RpcObjectReference")))
 					return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::Ptr<::vl::glr::json::JsonNode>(object)));
 			}
@@ -484,10 +484,9 @@ Closures
 		return value;
 	}
 
-	::RpcPrimitiveTest::Point __vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessStruct(::RpcPrimitiveTest::Point value)
+	::test::Point __vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService::ProcessStruct(::test::Point value)
 	{
-		auto result = [&](){ ::RpcPrimitiveTest::Point __vwsn_temp__; __vwsn_temp__.x = (value.x + static_cast<::vl::vint32_t>(10)); __vwsn_temp__.y = (value.y + static_cast<::vl::vint32_t>(20)); return __vwsn_temp__; }();
-		return result;
+		return [&](){ ::test::Point __vwsn_temp__; __vwsn_temp__.x = (value.x + static_cast<::vl::vint32_t>(10)); __vwsn_temp__.y = (value.y + static_cast<::vl::vint32_t>(20)); return __vwsn_temp__; }();
 	}
 
 	//-------------------------------------------------------------------
@@ -536,7 +535,7 @@ Closures
 			else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessStruct(::vl::__vwsn::Unbox<::RpcPrimitiveTest::Point>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint32_t>(0))))));
+				return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessStruct(::vl::__vwsn::Unbox<::test::Point>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint32_t>(0))))));
 			}
 			else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessUInt))
 			{
@@ -671,12 +670,12 @@ Closures
 		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments));
 	}
 
-	::RpcPrimitiveTest::Point __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::RpcPrimitiveTest::Point arg_value)
+	::test::Point __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::test::Point arg_value)
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(1));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::__vwsn::Box(arg_value));
-		return ::vl::__vwsn::Unbox<::RpcPrimitiveTest::Point>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
+		return ::vl::__vwsn::Unbox<::test::Point>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
 	}
 
 	::vl::vuint32_t __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vuint32_t arg_value)
@@ -752,7 +751,7 @@ Closures
 		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcPrimitiveTest__IService_ProcessString(_ref, value);
 	}
 
-	::RpcPrimitiveTest::Point __vwsnc5_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessStruct(::RpcPrimitiveTest::Point value)
+	::test::Point __vwsnc5_Rpc_PrimitiveTypes_rpcwrapper_RpcPrimitiveTest__IService__RpcPrimitiveTest_IRpcWrapper_IService::ProcessStruct(::test::Point value)
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
@@ -849,8 +848,8 @@ Closures
 			else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint32_t>(0)))));
-				auto jsonNode1 = GLOBAL_NAME rpcjson_Serialize_Struct_RpcPrimitiveTest__Point(::vl::__vwsn::This(target.Obj())->ProcessStruct(jsonValue0));
+				auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize_Struct_test__Point(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint32_t>(0)))));
+				auto jsonNode1 = GLOBAL_NAME rpcjson_Serialize_Struct_test__Point(::vl::__vwsn::This(target.Obj())->ProcessStruct(jsonValue0));
 				return ::vl::__vwsn::Box(jsonNode1);
 			}
 			else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessUInt))
@@ -1015,14 +1014,14 @@ Closures
 		return jsonValue1;
 	}
 
-	::RpcPrimitiveTest::Point __vwsnc9_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::RpcPrimitiveTest::Point arg_value)
+	::test::Point __vwsnc9_Rpc_PrimitiveTypes_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::test::Point arg_value)
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(1));
-		auto jsonNode0 = GLOBAL_NAME rpcjson_Serialize_Struct_RpcPrimitiveTest__Point(arg_value);
+		auto jsonNode0 = GLOBAL_NAME rpcjson_Serialize_Struct_test__Point(arg_value);
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::__vwsn::Box(jsonNode0));
 		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
-		auto jsonValue1 = GLOBAL_NAME rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point(jsonResult);
+		auto jsonValue1 = GLOBAL_NAME rpcjson_Deserialize_Struct_test__Point(jsonResult);
 		return jsonValue1;
 	}
 
