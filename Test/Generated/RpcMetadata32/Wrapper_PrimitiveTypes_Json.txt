@@ -113,518 +113,109 @@ func rpcjson_Deserialize_Struct_system__RpcObjectReference(node : system::JsonNo
 
 func rpcjson_Serialize(value : object) : (system::JsonNode^)
 {
-    if (value is null)
-    {
-        var jsonLiteral26 : system::JsonLiteral^ = new (system::JsonLiteral^)();
-        (jsonLiteral26.value = system::JsonLiteralValue::Null);
-        return jsonLiteral26;
-    }
-    var value_system__Boolean : system::Boolean? = (value as (system::Boolean?));
-    if (value_system__Boolean is not null)
-    {
-        var jsonLiteral27 : system::JsonLiteral^ = new (system::JsonLiteral^)();
-        if ((cast (::system::Boolean) value_system__Boolean))
-        (jsonLiteral27.value = system::JsonLiteralValue::True);
-        else
-        (jsonLiteral27.value = system::JsonLiteralValue::False);
-        return jsonLiteral27;
-    }
-    var value_system__String : system::String? = (value as (system::String?));
-    if (value_system__String is not null)
-    {
-        var jsonString28 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString28.content = {value : (cast (::system::String) value_system__String);});
-        return jsonString28;
-    }
-    var value_system__UInt8 : system::UInt8? = (value as (system::UInt8?));
-    if (value_system__UInt8 is not null)
-    {
-        var jsonNumber29 : system::JsonNumber^ = new (system::JsonNumber^)();
-        (jsonNumber29.content = {value : (cast (string) (cast (::system::UInt8) value_system__UInt8));});
-        var jsonString31 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString31.content = {value : "UInt8";});
-        var jsonArray30 : system::JsonArray^ = new (system::JsonArray^)();
-        jsonArray30.items.Add(jsonString31);
-        jsonArray30.items.Add(jsonNumber29);
-        return jsonArray30;
-    }
-    var value_system__UInt16 : system::UInt16? = (value as (system::UInt16?));
-    if (value_system__UInt16 is not null)
-    {
-        var jsonNumber32 : system::JsonNumber^ = new (system::JsonNumber^)();
-        (jsonNumber32.content = {value : (cast (string) (cast (::system::UInt16) value_system__UInt16));});
-        var jsonString34 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString34.content = {value : "UInt16";});
-        var jsonArray33 : system::JsonArray^ = new (system::JsonArray^)();
-        jsonArray33.items.Add(jsonString34);
-        jsonArray33.items.Add(jsonNumber32);
-        return jsonArray33;
-    }
-    var value_system__UInt32 : system::UInt32? = (value as (system::UInt32?));
-    if (value_system__UInt32 is not null)
-    {
-        var jsonNumber35 : system::JsonNumber^ = new (system::JsonNumber^)();
-        (jsonNumber35.content = {value : (cast (string) (cast (::system::UInt32) value_system__UInt32));});
-        var jsonString37 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString37.content = {value : "UInt32";});
-        var jsonArray36 : system::JsonArray^ = new (system::JsonArray^)();
-        jsonArray36.items.Add(jsonString37);
-        jsonArray36.items.Add(jsonNumber35);
-        return jsonArray36;
-    }
-    var value_system__UInt64 : system::UInt64? = (value as (system::UInt64?));
-    if (value_system__UInt64 is not null)
-    {
-        var jsonNumber38 : system::JsonNumber^ = new (system::JsonNumber^)();
-        (jsonNumber38.content = {value : (cast (string) (cast (::system::UInt64) value_system__UInt64));});
-        var jsonString40 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString40.content = {value : "UInt64";});
-        var jsonArray39 : system::JsonArray^ = new (system::JsonArray^)();
-        jsonArray39.items.Add(jsonString40);
-        jsonArray39.items.Add(jsonNumber38);
-        return jsonArray39;
-    }
-    var value_system__Int8 : system::Int8? = (value as (system::Int8?));
-    if (value_system__Int8 is not null)
-    {
-        var jsonNumber41 : system::JsonNumber^ = new (system::JsonNumber^)();
-        (jsonNumber41.content = {value : (cast (string) (cast (::system::Int8) value_system__Int8));});
-        var jsonString43 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString43.content = {value : "Int8";});
-        var jsonArray42 : system::JsonArray^ = new (system::JsonArray^)();
-        jsonArray42.items.Add(jsonString43);
-        jsonArray42.items.Add(jsonNumber41);
-        return jsonArray42;
-    }
-    var value_system__Int16 : system::Int16? = (value as (system::Int16?));
-    if (value_system__Int16 is not null)
-    {
-        var jsonNumber44 : system::JsonNumber^ = new (system::JsonNumber^)();
-        (jsonNumber44.content = {value : (cast (string) (cast (::system::Int16) value_system__Int16));});
-        var jsonString46 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString46.content = {value : "Int16";});
-        var jsonArray45 : system::JsonArray^ = new (system::JsonArray^)();
-        jsonArray45.items.Add(jsonString46);
-        jsonArray45.items.Add(jsonNumber44);
-        return jsonArray45;
-    }
-    var value_system__Int32 : system::Int32? = (value as (system::Int32?));
-    if (value_system__Int32 is not null)
-    {
-        var jsonNumber47 : system::JsonNumber^ = new (system::JsonNumber^)();
-        (jsonNumber47.content = {value : (cast (string) (cast (::system::Int32) value_system__Int32));});
-        var jsonString49 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString49.content = {value : "Int32";});
-        var jsonArray48 : system::JsonArray^ = new (system::JsonArray^)();
-        jsonArray48.items.Add(jsonString49);
-        jsonArray48.items.Add(jsonNumber47);
-        return jsonArray48;
-    }
-    var value_system__Int64 : system::Int64? = (value as (system::Int64?));
-    if (value_system__Int64 is not null)
-    {
-        var jsonNumber50 : system::JsonNumber^ = new (system::JsonNumber^)();
-        (jsonNumber50.content = {value : (cast (string) (cast (::system::Int64) value_system__Int64));});
-        var jsonString52 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString52.content = {value : "Int64";});
-        var jsonArray51 : system::JsonArray^ = new (system::JsonArray^)();
-        jsonArray51.items.Add(jsonString52);
-        jsonArray51.items.Add(jsonNumber50);
-        return jsonArray51;
-    }
-    var value_system__Single : system::Single? = (value as (system::Single?));
-    if (value_system__Single is not null)
-    {
-        var jsonNumber53 : system::JsonNumber^ = new (system::JsonNumber^)();
-        (jsonNumber53.content = {value : (cast (string) (cast (::system::Single) value_system__Single));});
-        var jsonString55 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString55.content = {value : "Single";});
-        var jsonArray54 : system::JsonArray^ = new (system::JsonArray^)();
-        jsonArray54.items.Add(jsonString55);
-        jsonArray54.items.Add(jsonNumber53);
-        return jsonArray54;
-    }
-    var value_system__Double : system::Double? = (value as (system::Double?));
-    if (value_system__Double is not null)
-    {
-        var jsonNumber56 : system::JsonNumber^ = new (system::JsonNumber^)();
-        (jsonNumber56.content = {value : (cast (string) (cast (::system::Double) value_system__Double));});
-        var jsonString58 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString58.content = {value : "Double";});
-        var jsonArray57 : system::JsonArray^ = new (system::JsonArray^)();
-        jsonArray57.items.Add(jsonString58);
-        jsonArray57.items.Add(jsonNumber56);
-        return jsonArray57;
-    }
-    var value_system__Char : system::Char? = (value as (system::Char?));
-    if (value_system__Char is not null)
-    {
-        var jsonString59 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString59.content = {value : (cast (string) (cast (::system::Char) value_system__Char));});
-        var jsonString61 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString61.content = {value : "Char";});
-        var jsonArray60 : system::JsonArray^ = new (system::JsonArray^)();
-        jsonArray60.items.Add(jsonString61);
-        jsonArray60.items.Add(jsonString59);
-        return jsonArray60;
-    }
-    var value_system__DateTime : system::DateTime? = (value as (system::DateTime?));
-    if (value_system__DateTime is not null)
-    {
-        var jsonString62 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString62.content = {value : (cast (string) (cast (::system::DateTime) value_system__DateTime));});
-        var jsonString64 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString64.content = {value : "DateTime";});
-        var jsonArray63 : system::JsonArray^ = new (system::JsonArray^)();
-        jsonArray63.items.Add(jsonString64);
-        jsonArray63.items.Add(jsonString62);
-        return jsonArray63;
-    }
-    var value_system__Locale : system::Locale? = (value as (system::Locale?));
-    if (value_system__Locale is not null)
-    {
-        var jsonString65 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString65.content = {value : (cast (string) (cast (::system::Locale) value_system__Locale));});
-        var jsonString67 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString67.content = {value : "Locale";});
-        var jsonArray66 : system::JsonArray^ = new (system::JsonArray^)();
-        jsonArray66.items.Add(jsonString67);
-        jsonArray66.items.Add(jsonString65);
-        return jsonArray66;
-    }
-    var observableList : system::ObservableList^ = (value as (system::ObservableList^));
-    if (observableList is not null)
-    {
-        var object : system::JsonObject^ = new (system::JsonObject^)();
-        var jsonString68 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString68.content = {value : "oblist";});
-        var jsonField69 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField69.name = {value : "$";});
-        (jsonField69.value = jsonString68);
-        object.fields.Add(jsonField69);
-        var values : system::JsonArray^ = new (system::JsonArray^)();
-        for (item in observableList)
-        {
-            values.items.Add(rpcjson_Serialize(item));
-        }
-        var jsonField70 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField70.name = {value : "values";});
-        (jsonField70.value = values);
-        object.fields.Add(jsonField70);
-        return object;
-    }
-    var dictionary : system::Dictionary^ = (value as (system::Dictionary^));
-    if (dictionary is not null)
-    {
-        var object : system::JsonObject^ = new (system::JsonObject^)();
-        var jsonString71 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString71.content = {value : "map";});
-        var jsonField72 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField72.name = {value : "$";});
-        (jsonField72.value = jsonString71);
-        object.fields.Add(jsonField72);
-        var values : system::JsonArray^ = new (system::JsonArray^)();
-        for (key in dictionary.Keys)
-        {
-            values.items.Add(rpcjson_Serialize(key));
-            values.items.Add(rpcjson_Serialize(dictionary.Get(key)));
-        }
-        var jsonField73 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField73.name = {value : "values";});
-        (jsonField73.value = values);
-        object.fields.Add(jsonField73);
-        return object;
-    }
-    var readonlyDictionary : system::ReadonlyDictionary^ = (value as (system::ReadonlyDictionary^));
-    if (readonlyDictionary is not null)
-    {
-        var object : system::JsonObject^ = new (system::JsonObject^)();
-        var jsonString74 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString74.content = {value : "map";});
-        var jsonField75 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField75.name = {value : "$";});
-        (jsonField75.value = jsonString74);
-        object.fields.Add(jsonField75);
-        var values : system::JsonArray^ = new (system::JsonArray^)();
-        for (key in readonlyDictionary.Keys)
-        {
-            values.items.Add(rpcjson_Serialize(key));
-            values.items.Add(rpcjson_Serialize(readonlyDictionary.Get(key)));
-        }
-        var jsonField76 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField76.name = {value : "values";});
-        (jsonField76.value = values);
-        object.fields.Add(jsonField76);
-        return object;
-    }
-    var list : system::List^ = (value as (system::List^));
-    if (list is not null)
-    {
-        var object : system::JsonObject^ = new (system::JsonObject^)();
-        var jsonString77 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString77.content = {value : "list";});
-        var jsonField78 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField78.name = {value : "$";});
-        (jsonField78.value = jsonString77);
-        object.fields.Add(jsonField78);
-        var values : system::JsonArray^ = new (system::JsonArray^)();
-        for (item in list)
-        {
-            values.items.Add(rpcjson_Serialize(item));
-        }
-        var jsonField79 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField79.name = {value : "values";});
-        (jsonField79.value = values);
-        object.fields.Add(jsonField79);
-        return object;
-    }
-    var readonlyList : system::ReadonlyList^ = (value as (system::ReadonlyList^));
-    if (readonlyList is not null)
-    {
-        var object : system::JsonObject^ = new (system::JsonObject^)();
-        var jsonString80 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString80.content = {value : "list";});
-        var jsonField81 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField81.name = {value : "$";});
-        (jsonField81.value = jsonString80);
-        object.fields.Add(jsonField81);
-        var values : system::JsonArray^ = new (system::JsonArray^)();
-        for (item in readonlyList)
-        {
-            values.items.Add(rpcjson_Serialize(item));
-        }
-        var jsonField82 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField82.name = {value : "values";});
-        (jsonField82.value = values);
-        object.fields.Add(jsonField82);
-        return object;
-    }
-    var enumerable : system::Enumerable^ = (value as (system::Enumerable^));
-    if (enumerable is not null)
-    {
-        var object : system::JsonObject^ = new (system::JsonObject^)();
-        var jsonString83 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString83.content = {value : "list";});
-        var jsonField84 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField84.name = {value : "$";});
-        (jsonField84.value = jsonString83);
-        object.fields.Add(jsonField84);
-        var values : system::JsonArray^ = new (system::JsonArray^)();
-        for (item in enumerable)
-        {
-            values.items.Add(rpcjson_Serialize(item));
-        }
-        var jsonField85 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField85.name = {value : "values";});
-        (jsonField85.value = values);
-        object.fields.Add(jsonField85);
-        return object;
-    }
     var value_RpcPrimitiveTest__Season : ::RpcPrimitiveTest::Season? = (value as (::RpcPrimitiveTest::Season?));
     if (value_RpcPrimitiveTest__Season is not null)
     {
-        var jsonNode86 : system::JsonNode^ = rpcjson_Serialize_Enum_RpcPrimitiveTest__Season((cast (::RpcPrimitiveTest::Season) value_RpcPrimitiveTest__Season));
-        var jsonString88 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString88.content = {value : "RpcPrimitiveTest::Season";});
-        var jsonArray87 : system::JsonArray^ = new (system::JsonArray^)();
-        jsonArray87.items.Add(jsonString88);
-        jsonArray87.items.Add(jsonNode86);
-        return jsonArray87;
+        var jsonNode26 : system::JsonNode^ = rpcjson_Serialize_Enum_RpcPrimitiveTest__Season((cast (::RpcPrimitiveTest::Season) value_RpcPrimitiveTest__Season));
+        var jsonString28 : system::JsonString^ = new (system::JsonString^)();
+        (jsonString28.content = {value : "RpcPrimitiveTest::Season";});
+        var jsonArray27 : system::JsonArray^ = new (system::JsonArray^)();
+        jsonArray27.items.Add(jsonString28);
+        jsonArray27.items.Add(jsonNode26);
+        return jsonArray27;
     }
     var value_RpcPrimitiveTest__Point : ::RpcPrimitiveTest::Point? = (value as (::RpcPrimitiveTest::Point?));
     if (value_RpcPrimitiveTest__Point is not null)
     {
         var object : system::JsonObject^ = new (system::JsonObject^)();
-        var jsonString89 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString89.content = {value : "RpcPrimitiveTest::Point";});
-        var jsonField90 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField90.name = {value : "$";});
-        (jsonField90.value = jsonString89);
-        object.fields.Add(jsonField90);
-        var value91 : ::RpcPrimitiveTest::Point = (cast (::RpcPrimitiveTest::Point) value_RpcPrimitiveTest__Point);
-        var jsonNumber92 : system::JsonNumber^ = new (system::JsonNumber^)();
-        (jsonNumber92.content = {value : (cast (string) value91.x);});
-        var jsonField93 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField93.name = {value : "x";});
-        (jsonField93.value = jsonNumber92);
-        object.fields.Add(jsonField93);
-        var jsonNumber94 : system::JsonNumber^ = new (system::JsonNumber^)();
-        (jsonNumber94.content = {value : (cast (string) value91.y);});
-        var jsonField95 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField95.name = {value : "y";});
-        (jsonField95.value = jsonNumber94);
-        object.fields.Add(jsonField95);
+        var jsonString29 : system::JsonString^ = new (system::JsonString^)();
+        (jsonString29.content = {value : "RpcPrimitiveTest::Point";});
+        var jsonField30 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+        (jsonField30.name = {value : "$";});
+        (jsonField30.value = jsonString29);
+        object.fields.Add(jsonField30);
+        var value31 : ::RpcPrimitiveTest::Point = (cast (::RpcPrimitiveTest::Point) value_RpcPrimitiveTest__Point);
+        var jsonNumber32 : system::JsonNumber^ = new (system::JsonNumber^)();
+        (jsonNumber32.content = {value : (cast (string) value31.x);});
+        var jsonField33 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+        (jsonField33.name = {value : "x";});
+        (jsonField33.value = jsonNumber32);
+        object.fields.Add(jsonField33);
+        var jsonNumber34 : system::JsonNumber^ = new (system::JsonNumber^)();
+        (jsonNumber34.content = {value : (cast (string) value31.y);});
+        var jsonField35 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+        (jsonField35.name = {value : "y";});
+        (jsonField35.value = jsonNumber34);
+        object.fields.Add(jsonField35);
         return object;
     }
     var value_system__RpcObjectReference : ::system::RpcObjectReference? = (value as (::system::RpcObjectReference?));
     if (value_system__RpcObjectReference is not null)
     {
         var object : system::JsonObject^ = new (system::JsonObject^)();
-        var jsonString96 : system::JsonString^ = new (system::JsonString^)();
-        (jsonString96.content = {value : "system::RpcObjectReference";});
-        var jsonField97 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField97.name = {value : "$";});
-        (jsonField97.value = jsonString96);
-        object.fields.Add(jsonField97);
-        var value98 : ::system::RpcObjectReference = (cast (::system::RpcObjectReference) value_system__RpcObjectReference);
-        var jsonNumber99 : system::JsonNumber^ = new (system::JsonNumber^)();
-        (jsonNumber99.content = {value : (cast (string) value98.clientId);});
-        var jsonField100 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField100.name = {value : "clientId";});
-        (jsonField100.value = jsonNumber99);
-        object.fields.Add(jsonField100);
-        var jsonNumber101 : system::JsonNumber^ = new (system::JsonNumber^)();
-        (jsonNumber101.content = {value : (cast (string) value98.objectId);});
-        var jsonField102 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField102.name = {value : "objectId";});
-        (jsonField102.value = jsonNumber101);
-        object.fields.Add(jsonField102);
-        var jsonNumber103 : system::JsonNumber^ = new (system::JsonNumber^)();
-        (jsonNumber103.content = {value : (cast (string) value98.typeId);});
-        var jsonField104 : system::JsonObjectField^ = new (system::JsonObjectField^)();
-        (jsonField104.name = {value : "typeId";});
-        (jsonField104.value = jsonNumber103);
-        object.fields.Add(jsonField104);
+        var jsonString36 : system::JsonString^ = new (system::JsonString^)();
+        (jsonString36.content = {value : "system::RpcObjectReference";});
+        var jsonField37 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+        (jsonField37.name = {value : "$";});
+        (jsonField37.value = jsonString36);
+        object.fields.Add(jsonField37);
+        var value38 : ::system::RpcObjectReference = (cast (::system::RpcObjectReference) value_system__RpcObjectReference);
+        var jsonNumber39 : system::JsonNumber^ = new (system::JsonNumber^)();
+        (jsonNumber39.content = {value : (cast (string) value38.clientId);});
+        var jsonField40 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+        (jsonField40.name = {value : "clientId";});
+        (jsonField40.value = jsonNumber39);
+        object.fields.Add(jsonField40);
+        var jsonNumber41 : system::JsonNumber^ = new (system::JsonNumber^)();
+        (jsonNumber41.content = {value : (cast (string) value38.objectId);});
+        var jsonField42 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+        (jsonField42.name = {value : "objectId";});
+        (jsonField42.value = jsonNumber41);
+        object.fields.Add(jsonField42);
+        var jsonNumber43 : system::JsonNumber^ = new (system::JsonNumber^)();
+        (jsonNumber43.content = {value : (cast (string) value38.typeId);});
+        var jsonField44 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+        (jsonField44.name = {value : "typeId";});
+        (jsonField44.value = jsonNumber43);
+        object.fields.Add(jsonField44);
         return object;
     }
-    raise "Unsupported RPC JSON serialization value.";
+    return system::IRpcLifecycle::JsonSerializePredefinedTypes(value, rpcjson_Serialize of ((func (object) : (system::JsonNode^))));
 }
 
 func rpcjson_Deserialize(node : system::JsonNode^) : (object)
 {
-    if (node is null)
-    return null;
-    var literal : system::JsonLiteral^ = (node as (system::JsonLiteral^));
-    if (literal is not null)
-    {
-        if ((literal.value == system::JsonLiteralValue::Null))
-        return null;
-        if ((literal.value == system::JsonLiteralValue::True))
-        return true;
-        if ((literal.value == system::JsonLiteralValue::False))
-        return false;
-        raise "Unsupported JSON literal.";
-    }
-    var stringNode : system::JsonString^ = (node as (system::JsonString^));
-    if (stringNode is not null)
-    return stringNode.content.value;
     var array : system::JsonArray^ = (node as (system::JsonArray^));
     if (array is not null)
     {
         var keyword : string = (cast (system::JsonString^) array.items[0]).content.value;
         switch (keyword)
         {
-            case "UInt8":
-            return (cast (::system::UInt8) (cast (system::JsonNumber^) array.items[1]).content.value);
-            case "UInt16":
-            return (cast (::system::UInt16) (cast (system::JsonNumber^) array.items[1]).content.value);
-            case "UInt32":
-            return (cast (::system::UInt32) (cast (system::JsonNumber^) array.items[1]).content.value);
-            case "UInt64":
-            return (cast (::system::UInt64) (cast (system::JsonNumber^) array.items[1]).content.value);
-            case "Int8":
-            return (cast (::system::Int8) (cast (system::JsonNumber^) array.items[1]).content.value);
-            case "Int16":
-            return (cast (::system::Int16) (cast (system::JsonNumber^) array.items[1]).content.value);
-            case "Int32":
-            return (cast (::system::Int32) (cast (system::JsonNumber^) array.items[1]).content.value);
-            case "Int64":
-            return (cast (::system::Int64) (cast (system::JsonNumber^) array.items[1]).content.value);
-            case "Single":
-            return (cast (::system::Single) (cast (system::JsonNumber^) array.items[1]).content.value);
-            case "Double":
-            return (cast (::system::Double) (cast (system::JsonNumber^) array.items[1]).content.value);
-            case "Char":
-            return (cast (::system::Char) (cast (system::JsonString^) array.items[1]).content.value);
-            case "DateTime":
-            return (cast (::system::DateTime) (cast (system::JsonString^) array.items[1]).content.value);
-            case "Locale":
-            return (cast (::system::Locale) (cast (system::JsonString^) array.items[1]).content.value);
             case "RpcPrimitiveTest::Season":
             return rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season(array.items[1]);
-            default:
-            raise "Unknown RPC JSON array schema.";
         }
     }
     var object : system::JsonObject^ = (node as (system::JsonObject^));
     if (object is not null)
     {
-        var jsonFieldValue105 : system::JsonNode^ = null;
-        for (jsonField106 in object.fields)
+        var jsonFieldValue45 : system::JsonNode^ = null;
+        for (jsonField46 in object.fields)
         {
-            if ((jsonField106.name.value == "$"))
-            (jsonFieldValue105 = jsonField106.value);
+            if ((jsonField46.name.value == "$"))
+            (jsonFieldValue45 = jsonField46.value);
         }
-        if (jsonFieldValue105 is null)
+        if (jsonFieldValue45 is null)
         raise "JSON object field not found: $";
-        var keyword : string = (cast (system::JsonString^) jsonFieldValue105).content.value;
+        var keyword : string = (cast (system::JsonString^) jsonFieldValue45).content.value;
         switch (keyword)
         {
-            case "list":
-            {
-                var result : system::List^ = {};
-                var jsonFieldValue107 : system::JsonNode^ = null;
-                for (jsonField108 in object.fields)
-                {
-                    if ((jsonField108.name.value == "values"))
-                    (jsonFieldValue107 = jsonField108.value);
-                }
-                if (jsonFieldValue107 is null)
-                raise "JSON object field not found: values";
-                var values : system::JsonArray^ = (cast (system::JsonArray^) jsonFieldValue107);
-                for (item in values.items)
-                {
-                    result.Add(rpcjson_Deserialize(item));
-                }
-                return result;
-            }
-            case "oblist":
-            {
-                var result : system::ObservableList^ = {};
-                var jsonFieldValue109 : system::JsonNode^ = null;
-                for (jsonField110 in object.fields)
-                {
-                    if ((jsonField110.name.value == "values"))
-                    (jsonFieldValue109 = jsonField110.value);
-                }
-                if (jsonFieldValue109 is null)
-                raise "JSON object field not found: values";
-                var values : system::JsonArray^ = (cast (system::JsonArray^) jsonFieldValue109);
-                for (item in values.items)
-                {
-                    result.Add(rpcjson_Deserialize(item));
-                }
-                return result;
-            }
-            case "map":
-            {
-                var result : system::Dictionary^ = {};
-                var jsonFieldValue111 : system::JsonNode^ = null;
-                for (jsonField112 in object.fields)
-                {
-                    if ((jsonField112.name.value == "values"))
-                    (jsonFieldValue111 = jsonField112.value);
-                }
-                if (jsonFieldValue111 is null)
-                raise "JSON object field not found: values";
-                var values : system::JsonArray^ = (cast (system::JsonArray^) jsonFieldValue111);
-                var index : int = 0;
-                while ((index < values.items.Count))
-                {
-                    result.Set(rpcjson_Deserialize(values.items[index]), rpcjson_Deserialize(values.items[(index + 1)]));
-                    (index = (index + 2));
-                }
-                return result;
-            }
             case "RpcPrimitiveTest::Point":
             return rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point(object);
             case "system::RpcObjectReference":
             return rpcjson_Deserialize_Struct_system__RpcObjectReference(object);
-            default:
-            raise "Unknown RPC JSON object schema.";
         }
     }
-    raise "Unsupported RPC JSON node.";
+    return system::IRpcLifecycle::JsonDeserializePredefinedTypes(node, rpcjson_Deserialize of ((func (system::JsonNode^) : (object))));
 }
 
 func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
