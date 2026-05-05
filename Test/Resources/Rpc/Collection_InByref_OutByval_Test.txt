@@ -1,0 +1,63 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcCollection::InByref::OutByval::*;
+
+
+var xsService : int[] = {};
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (IService^)
+  {
+    override func DoList(xs : int[]) : int[]
+    {
+      var xsObj : object = xs;
+      if ((xsObj as (system::IRpcWrapperBase^) is null))
+      {
+        raise "Parameter xs should be a wrapper object in serviceMain";
+      }
+
+      xsService = xs;
+      xs.Add(4);
+      return xs;
+    }
+  };
+  lc.RegisterService("RpcCollection::InByref::OutByval::IService", serviceObj);
+}
+
+func Print4(xs : int[]) : string
+{
+  return $"$(xs[0])$(xs[1])$(xs[2])$(xs[3])";
+}
+
+func Print5(xs : int[]) : string
+{
+  return $"$(xs[0])$(xs[1])$(xs[2])$(xs[3])$(xs[4])";
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var xsOrigin = {1 2 3};
+  var service = cast (IService^) lc.RequestService("RpcCollection::InByref::OutByval::IService");
+  var xs = service.DoList(xsOrigin);
+
+  if (xs == xsOrigin)
+  {
+    raise "Return value xs should be a copied local object in clientMain";
+  }
+
+  var xsObj : object = xs;
+  if ((xsObj as (system::IRpcWrapperBase^) is not null))
+  {
+    raise "Return value xs should not be a wrapper object in clientMain";
+  }
+
+  var xsClient = xs;
+  xs.Add(5);
+
+  return
+    $"[$(Print4(xsOrigin))]" &
+    $"[$(Print4(xsService))]" &
+    $"[$(Print5(xsClient))]";
+}

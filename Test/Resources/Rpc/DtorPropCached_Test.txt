@@ -1,0 +1,93 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcDtorPropCached::*;
+
+
+var s = "";
+
+func MakeValue(value : string) : IValue^
+{
+  return new (IValue^)
+  {
+    delete
+    {
+      s = $"$(s)[Deleted:$(value)]";
+    }
+  };
+}
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (IService^)
+  {
+    var _Value : IValue^ = MakeValue("A");
+
+    override func GetValue() : IValue^
+    {
+      return _Value;
+    }
+
+    override func SetValue(value : IValue^) : void
+    {
+      _Value = value;
+    }
+
+    override func Signal() : void
+    {
+      ValueChanged();
+    }
+  };
+  lc.RegisterService("RpcDtorPropCached::IService", serviceObj);
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (IService^) lc.RequestService("RpcDtorPropCached::IService");
+  attach(service.ValueChanged, func() : void
+  {
+    s = $"$(s)[ValueChanged]";
+  });
+
+  /* No wrapper in the service wrapper, calling SetValue would cause the A value to be destroyed immediately. */
+  s = $"$(s)[1]";
+  service.SetValue(MakeValue("B"));
+
+  /* Calling GetValue the first time triggers the read, storing the B value in the service wrapper. */
+  s = $"$(s)[2]";
+  var v = service.Value;
+
+  /* Calling SetValue without signaling the event keeps the cached property value visible in the service wrapper. */
+  s = $"$(s)[3]";
+  service.SetValue(MakeValue("C"));
+  if (v != service.Value)
+  {
+    raise "IService::Value in clientMain should not change before calling IService::Signal";
+  }
+
+  /* Triggering the event invalidates the cached property value in the service wrapper, but B is still held by v. */
+  s = $"$(s)[4]";
+  service.Signal();
+
+  /* Read the property again, replacing the B value cached in the service wrapper with C. */
+  s = $"$(s)[5]";
+  service.Value;
+
+  /* Reset v, causing the B value to be destroyed. */
+  s = $"$(s)[6]";
+  v = null;
+
+  /* Replace the service value again without invalidating the client cache yet. */
+  s = $"$(s)[7]";
+  service.SetValue(MakeValue("D"));
+
+  /* Trigger the event so the client cache is invalidated. */
+  s = $"$(s)[8]";
+  service.Signal();
+
+  /* Read the property again, replacing the C value cached in the service wrapper. */
+  s = $"$(s)[9]";
+  service.Value;
+
+  return s;
+}
