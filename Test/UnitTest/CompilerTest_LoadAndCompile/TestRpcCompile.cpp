@@ -61,7 +61,23 @@ struct RpcEventBridgeInfo : Object
 	List<WString>		argumentValueTypes;
 };
 
-static ITypeDescriptor* FindRpcTypeDescriptor(WfLexicalScopeManager& manager, const WString& fullName);
+static ITypeDescriptor* FindRpcTypeDescriptor(WfLexicalScopeManager& manager, const WString& fullName)
+{
+	for (auto [decl, index] : indexed(manager.declarationTypes.Keys()))
+	{
+		if (!manager.declarationTypes.Keys()[index].Cast<WfClassDeclaration>())
+		{
+			continue;
+		}
+
+		auto td = manager.declarationTypes.Values()[index].Obj();
+		if (td && td->GetTypeName() == fullName)
+		{
+			return td;
+		}
+	}
+	return nullptr;
+}
 
 static Ptr<List<Ptr<RpcEventBridgeInfo>>> CollectRpcEventBridgeInfos(WfLexicalScopeManager& manager, const WString& itemName)
 {
@@ -105,24 +121,6 @@ static Ptr<List<Ptr<RpcEventBridgeInfo>>> CollectRpcEventBridgeInfos(WfLexicalSc
 	return eventInfos;
 }
 
-static ITypeDescriptor* FindRpcTypeDescriptor(WfLexicalScopeManager& manager, const WString& fullName)
-{
-	for (auto [decl, index] : indexed(manager.declarationTypes.Keys()))
-	{
-		if (!manager.declarationTypes.Keys()[index].Cast<WfClassDeclaration>())
-		{
-			continue;
-		}
-
-		auto td = manager.declarationTypes.Values()[index].Obj();
-		if (td && td->GetTypeName() == fullName)
-		{
-			return td;
-		}
-	}
-	return nullptr;
-}
-
 static void SortRpcTypeFullNamesLeafFirst(WfLexicalScopeManager& manager, const List<WString>& typeFullNames, List<WString>& sortedTypeFullNames)
 {
 	sortedTypeFullNames.Clear();
@@ -161,48 +159,6 @@ static void SortRpcTypeFullNamesLeafFirst(WfLexicalScopeManager& manager, const 
 		for (vint i = 0; i < component.nodeCount; i++)
 		{
 			sortedTypeFullNames.Add(typeFullNames[component.firstNode[i]]);
-		}
-	}
-}
-
-static WfPropertyDeclaration* FindRpcProperty(WfClassDeclaration* interfaceDecl, const WString& name)
-{
-	for (auto declaration : interfaceDecl->declarations)
-	{
-		if (auto propertyDecl = declaration.Cast<WfPropertyDeclaration>())
-		{
-			if (propertyDecl->name.value == name)
-			{
-				return propertyDecl.Obj();
-			}
-		}
-	}
-	return nullptr;
-}
-
-static WfFunctionDeclaration* FindRpcMethod(WfClassDeclaration* interfaceDecl, const WString& name)
-{
-	for (auto declaration : interfaceDecl->declarations)
-	{
-		if (auto methodDecl = declaration.Cast<WfFunctionDeclaration>())
-		{
-			if (methodDecl->name.value == name)
-			{
-				return methodDecl.Obj();
-			}
-		}
-	}
-	return nullptr;
-}
-
-static void RemoveRpcAttribute(List<Ptr<WfAttribute>>& attributes, const WString& name)
-{
-	for (vint i = attributes.Count() - 1; i >= 0; i--)
-	{
-		auto attribute = attributes[i];
-		if (attribute->category.value == L"rpc" && attribute->name.value == name)
-		{
-			attributes.RemoveAt(i);
 		}
 	}
 }
