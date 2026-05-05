@@ -302,602 +302,116 @@ Global Functions
 
 	::vl::Ptr<::vl::glr::json::JsonNode> Rpc_PrimitiveTypes::rpcjson_Serialize(const ::vl::reflection::description::Value& value)
 	{
-		if (value.IsNull())
-		{
-			auto jsonLiteral26 = ::vl::Ptr<::vl::glr::json::JsonLiteral>(new ::vl::glr::json::JsonLiteral());
-			(::vl::__vwsn::This(jsonLiteral26.Obj())->value = ::vl::glr::json::JsonLiteralValue::Null);
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonLiteral26);
-		}
-		auto value_system__Boolean = ::vl::__vwsn::UnboxWeak<::vl::Nullable<bool>>(value);
-		if (static_cast<bool>(value_system__Boolean))
-		{
-			auto jsonLiteral27 = ::vl::Ptr<::vl::glr::json::JsonLiteral>(new ::vl::glr::json::JsonLiteral());
-			if (value_system__Boolean.Value())
-				(::vl::__vwsn::This(jsonLiteral27.Obj())->value = ::vl::glr::json::JsonLiteralValue::True);
-			else
-				(::vl::__vwsn::This(jsonLiteral27.Obj())->value = ::vl::glr::json::JsonLiteralValue::False);
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonLiteral27);
-		}
-		auto value_system__String = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::WString>>(value);
-		if (static_cast<bool>(value_system__String))
-		{
-			auto jsonString28 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString28.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = value_system__String.Value(); return __vwsn_temp__; }());
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString28);
-		}
-		auto value_system__UInt8 = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::vuint8_t>>(value);
-		if (static_cast<bool>(value_system__UInt8))
-		{
-			auto jsonNumber29 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber29.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value_system__UInt8.Value()); return __vwsn_temp__; }());
-			auto jsonString31 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString31.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"UInt8"); return __vwsn_temp__; }());
-			auto jsonArray30 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray30.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString31));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray30.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonNumber29));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray30);
-		}
-		auto value_system__UInt16 = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::vuint16_t>>(value);
-		if (static_cast<bool>(value_system__UInt16))
-		{
-			auto jsonNumber32 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber32.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value_system__UInt16.Value()); return __vwsn_temp__; }());
-			auto jsonString34 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString34.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"UInt16"); return __vwsn_temp__; }());
-			auto jsonArray33 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray33.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString34));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray33.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonNumber32));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray33);
-		}
-		auto value_system__UInt32 = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::vuint32_t>>(value);
-		if (static_cast<bool>(value_system__UInt32))
-		{
-			auto jsonNumber35 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber35.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value_system__UInt32.Value()); return __vwsn_temp__; }());
-			auto jsonString37 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString37.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"UInt32"); return __vwsn_temp__; }());
-			auto jsonArray36 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray36.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString37));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray36.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonNumber35));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray36);
-		}
-		auto value_system__UInt64 = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::vuint64_t>>(value);
-		if (static_cast<bool>(value_system__UInt64))
-		{
-			auto jsonNumber38 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber38.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value_system__UInt64.Value()); return __vwsn_temp__; }());
-			auto jsonString40 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString40.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"UInt64"); return __vwsn_temp__; }());
-			auto jsonArray39 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray39.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString40));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray39.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonNumber38));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray39);
-		}
-		auto value_system__Int8 = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::vint8_t>>(value);
-		if (static_cast<bool>(value_system__Int8))
-		{
-			auto jsonNumber41 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber41.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value_system__Int8.Value()); return __vwsn_temp__; }());
-			auto jsonString43 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString43.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"Int8"); return __vwsn_temp__; }());
-			auto jsonArray42 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray42.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString43));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray42.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonNumber41));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray42);
-		}
-		auto value_system__Int16 = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::vint16_t>>(value);
-		if (static_cast<bool>(value_system__Int16))
-		{
-			auto jsonNumber44 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber44.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value_system__Int16.Value()); return __vwsn_temp__; }());
-			auto jsonString46 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString46.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"Int16"); return __vwsn_temp__; }());
-			auto jsonArray45 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray45.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString46));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray45.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonNumber44));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray45);
-		}
-		auto value_system__Int32 = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::vint32_t>>(value);
-		if (static_cast<bool>(value_system__Int32))
-		{
-			auto jsonNumber47 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber47.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value_system__Int32.Value()); return __vwsn_temp__; }());
-			auto jsonString49 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString49.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"Int32"); return __vwsn_temp__; }());
-			auto jsonArray48 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray48.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString49));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray48.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonNumber47));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray48);
-		}
-		auto value_system__Int64 = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::vint64_t>>(value);
-		if (static_cast<bool>(value_system__Int64))
-		{
-			auto jsonNumber50 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber50.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value_system__Int64.Value()); return __vwsn_temp__; }());
-			auto jsonString52 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString52.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"Int64"); return __vwsn_temp__; }());
-			auto jsonArray51 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray51.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString52));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray51.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonNumber50));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray51);
-		}
-		auto value_system__Single = ::vl::__vwsn::UnboxWeak<::vl::Nullable<float>>(value);
-		if (static_cast<bool>(value_system__Single))
-		{
-			auto jsonNumber53 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber53.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value_system__Single.Value()); return __vwsn_temp__; }());
-			auto jsonString55 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString55.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"Single"); return __vwsn_temp__; }());
-			auto jsonArray54 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray54.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString55));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray54.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonNumber53));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray54);
-		}
-		auto value_system__Double = ::vl::__vwsn::UnboxWeak<::vl::Nullable<double>>(value);
-		if (static_cast<bool>(value_system__Double))
-		{
-			auto jsonNumber56 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber56.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value_system__Double.Value()); return __vwsn_temp__; }());
-			auto jsonString58 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString58.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"Double"); return __vwsn_temp__; }());
-			auto jsonArray57 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray57.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString58));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray57.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonNumber56));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray57);
-		}
-		auto value_system__Char = ::vl::__vwsn::UnboxWeak<::vl::Nullable<wchar_t>>(value);
-		if (static_cast<bool>(value_system__Char))
-		{
-			auto jsonString59 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString59.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value_system__Char.Value()); return __vwsn_temp__; }());
-			auto jsonString61 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString61.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"Char"); return __vwsn_temp__; }());
-			auto jsonArray60 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray60.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString61));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray60.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString59));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray60);
-		}
-		auto value_system__DateTime = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::DateTime>>(value);
-		if (static_cast<bool>(value_system__DateTime))
-		{
-			auto jsonString62 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString62.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value_system__DateTime.Value()); return __vwsn_temp__; }());
-			auto jsonString64 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString64.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"DateTime"); return __vwsn_temp__; }());
-			auto jsonArray63 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray63.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString64));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray63.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString62));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray63);
-		}
-		auto value_system__Locale = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::Locale>>(value);
-		if (static_cast<bool>(value_system__Locale))
-		{
-			auto jsonString65 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString65.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value_system__Locale.Value()); return __vwsn_temp__; }());
-			auto jsonString67 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString67.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"Locale"); return __vwsn_temp__; }());
-			auto jsonArray66 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray66.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString67));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray66.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString65));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray66);
-		}
-		auto observableList = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::reflection::description::IValueObservableList>>(value);
-		if (static_cast<bool>(observableList))
-		{
-			auto object = ::vl::Ptr<::vl::glr::json::JsonObject>(new ::vl::glr::json::JsonObject());
-			auto jsonString68 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString68.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"oblist"); return __vwsn_temp__; }());
-			auto jsonField69 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField69.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField69.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString68));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField69));
-			auto values = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			{
-				auto __vwsn_for_enumerable_item = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(observableList);
-				auto __vwsn_for_enumerator_item = ::vl::__vwsn::This(__vwsn_for_enumerable_item.Obj())->CreateEnumerator();
-				while (::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->Next())
-				{
-					auto item = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->GetCurrent());
-					{
-						::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(values.Obj())->items).Obj())->Add(::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(item)));
-					}
-				}
-			}
-			auto jsonField70 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField70.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"values"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField70.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(values));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField70));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(object);
-		}
-		auto dictionary = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(value);
-		if (static_cast<bool>(dictionary))
-		{
-			auto object = ::vl::Ptr<::vl::glr::json::JsonObject>(new ::vl::glr::json::JsonObject());
-			auto jsonString71 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString71.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"map"); return __vwsn_temp__; }());
-			auto jsonField72 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField72.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField72.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString71));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField72));
-			auto values = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			{
-				auto __vwsn_for_enumerable_key = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(dictionary.Obj())->GetKeys());
-				auto __vwsn_for_enumerator_key = ::vl::__vwsn::This(__vwsn_for_enumerable_key.Obj())->CreateEnumerator();
-				while (::vl::__vwsn::This(__vwsn_for_enumerator_key.Obj())->Next())
-				{
-					auto key = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_for_enumerator_key.Obj())->GetCurrent());
-					{
-						::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(values.Obj())->items).Obj())->Add(::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(key)));
-						::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(values.Obj())->items).Obj())->Add(::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(::vl::__vwsn::This(dictionary.Obj())->Get(key))));
-					}
-				}
-			}
-			auto jsonField73 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField73.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"values"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField73.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(values));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField73));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(object);
-		}
-		auto readonlyDictionary = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::reflection::description::IValueReadonlyDictionary>>(value);
-		if (static_cast<bool>(readonlyDictionary))
-		{
-			auto object = ::vl::Ptr<::vl::glr::json::JsonObject>(new ::vl::glr::json::JsonObject());
-			auto jsonString74 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString74.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"map"); return __vwsn_temp__; }());
-			auto jsonField75 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField75.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField75.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString74));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField75));
-			auto values = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			{
-				auto __vwsn_for_enumerable_key = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(readonlyDictionary.Obj())->GetKeys());
-				auto __vwsn_for_enumerator_key = ::vl::__vwsn::This(__vwsn_for_enumerable_key.Obj())->CreateEnumerator();
-				while (::vl::__vwsn::This(__vwsn_for_enumerator_key.Obj())->Next())
-				{
-					auto key = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_for_enumerator_key.Obj())->GetCurrent());
-					{
-						::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(values.Obj())->items).Obj())->Add(::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(key)));
-						::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(values.Obj())->items).Obj())->Add(::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(::vl::__vwsn::This(readonlyDictionary.Obj())->Get(key))));
-					}
-				}
-			}
-			auto jsonField76 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField76.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"values"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField76.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(values));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField76));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(object);
-		}
-		auto list = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::reflection::description::IValueList>>(value);
-		if (static_cast<bool>(list))
-		{
-			auto object = ::vl::Ptr<::vl::glr::json::JsonObject>(new ::vl::glr::json::JsonObject());
-			auto jsonString77 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString77.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"list"); return __vwsn_temp__; }());
-			auto jsonField78 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField78.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField78.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString77));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField78));
-			auto values = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			{
-				auto __vwsn_for_enumerable_item = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(list);
-				auto __vwsn_for_enumerator_item = ::vl::__vwsn::This(__vwsn_for_enumerable_item.Obj())->CreateEnumerator();
-				while (::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->Next())
-				{
-					auto item = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->GetCurrent());
-					{
-						::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(values.Obj())->items).Obj())->Add(::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(item)));
-					}
-				}
-			}
-			auto jsonField79 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField79.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"values"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField79.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(values));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField79));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(object);
-		}
-		auto readonlyList = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::reflection::description::IValueReadonlyList>>(value);
-		if (static_cast<bool>(readonlyList))
-		{
-			auto object = ::vl::Ptr<::vl::glr::json::JsonObject>(new ::vl::glr::json::JsonObject());
-			auto jsonString80 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString80.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"list"); return __vwsn_temp__; }());
-			auto jsonField81 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField81.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField81.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString80));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField81));
-			auto values = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			{
-				auto __vwsn_for_enumerable_item = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(readonlyList);
-				auto __vwsn_for_enumerator_item = ::vl::__vwsn::This(__vwsn_for_enumerable_item.Obj())->CreateEnumerator();
-				while (::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->Next())
-				{
-					auto item = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->GetCurrent());
-					{
-						::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(values.Obj())->items).Obj())->Add(::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(item)));
-					}
-				}
-			}
-			auto jsonField82 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField82.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"values"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField82.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(values));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField82));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(object);
-		}
-		auto enumerable = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::reflection::description::IValueEnumerable>>(value);
-		if (static_cast<bool>(enumerable))
-		{
-			auto object = ::vl::Ptr<::vl::glr::json::JsonObject>(new ::vl::glr::json::JsonObject());
-			auto jsonString83 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString83.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"list"); return __vwsn_temp__; }());
-			auto jsonField84 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField84.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField84.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString83));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField84));
-			auto values = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			{
-				auto __vwsn_for_enumerable_item = enumerable;
-				auto __vwsn_for_enumerator_item = ::vl::__vwsn::This(__vwsn_for_enumerable_item.Obj())->CreateEnumerator();
-				while (::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->Next())
-				{
-					auto item = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->GetCurrent());
-					{
-						::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(values.Obj())->items).Obj())->Add(::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(item)));
-					}
-				}
-			}
-			auto jsonField85 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField85.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"values"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField85.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(values));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField85));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(object);
-		}
 		auto value_RpcPrimitiveTest__Season = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::RpcPrimitiveTest::Season>>(value);
 		if (static_cast<bool>(value_RpcPrimitiveTest__Season))
 		{
-			auto jsonNode86 = GLOBAL_NAME rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(value_RpcPrimitiveTest__Season.Value());
-			auto jsonString88 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString88.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"RpcPrimitiveTest::Season"); return __vwsn_temp__; }());
-			auto jsonArray87 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray87.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString88));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray87.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonNode86));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray87);
+			auto jsonNode26 = GLOBAL_NAME rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(value_RpcPrimitiveTest__Season.Value());
+			auto jsonString28 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+			(::vl::__vwsn::This(jsonString28.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"RpcPrimitiveTest::Season"); return __vwsn_temp__; }());
+			auto jsonArray27 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray27.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString28));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray27.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonNode26));
+			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray27);
 		}
 		auto value_RpcPrimitiveTest__Point = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::RpcPrimitiveTest::Point>>(value);
 		if (static_cast<bool>(value_RpcPrimitiveTest__Point))
 		{
 			auto object = ::vl::Ptr<::vl::glr::json::JsonObject>(new ::vl::glr::json::JsonObject());
-			auto jsonString89 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString89.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"RpcPrimitiveTest::Point"); return __vwsn_temp__; }());
-			auto jsonField90 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField90.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField90.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString89));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField90));
-			auto value91 = value_RpcPrimitiveTest__Point.Value();
-			auto jsonNumber92 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber92.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value91.x); return __vwsn_temp__; }());
-			auto jsonField93 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField93.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"x"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField93.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber92));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField93));
-			auto jsonNumber94 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber94.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value91.y); return __vwsn_temp__; }());
-			auto jsonField95 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField95.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"y"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField95.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber94));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField95));
+			auto jsonString29 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+			(::vl::__vwsn::This(jsonString29.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"RpcPrimitiveTest::Point"); return __vwsn_temp__; }());
+			auto jsonField30 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
+			(::vl::__vwsn::This(jsonField30.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField30.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString29));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField30));
+			auto value31 = value_RpcPrimitiveTest__Point.Value();
+			auto jsonNumber32 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+			(::vl::__vwsn::This(jsonNumber32.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value31.x); return __vwsn_temp__; }());
+			auto jsonField33 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
+			(::vl::__vwsn::This(jsonField33.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"x"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField33.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber32));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField33));
+			auto jsonNumber34 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+			(::vl::__vwsn::This(jsonNumber34.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value31.y); return __vwsn_temp__; }());
+			auto jsonField35 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
+			(::vl::__vwsn::This(jsonField35.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"y"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField35.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber34));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField35));
 			return ::vl::Ptr<::vl::glr::json::JsonNode>(object);
 		}
 		auto value_system__RpcObjectReference = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcObjectReference>>(value);
 		if (static_cast<bool>(value_system__RpcObjectReference))
 		{
 			auto object = ::vl::Ptr<::vl::glr::json::JsonObject>(new ::vl::glr::json::JsonObject());
-			auto jsonString96 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString96.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"system::RpcObjectReference"); return __vwsn_temp__; }());
-			auto jsonField97 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField97.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField97.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString96));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField97));
-			auto value98 = value_system__RpcObjectReference.Value();
-			auto jsonNumber99 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber99.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value98.clientId); return __vwsn_temp__; }());
-			auto jsonField100 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField100.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"clientId"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField100.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber99));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField100));
-			auto jsonNumber101 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber101.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value98.objectId); return __vwsn_temp__; }());
-			auto jsonField102 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField102.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"objectId"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField102.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber101));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField102));
-			auto jsonNumber103 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber103.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value98.typeId); return __vwsn_temp__; }());
-			auto jsonField104 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField104.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"typeId"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField104.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber103));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField104));
+			auto jsonString36 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+			(::vl::__vwsn::This(jsonString36.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"system::RpcObjectReference"); return __vwsn_temp__; }());
+			auto jsonField37 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
+			(::vl::__vwsn::This(jsonField37.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField37.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString36));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField37));
+			auto value38 = value_system__RpcObjectReference.Value();
+			auto jsonNumber39 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+			(::vl::__vwsn::This(jsonNumber39.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value38.clientId); return __vwsn_temp__; }());
+			auto jsonField40 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
+			(::vl::__vwsn::This(jsonField40.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"clientId"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField40.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber39));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField40));
+			auto jsonNumber41 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+			(::vl::__vwsn::This(jsonNumber41.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value38.objectId); return __vwsn_temp__; }());
+			auto jsonField42 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
+			(::vl::__vwsn::This(jsonField42.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"objectId"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField42.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber41));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField42));
+			auto jsonNumber43 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+			(::vl::__vwsn::This(jsonNumber43.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value38.typeId); return __vwsn_temp__; }());
+			auto jsonField44 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
+			(::vl::__vwsn::This(jsonField44.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"typeId"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField44.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber43));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField44));
 			return ::vl::Ptr<::vl::glr::json::JsonNode>(object);
 		}
-		throw ::vl::Exception(::vl::WString::Unmanaged(L"Unsupported RPC JSON serialization value."));
+		return ::vl::rpc_controller::JsonSerializePredefinedTypes(value, ::vl::Func<::vl::Ptr<::vl::glr::json::JsonNode>(const ::vl::reflection::description::Value&)>(GLOBAL_OBJ, &GLOBAL_SYMBOL rpcjson_Serialize));
 	}
 
 	::vl::reflection::description::Value Rpc_PrimitiveTypes::rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node)
 	{
-		if ((! static_cast<bool>(node)))
-			return ::vl::reflection::description::Value();
-		auto literal = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonLiteral>(node.Obj());
-		if (static_cast<bool>(literal))
-		{
-			if ((::vl::__vwsn::This(literal.Obj())->value == ::vl::glr::json::JsonLiteralValue::Null))
-				return ::vl::reflection::description::Value();
-			if ((::vl::__vwsn::This(literal.Obj())->value == ::vl::glr::json::JsonLiteralValue::True))
-				return ::vl::__vwsn::Box(true);
-			if ((::vl::__vwsn::This(literal.Obj())->value == ::vl::glr::json::JsonLiteralValue::False))
-				return ::vl::__vwsn::Box(false);
-			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unsupported JSON literal."));
-		}
-		auto stringNode = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(node.Obj());
-		if (static_cast<bool>(stringNode))
-			return ::vl::__vwsn::Box(::vl::__vwsn::This(stringNode.Obj())->content.value);
 		auto array = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonArray>(node.Obj());
 		if (static_cast<bool>(array))
 		{
 			auto keyword = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(::vl::__vwsn::This(array.Obj())->items[static_cast<::vl::vint32_t>(0)].Obj())).Obj())->content.value;
 			{
 				auto __vwsn_switch_5 = keyword;
-				if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"UInt8")))
-					return ::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::vuint8_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::This(array.Obj())->items[static_cast<::vl::vint32_t>(1)].Obj())).Obj())->content.value));
-				else if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"UInt16")))
-					return ::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::vuint16_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::This(array.Obj())->items[static_cast<::vl::vint32_t>(1)].Obj())).Obj())->content.value));
-				else if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"UInt32")))
-					return ::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::vuint32_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::This(array.Obj())->items[static_cast<::vl::vint32_t>(1)].Obj())).Obj())->content.value));
-				else if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"UInt64")))
-					return ::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::vuint64_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::This(array.Obj())->items[static_cast<::vl::vint32_t>(1)].Obj())).Obj())->content.value));
-				else if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"Int8")))
-					return ::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::vint8_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::This(array.Obj())->items[static_cast<::vl::vint32_t>(1)].Obj())).Obj())->content.value));
-				else if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"Int16")))
-					return ::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::vint16_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::This(array.Obj())->items[static_cast<::vl::vint32_t>(1)].Obj())).Obj())->content.value));
-				else if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"Int32")))
-					return ::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::vint32_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::This(array.Obj())->items[static_cast<::vl::vint32_t>(1)].Obj())).Obj())->content.value));
-				else if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"Int64")))
-					return ::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::vint64_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::This(array.Obj())->items[static_cast<::vl::vint32_t>(1)].Obj())).Obj())->content.value));
-				else if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"Single")))
-					return ::vl::__vwsn::Box(::vl::__vwsn::Parse<float>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::This(array.Obj())->items[static_cast<::vl::vint32_t>(1)].Obj())).Obj())->content.value));
-				else if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"Double")))
-					return ::vl::__vwsn::Box(::vl::__vwsn::Parse<double>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::This(array.Obj())->items[static_cast<::vl::vint32_t>(1)].Obj())).Obj())->content.value));
-				else if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"Char")))
-					return ::vl::__vwsn::Box(::vl::__vwsn::Parse<wchar_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(::vl::__vwsn::This(array.Obj())->items[static_cast<::vl::vint32_t>(1)].Obj())).Obj())->content.value));
-				else if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"DateTime")))
-					return ::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::DateTime>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(::vl::__vwsn::This(array.Obj())->items[static_cast<::vl::vint32_t>(1)].Obj())).Obj())->content.value));
-				else if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"Locale")))
-					return ::vl::__vwsn::Box(::vl::__vwsn::Parse<::vl::Locale>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(::vl::__vwsn::This(array.Obj())->items[static_cast<::vl::vint32_t>(1)].Obj())).Obj())->content.value));
-				else if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"RpcPrimitiveTest::Season")))
+				if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"RpcPrimitiveTest::Season")))
 					return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season(::vl::__vwsn::This(array.Obj())->items[static_cast<::vl::vint32_t>(1)]));
-				else
-					throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC JSON array schema."));
 			}
 		}
 		auto object = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(node.Obj());
 		if (static_cast<bool>(object))
 		{
-			auto jsonFieldValue105 = ::vl::Ptr<::vl::glr::json::JsonNode>();
+			auto jsonFieldValue45 = ::vl::Ptr<::vl::glr::json::JsonNode>();
 			{
-				auto __vwsn_for_enumerable_jsonField106 = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields));
-				auto __vwsn_for_enumerator_jsonField106 = ::vl::__vwsn::This(__vwsn_for_enumerable_jsonField106.Obj())->CreateEnumerator();
-				while (::vl::__vwsn::This(__vwsn_for_enumerator_jsonField106.Obj())->Next())
+				auto __vwsn_for_enumerable_jsonField46 = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields));
+				auto __vwsn_for_enumerator_jsonField46 = ::vl::__vwsn::This(__vwsn_for_enumerable_jsonField46.Obj())->CreateEnumerator();
+				while (::vl::__vwsn::This(__vwsn_for_enumerator_jsonField46.Obj())->Next())
 				{
-					auto jsonField106 = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_jsonField106.Obj())->GetCurrent());
+					auto jsonField46 = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_jsonField46.Obj())->GetCurrent());
 					{
-						if ((::vl::__vwsn::This(jsonField106.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
-							(jsonFieldValue105 = ::vl::__vwsn::This(jsonField106.Obj())->value);
+						if ((::vl::__vwsn::This(jsonField46.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
+							(jsonFieldValue45 = ::vl::__vwsn::This(jsonField46.Obj())->value);
 					}
 				}
 			}
-			if ((! static_cast<bool>(jsonFieldValue105)))
+			if ((! static_cast<bool>(jsonFieldValue45)))
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"JSON object field not found: $"));
-			auto keyword = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(jsonFieldValue105.Obj())).Obj())->content.value;
+			auto keyword = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(jsonFieldValue45.Obj())).Obj())->content.value;
 			{
 				auto __vwsn_switch_6 = keyword;
-				if ((__vwsn_switch_6 == ::vl::WString::Unmanaged(L"list")))
-				{
-					auto result = ::vl::reflection::description::IValueList::Create();
-					auto jsonFieldValue107 = ::vl::Ptr<::vl::glr::json::JsonNode>();
-					{
-						auto __vwsn_for_enumerable_jsonField108 = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields));
-						auto __vwsn_for_enumerator_jsonField108 = ::vl::__vwsn::This(__vwsn_for_enumerable_jsonField108.Obj())->CreateEnumerator();
-						while (::vl::__vwsn::This(__vwsn_for_enumerator_jsonField108.Obj())->Next())
-						{
-							auto jsonField108 = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_jsonField108.Obj())->GetCurrent());
-							{
-								if ((::vl::__vwsn::This(jsonField108.Obj())->name.value == ::vl::WString::Unmanaged(L"values")))
-									(jsonFieldValue107 = ::vl::__vwsn::This(jsonField108.Obj())->value);
-							}
-						}
-					}
-					if ((! static_cast<bool>(jsonFieldValue107)))
-						throw ::vl::Exception(::vl::WString::Unmanaged(L"JSON object field not found: values"));
-					auto values = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonArray>(jsonFieldValue107.Obj()));
-					{
-						auto __vwsn_for_enumerable_item = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(values.Obj())->items));
-						auto __vwsn_for_enumerator_item = ::vl::__vwsn::This(__vwsn_for_enumerable_item.Obj())->CreateEnumerator();
-						while (::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->Next())
-						{
-							auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->GetCurrent());
-							{
-								::vl::__vwsn::This(result.Obj())->Add(GLOBAL_NAME rpcjson_Deserialize(item));
-							}
-						}
-					}
-					return ::vl::__vwsn::Box(result);
-				}
-				else if ((__vwsn_switch_6 == ::vl::WString::Unmanaged(L"oblist")))
-				{
-					auto result = ::vl::reflection::description::IValueObservableList::Create();
-					auto jsonFieldValue109 = ::vl::Ptr<::vl::glr::json::JsonNode>();
-					{
-						auto __vwsn_for_enumerable_jsonField110 = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields));
-						auto __vwsn_for_enumerator_jsonField110 = ::vl::__vwsn::This(__vwsn_for_enumerable_jsonField110.Obj())->CreateEnumerator();
-						while (::vl::__vwsn::This(__vwsn_for_enumerator_jsonField110.Obj())->Next())
-						{
-							auto jsonField110 = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_jsonField110.Obj())->GetCurrent());
-							{
-								if ((::vl::__vwsn::This(jsonField110.Obj())->name.value == ::vl::WString::Unmanaged(L"values")))
-									(jsonFieldValue109 = ::vl::__vwsn::This(jsonField110.Obj())->value);
-							}
-						}
-					}
-					if ((! static_cast<bool>(jsonFieldValue109)))
-						throw ::vl::Exception(::vl::WString::Unmanaged(L"JSON object field not found: values"));
-					auto values = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonArray>(jsonFieldValue109.Obj()));
-					{
-						auto __vwsn_for_enumerable_item = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(values.Obj())->items));
-						auto __vwsn_for_enumerator_item = ::vl::__vwsn::This(__vwsn_for_enumerable_item.Obj())->CreateEnumerator();
-						while (::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->Next())
-						{
-							auto item = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(__vwsn_for_enumerator_item.Obj())->GetCurrent());
-							{
-								::vl::__vwsn::This(result.Obj())->Add(GLOBAL_NAME rpcjson_Deserialize(item));
-							}
-						}
-					}
-					return ::vl::__vwsn::Box(result);
-				}
-				else if ((__vwsn_switch_6 == ::vl::WString::Unmanaged(L"map")))
-				{
-					auto result = ::vl::reflection::description::IValueDictionary::Create();
-					auto jsonFieldValue111 = ::vl::Ptr<::vl::glr::json::JsonNode>();
-					{
-						auto __vwsn_for_enumerable_jsonField112 = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields));
-						auto __vwsn_for_enumerator_jsonField112 = ::vl::__vwsn::This(__vwsn_for_enumerable_jsonField112.Obj())->CreateEnumerator();
-						while (::vl::__vwsn::This(__vwsn_for_enumerator_jsonField112.Obj())->Next())
-						{
-							auto jsonField112 = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_jsonField112.Obj())->GetCurrent());
-							{
-								if ((::vl::__vwsn::This(jsonField112.Obj())->name.value == ::vl::WString::Unmanaged(L"values")))
-									(jsonFieldValue111 = ::vl::__vwsn::This(jsonField112.Obj())->value);
-							}
-						}
-					}
-					if ((! static_cast<bool>(jsonFieldValue111)))
-						throw ::vl::Exception(::vl::WString::Unmanaged(L"JSON object field not found: values"));
-					auto values = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonArray>(jsonFieldValue111.Obj()));
-					auto index = static_cast<::vl::vint32_t>(0);
-					while ((index < ::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(values.Obj())->items).Obj())->GetCount()))
-					{
-						::vl::__vwsn::This(result.Obj())->Set(GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::This(values.Obj())->items[index]), GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::This(values.Obj())->items[(index + static_cast<::vl::vint32_t>(1))]));
-						(index = (index + static_cast<::vl::vint32_t>(2)));
-					}
-					return ::vl::__vwsn::Box(result);
-				}
-				else if ((__vwsn_switch_6 == ::vl::WString::Unmanaged(L"RpcPrimitiveTest::Point")))
+				if ((__vwsn_switch_6 == ::vl::WString::Unmanaged(L"RpcPrimitiveTest::Point")))
 					return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point(::vl::Ptr<::vl::glr::json::JsonNode>(object)));
 				else if ((__vwsn_switch_6 == ::vl::WString::Unmanaged(L"system::RpcObjectReference")))
 					return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::Ptr<::vl::glr::json::JsonNode>(object)));
-				else
-					throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC JSON object schema."));
 			}
 		}
-		throw ::vl::Exception(::vl::WString::Unmanaged(L"Unsupported RPC JSON node."));
+		return ::vl::rpc_controller::JsonDeserializePredefinedTypes(::vl::__vwsn::Box(node), ::vl::Func<::vl::reflection::description::Value(::vl::Ptr<::vl::glr::json::JsonNode>)>(GLOBAL_OBJ, &GLOBAL_SYMBOL rpcjson_Deserialize));
 	}
 
 	::vl::Ptr<::vl::rpc_controller::IRpcSerializer> Rpc_PrimitiveTypes::rpcops_IRpcSerializer()
