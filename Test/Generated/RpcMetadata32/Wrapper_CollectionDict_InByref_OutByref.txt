@@ -57,7 +57,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcCollectionDict__InByref__OutByref__IService_DoList:
                 {
-                    var target : RpcCollectionDict::InByref::OutByref::IService^ = (cast (RpcCollectionDict::InByref::OutByref::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcCollectionDict::InByref::OutByref::IService^) _lc.RefToPtr(ref));
                     return system::IRpcLifecycle::RpcBoxByref(target.DoList((cast (::system::String[::system::Int32]) system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) arguments[0]), _lc))), _lc);
                 }
                 default:
@@ -159,7 +159,7 @@ namespace RpcCollectionDict
 
 func rpcwrapper_RpcCollectionDict__InByref__OutByref__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_CollectionDict_InByref_OutByref^) : (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
 {
-    var proxy : RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^ = new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
+    var proxy = new (RpcCollectionDict::InByref::OutByref::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

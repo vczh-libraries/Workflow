@@ -67,19 +67,19 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcEventOblist__IService_ModifyHeldList:
                 {
-                    var target : RpcEventOblist::IService^ = (cast (RpcEventOblist::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcEventOblist::IService^) _lc.RefToPtr(ref));
                     target.ModifyHeldList();
                     return null;
                 }
                 case rpcmethod_RpcEventOblist__IService_SetList:
                 {
-                    var target : RpcEventOblist::IService^ = (cast (RpcEventOblist::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcEventOblist::IService^) _lc.RefToPtr(ref));
                     target.SetList((cast (observe ::system::Int32[]) system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) arguments[0]), _lc)));
                     return null;
                 }
                 case rpcmethod_RpcEventOblist__IService_WatchHeldList:
                 {
-                    var target : RpcEventOblist::IService^ = (cast (RpcEventOblist::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcEventOblist::IService^) _lc.RefToPtr(ref));
                     target.WatchHeldList();
                     return null;
                 }
@@ -190,7 +190,7 @@ namespace RpcEventOblist
 
 func rpcwrapper_RpcEventOblist__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_EventOblist^) : (RpcEventOblist::IRpcWrapper_IService^)
 {
-    var proxy : RpcEventOblist::IRpcWrapper_IService^ = new (RpcEventOblist::IRpcWrapper_IService^)
+    var proxy = new (RpcEventOblist::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

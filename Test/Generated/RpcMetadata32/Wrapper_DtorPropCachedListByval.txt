@@ -77,10 +77,10 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcDtorPropCachedListByval__IService_GetValue:
                 {
-                    var target : RpcDtorPropCachedListByval::IService^ = (cast (RpcDtorPropCachedListByval::IService^) _lc.RefToPtr(ref));
-                    var copiedReturnValue : object = system::IRpcLifecycle::RpcCopyByval(target.GetValue(), _lc);
-                    var boxedReturnValue : object = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
-                    var byvalReturnValue : system::RpcByvalReturnValue^ = new (system::RpcByvalReturnValue^)();
+                    var target = (cast (RpcDtorPropCachedListByval::IService^) _lc.RefToPtr(ref));
+                    var copiedReturnValue = system::IRpcLifecycle::RpcCopyByval(target.GetValue(), _lc);
+                    var boxedReturnValue = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
+                    var byvalReturnValue = new (system::RpcByvalReturnValue^)();
                     (byvalReturnValue.value = boxedReturnValue);
                     (byvalReturnValue.slot = _slot);
                     _byvalReturnValues.Set(_slot, copiedReturnValue);
@@ -89,13 +89,13 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 }
                 case rpcmethod_RpcDtorPropCachedListByval__IService_SetValue:
                 {
-                    var target : RpcDtorPropCachedListByval::IService^ = (cast (RpcDtorPropCachedListByval::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcDtorPropCachedListByval::IService^) _lc.RefToPtr(ref));
                     target.SetValue((cast (::RpcDtorPropCachedListByval::IValue^[]) system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) arguments[0]), _lc)));
                     return null;
                 }
                 case rpcmethod_RpcDtorPropCachedListByval__IService_Signal:
                 {
-                    var target : RpcDtorPropCachedListByval::IService^ = (cast (RpcDtorPropCachedListByval::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcDtorPropCachedListByval::IService^) _lc.RefToPtr(ref));
                     target.Signal();
                     return null;
                 }
@@ -158,7 +158,7 @@ func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjec
             {
                 case rpcevent_RpcDtorPropCachedListByval__IService_ValueChanged:
                 {
-                    var target : RpcDtorPropCachedListByval::IService^ = (cast (RpcDtorPropCachedListByval::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcDtorPropCachedListByval::IService^) _lc.RefToPtr(ref));
                     target.ValueChanged();
                 }
                 default:
@@ -182,9 +182,9 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_DtorProp
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            var objectOps : system::IRpcObjectOps* = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
-            var byvalReturnValue : system::RpcByvalReturnValue^ = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcDtorPropCachedListByval__IService_GetValue, arguments));
-            var result : ::RpcDtorPropCachedListByval::IValue^[] = (cast (::RpcDtorPropCachedListByval::IValue^[]) system::IRpcLifecycle::RpcUnboxByval(byvalReturnValue.value, _lc));
+            var objectOps = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
+            var byvalReturnValue = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcDtorPropCachedListByval__IService_GetValue, arguments));
+            var result = (cast (::RpcDtorPropCachedListByval::IValue^[]) system::IRpcLifecycle::RpcUnboxByval(byvalReturnValue.value, _lc));
             objectOps.EndInvokeMethod(byvalReturnValue.slot);
             return result;
         }
@@ -257,7 +257,7 @@ func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system:
 
 func rpcwrapper_RpcDtorPropCachedListByval__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_DtorPropCachedListByval^) : (RpcDtorPropCachedListByval::IRpcWrapper_IValue^)
 {
-    var proxy : RpcDtorPropCachedListByval::IRpcWrapper_IValue^ = new (RpcDtorPropCachedListByval::IRpcWrapper_IValue^)
+    var proxy = new (RpcDtorPropCachedListByval::IRpcWrapper_IValue^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -285,7 +285,7 @@ func rpcwrapper_RpcDtorPropCachedListByval__IValue(lc : system::IRpcLifecycle*, 
 
 func rpcwrapper_RpcDtorPropCachedListByval__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_DtorPropCachedListByval^) : (RpcDtorPropCachedListByval::IRpcWrapper_IService^)
 {
-    var proxy : RpcDtorPropCachedListByval::IRpcWrapper_IService^ = new (RpcDtorPropCachedListByval::IRpcWrapper_IService^)
+    var proxy = new (RpcDtorPropCachedListByval::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -293,7 +293,7 @@ func rpcwrapper_RpcDtorPropCachedListByval__IService(lc : system::IRpcLifecycle*
 
         var _ops : rpcops_IOps_Rpc_DtorPropCachedListByval^ = ops;
 
-        var Value<Cached> : ::RpcDtorPropCachedListByval::IValue^[] = null of (::RpcDtorPropCachedListByval::IValue^[]);
+        var Value<Cached> : ::RpcDtorPropCachedListByval::IValue^[] = null;
 
         var Value<Available> : bool = false;
 

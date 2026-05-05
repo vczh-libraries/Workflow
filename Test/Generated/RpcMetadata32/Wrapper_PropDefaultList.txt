@@ -72,10 +72,10 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcPropDefaultList__IService_GetValue:
                 {
-                    var target : RpcPropDefaultList::IService^ = (cast (RpcPropDefaultList::IService^) _lc.RefToPtr(ref));
-                    var copiedReturnValue : object = system::IRpcLifecycle::RpcCopyByval(target.GetValue(), _lc);
-                    var boxedReturnValue : object = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
-                    var byvalReturnValue : system::RpcByvalReturnValue^ = new (system::RpcByvalReturnValue^)();
+                    var target = (cast (RpcPropDefaultList::IService^) _lc.RefToPtr(ref));
+                    var copiedReturnValue = system::IRpcLifecycle::RpcCopyByval(target.GetValue(), _lc);
+                    var boxedReturnValue = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
+                    var byvalReturnValue = new (system::RpcByvalReturnValue^)();
                     (byvalReturnValue.value = boxedReturnValue);
                     (byvalReturnValue.slot = _slot);
                     _byvalReturnValues.Set(_slot, copiedReturnValue);
@@ -84,13 +84,13 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 }
                 case rpcmethod_RpcPropDefaultList__IService_SetValue:
                 {
-                    var target : RpcPropDefaultList::IService^ = (cast (RpcPropDefaultList::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcPropDefaultList::IService^) _lc.RefToPtr(ref));
                     target.SetValue((cast (::system::String[]) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)));
                     return null;
                 }
                 case rpcmethod_RpcPropDefaultList__IService_Signal:
                 {
-                    var target : RpcPropDefaultList::IService^ = (cast (RpcPropDefaultList::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcPropDefaultList::IService^) _lc.RefToPtr(ref));
                     target.Signal();
                     return null;
                 }
@@ -153,7 +153,7 @@ func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjec
             {
                 case rpcevent_RpcPropDefaultList__IService_ValueChanged:
                 {
-                    var target : RpcPropDefaultList::IService^ = (cast (RpcPropDefaultList::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcPropDefaultList::IService^) _lc.RefToPtr(ref));
                     target.ValueChanged();
                 }
                 default:
@@ -177,9 +177,9 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_PropDefa
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            var objectOps : system::IRpcObjectOps* = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
-            var byvalReturnValue : system::RpcByvalReturnValue^ = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcPropDefaultList__IService_GetValue, arguments));
-            var result : ::system::String[] = (cast (::system::String[]) system::IRpcLifecycle::RpcUnboxByval(byvalReturnValue.value, _lc));
+            var objectOps = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
+            var byvalReturnValue = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcPropDefaultList__IService_GetValue, arguments));
+            var result = (cast (::system::String[]) system::IRpcLifecycle::RpcUnboxByval(byvalReturnValue.value, _lc));
             objectOps.EndInvokeMethod(byvalReturnValue.slot);
             return result;
         }
@@ -244,7 +244,7 @@ func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system:
 
 func rpcwrapper_RpcPropDefaultList__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_PropDefaultList^) : (RpcPropDefaultList::IRpcWrapper_IService^)
 {
-    var proxy : RpcPropDefaultList::IRpcWrapper_IService^ = new (RpcPropDefaultList::IRpcWrapper_IService^)
+    var proxy = new (RpcPropDefaultList::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -252,7 +252,7 @@ func rpcwrapper_RpcPropDefaultList__IService(lc : system::IRpcLifecycle*, proxyR
 
         var _ops : rpcops_IOps_Rpc_PropDefaultList^ = ops;
 
-        var Value<Cached> : ::system::String[] = null of (::system::String[]);
+        var Value<Cached> : ::system::String[] = null;
 
         var Value<Available> : bool = false;
 

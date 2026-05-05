@@ -67,13 +67,13 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcEvent__IService_MakeItHappen:
                 {
-                    var target : RpcEvent::IService^ = (cast (RpcEvent::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcEvent::IService^) _lc.RefToPtr(ref));
                     target.MakeItHappen();
                     return null;
                 }
                 case rpcmethod_RpcEvent__IService_Watch:
                 {
-                    var target : RpcEvent::IService^ = (cast (RpcEvent::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcEvent::IService^) _lc.RefToPtr(ref));
                     target.Watch();
                     return null;
                 }
@@ -136,7 +136,7 @@ func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjec
             {
                 case rpcevent_RpcEvent__IService_SomethingHappened:
                 {
-                    var target : RpcEvent::IService^ = (cast (RpcEvent::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcEvent::IService^) _lc.RefToPtr(ref));
                     target.SomethingHappened((cast (::system::String) arguments[0]));
                 }
                 default:
@@ -174,7 +174,7 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Event^)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, (cast (object) arg_arg0));
+            arguments.Set(0, arg_arg0);
             _lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcEvent__IService_SomethingHappened, arguments);
         }
     };
@@ -195,11 +195,11 @@ func rpclistener_RpcEvent__IService(lc : system::IRpcLifecycle*, ref : system::R
         return;
         var arguments : system::Array^ = {};
         arguments.Resize(1);
-        arguments.Set(0, (cast (object) arg0));
-        var rpcSerializer : system::IRpcSerializer* = lc.Serializer;
+        arguments.Set(0, arg0);
+        var rpcSerializer = lc.Serializer;
         if (rpcSerializer is not null)
         {
-            var rpcArgumentIndex : int = 0;
+            var rpcArgumentIndex = 0;
             while ((rpcArgumentIndex < arguments.Count))
             {
                 arguments.Set(rpcArgumentIndex, rpcSerializer.Serialize(arguments[rpcArgumentIndex]));
@@ -226,7 +226,7 @@ func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system:
 
 func rpcwrapper_RpcEvent__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Event^) : (RpcEvent::IRpcWrapper_IService^)
 {
-    var proxy : RpcEvent::IRpcWrapper_IService^ = new (RpcEvent::IRpcWrapper_IService^)
+    var proxy = new (RpcEvent::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

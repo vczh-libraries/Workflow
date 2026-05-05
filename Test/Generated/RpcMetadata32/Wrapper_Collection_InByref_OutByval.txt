@@ -57,10 +57,10 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcCollection__InByref__OutByval__IService_DoList:
                 {
-                    var target : RpcCollection::InByref::OutByval::IService^ = (cast (RpcCollection::InByref::OutByval::IService^) _lc.RefToPtr(ref));
-                    var copiedReturnValue : object = system::IRpcLifecycle::RpcCopyByval(target.DoList((cast (::system::Int32[]) system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) arguments[0]), _lc))), _lc);
-                    var boxedReturnValue : object = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
-                    var byvalReturnValue : system::RpcByvalReturnValue^ = new (system::RpcByvalReturnValue^)();
+                    var target = (cast (RpcCollection::InByref::OutByval::IService^) _lc.RefToPtr(ref));
+                    var copiedReturnValue = system::IRpcLifecycle::RpcCopyByval(target.DoList((cast (::system::Int32[]) system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) arguments[0]), _lc))), _lc);
+                    var boxedReturnValue = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
+                    var byvalReturnValue = new (system::RpcByvalReturnValue^)();
                     (byvalReturnValue.value = boxedReturnValue);
                     (byvalReturnValue.slot = _slot);
                     _byvalReturnValues.Set(_slot, copiedReturnValue);
@@ -146,9 +146,9 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Collecti
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByref(arg_xs, _lc));
-            var objectOps : system::IRpcObjectOps* = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
-            var byvalReturnValue : system::RpcByvalReturnValue^ = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcCollection__InByref__OutByval__IService_DoList, arguments));
-            var result : ::system::Int32[] = (cast (::system::Int32[]) system::IRpcLifecycle::RpcUnboxByval(byvalReturnValue.value, _lc));
+            var objectOps = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
+            var byvalReturnValue = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcCollection__InByref__OutByval__IService_DoList, arguments));
+            var result = (cast (::system::Int32[]) system::IRpcLifecycle::RpcUnboxByval(byvalReturnValue.value, _lc));
             objectOps.EndInvokeMethod(byvalReturnValue.slot);
             return result;
         }
@@ -170,7 +170,7 @@ namespace RpcCollection
 
 func rpcwrapper_RpcCollection__InByref__OutByval__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Collection_InByref_OutByval^) : (RpcCollection::InByref::OutByval::IRpcWrapper_IService^)
 {
-    var proxy : RpcCollection::InByref::OutByval::IRpcWrapper_IService^ = new (RpcCollection::InByref::OutByval::IRpcWrapper_IService^)
+    var proxy = new (RpcCollection::InByref::OutByval::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

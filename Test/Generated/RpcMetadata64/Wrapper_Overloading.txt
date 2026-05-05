@@ -87,33 +87,33 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcOverloadingTest__IStringRepresentable_GetStringValue:
                 {
-                    var target : RpcOverloadingTest::IStringRepresentable^ = (cast (RpcOverloadingTest::IStringRepresentable^) _lc.RefToPtr(ref));
-                    return (cast (object) target.GetStringValue());
+                    var target = (cast (RpcOverloadingTest::IStringRepresentable^) _lc.RefToPtr(ref));
+                    return target.GetStringValue();
                 }
                 case rpcmethod_RpcOverloadingTest__IService_ToString_value__1:
                 {
-                    var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
-                    return (cast (object) target.ToString((cast (::system::Boolean) arguments[0])));
+                    var target = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
+                    return target.ToString((cast (::system::Boolean) arguments[0]));
                 }
                 case rpcmethod_RpcOverloadingTest__IService_ToString_value__2:
                 {
-                    var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
-                    return (cast (object) target.ToString((cast (::system::String) arguments[0])));
+                    var target = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
+                    return target.ToString((cast (::system::String) arguments[0]));
                 }
                 case rpcmethod_RpcOverloadingTest__IService_ToString_value__3:
                 {
-                    var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
-                    return (cast (object) target.ToString((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::RpcOverloadingTest::IStringRepresentable^))));
+                    var target = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
+                    return target.ToString((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::RpcOverloadingTest::IStringRepresentable^)));
                 }
                 case rpcmethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_:
                 {
-                    var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
-                    return (cast (object) target.ToString((cast (::system::Int64) arguments[0]), (cast (::system::Boolean) arguments[1]), (cast (::system::String) arguments[2]), (system::IRpcLifecycle::RpcUnboxByval(arguments[3], _lc) as (::RpcOverloadingTest::IStringRepresentable^))));
+                    var target = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
+                    return target.ToString((cast (::system::Int64) arguments[0]), (cast (::system::Boolean) arguments[1]), (cast (::system::String) arguments[2]), (system::IRpcLifecycle::RpcUnboxByval(arguments[3], _lc) as (::RpcOverloadingTest::IStringRepresentable^)));
                 }
                 case rpcmethod_RpcOverloadingTest__IService_ToStringInt:
                 {
-                    var target : RpcOverloadingTest::IService^ = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
-                    return (cast (object) target.ToStringInt((cast (::system::Int64) arguments[0])));
+                    var target = (cast (RpcOverloadingTest::IService^) _lc.RefToPtr(ref));
+                    return target.ToStringInt((cast (::system::Int64) arguments[0]));
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -200,7 +200,7 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Overload
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, (cast (object) arg_value));
+            arguments.Set(0, arg_value);
             return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToString_value__1, arguments));
         }
 
@@ -208,7 +208,7 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Overload
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, (cast (object) arg_value));
+            arguments.Set(0, arg_value);
             return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToString_value__2, arguments));
         }
 
@@ -224,9 +224,9 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Overload
         {
             var arguments : system::Array^ = {};
             arguments.Resize(4);
-            arguments.Set(0, (cast (object) arg_value1));
-            arguments.Set(1, (cast (object) arg_value2));
-            arguments.Set(2, (cast (object) arg_value3));
+            arguments.Set(0, arg_value1);
+            arguments.Set(1, arg_value2);
+            arguments.Set(2, arg_value3);
             arguments.Set(3, system::IRpcLifecycle::RpcBoxByval(arg_value4, _lc));
             return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_, arguments));
         }
@@ -235,7 +235,7 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Overload
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            arguments.Set(0, (cast (object) arg_value));
+            arguments.Set(0, arg_value);
             return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToStringInt, arguments));
         }
     };
@@ -254,7 +254,7 @@ namespace RpcOverloadingTest
 
 func rpcwrapper_RpcOverloadingTest__IStringRepresentable(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Overloading^) : (RpcOverloadingTest::IRpcWrapper_IStringRepresentable^)
 {
-    var proxy : RpcOverloadingTest::IRpcWrapper_IStringRepresentable^ = new (RpcOverloadingTest::IRpcWrapper_IStringRepresentable^)
+    var proxy = new (RpcOverloadingTest::IRpcWrapper_IStringRepresentable^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -289,7 +289,7 @@ func rpcwrapper_RpcOverloadingTest__IStringRepresentable(lc : system::IRpcLifecy
 
 func rpcwrapper_RpcOverloadingTest__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Overloading^) : (RpcOverloadingTest::IRpcWrapper_IService^)
 {
-    var proxy : RpcOverloadingTest::IRpcWrapper_IService^ = new (RpcOverloadingTest::IRpcWrapper_IService^)
+    var proxy = new (RpcOverloadingTest::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

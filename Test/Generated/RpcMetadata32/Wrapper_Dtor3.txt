@@ -72,12 +72,12 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcDtor3Test__IContainer_GetValue:
                 {
-                    var target : RpcDtor3Test::IContainer^ = (cast (RpcDtor3Test::IContainer^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcDtor3Test::IContainer^) _lc.RefToPtr(ref));
                     return system::IRpcLifecycle::RpcBoxByval(target.GetValue(), _lc);
                 }
                 case rpcmethod_RpcDtor3Test__IService_ContainValue:
                 {
-                    var target : RpcDtor3Test::IService^ = (cast (RpcDtor3Test::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcDtor3Test::IService^) _lc.RefToPtr(ref));
                     return system::IRpcLifecycle::RpcBoxByval(target.ContainValue((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::RpcDtor3Test::IValue^))), _lc);
                 }
                 default:
@@ -188,7 +188,7 @@ namespace RpcDtor3Test
 
 func rpcwrapper_RpcDtor3Test__IContainer(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Dtor3^) : (RpcDtor3Test::IRpcWrapper_IContainer^)
 {
-    var proxy : RpcDtor3Test::IRpcWrapper_IContainer^ = new (RpcDtor3Test::IRpcWrapper_IContainer^)
+    var proxy = new (RpcDtor3Test::IRpcWrapper_IContainer^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -223,7 +223,7 @@ func rpcwrapper_RpcDtor3Test__IContainer(lc : system::IRpcLifecycle*, proxyRef :
 
 func rpcwrapper_RpcDtor3Test__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Dtor3^) : (RpcDtor3Test::IRpcWrapper_IValue^)
 {
-    var proxy : RpcDtor3Test::IRpcWrapper_IValue^ = new (RpcDtor3Test::IRpcWrapper_IValue^)
+    var proxy = new (RpcDtor3Test::IRpcWrapper_IValue^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -251,7 +251,7 @@ func rpcwrapper_RpcDtor3Test__IValue(lc : system::IRpcLifecycle*, proxyRef : sys
 
 func rpcwrapper_RpcDtor3Test__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Dtor3^) : (RpcDtor3Test::IRpcWrapper_IService^)
 {
-    var proxy : RpcDtor3Test::IRpcWrapper_IService^ = new (RpcDtor3Test::IRpcWrapper_IService^)
+    var proxy = new (RpcDtor3Test::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

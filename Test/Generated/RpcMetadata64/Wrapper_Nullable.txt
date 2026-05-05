@@ -67,13 +67,13 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcNullable__IValue_GetValue:
                 {
-                    var target : RpcNullable::IValue^ = (cast (RpcNullable::IValue^) _lc.RefToPtr(ref));
-                    return (cast (object) target.GetValue());
+                    var target = (cast (RpcNullable::IValue^) _lc.RefToPtr(ref));
+                    return target.GetValue();
                 }
                 case rpcmethod_RpcNullable__IService_Print:
                 {
-                    var target : RpcNullable::IService^ = (cast (RpcNullable::IService^) _lc.RefToPtr(ref));
-                    return (cast (object) target.Print((cast (::system::String?) arguments[0]), (system::IRpcLifecycle::RpcUnboxByval(arguments[1], _lc) as (::RpcNullable::IValue^))));
+                    var target = (cast (RpcNullable::IService^) _lc.RefToPtr(ref));
+                    return target.Print((cast (::system::String?) arguments[0]), (system::IRpcLifecycle::RpcUnboxByval(arguments[1], _lc) as (::RpcNullable::IValue^)));
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -160,7 +160,7 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Nullable
         {
             var arguments : system::Array^ = {};
             arguments.Resize(2);
-            arguments.Set(0, (cast (object) arg_value));
+            arguments.Set(0, arg_value);
             arguments.Set(1, system::IRpcLifecycle::RpcBoxByval(arg_v, _lc));
             return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcNullable__IService_Print, arguments));
         }
@@ -180,7 +180,7 @@ namespace RpcNullable
 
 func rpcwrapper_RpcNullable__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Nullable^) : (RpcNullable::IRpcWrapper_IValue^)
 {
-    var proxy : RpcNullable::IRpcWrapper_IValue^ = new (RpcNullable::IRpcWrapper_IValue^)
+    var proxy = new (RpcNullable::IRpcWrapper_IValue^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -225,7 +225,7 @@ func rpcwrapper_RpcNullable__IValue(lc : system::IRpcLifecycle*, proxyRef : syst
 
 func rpcwrapper_RpcNullable__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Nullable^) : (RpcNullable::IRpcWrapper_IService^)
 {
-    var proxy : RpcNullable::IRpcWrapper_IService^ = new (RpcNullable::IRpcWrapper_IService^)
+    var proxy = new (RpcNullable::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

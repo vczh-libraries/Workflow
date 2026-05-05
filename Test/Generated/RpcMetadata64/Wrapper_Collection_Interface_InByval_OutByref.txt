@@ -67,12 +67,12 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcCollection__Interface__InByval__OutByref__IValue_GetValue:
                 {
-                    var target : RpcCollection::Interface::InByval::OutByref::IValue^ = (cast (RpcCollection::Interface::InByval::OutByref::IValue^) _lc.RefToPtr(ref));
-                    return (cast (object) target.GetValue());
+                    var target = (cast (RpcCollection::Interface::InByval::OutByref::IValue^) _lc.RefToPtr(ref));
+                    return target.GetValue();
                 }
                 case rpcmethod_RpcCollection__Interface__InByval__OutByref__IService_DoList:
                 {
-                    var target : RpcCollection::Interface::InByval::OutByref::IService^ = (cast (RpcCollection::Interface::InByval::OutByref::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcCollection::Interface::InByval::OutByref::IService^) _lc.RefToPtr(ref));
                     return system::IRpcLifecycle::RpcBoxByref(target.DoList((cast (::RpcCollection::Interface::InByval::OutByref::IValue^[]) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
                 }
                 default:
@@ -188,7 +188,7 @@ namespace RpcCollection
 
 func rpcwrapper_RpcCollection__Interface__InByval__OutByref__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Collection_Interface_InByval_OutByref^) : (RpcCollection::Interface::InByval::OutByref::IRpcWrapper_IValue^)
 {
-    var proxy : RpcCollection::Interface::InByval::OutByref::IRpcWrapper_IValue^ = new (RpcCollection::Interface::InByval::OutByref::IRpcWrapper_IValue^)
+    var proxy = new (RpcCollection::Interface::InByval::OutByref::IRpcWrapper_IValue^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -223,7 +223,7 @@ func rpcwrapper_RpcCollection__Interface__InByval__OutByref__IValue(lc : system:
 
 func rpcwrapper_RpcCollection__Interface__InByval__OutByref__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Collection_Interface_InByval_OutByref^) : (RpcCollection::Interface::InByval::OutByref::IRpcWrapper_IService^)
 {
-    var proxy : RpcCollection::Interface::InByval::OutByref::IRpcWrapper_IService^ = new (RpcCollection::Interface::InByval::OutByref::IRpcWrapper_IService^)
+    var proxy = new (RpcCollection::Interface::InByval::OutByref::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

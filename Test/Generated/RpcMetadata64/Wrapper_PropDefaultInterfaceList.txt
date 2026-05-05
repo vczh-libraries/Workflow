@@ -82,23 +82,23 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcPropDefaultInterfaceList__IValue_GetValue:
                 {
-                    var target : RpcPropDefaultInterfaceList::IValue^ = (cast (RpcPropDefaultInterfaceList::IValue^) _lc.RefToPtr(ref));
-                    return (cast (object) target.GetValue());
+                    var target = (cast (RpcPropDefaultInterfaceList::IValue^) _lc.RefToPtr(ref));
+                    return target.GetValue();
                 }
                 case rpcmethod_RpcPropDefaultInterfaceList__IService_GetValue:
                 {
-                    var target : RpcPropDefaultInterfaceList::IService^ = (cast (RpcPropDefaultInterfaceList::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcPropDefaultInterfaceList::IService^) _lc.RefToPtr(ref));
                     return system::IRpcLifecycle::RpcBoxByref(target.GetValue(), _lc);
                 }
                 case rpcmethod_RpcPropDefaultInterfaceList__IService_SetValue:
                 {
-                    var target : RpcPropDefaultInterfaceList::IService^ = (cast (RpcPropDefaultInterfaceList::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcPropDefaultInterfaceList::IService^) _lc.RefToPtr(ref));
                     target.SetValue((cast (::RpcPropDefaultInterfaceList::IValue^[]) system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) arguments[0]), _lc)));
                     return null;
                 }
                 case rpcmethod_RpcPropDefaultInterfaceList__IService_Signal:
                 {
-                    var target : RpcPropDefaultInterfaceList::IService^ = (cast (RpcPropDefaultInterfaceList::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcPropDefaultInterfaceList::IService^) _lc.RefToPtr(ref));
                     target.Signal();
                     return null;
                 }
@@ -161,7 +161,7 @@ func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjec
             {
                 case rpcevent_RpcPropDefaultInterfaceList__IService_ValueChanged:
                 {
-                    var target : RpcPropDefaultInterfaceList::IService^ = (cast (RpcPropDefaultInterfaceList::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcPropDefaultInterfaceList::IService^) _lc.RefToPtr(ref));
                     target.ValueChanged();
                 }
                 default:
@@ -263,7 +263,7 @@ func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system:
 
 func rpcwrapper_RpcPropDefaultInterfaceList__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_PropDefaultInterfaceList^) : (RpcPropDefaultInterfaceList::IRpcWrapper_IValue^)
 {
-    var proxy : RpcPropDefaultInterfaceList::IRpcWrapper_IValue^ = new (RpcPropDefaultInterfaceList::IRpcWrapper_IValue^)
+    var proxy = new (RpcPropDefaultInterfaceList::IRpcWrapper_IValue^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -298,7 +298,7 @@ func rpcwrapper_RpcPropDefaultInterfaceList__IValue(lc : system::IRpcLifecycle*,
 
 func rpcwrapper_RpcPropDefaultInterfaceList__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_PropDefaultInterfaceList^) : (RpcPropDefaultInterfaceList::IRpcWrapper_IService^)
 {
-    var proxy : RpcPropDefaultInterfaceList::IRpcWrapper_IService^ = new (RpcPropDefaultInterfaceList::IRpcWrapper_IService^)
+    var proxy = new (RpcPropDefaultInterfaceList::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -306,7 +306,7 @@ func rpcwrapper_RpcPropDefaultInterfaceList__IService(lc : system::IRpcLifecycle
 
         var _ops : rpcops_IOps_Rpc_PropDefaultInterfaceList^ = ops;
 
-        var Value<Cached> : ::RpcPropDefaultInterfaceList::IValue^[] = null of (::RpcPropDefaultInterfaceList::IValue^[]);
+        var Value<Cached> : ::RpcPropDefaultInterfaceList::IValue^[] = null;
 
         var Value<Available> : bool = false;
 

@@ -72,17 +72,17 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcCollectionDict__Interface__PropDefault__IValue_GetValue:
                 {
-                    var target : RpcCollectionDict::Interface::PropDefault::IValue^ = (cast (RpcCollectionDict::Interface::PropDefault::IValue^) _lc.RefToPtr(ref));
-                    return (cast (object) target.GetValue());
+                    var target = (cast (RpcCollectionDict::Interface::PropDefault::IValue^) _lc.RefToPtr(ref));
+                    return target.GetValue();
                 }
                 case rpcmethod_RpcCollectionDict__Interface__PropDefault__IService_GetList:
                 {
-                    var target : RpcCollectionDict::Interface::PropDefault::IService^ = (cast (RpcCollectionDict::Interface::PropDefault::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcCollectionDict::Interface::PropDefault::IService^) _lc.RefToPtr(ref));
                     return system::IRpcLifecycle::RpcBoxByref(target.GetList(), _lc);
                 }
                 case rpcmethod_RpcCollectionDict__Interface__PropDefault__IService_SetList:
                 {
-                    var target : RpcCollectionDict::Interface::PropDefault::IService^ = (cast (RpcCollectionDict::Interface::PropDefault::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcCollectionDict::Interface::PropDefault::IService^) _lc.RefToPtr(ref));
                     target.SetList((cast (::RpcCollectionDict::Interface::PropDefault::IValue^[::system::Int32]) system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) arguments[0]), _lc)));
                     return null;
                 }
@@ -203,7 +203,7 @@ namespace RpcCollectionDict
 
 func rpcwrapper_RpcCollectionDict__Interface__PropDefault__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_CollectionDict_Interface_PropDefault^) : (RpcCollectionDict::Interface::PropDefault::IRpcWrapper_IValue^)
 {
-    var proxy : RpcCollectionDict::Interface::PropDefault::IRpcWrapper_IValue^ = new (RpcCollectionDict::Interface::PropDefault::IRpcWrapper_IValue^)
+    var proxy = new (RpcCollectionDict::Interface::PropDefault::IRpcWrapper_IValue^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -238,7 +238,7 @@ func rpcwrapper_RpcCollectionDict__Interface__PropDefault__IValue(lc : system::I
 
 func rpcwrapper_RpcCollectionDict__Interface__PropDefault__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_CollectionDict_Interface_PropDefault^) : (RpcCollectionDict::Interface::PropDefault::IRpcWrapper_IService^)
 {
-    var proxy : RpcCollectionDict::Interface::PropDefault::IRpcWrapper_IService^ = new (RpcCollectionDict::Interface::PropDefault::IRpcWrapper_IService^)
+    var proxy = new (RpcCollectionDict::Interface::PropDefault::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

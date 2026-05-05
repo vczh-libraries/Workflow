@@ -72,15 +72,15 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcCollection__Interface__Nested__InByval__PropByval__IValue_GetValue:
                 {
-                    var target : RpcCollection::Interface::Nested::InByval::PropByval::IValue^ = (cast (RpcCollection::Interface::Nested::InByval::PropByval::IValue^) _lc.RefToPtr(ref));
-                    return (cast (object) target.GetValue());
+                    var target = (cast (RpcCollection::Interface::Nested::InByval::PropByval::IValue^) _lc.RefToPtr(ref));
+                    return target.GetValue();
                 }
                 case rpcmethod_RpcCollection__Interface__Nested__InByval__PropByval__IService_GetList:
                 {
-                    var target : RpcCollection::Interface::Nested::InByval::PropByval::IService^ = (cast (RpcCollection::Interface::Nested::InByval::PropByval::IService^) _lc.RefToPtr(ref));
-                    var copiedReturnValue : object = system::IRpcLifecycle::RpcCopyByval(target.GetList(), _lc);
-                    var boxedReturnValue : object = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
-                    var byvalReturnValue : system::RpcByvalReturnValue^ = new (system::RpcByvalReturnValue^)();
+                    var target = (cast (RpcCollection::Interface::Nested::InByval::PropByval::IService^) _lc.RefToPtr(ref));
+                    var copiedReturnValue = system::IRpcLifecycle::RpcCopyByval(target.GetList(), _lc);
+                    var boxedReturnValue = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
+                    var byvalReturnValue = new (system::RpcByvalReturnValue^)();
                     (byvalReturnValue.value = boxedReturnValue);
                     (byvalReturnValue.slot = _slot);
                     _byvalReturnValues.Set(_slot, copiedReturnValue);
@@ -89,7 +89,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 }
                 case rpcmethod_RpcCollection__Interface__Nested__InByval__PropByval__IService_SetList:
                 {
-                    var target : RpcCollection::Interface::Nested::InByval::PropByval::IService^ = (cast (RpcCollection::Interface::Nested::InByval::PropByval::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcCollection::Interface::Nested::InByval::PropByval::IService^) _lc.RefToPtr(ref));
                     target.SetList((cast (::RpcCollection::Interface::Nested::InByval::PropByval::IValue^[][::system::Int64]) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)));
                     return null;
                 }
@@ -178,9 +178,9 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Collecti
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            var objectOps : system::IRpcObjectOps* = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
-            var byvalReturnValue : system::RpcByvalReturnValue^ = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcCollection__Interface__Nested__InByval__PropByval__IService_GetList, arguments));
-            var result : ::RpcCollection::Interface::Nested::InByval::PropByval::IValue^[][::system::Int64] = (cast (::RpcCollection::Interface::Nested::InByval::PropByval::IValue^[][::system::Int64]) system::IRpcLifecycle::RpcUnboxByval(byvalReturnValue.value, _lc));
+            var objectOps = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
+            var byvalReturnValue = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcCollection__Interface__Nested__InByval__PropByval__IService_GetList, arguments));
+            var result = (cast (::RpcCollection::Interface::Nested::InByval::PropByval::IValue^[][::system::Int64]) system::IRpcLifecycle::RpcUnboxByval(byvalReturnValue.value, _lc));
             objectOps.EndInvokeMethod(byvalReturnValue.slot);
             return result;
         }
@@ -220,7 +220,7 @@ namespace RpcCollection
 
 func rpcwrapper_RpcCollection__Interface__Nested__InByval__PropByval__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Collection_Interface_Nested_PropByval^) : (RpcCollection::Interface::Nested::InByval::PropByval::IRpcWrapper_IValue^)
 {
-    var proxy : RpcCollection::Interface::Nested::InByval::PropByval::IRpcWrapper_IValue^ = new (RpcCollection::Interface::Nested::InByval::PropByval::IRpcWrapper_IValue^)
+    var proxy = new (RpcCollection::Interface::Nested::InByval::PropByval::IRpcWrapper_IValue^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -255,7 +255,7 @@ func rpcwrapper_RpcCollection__Interface__Nested__InByval__PropByval__IValue(lc 
 
 func rpcwrapper_RpcCollection__Interface__Nested__InByval__PropByval__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Collection_Interface_Nested_PropByval^) : (RpcCollection::Interface::Nested::InByval::PropByval::IRpcWrapper_IService^)
 {
-    var proxy : RpcCollection::Interface::Nested::InByval::PropByval::IRpcWrapper_IService^ = new (RpcCollection::Interface::Nested::InByval::PropByval::IRpcWrapper_IService^)
+    var proxy = new (RpcCollection::Interface::Nested::InByval::PropByval::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

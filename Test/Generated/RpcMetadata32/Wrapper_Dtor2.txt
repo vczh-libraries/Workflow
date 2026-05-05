@@ -67,12 +67,12 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcDtor2Test__IService_MakeValue:
                 {
-                    var target : RpcDtor2Test::IService^ = (cast (RpcDtor2Test::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcDtor2Test::IService^) _lc.RefToPtr(ref));
                     return system::IRpcLifecycle::RpcBoxByval(target.MakeValue(), _lc);
                 }
                 case rpcmethod_RpcDtor2Test__IService_ReviewValue:
                 {
-                    var target : RpcDtor2Test::IService^ = (cast (RpcDtor2Test::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcDtor2Test::IService^) _lc.RefToPtr(ref));
                     return system::IRpcLifecycle::RpcBoxByval(target.ReviewValue((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::RpcDtor2Test::IValue^))), _lc);
                 }
                 default:
@@ -179,7 +179,7 @@ namespace RpcDtor2Test
 
 func rpcwrapper_RpcDtor2Test__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Dtor2^) : (RpcDtor2Test::IRpcWrapper_IValue^)
 {
-    var proxy : RpcDtor2Test::IRpcWrapper_IValue^ = new (RpcDtor2Test::IRpcWrapper_IValue^)
+    var proxy = new (RpcDtor2Test::IRpcWrapper_IValue^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -207,7 +207,7 @@ func rpcwrapper_RpcDtor2Test__IValue(lc : system::IRpcLifecycle*, proxyRef : sys
 
 func rpcwrapper_RpcDtor2Test__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Dtor2^) : (RpcDtor2Test::IRpcWrapper_IService^)
 {
-    var proxy : RpcDtor2Test::IRpcWrapper_IService^ = new (RpcDtor2Test::IRpcWrapper_IService^)
+    var proxy = new (RpcDtor2Test::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

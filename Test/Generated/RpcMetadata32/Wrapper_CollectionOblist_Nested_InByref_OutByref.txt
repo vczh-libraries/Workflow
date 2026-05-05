@@ -57,7 +57,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcCollectionOblist__Nested__InByref__OutByref__IService_DoList:
                 {
-                    var target : RpcCollectionOblist::Nested::InByref::OutByref::IService^ = (cast (RpcCollectionOblist::Nested::InByref::OutByref::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcCollectionOblist::Nested::InByref::OutByref::IService^) _lc.RefToPtr(ref));
                     return system::IRpcLifecycle::RpcBoxByref(target.DoList((cast (observe observe ::system::Int32[][]) system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) arguments[0]), _lc))), _lc);
                 }
                 default:
@@ -162,7 +162,7 @@ namespace RpcCollectionOblist
 
 func rpcwrapper_RpcCollectionOblist__Nested__InByref__OutByref__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_CollectionOblist_Nested_InByref_OutByref^) : (RpcCollectionOblist::Nested::InByref::OutByref::IRpcWrapper_IService^)
 {
-    var proxy : RpcCollectionOblist::Nested::InByref::OutByref::IRpcWrapper_IService^ = new (RpcCollectionOblist::Nested::InByref::OutByref::IRpcWrapper_IService^)
+    var proxy = new (RpcCollectionOblist::Nested::InByref::OutByref::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

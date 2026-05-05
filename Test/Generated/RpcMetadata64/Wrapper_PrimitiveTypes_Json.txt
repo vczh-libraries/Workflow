@@ -2,7 +2,7 @@
 
 func rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(value : ::RpcPrimitiveTest::Season) : (system::JsonNode^)
 {
-    var jsonNumber0 : system::JsonNumber^ = new (system::JsonNumber^)();
+    var jsonNumber0 = new (system::JsonNumber^)();
     (jsonNumber0.content = {value : (cast (string) (cast (system::UInt64) value));});
     return jsonNumber0;
 }
@@ -14,16 +14,16 @@ func rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season(node : system::JsonNode^)
 
 func rpcjson_Serialize_Struct_RpcPrimitiveTest__Point(value : ::RpcPrimitiveTest::Point) : (system::JsonNode^)
 {
-    var object : system::JsonObject^ = new (system::JsonObject^)();
-    var jsonNumber1 : system::JsonNumber^ = new (system::JsonNumber^)();
+    var object = new (system::JsonObject^)();
+    var jsonNumber1 = new (system::JsonNumber^)();
     (jsonNumber1.content = {value : (cast (string) value.x);});
-    var jsonField2 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+    var jsonField2 = new (system::JsonObjectField^)();
     (jsonField2.name = {value : "x";});
     (jsonField2.value = jsonNumber1);
     object.fields.Add(jsonField2);
-    var jsonNumber3 : system::JsonNumber^ = new (system::JsonNumber^)();
+    var jsonNumber3 = new (system::JsonNumber^)();
     (jsonNumber3.content = {value : (cast (string) value.y);});
-    var jsonField4 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+    var jsonField4 = new (system::JsonObjectField^)();
     (jsonField4.name = {value : "y";});
     (jsonField4.value = jsonNumber3);
     object.fields.Add(jsonField4);
@@ -32,7 +32,7 @@ func rpcjson_Serialize_Struct_RpcPrimitiveTest__Point(value : ::RpcPrimitiveTest
 
 func rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point(node : system::JsonNode^) : (::RpcPrimitiveTest::Point)
 {
-    var object : system::JsonObject^ = (cast (system::JsonObject^) node);
+    var object = (cast (system::JsonObject^) node);
     var jsonFieldValue5 : system::JsonNode^ = null;
     for (jsonField6 in object.fields)
     {
@@ -41,7 +41,7 @@ func rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point(node : system::JsonNode^
     }
     if (jsonFieldValue5 is null)
     raise "JSON object field not found: x";
-    var jsonValue7 : ::system::Int64 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue5).content.value);
+    var jsonValue7 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue5).content.value);
     var jsonFieldValue8 : system::JsonNode^ = null;
     for (jsonField9 in object.fields)
     {
@@ -50,28 +50,28 @@ func rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point(node : system::JsonNode^
     }
     if (jsonFieldValue8 is null)
     raise "JSON object field not found: y";
-    var jsonValue10 : ::system::Int64 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue8).content.value);
-    return {x : jsonValue7; y : jsonValue10;} of (::RpcPrimitiveTest::Point);
+    var jsonValue10 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue8).content.value);
+    return {x : jsonValue7; y : jsonValue10;};
 }
 
 func rpcjson_Serialize_Struct_system__RpcObjectReference(value : ::system::RpcObjectReference) : (system::JsonNode^)
 {
-    var object : system::JsonObject^ = new (system::JsonObject^)();
-    var jsonNumber11 : system::JsonNumber^ = new (system::JsonNumber^)();
+    var object = new (system::JsonObject^)();
+    var jsonNumber11 = new (system::JsonNumber^)();
     (jsonNumber11.content = {value : (cast (string) value.clientId);});
-    var jsonField12 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+    var jsonField12 = new (system::JsonObjectField^)();
     (jsonField12.name = {value : "clientId";});
     (jsonField12.value = jsonNumber11);
     object.fields.Add(jsonField12);
-    var jsonNumber13 : system::JsonNumber^ = new (system::JsonNumber^)();
+    var jsonNumber13 = new (system::JsonNumber^)();
     (jsonNumber13.content = {value : (cast (string) value.objectId);});
-    var jsonField14 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+    var jsonField14 = new (system::JsonObjectField^)();
     (jsonField14.name = {value : "objectId";});
     (jsonField14.value = jsonNumber13);
     object.fields.Add(jsonField14);
-    var jsonNumber15 : system::JsonNumber^ = new (system::JsonNumber^)();
+    var jsonNumber15 = new (system::JsonNumber^)();
     (jsonNumber15.content = {value : (cast (string) value.typeId);});
-    var jsonField16 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+    var jsonField16 = new (system::JsonObjectField^)();
     (jsonField16.name = {value : "typeId";});
     (jsonField16.value = jsonNumber15);
     object.fields.Add(jsonField16);
@@ -80,7 +80,7 @@ func rpcjson_Serialize_Struct_system__RpcObjectReference(value : ::system::RpcOb
 
 func rpcjson_Deserialize_Struct_system__RpcObjectReference(node : system::JsonNode^) : (::system::RpcObjectReference)
 {
-    var object : system::JsonObject^ = (cast (system::JsonObject^) node);
+    var object = (cast (system::JsonObject^) node);
     var jsonFieldValue17 : system::JsonNode^ = null;
     for (jsonField18 in object.fields)
     {
@@ -89,7 +89,7 @@ func rpcjson_Deserialize_Struct_system__RpcObjectReference(node : system::JsonNo
     }
     if (jsonFieldValue17 is null)
     raise "JSON object field not found: clientId";
-    var jsonValue19 : ::system::Int64 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue17).content.value);
+    var jsonValue19 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue17).content.value);
     var jsonFieldValue20 : system::JsonNode^ = null;
     for (jsonField21 in object.fields)
     {
@@ -98,7 +98,7 @@ func rpcjson_Deserialize_Struct_system__RpcObjectReference(node : system::JsonNo
     }
     if (jsonFieldValue20 is null)
     raise "JSON object field not found: objectId";
-    var jsonValue22 : ::system::Int64 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue20).content.value);
+    var jsonValue22 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue20).content.value);
     var jsonFieldValue23 : system::JsonNode^ = null;
     for (jsonField24 in object.fields)
     {
@@ -107,95 +107,95 @@ func rpcjson_Deserialize_Struct_system__RpcObjectReference(node : system::JsonNo
     }
     if (jsonFieldValue23 is null)
     raise "JSON object field not found: typeId";
-    var jsonValue25 : ::system::Int64 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue23).content.value);
-    return {clientId : jsonValue19; objectId : jsonValue22; typeId : jsonValue25;} of (::system::RpcObjectReference);
+    var jsonValue25 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue23).content.value);
+    return {clientId : jsonValue19; objectId : jsonValue22; typeId : jsonValue25;};
 }
 
 func rpcjson_Serialize(value : object) : (system::JsonNode^)
 {
-    var value_RpcPrimitiveTest__Season : ::RpcPrimitiveTest::Season? = (value as (::RpcPrimitiveTest::Season?));
+    var value_RpcPrimitiveTest__Season = (value as (::RpcPrimitiveTest::Season?));
     if (value_RpcPrimitiveTest__Season is not null)
     {
-        var jsonNode26 : system::JsonNode^ = rpcjson_Serialize_Enum_RpcPrimitiveTest__Season((cast (::RpcPrimitiveTest::Season) value_RpcPrimitiveTest__Season));
-        var jsonString28 : system::JsonString^ = new (system::JsonString^)();
+        var jsonNode26 = rpcjson_Serialize_Enum_RpcPrimitiveTest__Season((cast (::RpcPrimitiveTest::Season) value_RpcPrimitiveTest__Season));
+        var jsonString28 = new (system::JsonString^)();
         (jsonString28.content = {value : "RpcPrimitiveTest::Season";});
-        var jsonArray27 : system::JsonArray^ = new (system::JsonArray^)();
+        var jsonArray27 = new (system::JsonArray^)();
         jsonArray27.items.Add(jsonString28);
         jsonArray27.items.Add(jsonNode26);
         return jsonArray27;
     }
-    var value_RpcPrimitiveTest__Point : ::RpcPrimitiveTest::Point? = (value as (::RpcPrimitiveTest::Point?));
+    var value_RpcPrimitiveTest__Point = (value as (::RpcPrimitiveTest::Point?));
     if (value_RpcPrimitiveTest__Point is not null)
     {
-        var object : system::JsonObject^ = new (system::JsonObject^)();
-        var jsonString29 : system::JsonString^ = new (system::JsonString^)();
+        var object = new (system::JsonObject^)();
+        var jsonString29 = new (system::JsonString^)();
         (jsonString29.content = {value : "RpcPrimitiveTest::Point";});
-        var jsonField30 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+        var jsonField30 = new (system::JsonObjectField^)();
         (jsonField30.name = {value : "$";});
         (jsonField30.value = jsonString29);
         object.fields.Add(jsonField30);
-        var value31 : ::RpcPrimitiveTest::Point = (cast (::RpcPrimitiveTest::Point) value_RpcPrimitiveTest__Point);
-        var jsonNumber32 : system::JsonNumber^ = new (system::JsonNumber^)();
+        var value31 = (cast (::RpcPrimitiveTest::Point) value_RpcPrimitiveTest__Point);
+        var jsonNumber32 = new (system::JsonNumber^)();
         (jsonNumber32.content = {value : (cast (string) value31.x);});
-        var jsonField33 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+        var jsonField33 = new (system::JsonObjectField^)();
         (jsonField33.name = {value : "x";});
         (jsonField33.value = jsonNumber32);
         object.fields.Add(jsonField33);
-        var jsonNumber34 : system::JsonNumber^ = new (system::JsonNumber^)();
+        var jsonNumber34 = new (system::JsonNumber^)();
         (jsonNumber34.content = {value : (cast (string) value31.y);});
-        var jsonField35 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+        var jsonField35 = new (system::JsonObjectField^)();
         (jsonField35.name = {value : "y";});
         (jsonField35.value = jsonNumber34);
         object.fields.Add(jsonField35);
         return object;
     }
-    var value_system__RpcObjectReference : ::system::RpcObjectReference? = (value as (::system::RpcObjectReference?));
+    var value_system__RpcObjectReference = (value as (::system::RpcObjectReference?));
     if (value_system__RpcObjectReference is not null)
     {
-        var object : system::JsonObject^ = new (system::JsonObject^)();
-        var jsonString36 : system::JsonString^ = new (system::JsonString^)();
+        var object = new (system::JsonObject^)();
+        var jsonString36 = new (system::JsonString^)();
         (jsonString36.content = {value : "system::RpcObjectReference";});
-        var jsonField37 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+        var jsonField37 = new (system::JsonObjectField^)();
         (jsonField37.name = {value : "$";});
         (jsonField37.value = jsonString36);
         object.fields.Add(jsonField37);
-        var value38 : ::system::RpcObjectReference = (cast (::system::RpcObjectReference) value_system__RpcObjectReference);
-        var jsonNumber39 : system::JsonNumber^ = new (system::JsonNumber^)();
+        var value38 = (cast (::system::RpcObjectReference) value_system__RpcObjectReference);
+        var jsonNumber39 = new (system::JsonNumber^)();
         (jsonNumber39.content = {value : (cast (string) value38.clientId);});
-        var jsonField40 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+        var jsonField40 = new (system::JsonObjectField^)();
         (jsonField40.name = {value : "clientId";});
         (jsonField40.value = jsonNumber39);
         object.fields.Add(jsonField40);
-        var jsonNumber41 : system::JsonNumber^ = new (system::JsonNumber^)();
+        var jsonNumber41 = new (system::JsonNumber^)();
         (jsonNumber41.content = {value : (cast (string) value38.objectId);});
-        var jsonField42 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+        var jsonField42 = new (system::JsonObjectField^)();
         (jsonField42.name = {value : "objectId";});
         (jsonField42.value = jsonNumber41);
         object.fields.Add(jsonField42);
-        var jsonNumber43 : system::JsonNumber^ = new (system::JsonNumber^)();
+        var jsonNumber43 = new (system::JsonNumber^)();
         (jsonNumber43.content = {value : (cast (string) value38.typeId);});
-        var jsonField44 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+        var jsonField44 = new (system::JsonObjectField^)();
         (jsonField44.name = {value : "typeId";});
         (jsonField44.value = jsonNumber43);
         object.fields.Add(jsonField44);
         return object;
     }
-    return system::IRpcLifecycle::JsonSerializePredefinedTypes(value, rpcjson_Serialize of ((func (object) : (system::JsonNode^))));
+    return system::IRpcLifecycle::JsonSerializePredefinedTypes(value, rpcjson_Serialize);
 }
 
 func rpcjson_Deserialize(node : system::JsonNode^) : (object)
 {
-    var array : system::JsonArray^ = (node as (system::JsonArray^));
+    var array = (node as (system::JsonArray^));
     if (array is not null)
     {
-        var keyword : string = (cast (system::JsonString^) array.items[0]).content.value;
+        var keyword = (cast (system::JsonString^) array.items[0]).content.value;
         switch (keyword)
         {
             case "RpcPrimitiveTest::Season":
             return rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season(array.items[1]);
         }
     }
-    var object : system::JsonObject^ = (node as (system::JsonObject^));
+    var object = (node as (system::JsonObject^));
     if (object is not null)
     {
         var jsonFieldValue45 : system::JsonNode^ = null;
@@ -206,7 +206,7 @@ func rpcjson_Deserialize(node : system::JsonNode^) : (object)
         }
         if (jsonFieldValue45 is null)
         raise "JSON object field not found: $";
-        var keyword : string = (cast (system::JsonString^) jsonFieldValue45).content.value;
+        var keyword = (cast (system::JsonString^) jsonFieldValue45).content.value;
         switch (keyword)
         {
             case "RpcPrimitiveTest::Point":
@@ -215,7 +215,7 @@ func rpcjson_Deserialize(node : system::JsonNode^) : (object)
             return rpcjson_Deserialize_Struct_system__RpcObjectReference(object);
         }
     }
-    return system::IRpcLifecycle::JsonDeserializePredefinedTypes(node, rpcjson_Deserialize of ((func (system::JsonNode^) : (object))));
+    return system::IRpcLifecycle::JsonDeserializePredefinedTypes(node, rpcjson_Deserialize);
 }
 
 func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
@@ -224,7 +224,7 @@ func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
     {
         override func Serialize(value : object) : (object)
         {
-            var result : system::JsonNode^ = rpcjson_Serialize(value);
+            var result = rpcjson_Serialize(value);
             return result;
         }
 
@@ -251,9 +251,9 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
             {
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessBool:
                 {
-                    var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::Boolean = ((cast (system::JsonLiteral^) (cast (system::JsonNode^) arguments[0])).value == system::JsonLiteralValue::True);
-                    var jsonLiteral1 : system::JsonLiteral^ = new (system::JsonLiteral^)();
+                    var target = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 = ((cast (system::JsonLiteral^) (cast (system::JsonNode^) arguments[0])).value == system::JsonLiteralValue::True);
+                    var jsonLiteral1 = new (system::JsonLiteral^)();
                     if (target.ProcessBool(jsonValue0))
                     (jsonLiteral1.value = system::JsonLiteralValue::True);
                     else
@@ -262,55 +262,55 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessDouble:
                 {
-                    var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::Double = (cast (::system::Double) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
-                    var jsonNumber1 : system::JsonNumber^ = new (system::JsonNumber^)();
+                    var target = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 = (cast (::system::Double) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
+                    var jsonNumber1 = new (system::JsonNumber^)();
                     (jsonNumber1.content = {value : (cast (string) target.ProcessDouble(jsonValue0));});
                     return jsonNumber1;
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessEnum:
                 {
-                    var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::RpcPrimitiveTest::Season = rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season((cast (system::JsonNode^) arguments[0]));
-                    var jsonNode1 : system::JsonNode^ = rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(target.ProcessEnum(jsonValue0));
+                    var target = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 = rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season((cast (system::JsonNode^) arguments[0]));
+                    var jsonNode1 = rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(target.ProcessEnum(jsonValue0));
                     return jsonNode1;
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessFloat:
                 {
-                    var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::Single = (cast (::system::Single) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
-                    var jsonNumber1 : system::JsonNumber^ = new (system::JsonNumber^)();
+                    var target = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 = (cast (::system::Single) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
+                    var jsonNumber1 = new (system::JsonNumber^)();
                     (jsonNumber1.content = {value : (cast (string) target.ProcessFloat(jsonValue0));});
                     return jsonNumber1;
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessInt:
                 {
-                    var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::Int64 = (cast (::system::Int64) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
-                    var jsonNumber1 : system::JsonNumber^ = new (system::JsonNumber^)();
+                    var target = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 = (cast (::system::Int64) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
+                    var jsonNumber1 = new (system::JsonNumber^)();
                     (jsonNumber1.content = {value : (cast (string) target.ProcessInt(jsonValue0));});
                     return jsonNumber1;
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessString:
                 {
-                    var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::String = (cast (::system::String) (cast (system::JsonString^) (cast (system::JsonNode^) arguments[0])).content.value);
-                    var jsonString1 : system::JsonString^ = new (system::JsonString^)();
+                    var target = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 = (cast (::system::String) (cast (system::JsonString^) (cast (system::JsonNode^) arguments[0])).content.value);
+                    var jsonString1 = new (system::JsonString^)();
                     (jsonString1.content = {value : (cast (string) target.ProcessString(jsonValue0));});
                     return jsonString1;
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessStruct:
                 {
-                    var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::RpcPrimitiveTest::Point = rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point((cast (system::JsonNode^) arguments[0]));
-                    var jsonNode1 : system::JsonNode^ = rpcjson_Serialize_Struct_RpcPrimitiveTest__Point(target.ProcessStruct(jsonValue0));
+                    var target = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 = rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point((cast (system::JsonNode^) arguments[0]));
+                    var jsonNode1 = rpcjson_Serialize_Struct_RpcPrimitiveTest__Point(target.ProcessStruct(jsonValue0));
                     return jsonNode1;
                 }
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessUInt:
                 {
-                    var target : RpcPrimitiveTest::IService^ = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 : ::system::UInt64 = (cast (::system::UInt64) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
-                    var jsonNumber1 : system::JsonNumber^ = new (system::JsonNumber^)();
+                    var target = (cast (RpcPrimitiveTest::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 = (cast (::system::UInt64) (cast (system::JsonNumber^) (cast (system::JsonNode^) arguments[0])).content.value);
+                    var jsonNumber1 = new (system::JsonNumber^)();
                     (jsonNumber1.content = {value : (cast (string) target.ProcessUInt(jsonValue0));});
                     return jsonNumber1;
                 }
@@ -392,14 +392,14 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            var jsonLiteral0 : system::JsonLiteral^ = new (system::JsonLiteral^)();
+            var jsonLiteral0 = new (system::JsonLiteral^)();
             if (arg_value)
             (jsonLiteral0.value = system::JsonLiteralValue::True);
             else
             (jsonLiteral0.value = system::JsonLiteralValue::False);
             arguments.Set(0, jsonLiteral0);
-            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments));
-            var jsonValue1 : ::system::Boolean = ((cast (system::JsonLiteral^) jsonResult).value == system::JsonLiteralValue::True);
+            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments));
+            var jsonValue1 = ((cast (system::JsonLiteral^) jsonResult).value == system::JsonLiteralValue::True);
             return jsonValue1;
         }
 
@@ -407,11 +407,11 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            var jsonNumber0 : system::JsonNumber^ = new (system::JsonNumber^)();
+            var jsonNumber0 = new (system::JsonNumber^)();
             (jsonNumber0.content = {value : (cast (string) arg_value);});
             arguments.Set(0, jsonNumber0);
-            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments));
-            var jsonValue1 : ::system::Double = (cast (::system::Double) (cast (system::JsonNumber^) jsonResult).content.value);
+            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments));
+            var jsonValue1 = (cast (::system::Double) (cast (system::JsonNumber^) jsonResult).content.value);
             return jsonValue1;
         }
 
@@ -419,10 +419,10 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            var jsonNode0 : system::JsonNode^ = rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(arg_value);
+            var jsonNode0 = rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(arg_value);
             arguments.Set(0, jsonNode0);
-            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments));
-            var jsonValue1 : ::RpcPrimitiveTest::Season = rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season(jsonResult);
+            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments));
+            var jsonValue1 = rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season(jsonResult);
             return jsonValue1;
         }
 
@@ -430,11 +430,11 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            var jsonNumber0 : system::JsonNumber^ = new (system::JsonNumber^)();
+            var jsonNumber0 = new (system::JsonNumber^)();
             (jsonNumber0.content = {value : (cast (string) arg_value);});
             arguments.Set(0, jsonNumber0);
-            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments));
-            var jsonValue1 : ::system::Single = (cast (::system::Single) (cast (system::JsonNumber^) jsonResult).content.value);
+            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments));
+            var jsonValue1 = (cast (::system::Single) (cast (system::JsonNumber^) jsonResult).content.value);
             return jsonValue1;
         }
 
@@ -442,11 +442,11 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            var jsonNumber0 : system::JsonNumber^ = new (system::JsonNumber^)();
+            var jsonNumber0 = new (system::JsonNumber^)();
             (jsonNumber0.content = {value : (cast (string) arg_value);});
             arguments.Set(0, jsonNumber0);
-            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments));
-            var jsonValue1 : ::system::Int64 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonResult).content.value);
+            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments));
+            var jsonValue1 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonResult).content.value);
             return jsonValue1;
         }
 
@@ -454,11 +454,11 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            var jsonString0 : system::JsonString^ = new (system::JsonString^)();
+            var jsonString0 = new (system::JsonString^)();
             (jsonString0.content = {value : (cast (string) arg_value);});
             arguments.Set(0, jsonString0);
-            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments));
-            var jsonValue1 : ::system::String = (cast (::system::String) (cast (system::JsonString^) jsonResult).content.value);
+            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments));
+            var jsonValue1 = (cast (::system::String) (cast (system::JsonString^) jsonResult).content.value);
             return jsonValue1;
         }
 
@@ -466,10 +466,10 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            var jsonNode0 : system::JsonNode^ = rpcjson_Serialize_Struct_RpcPrimitiveTest__Point(arg_value);
+            var jsonNode0 = rpcjson_Serialize_Struct_RpcPrimitiveTest__Point(arg_value);
             arguments.Set(0, jsonNode0);
-            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
-            var jsonValue1 : ::RpcPrimitiveTest::Point = rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point(jsonResult);
+            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
+            var jsonValue1 = rpcjson_Deserialize_Struct_RpcPrimitiveTest__Point(jsonResult);
             return jsonValue1;
         }
 
@@ -477,11 +477,11 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
         {
             var arguments : system::Array^ = {};
             arguments.Resize(1);
-            var jsonNumber0 : system::JsonNumber^ = new (system::JsonNumber^)();
+            var jsonNumber0 = new (system::JsonNumber^)();
             (jsonNumber0.content = {value : (cast (string) arg_value);});
             arguments.Set(0, jsonNumber0);
-            var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments));
-            var jsonValue1 : ::system::UInt64 = (cast (::system::UInt64) (cast (system::JsonNumber^) jsonResult).content.value);
+            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments));
+            var jsonValue1 = (cast (::system::UInt64) (cast (system::JsonNumber^) jsonResult).content.value);
             return jsonValue1;
         }
     };

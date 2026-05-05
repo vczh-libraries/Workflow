@@ -67,15 +67,15 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcCollectionDict__Interface__InByval__OutByval__IValue_GetValue:
                 {
-                    var target : RpcCollectionDict::Interface::InByval::OutByval::IValue^ = (cast (RpcCollectionDict::Interface::InByval::OutByval::IValue^) _lc.RefToPtr(ref));
-                    return (cast (object) target.GetValue());
+                    var target = (cast (RpcCollectionDict::Interface::InByval::OutByval::IValue^) _lc.RefToPtr(ref));
+                    return target.GetValue();
                 }
                 case rpcmethod_RpcCollectionDict__Interface__InByval__OutByval__IService_DoList:
                 {
-                    var target : RpcCollectionDict::Interface::InByval::OutByval::IService^ = (cast (RpcCollectionDict::Interface::InByval::OutByval::IService^) _lc.RefToPtr(ref));
-                    var copiedReturnValue : object = system::IRpcLifecycle::RpcCopyByval(target.DoList((cast (::RpcCollectionDict::Interface::InByval::OutByval::IValue^[::system::Int32]) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
-                    var boxedReturnValue : object = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
-                    var byvalReturnValue : system::RpcByvalReturnValue^ = new (system::RpcByvalReturnValue^)();
+                    var target = (cast (RpcCollectionDict::Interface::InByval::OutByval::IService^) _lc.RefToPtr(ref));
+                    var copiedReturnValue = system::IRpcLifecycle::RpcCopyByval(target.DoList((cast (::RpcCollectionDict::Interface::InByval::OutByval::IValue^[::system::Int32]) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+                    var boxedReturnValue = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
+                    var byvalReturnValue = new (system::RpcByvalReturnValue^)();
                     (byvalReturnValue.value = boxedReturnValue);
                     (byvalReturnValue.slot = _slot);
                     _byvalReturnValues.Set(_slot, copiedReturnValue);
@@ -168,9 +168,9 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Collecti
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg_xs, _lc));
-            var objectOps : system::IRpcObjectOps* = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
-            var byvalReturnValue : system::RpcByvalReturnValue^ = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcCollectionDict__Interface__InByval__OutByval__IService_DoList, arguments));
-            var result : ::RpcCollectionDict::Interface::InByval::OutByval::IValue^[::system::Int32] = (cast (::RpcCollectionDict::Interface::InByval::OutByval::IValue^[::system::Int32]) system::IRpcLifecycle::RpcUnboxByval(byvalReturnValue.value, _lc));
+            var objectOps = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
+            var byvalReturnValue = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcCollectionDict__Interface__InByval__OutByval__IService_DoList, arguments));
+            var result = (cast (::RpcCollectionDict::Interface::InByval::OutByval::IValue^[::system::Int32]) system::IRpcLifecycle::RpcUnboxByval(byvalReturnValue.value, _lc));
             objectOps.EndInvokeMethod(byvalReturnValue.slot);
             return result;
         }
@@ -199,7 +199,7 @@ namespace RpcCollectionDict
 
 func rpcwrapper_RpcCollectionDict__Interface__InByval__OutByval__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_CollectionDict_Interface_InByval_OutByval^) : (RpcCollectionDict::Interface::InByval::OutByval::IRpcWrapper_IValue^)
 {
-    var proxy : RpcCollectionDict::Interface::InByval::OutByval::IRpcWrapper_IValue^ = new (RpcCollectionDict::Interface::InByval::OutByval::IRpcWrapper_IValue^)
+    var proxy = new (RpcCollectionDict::Interface::InByval::OutByval::IRpcWrapper_IValue^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -234,7 +234,7 @@ func rpcwrapper_RpcCollectionDict__Interface__InByval__OutByval__IValue(lc : sys
 
 func rpcwrapper_RpcCollectionDict__Interface__InByval__OutByval__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_CollectionDict_Interface_InByval_OutByval^) : (RpcCollectionDict::Interface::InByval::OutByval::IRpcWrapper_IService^)
 {
-    var proxy : RpcCollectionDict::Interface::InByval::OutByval::IRpcWrapper_IService^ = new (RpcCollectionDict::Interface::InByval::OutByval::IRpcWrapper_IService^)
+    var proxy = new (RpcCollectionDict::Interface::InByval::OutByval::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

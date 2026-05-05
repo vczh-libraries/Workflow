@@ -72,17 +72,17 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcCollection__Interface__PropDefault__IValue_GetValue:
                 {
-                    var target : RpcCollection::Interface::PropDefault::IValue^ = (cast (RpcCollection::Interface::PropDefault::IValue^) _lc.RefToPtr(ref));
-                    return (cast (object) target.GetValue());
+                    var target = (cast (RpcCollection::Interface::PropDefault::IValue^) _lc.RefToPtr(ref));
+                    return target.GetValue();
                 }
                 case rpcmethod_RpcCollection__Interface__PropDefault__IService_GetList:
                 {
-                    var target : RpcCollection::Interface::PropDefault::IService^ = (cast (RpcCollection::Interface::PropDefault::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcCollection::Interface::PropDefault::IService^) _lc.RefToPtr(ref));
                     return system::IRpcLifecycle::RpcBoxByref(target.GetList(), _lc);
                 }
                 case rpcmethod_RpcCollection__Interface__PropDefault__IService_SetList:
                 {
-                    var target : RpcCollection::Interface::PropDefault::IService^ = (cast (RpcCollection::Interface::PropDefault::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcCollection::Interface::PropDefault::IService^) _lc.RefToPtr(ref));
                     target.SetList((cast (::RpcCollection::Interface::PropDefault::IValue^[]) system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) arguments[0]), _lc)));
                     return null;
                 }
@@ -203,7 +203,7 @@ namespace RpcCollection
 
 func rpcwrapper_RpcCollection__Interface__PropDefault__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Collection_Interface_PropDefault^) : (RpcCollection::Interface::PropDefault::IRpcWrapper_IValue^)
 {
-    var proxy : RpcCollection::Interface::PropDefault::IRpcWrapper_IValue^ = new (RpcCollection::Interface::PropDefault::IRpcWrapper_IValue^)
+    var proxy = new (RpcCollection::Interface::PropDefault::IRpcWrapper_IValue^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -238,7 +238,7 @@ func rpcwrapper_RpcCollection__Interface__PropDefault__IValue(lc : system::IRpcL
 
 func rpcwrapper_RpcCollection__Interface__PropDefault__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Collection_Interface_PropDefault^) : (RpcCollection::Interface::PropDefault::IRpcWrapper_IService^)
 {
-    var proxy : RpcCollection::Interface::PropDefault::IRpcWrapper_IService^ = new (RpcCollection::Interface::PropDefault::IRpcWrapper_IService^)
+    var proxy = new (RpcCollection::Interface::PropDefault::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

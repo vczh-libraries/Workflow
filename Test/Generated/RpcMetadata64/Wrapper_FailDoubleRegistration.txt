@@ -67,12 +67,12 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcFailDoubleRegistrationTest__IObject_GetName:
                 {
-                    var target : RpcFailDoubleRegistrationTest::IObject^ = (cast (RpcFailDoubleRegistrationTest::IObject^) _lc.RefToPtr(ref));
-                    return (cast (object) target.GetName());
+                    var target = (cast (RpcFailDoubleRegistrationTest::IObject^) _lc.RefToPtr(ref));
+                    return target.GetName();
                 }
                 case rpcmethod_RpcFailDoubleRegistrationTest__IService_SetObject:
                 {
-                    var target : RpcFailDoubleRegistrationTest::IService^ = (cast (RpcFailDoubleRegistrationTest::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcFailDoubleRegistrationTest::IService^) _lc.RefToPtr(ref));
                     return system::IRpcLifecycle::RpcBoxByval(target.SetObject((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::RpcFailDoubleRegistrationTest::IObject^)), (cast (::system::Int64) arguments[1])), _lc);
                 }
                 default:
@@ -161,7 +161,7 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_FailDoub
             var arguments : system::Array^ = {};
             arguments.Resize(2);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg_obj, _lc));
-            arguments.Set(1, (cast (object) arg_index));
+            arguments.Set(1, arg_index);
             return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcFailDoubleRegistrationTest__IService_SetObject, arguments), _lc) as (::RpcFailDoubleRegistrationTest::IObject^));
         }
     };
@@ -180,7 +180,7 @@ namespace RpcFailDoubleRegistrationTest
 
 func rpcwrapper_RpcFailDoubleRegistrationTest__IObject(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_FailDoubleRegistration^) : (RpcFailDoubleRegistrationTest::IRpcWrapper_IObject^)
 {
-    var proxy : RpcFailDoubleRegistrationTest::IRpcWrapper_IObject^ = new (RpcFailDoubleRegistrationTest::IRpcWrapper_IObject^)
+    var proxy = new (RpcFailDoubleRegistrationTest::IRpcWrapper_IObject^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
@@ -215,7 +215,7 @@ func rpcwrapper_RpcFailDoubleRegistrationTest__IObject(lc : system::IRpcLifecycl
 
 func rpcwrapper_RpcFailDoubleRegistrationTest__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_FailDoubleRegistration^) : (RpcFailDoubleRegistrationTest::IRpcWrapper_IService^)
 {
-    var proxy : RpcFailDoubleRegistrationTest::IRpcWrapper_IService^ = new (RpcFailDoubleRegistrationTest::IRpcWrapper_IService^)
+    var proxy = new (RpcFailDoubleRegistrationTest::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

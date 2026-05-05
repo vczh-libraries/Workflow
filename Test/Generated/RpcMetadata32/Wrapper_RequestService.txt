@@ -57,8 +57,8 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             {
                 case rpcmethod_RpcTest__IService_GetText:
                 {
-                    var target : RpcTest::IService^ = (cast (RpcTest::IService^) _lc.RefToPtr(ref));
-                    return (cast (object) target.GetText());
+                    var target = (cast (RpcTest::IService^) _lc.RefToPtr(ref));
+                    return target.GetText();
                 }
                 default:
                 raise "Unknown RPC method id.";
@@ -152,7 +152,7 @@ namespace RpcTest
 
 func rpcwrapper_RpcTest__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_RequestService^) : (RpcTest::IRpcWrapper_IService^)
 {
-    var proxy : RpcTest::IRpcWrapper_IService^ = new (RpcTest::IRpcWrapper_IService^)
+    var proxy = new (RpcTest::IRpcWrapper_IService^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 

@@ -1304,13 +1304,13 @@ Instructions:
 400  :     InvokeMethod  : methodInfo = RefToPtr<system::IRpcLifecycle>, stackPatternCount = 1
 //  _lc.RefToPtr(ref)
 401  :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcCollectionOblist::Interface::InByval::OutByval::IValue
-//  var target : RpcCollectionOblist::Interface::InByval::OutByval::IValue^ = (cast (RpcCollectionOblist::Interface::InByval::OutByval::IValue^) _lc.RefToPtr(ref));
+//  var target = (cast (RpcCollectionOblist::Interface::InByval::OutByval::IValue^) _lc.RefToPtr(ref));
 402  :     StoreLocalVar : var = 4(target)
 //  target
 403  :     LoadLocalVar  : var = 4(target)
 //  target.GetValue()
 404  :     InvokeMethod  : methodInfo = GetValue<RpcCollectionOblist::Interface::InByval::OutByval::IValue>, stackPatternCount = 0
-//  return (cast (object) target.GetValue());
+//  return target.GetValue();
 405  :     Return        
 //  if ((<switch>2 == rpcmethod_RpcCollectionOblist__Interface__InByval__OutByval__IValue_GetValue of (::system::Int64)))
 406  :     Jump          : label = 464
@@ -1332,7 +1332,7 @@ Instructions:
 414  :     InvokeMethod  : methodInfo = RefToPtr<system::IRpcLifecycle>, stackPatternCount = 1
 //  _lc.RefToPtr(ref)
 415  :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcCollectionOblist::Interface::InByval::OutByval::IService
-//  var target : RpcCollectionOblist::Interface::InByval::OutByval::IService^ = (cast (RpcCollectionOblist::Interface::InByval::OutByval::IService^) _lc.RefToPtr(ref));
+//  var target = (cast (RpcCollectionOblist::Interface::InByval::OutByval::IService^) _lc.RefToPtr(ref));
 416  :     StoreLocalVar : var = 5(target)
 //  0
 417  :     LoadValue     : value = <I8, 0>
@@ -1358,7 +1358,7 @@ Instructions:
 427  :     LoadValue     : value = <null>
 //  system::IRpcLifecycle::RpcCopyByval(target.DoList((cast (observe ::RpcCollectionOblist::Interface::InByval::OutByval::IValue^[]) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc)
 428  :     InvokeMethod  : methodInfo = RpcCopyByval<system::IRpcLifecycle>, stackPatternCount = 2
-//  var copiedReturnValue : object = system::IRpcLifecycle::RpcCopyByval(target.DoList((cast (observe ::RpcCollectionOblist::Interface::InByval::OutByval::IValue^[]) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
+//  var copiedReturnValue = system::IRpcLifecycle::RpcCopyByval(target.DoList((cast (observe ::RpcCollectionOblist::Interface::InByval::OutByval::IValue^[]) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
 429  :     StoreLocalVar : var = 6(copiedReturnValue)
 //  copiedReturnValue
 430  :     LoadLocalVar  : var = 6(copiedReturnValue)
@@ -1368,13 +1368,13 @@ Instructions:
 432  :     LoadValue     : value = <null>
 //  system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc)
 433  :     InvokeMethod  : methodInfo = RpcBoxByval<system::IRpcLifecycle>, stackPatternCount = 2
-//  var boxedReturnValue : object = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
+//  var boxedReturnValue = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
 434  :     StoreLocalVar : var = 7(boxedReturnValue)
 //  new (system::RpcByvalReturnValue^)()
 435  :     LoadValue     : value = <null>
 //  new (system::RpcByvalReturnValue^)()
 436  :     InvokeMethod  : methodInfo = <system::RpcByvalReturnValue>, stackPatternCount = 0
-//  var byvalReturnValue : system::RpcByvalReturnValue^ = new (system::RpcByvalReturnValue^)();
+//  var byvalReturnValue = new (system::RpcByvalReturnValue^)();
 437  :     StoreLocalVar : var = 8(byvalReturnValue)
 //  boxedReturnValue
 438  :     LoadLocalVar  : var = 7(boxedReturnValue)
@@ -1708,7 +1708,7 @@ Instructions:
 602  :     InvokeMethod  : methodInfo = GetDispatcher<system::IRpcLifecycle>, stackPatternCount = 0
 //  _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId)
 603  :     InvokeMethod  : methodInfo = SendToClient_ObjectOps<system::IRpcDispatcher>, stackPatternCount = 1
-//  var objectOps : system::IRpcObjectOps* = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
+//  var objectOps = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
 604  :     StoreLocalVar : var = 3(objectOps)
 //  ref
 605  :     LoadLocalVar  : var = 0(ref)
@@ -1722,7 +1722,7 @@ Instructions:
 609  :     InvokeMethod  : methodInfo = InvokeMethod<system::IRpcObjectOps>, stackPatternCount = 3
 //  objectOps.InvokeMethod(ref, rpcmethod_RpcCollectionOblist__Interface__InByval__OutByval__IService_DoList, arguments)
 610  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::RpcByvalReturnValue
-//  var byvalReturnValue : system::RpcByvalReturnValue^ = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcCollectionOblist__Interface__InByval__OutByval__IService_DoList, arguments));
+//  var byvalReturnValue = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcCollectionOblist__Interface__InByval__OutByval__IService_DoList, arguments));
 611  :     StoreLocalVar : var = 4(byvalReturnValue)
 //  byvalReturnValue
 612  :     LoadLocalVar  : var = 4(byvalReturnValue)
@@ -1736,7 +1736,7 @@ Instructions:
 616  :     InvokeMethod  : methodInfo = RpcUnboxByval<system::IRpcLifecycle>, stackPatternCount = 2
 //  system::IRpcLifecycle::RpcUnboxByval(byvalReturnValue.value, _lc)
 617  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::ObservableList
-//  var result : observe ::RpcCollectionOblist::Interface::InByval::OutByval::IValue^[] = (cast (observe ::RpcCollectionOblist::Interface::InByval::OutByval::IValue^[]) system::IRpcLifecycle::RpcUnboxByval(byvalReturnValue.value, _lc));
+//  var result = (cast (observe ::RpcCollectionOblist::Interface::InByval::OutByval::IValue^[]) system::IRpcLifecycle::RpcUnboxByval(byvalReturnValue.value, _lc));
 618  :     StoreLocalVar : var = 5(result)
 //  byvalReturnValue
 619  :     LoadLocalVar  : var = 4(byvalReturnValue)
@@ -1780,7 +1780,7 @@ Instructions:
 638  :     LoadFunction  : func = 37(<dtor:<RpcCollectionOblist::Interface::InByval::OutByval::IRpcWrapper_IValue>(37)> in rpcwrapper_RpcCollectionOblist__Interface__InByval__OutByval__IValue)
 //  new (RpcCollectionOblist::Interface::InByval::OutByval::IRpcWrapper_IValue^)
 639  :     CreateInterface: methodInfo = <RpcCollectionOblist::Interface::InByval::OutByval::IRpcWrapper_IValue>, stackPatternCount = 6
-//  var proxy : RpcCollectionOblist::Interface::InByval::OutByval::IRpcWrapper_IValue^ = new (RpcCollectionOblist::Interface::InByval::OutByval::IRpcWrapper_IValue^)
+//  var proxy = new (RpcCollectionOblist::Interface::InByval::OutByval::IRpcWrapper_IValue^)
 640  :     StoreLocalVar : var = 3(proxy)
 //  proxyRef
 641  :     LoadLocalVar  : var = 1(proxyRef)
@@ -1924,7 +1924,7 @@ Instructions:
 710  :     LoadFunction  : func = 40(<dtor:<RpcCollectionOblist::Interface::InByval::OutByval::IRpcWrapper_IService>(40)> in rpcwrapper_RpcCollectionOblist__Interface__InByval__OutByval__IService)
 //  new (RpcCollectionOblist::Interface::InByval::OutByval::IRpcWrapper_IService^)
 711  :     CreateInterface: methodInfo = <RpcCollectionOblist::Interface::InByval::OutByval::IRpcWrapper_IService>, stackPatternCount = 6
-//  var proxy : RpcCollectionOblist::Interface::InByval::OutByval::IRpcWrapper_IService^ = new (RpcCollectionOblist::Interface::InByval::OutByval::IRpcWrapper_IService^)
+//  var proxy = new (RpcCollectionOblist::Interface::InByval::OutByval::IRpcWrapper_IService^)
 712  :     StoreLocalVar : var = 3(proxy)
 //  proxyRef
 713  :     LoadLocalVar  : var = 1(proxyRef)
@@ -2112,13 +2112,13 @@ Instructions:
 804  :     LoadValue     : value = <null>
 //  new (system::JsonObject^)()
 805  :     InvokeMethod  : methodInfo = <system::JsonObject>, stackPatternCount = 0
-//  var object : system::JsonObject^ = new (system::JsonObject^)();
+//  var object = new (system::JsonObject^)();
 806  :     StoreLocalVar : var = 1(object)
 //  new (system::JsonNumber^)()
 807  :     LoadValue     : value = <null>
 //  new (system::JsonNumber^)()
 808  :     InvokeMethod  : methodInfo = <system::JsonNumber>, stackPatternCount = 0
-//  var jsonNumber0 : system::JsonNumber^ = new (system::JsonNumber^)();
+//  var jsonNumber0 = new (system::JsonNumber^)();
 809  :     StoreLocalVar : var = 2(jsonNumber0)
 //  {value : (cast (string) value.clientId);}
 810  :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
@@ -2142,7 +2142,7 @@ Instructions:
 819  :     LoadValue     : value = <null>
 //  new (system::JsonObjectField^)()
 820  :     InvokeMethod  : methodInfo = <system::JsonObjectField>, stackPatternCount = 0
-//  var jsonField1 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+//  var jsonField1 = new (system::JsonObjectField^)();
 821  :     StoreLocalVar : var = 3(jsonField1)
 //  {value : "clientId";}
 822  :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
@@ -2184,7 +2184,7 @@ Instructions:
 840  :     LoadValue     : value = <null>
 //  new (system::JsonNumber^)()
 841  :     InvokeMethod  : methodInfo = <system::JsonNumber>, stackPatternCount = 0
-//  var jsonNumber2 : system::JsonNumber^ = new (system::JsonNumber^)();
+//  var jsonNumber2 = new (system::JsonNumber^)();
 842  :     StoreLocalVar : var = 4(jsonNumber2)
 //  {value : (cast (string) value.objectId);}
 843  :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
@@ -2208,7 +2208,7 @@ Instructions:
 852  :     LoadValue     : value = <null>
 //  new (system::JsonObjectField^)()
 853  :     InvokeMethod  : methodInfo = <system::JsonObjectField>, stackPatternCount = 0
-//  var jsonField3 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+//  var jsonField3 = new (system::JsonObjectField^)();
 854  :     StoreLocalVar : var = 5(jsonField3)
 //  {value : "objectId";}
 855  :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
@@ -2250,7 +2250,7 @@ Instructions:
 873  :     LoadValue     : value = <null>
 //  new (system::JsonNumber^)()
 874  :     InvokeMethod  : methodInfo = <system::JsonNumber>, stackPatternCount = 0
-//  var jsonNumber4 : system::JsonNumber^ = new (system::JsonNumber^)();
+//  var jsonNumber4 = new (system::JsonNumber^)();
 875  :     StoreLocalVar : var = 6(jsonNumber4)
 //  {value : (cast (string) value.typeId);}
 876  :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
@@ -2274,7 +2274,7 @@ Instructions:
 885  :     LoadValue     : value = <null>
 //  new (system::JsonObjectField^)()
 886  :     InvokeMethod  : methodInfo = <system::JsonObjectField>, stackPatternCount = 0
-//  var jsonField5 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+//  var jsonField5 = new (system::JsonObjectField^)();
 887  :     StoreLocalVar : var = 7(jsonField5)
 //  {value : "typeId";}
 888  :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
@@ -2326,7 +2326,7 @@ Instructions:
 911  :     LoadLocalVar  : var = 0(node)
 //  node
 912  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonObject
-//  var object : system::JsonObject^ = (cast (system::JsonObject^) node);
+//  var object = (cast (system::JsonObject^) node);
 913  :     StoreLocalVar : var = 1(object)
 //  null
 914  :     LoadValue     : value = <null>
@@ -2416,7 +2416,7 @@ Instructions:
 956  :     GetProperty   : propertyInfo = value<system::ParsingToken>
 //  (cast (system::JsonNumber^) jsonFieldValue6).content.value
 957  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
-//  var jsonValue8 : ::system::Int64 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue6).content.value);
+//  var jsonValue8 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue6).content.value);
 958  :     StoreLocalVar : var = 6(jsonValue8)
 //  null
 959  :     LoadValue     : value = <null>
@@ -2506,7 +2506,7 @@ Instructions:
 1001 :     GetProperty   : propertyInfo = value<system::ParsingToken>
 //  (cast (system::JsonNumber^) jsonFieldValue9).content.value
 1002 :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
-//  var jsonValue11 : ::system::Int64 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue9).content.value);
+//  var jsonValue11 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue9).content.value);
 1003 :     StoreLocalVar : var = 11(jsonValue11)
 //  null
 1004 :     LoadValue     : value = <null>
@@ -2596,7 +2596,7 @@ Instructions:
 1046 :     GetProperty   : propertyInfo = value<system::ParsingToken>
 //  (cast (system::JsonNumber^) jsonFieldValue12).content.value
 1047 :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
-//  var jsonValue14 : ::system::Int64 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue12).content.value);
+//  var jsonValue14 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue12).content.value);
 1048 :     StoreLocalVar : var = 16(jsonValue14)
 //  {clientId : jsonValue8; objectId : jsonValue11; typeId : jsonValue14;}
 1049 :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::RpcObjectReference
@@ -2612,7 +2612,7 @@ Instructions:
 1054 :     LoadLocalVar  : var = 16(jsonValue14)
 //  {clientId : jsonValue8; objectId : jsonValue11; typeId : jsonValue14;}
 1055 :     UpdateProperty: propertyInfo = typeId<system::RpcObjectReference>
-//  return {clientId : jsonValue8; objectId : jsonValue11; typeId : jsonValue14;} of (::system::RpcObjectReference);
+//  return {clientId : jsonValue8; objectId : jsonValue11; typeId : jsonValue14;};
 1056 :     Return        
 //  func rpcjson_Deserialize_Struct_system__RpcObjectReference(node : system::JsonNode^) : (::system::RpcObjectReference)
 1057 :     LoadValue     : value = <null>
@@ -2634,7 +2634,7 @@ Instructions:
 1065 :     Jump          : label = 1067
 //  (value as (::system::RpcObjectReference?))
 1066 :     LoadValue     : value = <null>
-//  var value_system__RpcObjectReference : ::system::RpcObjectReference? = (value as (::system::RpcObjectReference?));
+//  var value_system__RpcObjectReference = (value as (::system::RpcObjectReference?));
 1067 :     StoreLocalVar : var = 1(value_system__RpcObjectReference)
 //  value_system__RpcObjectReference
 1068 :     LoadLocalVar  : var = 1(value_system__RpcObjectReference)
@@ -2652,13 +2652,13 @@ Instructions:
 1074 :     LoadValue     : value = <null>
 //  new (system::JsonObject^)()
 1075 :     InvokeMethod  : methodInfo = <system::JsonObject>, stackPatternCount = 0
-//  var object : system::JsonObject^ = new (system::JsonObject^)();
+//  var object = new (system::JsonObject^)();
 1076 :     StoreLocalVar : var = 2(object)
 //  new (system::JsonString^)()
 1077 :     LoadValue     : value = <null>
 //  new (system::JsonString^)()
 1078 :     InvokeMethod  : methodInfo = <system::JsonString>, stackPatternCount = 0
-//  var jsonString15 : system::JsonString^ = new (system::JsonString^)();
+//  var jsonString15 = new (system::JsonString^)();
 1079 :     StoreLocalVar : var = 3(jsonString15)
 //  {value : "system::RpcObjectReference";}
 1080 :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
@@ -2678,7 +2678,7 @@ Instructions:
 1087 :     LoadValue     : value = <null>
 //  new (system::JsonObjectField^)()
 1088 :     InvokeMethod  : methodInfo = <system::JsonObjectField>, stackPatternCount = 0
-//  var jsonField16 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+//  var jsonField16 = new (system::JsonObjectField^)();
 1089 :     StoreLocalVar : var = 4(jsonField16)
 //  {value : "$";}
 1090 :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
@@ -2720,13 +2720,13 @@ Instructions:
 1108 :     LoadLocalVar  : var = 1(value_system__RpcObjectReference)
 //  value_system__RpcObjectReference
 1109 :     ConvertToType : flag = BoxedValue, typeDescriptor = system::RpcObjectReference
-//  var value17 : ::system::RpcObjectReference = (cast (::system::RpcObjectReference) value_system__RpcObjectReference);
+//  var value17 = (cast (::system::RpcObjectReference) value_system__RpcObjectReference);
 1110 :     StoreLocalVar : var = 5(value17)
 //  new (system::JsonNumber^)()
 1111 :     LoadValue     : value = <null>
 //  new (system::JsonNumber^)()
 1112 :     InvokeMethod  : methodInfo = <system::JsonNumber>, stackPatternCount = 0
-//  var jsonNumber18 : system::JsonNumber^ = new (system::JsonNumber^)();
+//  var jsonNumber18 = new (system::JsonNumber^)();
 1113 :     StoreLocalVar : var = 6(jsonNumber18)
 //  {value : (cast (string) value17.clientId);}
 1114 :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
@@ -2750,7 +2750,7 @@ Instructions:
 1123 :     LoadValue     : value = <null>
 //  new (system::JsonObjectField^)()
 1124 :     InvokeMethod  : methodInfo = <system::JsonObjectField>, stackPatternCount = 0
-//  var jsonField19 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+//  var jsonField19 = new (system::JsonObjectField^)();
 1125 :     StoreLocalVar : var = 7(jsonField19)
 //  {value : "clientId";}
 1126 :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
@@ -2792,7 +2792,7 @@ Instructions:
 1144 :     LoadValue     : value = <null>
 //  new (system::JsonNumber^)()
 1145 :     InvokeMethod  : methodInfo = <system::JsonNumber>, stackPatternCount = 0
-//  var jsonNumber20 : system::JsonNumber^ = new (system::JsonNumber^)();
+//  var jsonNumber20 = new (system::JsonNumber^)();
 1146 :     StoreLocalVar : var = 8(jsonNumber20)
 //  {value : (cast (string) value17.objectId);}
 1147 :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
@@ -2816,7 +2816,7 @@ Instructions:
 1156 :     LoadValue     : value = <null>
 //  new (system::JsonObjectField^)()
 1157 :     InvokeMethod  : methodInfo = <system::JsonObjectField>, stackPatternCount = 0
-//  var jsonField21 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+//  var jsonField21 = new (system::JsonObjectField^)();
 1158 :     StoreLocalVar : var = 9(jsonField21)
 //  {value : "objectId";}
 1159 :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
@@ -2858,7 +2858,7 @@ Instructions:
 1177 :     LoadValue     : value = <null>
 //  new (system::JsonNumber^)()
 1178 :     InvokeMethod  : methodInfo = <system::JsonNumber>, stackPatternCount = 0
-//  var jsonNumber22 : system::JsonNumber^ = new (system::JsonNumber^)();
+//  var jsonNumber22 = new (system::JsonNumber^)();
 1179 :     StoreLocalVar : var = 10(jsonNumber22)
 //  {value : (cast (string) value17.typeId);}
 1180 :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
@@ -2882,7 +2882,7 @@ Instructions:
 1189 :     LoadValue     : value = <null>
 //  new (system::JsonObjectField^)()
 1190 :     InvokeMethod  : methodInfo = <system::JsonObjectField>, stackPatternCount = 0
-//  var jsonField23 : system::JsonObjectField^ = new (system::JsonObjectField^)();
+//  var jsonField23 = new (system::JsonObjectField^)();
 1191 :     StoreLocalVar : var = 11(jsonField23)
 //  {value : "typeId";}
 1192 :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
@@ -2936,11 +2936,11 @@ Instructions:
 1216 :     LoadFunction  : func = 19(rpcjson_Serialize)
 //  rpcjson_Serialize
 1217 :     CreateClosure 
-//  system::IRpcLifecycle::JsonSerializePredefinedTypes(value, rpcjson_Serialize of ((func (object) : (system::JsonNode^))))
+//  system::IRpcLifecycle::JsonSerializePredefinedTypes(value, rpcjson_Serialize)
 1218 :     LoadValue     : value = <null>
-//  system::IRpcLifecycle::JsonSerializePredefinedTypes(value, rpcjson_Serialize of ((func (object) : (system::JsonNode^))))
+//  system::IRpcLifecycle::JsonSerializePredefinedTypes(value, rpcjson_Serialize)
 1219 :     InvokeMethod  : methodInfo = JsonSerializePredefinedTypes<system::IRpcLifecycle>, stackPatternCount = 2
-//  return system::IRpcLifecycle::JsonSerializePredefinedTypes(value, rpcjson_Serialize of ((func (object) : (system::JsonNode^))));
+//  return system::IRpcLifecycle::JsonSerializePredefinedTypes(value, rpcjson_Serialize);
 1220 :     Return        
 //  func rpcjson_Serialize(value : object) : (system::JsonNode^)
 1221 :     LoadValue     : value = <null>
@@ -2950,7 +2950,7 @@ Instructions:
 1223 :     LoadLocalVar  : var = 0(node)
 //  (node as (system::JsonObject^))
 1224 :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::JsonObject
-//  var object : system::JsonObject^ = (node as (system::JsonObject^));
+//  var object = (node as (system::JsonObject^));
 1225 :     StoreLocalVar : var = 1(object)
 //  object
 1226 :     LoadLocalVar  : var = 1(object)
@@ -3050,7 +3050,7 @@ Instructions:
 1273 :     GetProperty   : propertyInfo = content<system::JsonString>
 //  (cast (system::JsonString^) jsonFieldValue24).content.value
 1274 :     GetProperty   : propertyInfo = value<system::ParsingToken>
-//  var keyword : string = (cast (system::JsonString^) jsonFieldValue24).content.value;
+//  var keyword = (cast (system::JsonString^) jsonFieldValue24).content.value;
 1275 :     StoreLocalVar : var = 6(keyword)
 //  keyword
 1276 :     LoadLocalVar  : var = 6(keyword)
@@ -3086,11 +3086,11 @@ Instructions:
 1291 :     LoadFunction  : func = 20(rpcjson_Deserialize)
 //  rpcjson_Deserialize
 1292 :     CreateClosure 
-//  system::IRpcLifecycle::JsonDeserializePredefinedTypes(node, rpcjson_Deserialize of ((func (system::JsonNode^) : (object))))
+//  system::IRpcLifecycle::JsonDeserializePredefinedTypes(node, rpcjson_Deserialize)
 1293 :     LoadValue     : value = <null>
-//  system::IRpcLifecycle::JsonDeserializePredefinedTypes(node, rpcjson_Deserialize of ((func (system::JsonNode^) : (object))))
+//  system::IRpcLifecycle::JsonDeserializePredefinedTypes(node, rpcjson_Deserialize)
 1294 :     InvokeMethod  : methodInfo = JsonDeserializePredefinedTypes<system::IRpcLifecycle>, stackPatternCount = 2
-//  return system::IRpcLifecycle::JsonDeserializePredefinedTypes(node, rpcjson_Deserialize of ((func (system::JsonNode^) : (object))));
+//  return system::IRpcLifecycle::JsonDeserializePredefinedTypes(node, rpcjson_Deserialize);
 1295 :     Return        
 //  func rpcjson_Deserialize(node : system::JsonNode^) : (object)
 1296 :     LoadValue     : value = <null>
@@ -3120,7 +3120,7 @@ Instructions:
 1308 :     LoadLocalVar  : var = 0(value)
 //  rpcjson_Serialize(value)
 1309 :     Invoke        : func = 19(rpcjson_Serialize), stackPatternCount = 1
-//  var result : system::JsonNode^ = rpcjson_Serialize(value);
+//  var result = rpcjson_Serialize(value);
 1310 :     StoreLocalVar : var = 1(result)
 //  result
 1311 :     LoadLocalVar  : var = 1(result)
@@ -3198,13 +3198,13 @@ Instructions:
 1347 :     InvokeMethod  : methodInfo = RefToPtr<system::IRpcLifecycle>, stackPatternCount = 1
 //  _lc.RefToPtr(ref)
 1348 :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcCollectionOblist::Interface::InByval::OutByval::IValue
-//  var target : RpcCollectionOblist::Interface::InByval::OutByval::IValue^ = (cast (RpcCollectionOblist::Interface::InByval::OutByval::IValue^) _lc.RefToPtr(ref));
+//  var target = (cast (RpcCollectionOblist::Interface::InByval::OutByval::IValue^) _lc.RefToPtr(ref));
 1349 :     StoreLocalVar : var = 4(target)
 //  new (system::JsonString^)()
 1350 :     LoadValue     : value = <null>
 //  new (system::JsonString^)()
 1351 :     InvokeMethod  : methodInfo = <system::JsonString>, stackPatternCount = 0
-//  var jsonString0 : system::JsonString^ = new (system::JsonString^)();
+//  var jsonString0 = new (system::JsonString^)();
 1352 :     StoreLocalVar : var = 5(jsonString0)
 //  {value : (cast (string) target.GetValue());}
 1353 :     CreateStruct  : flag = BoxedValue, typeDescriptor = system::ParsingToken
@@ -3246,7 +3246,7 @@ Instructions:
 1371 :     InvokeMethod  : methodInfo = RefToPtr<system::IRpcLifecycle>, stackPatternCount = 1
 //  _lc.RefToPtr(ref)
 1372 :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcCollectionOblist::Interface::InByval::OutByval::IService
-//  var target : RpcCollectionOblist::Interface::InByval::OutByval::IService^ = (cast (RpcCollectionOblist::Interface::InByval::OutByval::IService^) _lc.RefToPtr(ref));
+//  var target = (cast (RpcCollectionOblist::Interface::InByval::OutByval::IService^) _lc.RefToPtr(ref));
 1373 :     StoreLocalVar : var = 6(target)
 //  0
 1374 :     LoadValue     : value = <I8, 0>
@@ -3258,7 +3258,7 @@ Instructions:
 1377 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
 //  rpcjson_Deserialize((cast (system::JsonNode^) arguments[0]))
 1378 :     Invoke        : func = 20(rpcjson_Deserialize), stackPatternCount = 1
-//  var jsonValue0 : object = rpcjson_Deserialize((cast (system::JsonNode^) arguments[0]));
+//  var jsonValue0 = rpcjson_Deserialize((cast (system::JsonNode^) arguments[0]));
 1379 :     StoreLocalVar : var = 7(jsonValue0)
 //  jsonValue0
 1380 :     LoadLocalVar  : var = 7(jsonValue0)
@@ -3280,7 +3280,7 @@ Instructions:
 1388 :     LoadValue     : value = <null>
 //  system::IRpcLifecycle::RpcCopyByval(target.DoList((cast (observe ::RpcCollectionOblist::Interface::InByval::OutByval::IValue^[]) system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc))), _lc)
 1389 :     InvokeMethod  : methodInfo = RpcCopyByval<system::IRpcLifecycle>, stackPatternCount = 2
-//  var copiedReturnValue : object = system::IRpcLifecycle::RpcCopyByval(target.DoList((cast (observe ::RpcCollectionOblist::Interface::InByval::OutByval::IValue^[]) system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc))), _lc);
+//  var copiedReturnValue = system::IRpcLifecycle::RpcCopyByval(target.DoList((cast (observe ::RpcCollectionOblist::Interface::InByval::OutByval::IValue^[]) system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc))), _lc);
 1390 :     StoreLocalVar : var = 8(copiedReturnValue)
 //  copiedReturnValue
 1391 :     LoadLocalVar  : var = 8(copiedReturnValue)
@@ -3290,29 +3290,29 @@ Instructions:
 1393 :     LoadValue     : value = <null>
 //  system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc)
 1394 :     InvokeMethod  : methodInfo = RpcBoxByval<system::IRpcLifecycle>, stackPatternCount = 2
-//  var jsonValue1 : object = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
+//  var jsonValue1 = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
 1395 :     StoreLocalVar : var = 9(jsonValue1)
 //  jsonValue1
 1396 :     LoadLocalVar  : var = 9(jsonValue1)
 //  rpcjson_Serialize(jsonValue1)
 1397 :     Invoke        : func = 19(rpcjson_Serialize), stackPatternCount = 1
-//  var jsonNode2 : system::JsonNode^ = rpcjson_Serialize(jsonValue1);
+//  var jsonNode2 = rpcjson_Serialize(jsonValue1);
 1398 :     StoreLocalVar : var = 10(jsonNode2)
 //  new (system::RpcByvalReturnValue^)()
 1399 :     LoadValue     : value = <null>
 //  new (system::RpcByvalReturnValue^)()
 1400 :     InvokeMethod  : methodInfo = <system::RpcByvalReturnValue>, stackPatternCount = 0
-//  var byvalReturnValue : system::RpcByvalReturnValue^ = new (system::RpcByvalReturnValue^)();
+//  var byvalReturnValue = new (system::RpcByvalReturnValue^)();
 1401 :     StoreLocalVar : var = 11(byvalReturnValue)
 //  jsonNode2
 1402 :     LoadLocalVar  : var = 10(jsonNode2)
-//  (byvalReturnValue.value = (cast (object) jsonNode2))
+//  (byvalReturnValue.value = jsonNode2)
 1403 :     Duplicate     : stackPatternCount = 0
 //  byvalReturnValue
 1404 :     LoadLocalVar  : var = 11(byvalReturnValue)
-//  (byvalReturnValue.value = (cast (object) jsonNode2))
+//  (byvalReturnValue.value = jsonNode2)
 1405 :     SetProperty   : propertyInfo = value<system::RpcByvalReturnValue>
-//  (byvalReturnValue.value = (cast (object) jsonNode2));
+//  (byvalReturnValue.value = jsonNode2);
 1406 :     Pop           
 //  _slot
 1407 :     LoadCapturedVar: var = 1(<captured>_slot)
@@ -3592,7 +3592,7 @@ Instructions:
 1544 :     InvokeMethod  : methodInfo = InvokeMethod<system::IRpcObjectOps>, stackPatternCount = 3
 //  _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcCollectionOblist__Interface__InByval__OutByval__IValue_GetValue, arguments)
 1545 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
-//  var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcCollectionOblist__Interface__InByval__OutByval__IValue_GetValue, arguments));
+//  var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcCollectionOblist__Interface__InByval__OutByval__IValue_GetValue, arguments));
 1546 :     StoreLocalVar : var = 2(jsonResult)
 //  jsonResult
 1547 :     LoadLocalVar  : var = 2(jsonResult)
@@ -3602,7 +3602,7 @@ Instructions:
 1549 :     GetProperty   : propertyInfo = content<system::JsonString>
 //  (cast (system::JsonString^) jsonResult).content.value
 1550 :     GetProperty   : propertyInfo = value<system::ParsingToken>
-//  var jsonValue0 : ::system::String = (cast (::system::String) (cast (system::JsonString^) jsonResult).content.value);
+//  var jsonValue0 = (cast (::system::String) (cast (system::JsonString^) jsonResult).content.value);
 1551 :     StoreLocalVar : var = 3(jsonValue0)
 //  jsonValue0
 1552 :     LoadLocalVar  : var = 3(jsonValue0)
@@ -3632,13 +3632,13 @@ Instructions:
 1564 :     LoadValue     : value = <null>
 //  system::IRpcLifecycle::RpcBoxByval(arg_xs, _lc)
 1565 :     InvokeMethod  : methodInfo = RpcBoxByval<system::IRpcLifecycle>, stackPatternCount = 2
-//  var jsonValue0 : object = system::IRpcLifecycle::RpcBoxByval(arg_xs, _lc);
+//  var jsonValue0 = system::IRpcLifecycle::RpcBoxByval(arg_xs, _lc);
 1566 :     StoreLocalVar : var = 3(jsonValue0)
 //  jsonValue0
 1567 :     LoadLocalVar  : var = 3(jsonValue0)
 //  rpcjson_Serialize(jsonValue0)
 1568 :     Invoke        : func = 19(rpcjson_Serialize), stackPatternCount = 1
-//  var jsonNode1 : system::JsonNode^ = rpcjson_Serialize(jsonValue0);
+//  var jsonNode1 = rpcjson_Serialize(jsonValue0);
 1569 :     StoreLocalVar : var = 4(jsonNode1)
 //  0
 1570 :     LoadValue     : value = <I8, 0>
@@ -3660,7 +3660,7 @@ Instructions:
 1578 :     InvokeMethod  : methodInfo = GetDispatcher<system::IRpcLifecycle>, stackPatternCount = 0
 //  _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId)
 1579 :     InvokeMethod  : methodInfo = SendToClient_ObjectOps<system::IRpcDispatcher>, stackPatternCount = 1
-//  var objectOps : system::IRpcObjectOps* = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
+//  var objectOps = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
 1580 :     StoreLocalVar : var = 5(objectOps)
 //  ref
 1581 :     LoadLocalVar  : var = 0(ref)
@@ -3674,7 +3674,7 @@ Instructions:
 1585 :     InvokeMethod  : methodInfo = InvokeMethod<system::IRpcObjectOps>, stackPatternCount = 3
 //  objectOps.InvokeMethod(ref, rpcmethod_RpcCollectionOblist__Interface__InByval__OutByval__IService_DoList, arguments)
 1586 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::RpcByvalReturnValue
-//  var byvalReturnValue : system::RpcByvalReturnValue^ = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcCollectionOblist__Interface__InByval__OutByval__IService_DoList, arguments));
+//  var byvalReturnValue = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcCollectionOblist__Interface__InByval__OutByval__IService_DoList, arguments));
 1587 :     StoreLocalVar : var = 6(byvalReturnValue)
 //  byvalReturnValue
 1588 :     LoadLocalVar  : var = 6(byvalReturnValue)
@@ -3682,13 +3682,13 @@ Instructions:
 1589 :     GetProperty   : propertyInfo = value<system::RpcByvalReturnValue>
 //  byvalReturnValue.value
 1590 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
-//  var jsonResult : system::JsonNode^ = (cast (system::JsonNode^) byvalReturnValue.value);
+//  var jsonResult = (cast (system::JsonNode^) byvalReturnValue.value);
 1591 :     StoreLocalVar : var = 7(jsonResult)
 //  jsonResult
 1592 :     LoadLocalVar  : var = 7(jsonResult)
 //  rpcjson_Deserialize(jsonResult)
 1593 :     Invoke        : func = 20(rpcjson_Deserialize), stackPatternCount = 1
-//  var jsonValue2 : object = rpcjson_Deserialize(jsonResult);
+//  var jsonValue2 = rpcjson_Deserialize(jsonResult);
 1594 :     StoreLocalVar : var = 8(jsonValue2)
 //  jsonValue2
 1595 :     LoadLocalVar  : var = 8(jsonValue2)
@@ -3700,7 +3700,7 @@ Instructions:
 1598 :     InvokeMethod  : methodInfo = RpcUnboxByval<system::IRpcLifecycle>, stackPatternCount = 2
 //  system::IRpcLifecycle::RpcUnboxByval(jsonValue2, _lc)
 1599 :     ConvertToType : flag = SharedPtr, typeDescriptor = system::ObservableList
-//  var result : observe ::RpcCollectionOblist::Interface::InByval::OutByval::IValue^[] = (cast (observe ::RpcCollectionOblist::Interface::InByval::OutByval::IValue^[]) system::IRpcLifecycle::RpcUnboxByval(jsonValue2, _lc));
+//  var result = (cast (observe ::RpcCollectionOblist::Interface::InByval::OutByval::IValue^[]) system::IRpcLifecycle::RpcUnboxByval(jsonValue2, _lc));
 1600 :     StoreLocalVar : var = 9(result)
 //  byvalReturnValue
 1601 :     LoadLocalVar  : var = 6(byvalReturnValue)
