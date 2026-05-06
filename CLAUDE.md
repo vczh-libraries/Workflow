@@ -19,7 +19,10 @@ Read the first word of the request, and read an additional instruction file if i
 - The following rules apply when the first word is not in the list:
 - If the request looks like a research or question, treat the request as if it begins with "ask".
 - If the request looks like a coding work, treat the request as if it begins with "investigate repro".
-- If the request looks like a planning or document refining work, just execute the request.
+- If the request looks like other non-coding work, just execute the request directly. Such works usually include but not limit to:
+  - Planning.
+  - Document refining.
+  - Daily maintenance.
 
 ## Step 2
 

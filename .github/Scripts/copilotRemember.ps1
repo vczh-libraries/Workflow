@@ -1,20 +1,25 @@
 # Remember Copilot investigation notes
 
 param(
-    [switch]$Earliest
+    [switch]$Earliest,
+    [Parameter(Position=0)]
+    [ValidateRange(1, [int]::MaxValue)]
+    [int]$Count = 1
 )
 
 if ($Earliest) {
     $learningRoot = Resolve-Path -LiteralPath "$PSScriptRoot\..\Learning"
-    $earliestFolder = Get-ChildItem -LiteralPath $learningRoot -Directory |
+    $earliestFolders = @(Get-ChildItem -LiteralPath $learningRoot -Directory |
         Sort-Object -Property Name |
-        Select-Object -First 1
+        Select-Object -First $Count)
 
-    if ($null -eq $earliestFolder) {
-        throw "No folder is found in '$learningRoot'."
+    if ($earliestFolders.Count -lt $Count) {
+        Write-Output "Requested $Count backups and $($earliestFolders.Count) found:"
     }
 
-    Write-Output $earliestFolder.FullName
+    $earliestFolders | ForEach-Object {
+        Write-Output $_.FullName
+    }
     exit 0
 }
 

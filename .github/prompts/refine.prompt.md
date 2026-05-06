@@ -24,8 +24,13 @@
 
 ## Step 1. Find the Earliest Backup Folder
 
-- Find and execute `copilotRemember.ps1 -Earliest` to get the absolute path to the earliest backup folder in `Learning`.
-- If the script fails, it means there is no material to learn from, stop. Otherwise continue to process this folder.
+- Firstly you need to do a simple clean up:
+  - Folder names are time stamps, you need to read a few of earilest documents.
+  - Sometimes the same document will be backed up multiple times with new content increasing as instructed in the original request.
+  - You should identify them, and leave the latest one while deleting earlier ones. The kept document should contain the most content.
+  - Stop cleaning up at the first group of documents. Or when the second earilest document has a different task than the earliest one, you will have nothing to delete and just stops the cleaning up.
+  - You can use `copilotRemember.ps1 -Earliest COUNT` to help you identify the earliest COUNT backup folders.
+- Secondly, pick the earliest backup folder after cleaning up and continue.
 
 ## Step 2. Read All Documents
 
