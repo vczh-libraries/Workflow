@@ -1,3 +1,7 @@
+#ifdef _MSC_VER
+#include <windows.h>
+#endif
+
 #include "RpcDualJsonDispatcherMock.h"
 
 namespace vl
@@ -11,6 +15,42 @@ namespace vl
 
 		namespace
 		{
+#if defined VCZH_MSVC
+			WString GetExePath()
+			{
+				wchar_t buffer[65536];
+				GetModuleFileName(NULL, buffer, sizeof(buffer) / sizeof(*buffer));
+				vint pos = -1;
+				vint index = 0;
+				while (buffer[index])
+				{
+					if (buffer[index] == L'\\')
+					{
+						pos = index;
+					}
+					index++;
+				}
+				return WString::CopyFrom(buffer, pos + 1);
+			}
+#endif
+
+			WString GetJsonValueOutputPath()
+			{
+#if defined VCZH_MSVC
+#ifdef VCZH_64
+				return GetExePath() + L"..\\..\\..\\TypeScript\\JsonValues64\\";
+#else
+				return GetExePath() + L"..\\..\\TypeScript\\JsonValues32\\";
+#endif
+#elif defined VCZH_GCC
+#ifdef VCZH_64
+				return L"../../TypeScript/JsonValues64/";
+#else
+				return L"../../TypeScript/JsonValues32/";
+#endif
+#endif
+			}
+
 			template<typename TInterface, typename TMock>
 			TInterface* WrapOps(
 				RpcDualJsonDispatcherMock* dispatcher,
@@ -290,6 +330,40 @@ namespace vl
 		List<Ptr<JsonNode>>& RpcDualJsonDispatcherMock::JsonValues()
 		{
 			return jsonValues;
+		}
+
+		void RpcDualJsonDispatcherMock::DumpJsonValues(const WString& itemName)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonDispatcherMock::DumpJsonValues(const WString&)#"
+			auto folderPath = GetJsonValueOutputPath();
+			filesystem::Folder folder(folderPath);
+			if (!folder.Exists())
+			{
+				CHECK_ERROR(folder.Create(true), ERROR_MESSAGE_PREFIX L"Failed to create JSON value output folder.");
+			}
+
+			stream::FileStream fileStream(folderPath + L"JsonValue_" + itemName + L".ts", stream::FileStream::WriteOnly);
+			stream::BomEncoder encoder(stream::BomEncoder::Utf8);
+			stream::EncoderStream encoderStream(fileStream, encoder);
+			stream::StreamWriter writer(encoderStream);
+
+			writer.WriteString(L"import type { KnownTypeSchema } from \"./Serialization_");
+			writer.WriteString(itemName);
+			writer.WriteLine(L"\";");
+			writer.WriteLine(L"");
+			writer.WriteLine(L"export const json : KnownTypeSchema[] = [");
+			for (auto [node, index] : indexed(jsonValues))
+			{
+				writer.WriteString(L"  ");
+				JsonPrint(node, writer);
+				if (index + 1 < jsonValues.Count())
+				{
+					writer.WriteString(L",");
+				}
+				writer.WriteLine(L"");
+			}
+			writer.WriteLine(L"];");
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 		IRpcListEventOps* RpcDualJsonDispatcherMock::BroadcastFromClient_ListEventOps(vint selfClientId)

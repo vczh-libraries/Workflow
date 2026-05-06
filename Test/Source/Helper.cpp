@@ -183,6 +183,51 @@ WString GetWorkflowOutputPath()
 #endif
 }
 
+WString GetWorkflowOutputPath32()
+{
+#if defined VCZH_MSVC
+	return GetTestOutputBasePath() + L"Workflow32\\";
+#elif defined VCZH_GCC
+	return GetTestOutputBasePath() + L"Workflow32/";
+#endif
+}
+
+WString GetWorkflowOutputPath64()
+{
+#if defined VCZH_MSVC
+	return GetTestOutputBasePath() + L"Workflow64\\";
+#elif defined VCZH_GCC
+	return GetTestOutputBasePath() + L"Workflow64/";
+#endif
+}
+
+WString GetRpcMetadataOutputPath()
+{
+#if defined VCZH_MSVC
+	return GetTestOutputBasePath() + L"RpcMetadata" + GetBits() + L"\\";
+#elif defined VCZH_GCC
+	return GetTestOutputBasePath() + L"RpcMetadata" + GetBits() + L"/";
+#endif
+}
+
+WString GetRpcMetadataOutputPath32()
+{
+#if defined VCZH_MSVC
+	return GetTestOutputBasePath() + L"RpcMetadata32\\";
+#elif defined VCZH_GCC
+	return GetTestOutputBasePath() + L"RpcMetadata32/";
+#endif
+}
+
+WString GetRpcMetadataOutputPath64()
+{
+#if defined VCZH_MSVC
+	return GetTestOutputBasePath() + L"RpcMetadata64\\";
+#elif defined VCZH_GCC
+	return GetTestOutputBasePath() + L"RpcMetadata64/";
+#endif
+}
+
 void LoadSampleIndex(const WString& sampleName, List<WString>& itemNames)
 {
 	FileStream fileStream(GetTestResourcePath() + L"Index" + sampleName + L".txt", FileStream::ReadOnly);

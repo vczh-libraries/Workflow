@@ -2,17 +2,6 @@
 
 extern WfCpuArchitecture testCpuArchitecture;
 
-static const wchar_t* GetBitsFromArchitecture()
-{
-	switch (testCpuArchitecture)
-	{
-	case WfCpuArchitecture::x86: return L"32";
-	case WfCpuArchitecture::x64: return L"64";
-	default:
-		CHECK_FAIL(L"The CPU architecture is specified.");
-	}
-}
-
 static bool DecodeRpcName(const WString& rpcLine, WString& itemName, WString& itemResult)
 {
 	const wchar_t* reading = rpcLine.Buffer();
@@ -253,7 +242,6 @@ TEST_FILE
 					rpcTypeFullNamesPerItem.Add(itemName, typeFullNames);
 					rpcEventBridgeInfosPerItem.Add(itemName, CollectRpcEventBridgeInfos(manager, itemName));
 
-					auto bits = GetBitsFromArchitecture();
 					auto wrapperString = GenerateToStream([&](StreamWriter& writer)
 					{
 						WfPrint(wrapperModule, L"", writer);
@@ -268,7 +256,7 @@ TEST_FILE
 					});
 					auto dtsString = manager.rpcMetadata->dts;
 
-					auto outputFolder = FilePath(GetTestOutputBasePath()) / (WString::Unmanaged(L"RpcMetadata") + bits);
+					auto outputFolder = FilePath(GetRpcMetadataOutputPath());
 					Folder folder(outputFolder);
 					if (!folder.Exists())
 					{
@@ -413,6 +401,8 @@ TEST_FILE
 				writer.WriteString(L"\tRunRpcTestCase<::vl_workflow_global::");
 				writer.WriteString(assemblyNames[itemName]);
 				writer.WriteString(L">(L\"");
+				writer.WriteString(itemName);
+				writer.WriteString(L"\", L\"");
 				writer.WriteString(itemResult);
 				writer.WriteLine(L"\",");
 

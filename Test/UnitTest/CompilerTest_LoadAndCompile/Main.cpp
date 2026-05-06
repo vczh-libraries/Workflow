@@ -154,22 +154,6 @@ int main(int argc, char* argv[])
 			CHECK_ERROR(folder.Create(false) == true, L"Failed to create GetTestOutputBasePath()");
 		}
 	}
-	{
-		Folder folder(GetWorkflowOutputPath());
-		if (!folder.Exists())
-		{
-			CHECK_ERROR(folder.Create(false) == true, L"Failed to create GetWorkflowOutputPath()");
-		}
-		else
-		{
-			List<File> files;
-			CHECK_ERROR(folder.GetFiles(files) == true, L"Failed to get files from GetWorkflowOutputPath()");
-			for (auto file : files)
-			{
-				CHECK_ERROR(file.Delete() == true, L"Failed to delete file");
-			}
-		}
-	}
 	auto createOrCleanFolder = [](const WString& path, const wchar_t* msgCreate, const wchar_t* msgGetFiles, const wchar_t* msgDelete)
 	{
 		Folder folder(path);
@@ -187,22 +171,27 @@ int main(int argc, char* argv[])
 			}
 		}
 	};
-	createOrCleanFolder(GetCppOutputPath32(),
-		L"Failed to create GetCppOutputPath32()",
-		L"Failed to get files from GetCppOutputPath32()",
-		L"Failed to delete file from GetCppOutputPath32()");
-	createOrCleanFolder(GetCppOutputPath64(),
-		L"Failed to create GetCppOutputPath64()",
-		L"Failed to get files from GetCppOutputPath64()",
-		L"Failed to delete file from GetCppOutputPath64()");
-	createOrCleanFolder(GetCppOutputPath32Rpc(),
-		L"Failed to create GetCppOutputPath32Rpc()",
-		L"Failed to get files from GetCppOutputPath32Rpc()",
-		L"Failed to delete file from GetCppOutputPath32Rpc()");
-	createOrCleanFolder(GetCppOutputPath64Rpc(),
-		L"Failed to create GetCppOutputPath64Rpc()",
-		L"Failed to get files from GetCppOutputPath64Rpc()",
-		L"Failed to delete file from GetCppOutputPath64Rpc()");
+
+#define OUTPUT_FOLDERS(FOLDER)\
+	FOLDER(GetCppOutputPath32)\
+	FOLDER(GetCppOutputPath64)\
+	FOLDER(GetCppOutputPath32Rpc)\
+	FOLDER(GetCppOutputPath64Rpc)\
+	FOLDER(GetWorkflowOutputPath32)\
+	FOLDER(GetWorkflowOutputPath64)\
+	FOLDER(GetRpcMetadataOutputPath32)\
+	FOLDER(GetRpcMetadataOutputPath64)
+
+#define CLEAN_OUTPUT_FOLDER(FUNC)\
+	createOrCleanFolder(FUNC(),\
+		L"Failed to create output folder.",\
+		L"Failed to get files from output folder.",\
+		L"Failed to delete file from output folder.");
+
+	OUTPUT_FOLDERS(CLEAN_OUTPUT_FOLDER)
+
+#undef CLEAN_OUTPUT_FOLDER
+#undef OUTPUT_FOLDERS
 #endif
 	int result32 = 0;
 	int result64 = 0;

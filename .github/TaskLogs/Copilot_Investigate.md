@@ -148,3 +148,23 @@ Task 1 verification:
 - `CppTest` passed on Debug x64 with 2/2 test files and 223/223 test cases.
 - Debug Win32 solution build passed.
 - `CppTest` passed on Debug Win32 with 2/2 test files and 223/223 test cases.
+
+### CODE CHANGE
+
+Task 2:
+- Added 32-bit, 64-bit, and architecture-selected helper paths for generated Workflow output folders and RPC metadata output folders.
+- Updated `TestRpcCompile.cpp` to write RPC metadata files through `GetRpcMetadataOutputPath`.
+- Updated `CompilerTest_LoadAndCompile` startup cleanup so the Cpp, CppRpc, Workflow, and RpcMetadata 32/64 output folders are cleaned through one folder list.
+- Extended `RunRpcTestCase` with the RPC sample name and regenerated `TestCasesRpc.cpp` call sites to pass it.
+- Added JSON value dumping to `RpcDualJsonDispatcherMock`, writing compact JSON arrays to `Test/TypeScript/JsonValues32` and `Test/TypeScript/JsonValues64`.
+- Generated 120 `JsonValue_*.ts` files for Win32 and 120 for x64.
+
+### TASK 2 CONFIRMED
+
+Task 2 verification:
+- Built `CompilerTest_LoadAndCompile` Debug x64 through `UnitTest.sln`.
+- `CompilerTest_LoadAndCompile` passed on Debug x64 and regenerated RPC metadata/testcase outputs through the new paths.
+- Debug x64 solution build passed.
+- `CppTest` passed on Debug x64 with 2/2 test files and 223/223 test cases.
+- Debug Win32 solution build passed.
+- `CppTest` passed on Debug Win32 with 2/2 test files and 223/223 test cases.

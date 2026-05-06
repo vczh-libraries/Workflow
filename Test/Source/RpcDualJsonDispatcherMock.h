@@ -29,6 +29,7 @@ namespace vl
 			void																RecordJsonValue(const reflection::description::Value& value);
 			void																RecordJsonArguments(Ptr<reflection::description::IValueArray> arguments);
 			collections::List<Ptr<glr::json::JsonNode>>&						JsonValues();
+			void																DumpJsonValues(const WString& itemName);
 
 			rpc_controller::IRpcListEventOps*									BroadcastFromClient_ListEventOps(vint selfClientId)override;
 			rpc_controller::IRpcObjectEventOps*									BroadcastFromClient_ObjectEventOps(vint selfClientId)override;

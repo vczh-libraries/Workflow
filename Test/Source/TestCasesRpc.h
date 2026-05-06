@@ -38,6 +38,7 @@ namespace vl
 
 template<typename TInstance>
 void RunRpcTestCase(
+	const vl::WString& itemName,
 	const vl::WString& expected,
 	vl::vint(*decideTypeId)(vl::reflection::IDescriptable*),
 	void(*attachLocalEvents)(vl::rpc_controller_test::RpcDualLifecycleMock*, vl::rpc_controller::RpcObjectReference, vl::reflection::IDescriptable*))
@@ -95,6 +96,9 @@ void RunRpcTestCase(
 	TEST_ASSERT(actual == expected);
 
 	dispatcher.Finalize();
+#ifdef VCZH_DEBUG_NO_REFLECTION
+	dispatcher.DumpJsonValues(itemName);
+#endif
 }
 
 #endif
