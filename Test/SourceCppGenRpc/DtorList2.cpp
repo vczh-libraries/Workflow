@@ -742,13 +742,17 @@ Closures
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcDtorList2::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 				::vl::__vwsn::This(target.Obj())->Clear();
-				return ::vl::reflection::description::Value();
+				auto jsonLiteral0 = ::vl::Ptr<::vl::glr::json::JsonLiteral>(new ::vl::glr::json::JsonLiteral());
+				(::vl::__vwsn::This(jsonLiteral0.Obj())->value = ::vl::glr::json::JsonLiteralValue::Null);
+				return ::vl::__vwsn::Box(jsonLiteral0);
 			}
 			else if ((__vwsn_switch_6 == GLOBAL_NAME rpcmethod_RpcDtorList2__IService_Hold))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcDtorList2::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 				::vl::__vwsn::This(target.Obj())->Hold();
-				return ::vl::reflection::description::Value();
+				auto jsonLiteral0 = ::vl::Ptr<::vl::glr::json::JsonLiteral>(new ::vl::glr::json::JsonLiteral());
+				(::vl::__vwsn::This(jsonLiteral0.Obj())->value = ::vl::glr::json::JsonLiteralValue::Null);
+				return ::vl::__vwsn::Box(jsonLiteral0);
 			}
 			else if ((__vwsn_switch_6 == GLOBAL_NAME rpcmethod_RpcDtorList2__IService_Make))
 			{
@@ -760,7 +764,9 @@ Closures
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcDtorList2::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 				::vl::__vwsn::This(target.Obj())->Unhold();
-				return ::vl::reflection::description::Value();
+				auto jsonLiteral0 = ::vl::Ptr<::vl::glr::json::JsonLiteral>(new ::vl::glr::json::JsonLiteral());
+				(::vl::__vwsn::This(jsonLiteral0.Obj())->value = ::vl::glr::json::JsonLiteralValue::Null);
+				return ::vl::__vwsn::Box(jsonLiteral0);
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));

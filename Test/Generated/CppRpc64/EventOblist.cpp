@@ -576,20 +576,26 @@ Closures
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcEventOblist::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 				::vl::__vwsn::This(target.Obj())->ModifyHeldList();
-				return ::vl::reflection::description::Value();
+				auto jsonLiteral0 = ::vl::Ptr<::vl::glr::json::JsonLiteral>(new ::vl::glr::json::JsonLiteral());
+				(::vl::__vwsn::This(jsonLiteral0.Obj())->value = ::vl::glr::json::JsonLiteralValue::Null);
+				return ::vl::__vwsn::Box(jsonLiteral0);
 			}
 			else if ((__vwsn_switch_6 == GLOBAL_NAME rpcmethod_RpcEventOblist__IService_SetList))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcEventOblist::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 				auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))));
 				::vl::__vwsn::This(target.Obj())->SetList(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueObservableList>(::vl::rpc_controller::RpcUnboxByref(jsonValue0, _lc).Obj())));
-				return ::vl::reflection::description::Value();
+				auto jsonLiteral1 = ::vl::Ptr<::vl::glr::json::JsonLiteral>(new ::vl::glr::json::JsonLiteral());
+				(::vl::__vwsn::This(jsonLiteral1.Obj())->value = ::vl::glr::json::JsonLiteralValue::Null);
+				return ::vl::__vwsn::Box(jsonLiteral1);
 			}
 			else if ((__vwsn_switch_6 == GLOBAL_NAME rpcmethod_RpcEventOblist__IService_WatchHeldList))
 			{
 				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcEventOblist::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 				::vl::__vwsn::This(target.Obj())->WatchHeldList();
-				return ::vl::reflection::description::Value();
+				auto jsonLiteral0 = ::vl::Ptr<::vl::glr::json::JsonLiteral>(new ::vl::glr::json::JsonLiteral());
+				(::vl::__vwsn::This(jsonLiteral0.Obj())->value = ::vl::glr::json::JsonLiteralValue::Null);
+				return ::vl::__vwsn::Box(jsonLiteral0);
 			}
 			else
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
