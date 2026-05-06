@@ -347,11 +347,11 @@ namespace vl
 			stream::EncoderStream encoderStream(fileStream, encoder);
 			stream::StreamWriter writer(encoderStream);
 
-			writer.WriteString(L"import type { KnownTypeSchema } from \"./Serialization_");
+			writer.WriteString(L"import type { KnownTypeSchema, UnknownTypeSchema } from \"./Serialization_");
 			writer.WriteString(itemName);
 			writer.WriteLine(L"\";");
 			writer.WriteLine(L"");
-			writer.WriteLine(L"export const json : KnownTypeSchema[] = [");
+			writer.WriteLine(L"export const json : (KnownTypeSchema | UnknownTypeSchema)[] = [");
 			for (auto [node, index] : indexed(jsonValues))
 			{
 				writer.WriteString(L"  ");

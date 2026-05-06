@@ -133,8 +133,10 @@ namespace vl
 				for (vint i = 0; i < keys->GetCount(); i++)
 				{
 					auto key = keys->Get(i);
-					values->items.Add(rpcjson_Serialize(key));
-					values->items.Add(rpcjson_Serialize(dictionary->Get(key)));
+					auto pair = CreateJsonArray();
+					pair->items.Add(rpcjson_Serialize(key));
+					pair->items.Add(rpcjson_Serialize(dictionary->Get(key)));
+					values->items.Add(pair);
 				}
 				AddJsonObjectField(object, WString::Unmanaged(L"values"), values);
 				return Ptr<JsonNode>(object);
@@ -198,9 +200,11 @@ namespace vl
 				auto values = GetJsonObjectField(object, WString::Unmanaged(L"values")).Cast<JsonArray>();
 				CHECK_ERROR(values, L"JSON array is expected.");
 				auto result = IValueDictionary::Create();
-				for (vint i = 0; i < values->items.Count(); i += 2)
+				for (auto item : values->items)
 				{
-					result->Set(rpcjson_Deserialize(values->items[i]), rpcjson_Deserialize(values->items[i + 1]));
+					auto pair = item.Cast<JsonArray>();
+					CHECK_ERROR(pair, L"JSON array is expected.");
+					result->Set(rpcjson_Deserialize(pair->items[0]), rpcjson_Deserialize(pair->items[1]));
 				}
 				return BoxValue(result);
 			}

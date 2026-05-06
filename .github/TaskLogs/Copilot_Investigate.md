@@ -183,3 +183,30 @@ Task 3:
 Task 3 verification:
 - Built `CompilerTest_LoadAndCompile` Debug x64 through `UnitTest.sln`.
 - `CompilerTest_LoadAndCompile` passed on Debug x64 and regenerated RPC metadata outputs.
+
+### CODE CHANGE
+
+Task 4:
+- Added the `Test/TypeScript` npm/TypeScript harness with `.gitignore`, `package.json`, generated `package-lock.json`, `tsconfig.json`, and `prepare.ps1`.
+- `prepare.ps1` copies generated `Serialization_*.d.ts` files from `Test/Generated/RpcMetadata32` and `Test/Generated/RpcMetadata64` into `JsonValues32` and `JsonValues64` without deleting tracked `JsonValue_*.ts` files.
+- Fixed predefined RPC JSON dictionary serialization/deserialization to use the expected unknown map schema with `[key, value]` pairs.
+- Updated `TODO_RPC_Json.md` to remove a stray patch marker, document the pair-array map format, include `UnknownType_Map` in the expected union, and document the mixed known/unknown ops-boundary TypeScript values.
+- Updated generated `JsonValue_*.ts` files to import both `KnownTypeSchema` and `UnknownTypeSchema`.
+- Regenerated JSON value files for 32-bit and 64-bit CppTest outputs and refreshed release pack files from the full Workflow build.
+
+### TASK 4 CONFIRMED
+
+Task 4 verification:
+- `prepare.ps1` passed in `Test/TypeScript`.
+- `npm install` passed in `Test/TypeScript`.
+- Initial `npm run build` exposed real schema mismatches in map shape and ops-boundary value typing.
+- Built `CompilerTest_LoadAndCompile` Debug x64 through `UnitTest.sln`.
+- `CompilerTest_LoadAndCompile` passed on Debug x64.
+- Built `CppTest` Debug x64 through `UnitTest.sln`.
+- `CppTest` passed on Debug x64 with 2/2 test files and 223/223 test cases.
+- Built `CppTest` Debug Win32 through `UnitTest.sln`.
+- `CppTest` passed on Debug Win32 with 2/2 test files and 223/223 test cases.
+- `prepare.ps1` passed again in `Test/TypeScript`.
+- `npm run build` passed in `Test/TypeScript`.
+- `Build.ps1 Workflow` passed via `C:\Code\VczhLibraries\Tools\Tools\Build.ps1`.
+- Final `prepare.ps1` and `npm run build` passed in `Test/TypeScript`.

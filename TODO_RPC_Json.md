@@ -1,4 +1,3 @@
-@ -1,335 +0,0 @@
 # Workflow Interface Based RPC (JSON Serialization Schema)
 
 There are two kinds of JSON schema for RPC serializable types:
@@ -73,9 +72,8 @@ export type UnknownType_PrimitiveSchema =
 
 4) collection types
 
-`{ "$": "list" | "map" | "oblist", values: [elements ...]}`
-- For list, put each elements in the list.
-- For dictionary, put key1, value1, key2, value2, ...
+- For list and oblist: `{ "$": "list" | "oblist", values: [elements ...]}`.
+- For dictionary: `{ "$": "map", values: [[key1, value1], [key2, value2], ...]}`.
 
 ## Implementation of rpcjson_Serialize
 
@@ -156,6 +154,7 @@ export type UnknownTypeSchema =
   | UnknownType_PrimitiveSchema
   | UnknownType_EnumSchema
   | UnknownType_List
+  | UnknownType_Map
   | UnknownType_struct_type_full_name
   | ...
   ...
@@ -185,3 +184,5 @@ export type KnownTypeSchema =
   | ...
   ;
 ```
+
+`JsonValue_*.ts` files generated for TypeScript validation contain JSON values captured at the generic RPC ops boundary, so each element is typed as `KnownTypeSchema | UnknownTypeSchema`.
