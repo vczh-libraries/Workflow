@@ -20,8 +20,6 @@
   - Interface inheritance.
 - Generate JSON from "RPC metadata in Workflow syntax".
   - Review JSON related constructions.
-  - Make sure arguments are serialized to expected JSON representation.
-    - Make a `RpcDualDispatcherJson` to record all JSON objects, code gen ts files and create a npm project to build against the schema, just like VlppParser2.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
 - Document RPC
   - use `TODO_RPC_(Definition|Json|GeneratedWrappers).md`

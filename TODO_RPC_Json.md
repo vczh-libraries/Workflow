@@ -20,9 +20,9 @@ Types listed here should include every typed appear in `WfLexicalScopeManager::r
 
 1) primitive types
 
-Use the second element in `UnknownType_PrimitiveSchema`.
+Use the second element in `UnknownType_PrimitiveSchema` if it is an array, unless it is `null | true | false | string`.
 
-2) eum types
+2) enum types
 
 Use `number`.
 
@@ -53,12 +53,13 @@ export type UnknownType_PrimitiveSchema =
   | ["Int64", number]
   | ["Single", number]
   | ["Double", number]
-  | ["Boolean", boolean]
   | ["Char", string]
-  | ["String", string]
   | ["DateTime", string]
   | ["Locale", string]
   | null
+  | true
+  | false
+  | string
   ;
 ```
 
@@ -72,7 +73,7 @@ export type UnknownType_PrimitiveSchema =
 
 4) collection types
 
-`{ "$": "list" | "map" | "oblist", value: [elements ...]}`
+`{ "$": "list" | "map" | "oblist", values: [elements ...]}`
 - For list, put each elements in the list.
 - For dictionary, put key1, value1, key2, value2, ...
 
@@ -136,11 +137,17 @@ export type UnknownType_EnumSchema = [TypeList_Enum, number];
 
 export interface UnknownType_List
 {
-  "$": "list" | "map" | "oblist";
+  "$": "list" | "oblist";
   values: UnknownTypeSchema[];
 }
 
-export interface UnknownType_struct_type_full_name : extends struct_type_full_name
+export interface UnknownType_Map
+{
+  "$": "map";
+  values: [UnknownTypeSchema, UnknownTypeSchema][];
+}
+
+export interface UnknownType_struct_type_full_name extends struct_type_full_name
 {
   "$": "struct::type::full::name",
 }
@@ -157,7 +164,7 @@ export type UnknownTypeSchema =
 
 export enum enum_type_full_name
 {
-  item: number-literal,
+  item = number-literal,
   ...
 }
 
@@ -165,4 +172,16 @@ export interface struct_type_full_name
 {
   field: value_type;
 }
+
+// All enum_type_full_name is omitted because in known type enums are just numbers
+export type KnownTypeSchema =
+  | number
+  | true
+  | false
+  | string
+  | KnownTypeSchema[]
+  | [KnownTypeSchema, KnownTypeSchema][]
+  | struct_type_full_name
+  | ...
+  ;
 ```
