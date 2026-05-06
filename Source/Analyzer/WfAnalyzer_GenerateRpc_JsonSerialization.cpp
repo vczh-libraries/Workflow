@@ -1172,7 +1172,12 @@ namespace vl
 					if (IsVoidType(methodModel.returnType.Obj()))
 					{
 						AddStatement(block, CreateExpressionStatement(invoke));
-						AddStatement(block, CreateReturn(CreateNull()));
+						RpcJsonGenerationContext context;
+						context.manager = manager;
+						context.tempIndex = tempIndex;
+						auto nodeName = AddRpcJsonLiteral(block, context, L"Null");
+						tempIndex = context.tempIndex;
+						AddStatement(block, CreateReturn(CreateReference(nodeName)));
 					}
 					else
 					{

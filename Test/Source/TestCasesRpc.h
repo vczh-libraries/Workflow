@@ -3,6 +3,9 @@
 
 #include "CppTypes.h"
 #include "RpcDualLifecycleMock.h"
+#ifdef VCZH_DEBUG_NO_REFLECTION
+#include "RpcDualJsonDispatcherMock.h"
+#endif
 
 namespace vl
 {
@@ -75,7 +78,11 @@ void RunRpcTestCase(
 
 	lc1->GetController()->Register(oo1, oeo1, lo1, leo1);
 	lc2->GetController()->Register(oo2, oeo2, lo2, leo2);
+#ifdef VCZH_DEBUG_NO_REFLECTION
+	RpcDualJsonDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
+#else
 	RpcDualDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
+#endif
 	lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops1); });
 	lc2->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops2); });
 

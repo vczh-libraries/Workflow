@@ -9,6 +9,10 @@ You should complete tasks one by one.
 - I am a fan of crash early. When something should happen, it should just happen, do not play a game like "what if it is not the case" and silently covers the issue. One example is that, if an object should not be null, then we should just use it, if a nullable object should not be null, we should just cast it. No test is performed in this case, using it will crash if it is null, and we know there is a problem. Fix the actual problem instead of doing "error tolerance".
 - you have to follow complete instructions in `.github\Rules\verify-and-commit.md` to properly finish any task, before doing the next task.
 
+It is important to do task one by one strictly, by me designing tasks in this way, we can achieve:
+- Easy-to-understand commits for file changing that is easy to review.
+- Limit side effects so that you don't have to deal with massive of issues at the same time.
+
 ## Workflow Script Best Practice
 
 - Avoid explicit type specification whenever possible:
@@ -19,193 +23,128 @@ You should complete tasks one by one.
 
 ## Task 1
 
-Refactor `TestRpcCompile.cpp`.
-- `MangleRpcFullName` is already in `WfAnalyzer_GenerateRpc.cpp`, `TestRpcCompile.cpp` should not have a copy, it should just use that function directly.
-  - The same to `FindRpcTypeDescriptor`.
-- Reorganize test case in `TEST_CATEGORY(L"RPC compilation")` into multiple functions.
-  - Currently the test case do the following thing:
-    1. manager.Clear + compile sample + `GenerateModuleRpc` + `GenerateModuleRpcJson`
-    2. save logs.
-    3. compile sample with wrappers.
-    4. save logs.
-  - I would like you to:
-    - Extract step 1 to `CompileRpcSample`, `wrapperModule` and `wrapperJsonModule` could be lrvalue parameters.
-    - Extra step 3 to `LinkRpcSample`.
-    - Assertion against `manager` members should be include in these functions
-- Some RPC samples are not added to `CompilerTest_LoadAndCompile`'s `Resource Files/Rpc` solution explorer folder. All should be there, but it won't affect compiling.
+I would like you to implement `RpcDualJsonDispatcherMock`, inheriting from `RpcDualDispatcherMock`, override 4 methods returning ops interfaces.
+All code should be in `Test/Source/RpcDualJsonDispatcherMock.(h|cpp)`
+All 4 functions are implemented in the same way, so I only take one as an example, say we pick `BroadcastFromClient_ListEventOps`.
+There is only two possible arguments passed to `BroadcastFromClient_ListEventOps`, basically we are going to implement it like this:
 
-If you implement it correctly, you will see `CompileTest_LoadAndCompile` do not touch any generated files.
-If anything is affected, you should investigate why and fix it.
-If anything is not affected, your verification could just stop at `CompileTest_LoadAndCompile` cause all following test projects should be fine.
+```C++
+rpc_controller::IRpcListEventOps* RpcDualJsonDispatcherMock::BroadcastFromClient_ListEventOps(vint selfClientId)
+{
+  auto ops = RpcDualDispatcherMock::BroadcastFromClient_ListEventOps(selfClientId);
+  auto&& opsPtr = ops == lifecycle1->GetController() ? &listEventOps1 : &listEventOps2;
+  if (!opsPtr) opsPtr = Ptr(new RpcJsonListEventOpsMock(this, ops));
+  return opsPtr.Obj();
+}
+```
+`listEventOps[12]` is `Ptr<IRpcListEventOps>`, private fields in `RpcDualJsonDispatcherMock`.
+
+What `RpcJsonListEventOpsMock` does will be simple, all arguments or return values, if it is `Value`, or `Value` in `arguments` array:
+- `CHECK_ERROR` to ensure that it is a `Ptr<JsonNode>`.
+- Add that object to `RpcDualJsonDispatcherMock`'s list.
+- Redirect everything to the `ops` passed into its constructor.
+
+Finally, use `RpcJsonListEventOpsMock` to replace `RpcDualDispatcherMock` only in `TestCasesRpc.h`, so that only `CppTest` test projects use it.
+To distinguish `CppTest` and other `CppTest*`, you can protect the code with `VCZH_DEBUG_NO_REFLECTION`, when it is defined use the JSON version, otherwise use the original dual version.
+The goal of this change is to make sure that, all arguments and return values passing through ops interfaces are actually JSON objects.
+So if that `CHECK_ERROR` crashes, you are going to fix it.
+To speed up testing, you only need to run `CppTest` test projects, others should be unrelated.
 
 ## Task 2
 
-I would like you to add `@rpc:IdString(string)`, and `@rpc:IdNumber(int)`.
-- They are not supposed to be used by users, but they should appear in `WfLexicalScopeManager::rpcMetadata->metadataModule`.
-  - If these two attributes appear at the input, just ignore it. Ensure those will not be brought into `WfLexicalScopeManager::rpcMetadata->metadataModule`.
-    - You can focus on clearning interfaces, methods, events. If they are attached to other members, don't care.
-  - You are going to add `@rpc:IdString(string)`, and `@rpc:IdNumber(int)` to `WfLexicalScopeManager::rpcMetadata->metadataModule`:
-    - They are used on each interface, method, event.
-    - They specify generated text id and number id for them.
-    - Add `SortedList<WString> orderedIds;` to `WfRpcMetadata`:
-      - Running `ValidateModuleRPC` should eventually fill `orderedIds`.
-      - In generated `Wrapper_*.txt`, there are a lot of ID variables and `rpc_GetIds` generated in this file. Now generation of them should use `orderedIds`. It is OK that in generated files those numbers are changed, or generated `IRpcObject(Event)Ops` handles ids in different order.
-    - The generated `metadataModule` should leverage `orderedIds` to attach `@rpc:IdString(string)`, and `@rpc:IdNumber(int)` to interfaces, methods, events.
-- You should update `TODO_RPC_Definition.md` to mention these new attributes.
+In `Test/Source/Helper.(h|cpp)` there should be a function `GetRpcMetadataOutputPath` for `Test/Generated/RpcMetadata(32|64)`:
+- And `TestRpcCompile.cpp` should use it.
+- And in `CompilerTest_LoadAndCompiler`'s `Main.cpp`, this folder should also be deleted just like `GetWorkflowOutputPath`.
+  - Just like `GetCppOutputPathRpc`, 32/64 versions of `GetWorkflowOutputPath` and `GetRpcMetadataOutputPath` should be created in `Helper.(h|cpp)`.
+  - Those 4 functions should be passed to `createOrCleanFolder` in `Main.cpp`, so that `Workflow(32|64)` and `RpcMetadata(32|64)` will be deleted.
+  - In `Main.cpp` no need to handle `GetWorkflowOutputPath` separately, all 8 folders will be listed.
+    - You can define a macro, list all 8 functions, under that macro, so the code looks clean.
 
-This might affect generated files so full test should run.
+At the end of the test case in `TestCasesRpc.h` for `CppTest` with , you are going to dump a big object to a `.ts` file.
+- That means only when `VCZH_DEBUG_NO_REFLECTION` is defined.
+- Each case already has a `Serialization_*.d.ts`
+- Make a `JsonValue_*.ts` in `Test/TypeScript/JsonValues(32|64)`.
+
+The content of `JsonValue_*.ts` looks like this:
+```TypeScript
+import { KnownTypeSchema } from `./Serialization_*` // pretent them to be in the same folder
+
+const json : KnownTypeSchema[] = {
+  JSON representation of a JsonNode recorded in `RpcJsonListEventOpsMock` in the first task.
+}
+```
+
+To write JSON representation, you can use the predefined `JsonPrint` function, omit the formatter parameter and everything will be compact into single line.
+To speed up testing, you only need to run `CppTest` test projects, others should be unrelated.
 
 ## Task 3
 
-In `WfAnalyzer_ValidateRpc.cpp` add a new function `CopyAndClearRpcMetadata`, accepting `Ptr<WfModule>`, returning `Ptr<WfModule>`.
-- In `TestRpcCompile.cpp` add `VerifyRpcMetadata`, call it right after `CompileRpcSample`.
-- It will do
-  - Save `WfLexicalScopeManager::rpcMetadata->metadataModule` to a variable.
-  - manager.Clear
-  - Call `CopyAndClearRpcMetadata` on that variable.
-  - Compile.
-  - Compare the old ``WfLexicalScopeManager::rpcMetadata->metadataModule` with the new `WfLexicalScopeManager::rpcMetadata->metadataModule`.
-    - You can just assert there `WfPrint` result should be identical.
-    - The test is to ensure that, compile against the same RPC definition multiple times won't affect `orderedIds`.
-- `CopyAndClearRpcMetadata` should obviously returned a copy of the input:
-  - Copying is already implemented, reuse that function.
-  - You should also remove existing types from the output module.
-    - For example, in `Rpc/PrimitiveTypes.txt`, there is `test::Point` This type is referenced so it is there. But it is actually defined in `CppTypes.h`, so if you just compile the metadata it will fail by duplicating a struct.
-    - So you should recursively walk through the module using visitors, making full names during walking, and try to call `GetTypeDescriptor` on that name. If it returns nullptr, it means the type does not exist in the environment, and you can keep that declaration.
-
-This might affect generated files so full test should run.
+You are going to fix each `Serializtion_*.d.ts`, adding the missing `KnownTypeSchema` as described in `TODO_RPC_Json.md`, as well as other changes.
+In commit `83af71e7bce0a0a94994a60a0116759ebd9ea18b`, `TODO_RPC_Json.md` is updated, read the commit to recognize what is changed, and you need to verify generated `Serialization_*.d.ts` to make sure it actually align with the latest `TODO_RPC_Json.md`.
+This time you should run `CompilerTest_LoadAndCompile`. But if only `Serialization_*.d.ts` files are affected (that is the goal), to speed up testing, all following tests could be omitted.
 
 ## Task 4
 
-You are going to split each `Rpc/SAMPLE.txt` into two files:
-- `Rpc/SAMPLE.txt`: containing only RPC definitions.
-- `Rpc/SAMPLE_Test.txt`: containing the rest.
-All of the should be in `CompilerTest_LoadAndCompile`'s `Resource Files/Rpc` solution explorer folder.
-Now in `CompileRpcSample` you only load the definiton. But in `LinkRpcSample` you will also need to load the `*_Test.txt`.
+Please be awared that, `Workflow` folder (this repo) and `VlppParser2` (`REPO-ROOT/../VlppParser2`) are siblings.
 
-Scan
-- `TODO_RPC_Sample.md` which is a template of task instructions.
-- `Project.md` which explains how unit test works.
-- `new-sample.md` and `new-sample-rpc.md` are instructions guiding you how to update samples.
-And write the new knowledge about `*_Test.txt` in it.
+You are now going to complete `Test/TypeScript`. Just like `REPO-ROOT/../VlppParser2/Test/TypeScript`, you need to have:
+- `.gitignore`, `package.json`, `package-lock.json` (this one should be generated by `npm run build`), `tsconfig.json`
+- `prepare.ps1` to copy all `Test/Generated/RpcMetadata(32|64)/Serialization*.d.ts` to `Test/TypeScript/JsonValues(32|64)`
+- You can just copy these 5 files to `Workflow` and then edit them.
 
-This might affect generated files so full test should run.
+You can read `REPO-ROOT/../VlppParser2/Test/TypeScript` for understanding, basically:
+- `"typescript": "^6.0.2"`
+- `tsconfig.json` needs to be twisted because typescript source files are in different folder than `VlppParser2` one.
 
-## Task 5
+Run `prepare.ps1` followed by `npm install` and `npm run build`, ensure it builds.
 
-This is a verification task, make sure all mentiond documents:
-- `TODO_RPC_Definition.md`
-- `TODO_RPC_Sample.md`
-- `Project.md`
-- `new-sample.md` and `new-sample-rpc.md`
-Are property changed. If they are not changed, you should review the original instruction `TODO_RPC_Tasks.md` with the implementation (you might want to just scan the file or read git commits), and fix them.
+The goal is to test that, serialized JSON values actually match the generated .d.ts file.
+If it can't build, besides of TypeScript or npm configuration issues, it is the Workflow code generation part that messed up.
+You need to carefully re-read `TODO_RPC_Json.md` and figure out:
+- Is the document has conflict information causing the issue?
+- Is the implementation not matching the document causing the issue?
+
+When the document has conflict information, I would like you to stick to the `## Expected format of generated .d.ts files`, and when it doesn't offer enough information, stick to all sections above. In this case, you should edit the document `TODO_RPC_Json.md`.
+Since `TODO_RPC_Json.md` is updated, the compiling might expect to fail. In order to fix the issue, after modifying code generation, you should at least run:
+- `CompilerTest_LoadAndCompile` debug x64
+- `CppTest` debug x64 + Win32
+to refresh all test files.
+
+When issues are fixed, run `Build.ps1 Workflow` followed by compiling `Test/TypeScript` to make sure you have addressed every issues, including pre-existing ones.
 
 # UPDATES
 
-# TEST [CONFIRMED]
+# TEST
 
-The requested tasks are implementation and verification tasks against existing compiler/RPC tests.
+The requested work is a sequence of implementation tasks that must be verified task by task.
 
 Success criteria:
-- Each task is completed in order.
-- For Task 1, `CompilerTest_LoadAndCompile` passes and does not modify generated files.
-- For Tasks 2 through 4, generated files are updated where expected and the full test flow required by `Project.md` and `.github\Rules\verify-and-commit.md` passes.
-- Task 5 verifies the listed documentation files against the implemented behavior.
+- Task 1 implements `RpcDualJsonDispatcherMock`, validates JSON values through RPC ops, switches only `CppTest` to it under `VCZH_DEBUG_NO_REFLECTION`, and passes the requested `CppTest` projects.
+- Task 2 centralizes RPC metadata output paths, cleans the generated metadata folders, emits `JsonValue_*.ts` files from captured JSON values, and passes the requested `CppTest` projects.
+- Task 3 updates generated `Serialization_*.d.ts` output to match the latest `TODO_RPC_Json.md` changes from commit `83af71e7bce0a0a94994a60a0116759ebd9ea18b`, and `CompilerTest_LoadAndCompile` passes.
+- Task 4 completes `Test/TypeScript`, verifies generated JSON values against generated TypeScript declaration files, and runs the requested C++ and TypeScript verification.
 
 # PROPOSALS
 
-- No.1 Implement the requested RPC compiler, metadata, sample, and documentation changes task by task
+- No.1 Complete the RPC JSON mock, metadata output, TypeScript declarations, and TypeScript verification tasks sequentially
 
-## No.1 Implement the requested RPC compiler, metadata, sample, and documentation changes task by task
+## No.1 Complete the RPC JSON mock, metadata output, TypeScript declarations, and TypeScript verification tasks sequentially
 
 ### CODE CHANGE
 
 Task 1:
-- Removed the duplicate local `MangleRpcFullName` and `FindRpcTypeDescriptor` implementations from `Test/UnitTest/CompilerTest_LoadAndCompile/TestRpcCompile.cpp`.
-- Declared the existing `rpc_generating::MangleRpcFullName` and `rpc_generating::FindRpcTypeDescriptor` helpers in `Source/Analyzer/WfAnalyzer.h` and used them directly from the RPC compile test.
-- Extracted RPC definition compilation to `CompileRpcSample`, including manager clearing, parsing, rebuild, RPC metadata assertions, and wrapper generation assertions.
-- Extracted wrapper linking to `LinkRpcSample`, including manager clearing, parsing, wrapper module linking, rebuild, parse logging, and manager error assertions.
-- Updated `CompilerTest_LoadAndCompile.vcxproj` and `.filters` so every current `Test/Resources/Rpc/*.txt` sample appears under `Resource Files\Rpc`.
+- Added `RpcDualJsonDispatcherMock` for `CppTest` only, wrapping the four RPC ops interfaces returned by `RpcDualDispatcherMock`.
+- The JSON mock records every `Value` argument and return value passing through object/list ops, checks that each value is backed by a `Ptr<JsonNode>`, and forwards to the original ops implementation.
+- Switched `TestCasesRpc.h` to use `RpcDualJsonDispatcherMock` under `VCZH_DEBUG_NO_REFLECTION`, leaving reflection/metaonly test projects on the original dispatcher.
+- Added the new mock source/header to the `CppTest` project.
+- Fixed JSON RPC method generation for void methods so the generated invoke branch returns a concrete JSON null node instead of an empty `Value`.
+- Refreshed generated RPC C++ and text outputs affected by the void-return JSON serialization change.
 
 ### TASK 1 CONFIRMED
 
 Task 1 verification:
-- Debug x64 solution build passed with 0 warnings and 0 errors.
-- `CompilerTest_LoadAndCompile` passed both architecture passes, with 6/6 test files and 699/699 test cases each pass.
-- Running `CompilerTest_LoadAndCompile` did not modify any generated files; `git status` only showed the source, project metadata, and investigation log edits.
-- Debug Win32 solution build passed with 0 warnings and 0 errors.
-
-### CODE CHANGE
-
-Task 2:
-- Added `@rpc:IdString(string)` and `@rpc:IdNumber(int)` to the predefined Workflow attribute model and reflection registration.
-- Added `orderedIds` to `WfRpcMetadata` and populated it from validated RPC interface, method, and event full names.
-- Generated RPC metadata now filters any source/reflection `IdString` and `IdNumber` attributes, then appends generated `IdString` and `IdNumber` attributes from `orderedIds`.
-- RPC wrapper ID constants, interface/method/event models, and `rpc_GetIds` now derive numeric IDs from `orderedIds`.
-- Updated `TODO_RPC_Definition.md` to document the generated-only RPC ID attributes and the user-authored ignore behavior.
-- Regenerated reflection and RPC metadata/generated C++ baselines affected by the new attributes and ID ordering.
-
-### TASK 2 CONFIRMED
-
-Task 2 verification:
-- `git diff --check` passed.
-- Debug x64 solution build passed with 0 warnings and 0 errors.
-- Debug Win32 solution build passed with 0 warnings and 0 errors.
-- `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug x64.
-- `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug Win32.
-
-### CODE CHANGE
-
-Task 3:
-- Added `CopyAndClearRpcMetadata` to the RPC analyzer API.
-- Implemented metadata copying with `CopyModule`, then recursively removed copied type declarations whose full names already exist in the reflection environment.
-- Added `VerifyRpcMetadata` to `TestRpcCompile.cpp`, recompiling copied metadata immediately after `CompileRpcSample` and asserting the regenerated metadata module prints identically.
-
-### TASK 3 CONFIRMED
-
-Task 3 verification:
-- `git diff --check` passed.
-- Debug x64 solution build passed after fixing the qualified `GetTypeDescriptor` call.
-- `CompilerTest_LoadAndCompile` passed on Debug x64 after adding `VerifyRpcMetadata`.
-- Debug Win32 solution build passed with 0 warnings and 0 errors.
-- `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug x64.
-- `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug Win32.
-- No generated files were modified by Task 3 verification; only the analyzer, RPC compile test, and task log changed.
-
-### CODE CHANGE
-
-Task 4:
-- Split all 120 RPC samples into `Rpc/SAMPLE.txt` definition files and `Rpc/SAMPLE_Test.txt` executable test files.
-- Updated `TestRpcCompile.cpp` so `CompileRpcSample` compiles only the definition module, while `LinkRpcSample` loads the definition module, test module, and generated wrappers.
-- Added the new `*_Test.txt` files to `CompilerTest_LoadAndCompile.vcxproj` and `.filters` under `Resource Files\Rpc`.
-- Updated `Project.md`, `TODO_RPC_Sample.md`, `.github\Rules\new-sample.md`, and `.github\Rules\new-sample-rpc.md` to document the RPC sample split and indexing rules.
-- Regenerated RPC parse logs and generated C++/reflection outputs affected by the split source comments and separate test module parsing.
-
-### TASK 4 CONFIRMED
-
-Task 4 verification:
-- Structural checks confirmed 120 RPC definition files, 120 matching `*_Test.txt` files, no missing pairs, no executable globals in definition files, and no `@rpc` attributes in test files.
-- `CompilerTest_LoadAndCompile.vcxproj` and `.filters` each contain 120 `*_Test.txt` entries.
-- `git diff --check` passed.
-- Debug x64 solution build passed with 0 warnings and 0 errors.
-- `CompilerTest_LoadAndCompile` passed on Debug x64 after the split.
-- Debug Win32 solution build passed with 0 warnings and 0 errors.
-- `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug x64.
-- `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` passed on Debug Win32.
-
-### CODE CHANGE
-
-Task 5:
-- Reviewed `TODO_RPC_Definition.md`, `TODO_RPC_Sample.md`, `Project.md`, `.github\Rules\new-sample.md`, and `.github\Rules\new-sample-rpc.md` against `TODO_RPC_Tasks.md` and the implemented RPC metadata/sample split behavior.
-- Removed an accidental patch hunk marker from `TODO_RPC_Definition.md`.
-- Normalized the remaining `IRpcLifeCycle` spelling in `TODO_RPC_Definition.md` to `IRpcLifecycle`.
-- Added the missing `using YourFavoriteNamespace::*;` line to the split `TODO_RPC_Sample.md` test template.
-- Corrected stale `Test\Resource` paths in `.github\Rules\new-sample.md` to `Test\Resources`.
-
-### TASK 5 CONFIRMED
-
-Task 5 verification:
-- Confirmed `TODO_RPC_Definition.md` documents generated `@rpc:IdString(string)` and `@rpc:IdNumber(int)` attributes and user-authored ignore behavior.
-- Confirmed `TODO_RPC_Sample.md`, `Project.md`, `.github\Rules\new-sample.md`, and `.github\Rules\new-sample-rpc.md` document the `Rpc/SAMPLE.txt` plus `Rpc/SAMPLE_Test.txt` split, `IndexRpc.txt` base-sample indexing, and `Resource Files\Rpc` inclusion.
-- `git diff --check` passed.
-- `CompilerTest_LoadAndCompile` passed on Debug x64.
+- Debug x64 solution build passed.
+- `CompilerTest_LoadAndCompile` passed on Debug x64 after the JSON void-return generator fix and refreshed generated outputs.
+- `CppTest` passed on Debug x64 with 2/2 test files and 223/223 test cases.
+- Debug Win32 solution build passed.
+- `CppTest` passed on Debug Win32 with 2/2 test files and 223/223 test cases.
