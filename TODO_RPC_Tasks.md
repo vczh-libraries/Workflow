@@ -73,7 +73,8 @@ To speed up testing, you only need to run `CppTest` test projects, others should
 
 ## Task 3
 
-You are going to fix each `Serializtion_*.d.ts`, adding the missing `KnownTypeSchema` as described in `TODO_RPC_Json.md`.
+You are going to fix each `Serializtion_*.d.ts`, adding the missing `KnownTypeSchema` as described in `TODO_RPC_Json.md`, as well as other changes.
+In commit `83af71e7bce0a0a94994a60a0116759ebd9ea18b`, `TODO_RPC_Json.md` is updated, read the commit to recognize what is changed, and you need to verify generated `Serialization_*.d.ts` to make sure it actually align with the latest `TODO_RPC_Json.md`.
 This time you should run `CompilerTest_LoadAndCompile`. But if only `Serialization_*.d.ts` files are affected (that is the goal), to speed up testing, all following tests could be omitted.
 
 ## Task 4
@@ -97,4 +98,10 @@ You need to carefully re-read `TODO_RPC_Json.md` and figure out:
 - Is the document has conflict information causing the issue?
 - Is the implementation not matching the document causing the issue?
 
-When the document has conflict information, I would like you to stick to the `## Expected format of generated .d.ts files`, and when it doesn't offer enough information, stick to all sections above. In this case, you should edit the document `TODO_RPS_Json.md`. But I believe this should not happen.
+When the document has conflict information, I would like you to stick to the `## Expected format of generated .d.ts files`, and when it doesn't offer enough information, stick to all sections above. In this case, you should edit the document `TODO_RPC_Json.md`.
+Since `TODO_RPC_Json.md` is updated, the compiling might expect to fail. In order to fix the issue, after modifying code generation, you should at least run:
+- `CompilerTest_LoadAndCompile` debug x64
+- `CppTest` debug x64 + Win32
+to refresh all test files.
+
+When issues are fixed, run `Build.ps1 Workflow` followed by compiling `Test/TypeScript` to make sure you have addressed every issues, including pre-existing ones.
