@@ -258,7 +258,7 @@ TEST_FILE
 
 TEST_CASE(L"Rpc:Collection_Default")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Default>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Default>(L"Collection_Default", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Default::Instance();
@@ -270,7 +270,7 @@ TEST_CASE(L"Rpc:Collection_Default")
 
 TEST_CASE(L"Rpc:Collection_InByref_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_InByref_OutByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_InByref_OutByref>(L"Collection_InByref_OutByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_InByref_OutByref::Instance();
@@ -282,7 +282,7 @@ TEST_CASE(L"Rpc:Collection_InByref_OutByref")
 
 TEST_CASE(L"Rpc:Collection_InByref_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_InByref_OutByval>(L"[1234][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_InByref_OutByval>(L"Collection_InByref_OutByval", L"[1234][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_InByref_OutByval::Instance();
@@ -294,7 +294,7 @@ TEST_CASE(L"Rpc:Collection_InByref_OutByval")
 
 TEST_CASE(L"Rpc:Collection_InByval_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_InByval_OutByref>(L"[123][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_InByval_OutByref>(L"Collection_InByval_OutByref", L"[123][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_InByval_OutByref::Instance();
@@ -306,7 +306,7 @@ TEST_CASE(L"Rpc:Collection_InByval_OutByref")
 
 TEST_CASE(L"Rpc:Collection_InByval_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_InByval_OutByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_InByval_OutByval>(L"Collection_InByval_OutByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_InByval_OutByval::Instance();
@@ -318,7 +318,7 @@ TEST_CASE(L"Rpc:Collection_InByval_OutByval")
 
 TEST_CASE(L"Rpc:Collection_Interface_Default")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Default>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Default>(L"Collection_Interface_Default", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_Default::Instance();
@@ -331,7 +331,7 @@ TEST_CASE(L"Rpc:Collection_Interface_Default")
 
 TEST_CASE(L"Rpc:Collection_Interface_InByref_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_InByref_OutByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_InByref_OutByref>(L"Collection_Interface_InByref_OutByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_InByref_OutByref::Instance();
@@ -344,7 +344,7 @@ TEST_CASE(L"Rpc:Collection_Interface_InByref_OutByref")
 
 TEST_CASE(L"Rpc:Collection_Interface_InByref_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_InByref_OutByval>(L"[1234][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_InByref_OutByval>(L"Collection_Interface_InByref_OutByval", L"[1234][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_InByref_OutByval::Instance();
@@ -357,7 +357,7 @@ TEST_CASE(L"Rpc:Collection_Interface_InByref_OutByval")
 
 TEST_CASE(L"Rpc:Collection_Interface_InByval_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_InByval_OutByref>(L"[123][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_InByval_OutByref>(L"Collection_Interface_InByval_OutByref", L"[123][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_InByval_OutByref::Instance();
@@ -370,7 +370,7 @@ TEST_CASE(L"Rpc:Collection_Interface_InByval_OutByref")
 
 TEST_CASE(L"Rpc:Collection_Interface_InByval_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_InByval_OutByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_InByval_OutByval>(L"Collection_Interface_InByval_OutByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_InByval_OutByval::Instance();
@@ -383,7 +383,7 @@ TEST_CASE(L"Rpc:Collection_Interface_InByval_OutByval")
 
 TEST_CASE(L"Rpc:Collection_Interface_Nested_Default")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_Default>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_Default>(L"Collection_Interface_Nested_Default", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_Nested_Default::Instance();
@@ -396,7 +396,7 @@ TEST_CASE(L"Rpc:Collection_Interface_Nested_Default")
 
 TEST_CASE(L"Rpc:Collection_Interface_Nested_InByref_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_InByref_OutByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_InByref_OutByref>(L"Collection_Interface_Nested_InByref_OutByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_Nested_InByref_OutByref::Instance();
@@ -409,7 +409,7 @@ TEST_CASE(L"Rpc:Collection_Interface_Nested_InByref_OutByref")
 
 TEST_CASE(L"Rpc:Collection_Interface_Nested_InByref_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_InByref_OutByval>(L"[1234][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_InByref_OutByval>(L"Collection_Interface_Nested_InByref_OutByval", L"[1234][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_Nested_InByref_OutByval::Instance();
@@ -422,7 +422,7 @@ TEST_CASE(L"Rpc:Collection_Interface_Nested_InByref_OutByval")
 
 TEST_CASE(L"Rpc:Collection_Interface_Nested_InByval_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_InByval_OutByref>(L"[123][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_InByval_OutByref>(L"Collection_Interface_Nested_InByval_OutByref", L"[123][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_Nested_InByval_OutByref::Instance();
@@ -435,7 +435,7 @@ TEST_CASE(L"Rpc:Collection_Interface_Nested_InByval_OutByref")
 
 TEST_CASE(L"Rpc:Collection_Interface_Nested_InByval_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_InByval_OutByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_InByval_OutByval>(L"Collection_Interface_Nested_InByval_OutByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_Nested_InByval_OutByval::Instance();
@@ -448,7 +448,7 @@ TEST_CASE(L"Rpc:Collection_Interface_Nested_InByval_OutByval")
 
 TEST_CASE(L"Rpc:Collection_Interface_Nested_PropByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_PropByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_PropByref>(L"Collection_Interface_Nested_PropByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_Nested_PropByref::Instance();
@@ -461,7 +461,7 @@ TEST_CASE(L"Rpc:Collection_Interface_Nested_PropByref")
 
 TEST_CASE(L"Rpc:Collection_Interface_Nested_PropByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_PropByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_PropByval>(L"Collection_Interface_Nested_PropByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_Nested_PropByval::Instance();
@@ -474,7 +474,7 @@ TEST_CASE(L"Rpc:Collection_Interface_Nested_PropByval")
 
 TEST_CASE(L"Rpc:Collection_Interface_Nested_PropDefault")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_PropDefault>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_Nested_PropDefault>(L"Collection_Interface_Nested_PropDefault", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_Nested_PropDefault::Instance();
@@ -487,7 +487,7 @@ TEST_CASE(L"Rpc:Collection_Interface_Nested_PropDefault")
 
 TEST_CASE(L"Rpc:Collection_Interface_PropByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_PropByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_PropByref>(L"Collection_Interface_PropByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_PropByref::Instance();
@@ -500,7 +500,7 @@ TEST_CASE(L"Rpc:Collection_Interface_PropByref")
 
 TEST_CASE(L"Rpc:Collection_Interface_PropByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_PropByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_PropByval>(L"Collection_Interface_PropByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_PropByval::Instance();
@@ -513,7 +513,7 @@ TEST_CASE(L"Rpc:Collection_Interface_PropByval")
 
 TEST_CASE(L"Rpc:Collection_Interface_PropDefault")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_PropDefault>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Interface_PropDefault>(L"Collection_Interface_PropDefault", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Interface_PropDefault::Instance();
@@ -526,7 +526,7 @@ TEST_CASE(L"Rpc:Collection_Interface_PropDefault")
 
 TEST_CASE(L"Rpc:Collection_Nested_Default")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_Default>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_Default>(L"Collection_Nested_Default", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Nested_Default::Instance();
@@ -538,7 +538,7 @@ TEST_CASE(L"Rpc:Collection_Nested_Default")
 
 TEST_CASE(L"Rpc:Collection_Nested_InByref_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_InByref_OutByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_InByref_OutByref>(L"Collection_Nested_InByref_OutByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Nested_InByref_OutByref::Instance();
@@ -550,7 +550,7 @@ TEST_CASE(L"Rpc:Collection_Nested_InByref_OutByref")
 
 TEST_CASE(L"Rpc:Collection_Nested_InByref_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_InByref_OutByval>(L"[1234][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_InByref_OutByval>(L"Collection_Nested_InByref_OutByval", L"[1234][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Nested_InByref_OutByval::Instance();
@@ -562,7 +562,7 @@ TEST_CASE(L"Rpc:Collection_Nested_InByref_OutByval")
 
 TEST_CASE(L"Rpc:Collection_Nested_InByval_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_InByval_OutByref>(L"[123][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_InByval_OutByref>(L"Collection_Nested_InByval_OutByref", L"[123][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Nested_InByval_OutByref::Instance();
@@ -574,7 +574,7 @@ TEST_CASE(L"Rpc:Collection_Nested_InByval_OutByref")
 
 TEST_CASE(L"Rpc:Collection_Nested_InByval_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_InByval_OutByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_InByval_OutByval>(L"Collection_Nested_InByval_OutByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Nested_InByval_OutByval::Instance();
@@ -586,7 +586,7 @@ TEST_CASE(L"Rpc:Collection_Nested_InByval_OutByval")
 
 TEST_CASE(L"Rpc:Collection_Nested_PropByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_PropByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_PropByref>(L"Collection_Nested_PropByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Nested_PropByref::Instance();
@@ -598,7 +598,7 @@ TEST_CASE(L"Rpc:Collection_Nested_PropByref")
 
 TEST_CASE(L"Rpc:Collection_Nested_PropByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_PropByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_PropByval>(L"Collection_Nested_PropByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Nested_PropByval::Instance();
@@ -610,7 +610,7 @@ TEST_CASE(L"Rpc:Collection_Nested_PropByval")
 
 TEST_CASE(L"Rpc:Collection_Nested_PropDefault")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_PropDefault>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_Nested_PropDefault>(L"Collection_Nested_PropDefault", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_Nested_PropDefault::Instance();
@@ -622,7 +622,7 @@ TEST_CASE(L"Rpc:Collection_Nested_PropDefault")
 
 TEST_CASE(L"Rpc:Collection_PropByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_PropByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_PropByref>(L"Collection_PropByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_PropByref::Instance();
@@ -634,7 +634,7 @@ TEST_CASE(L"Rpc:Collection_PropByref")
 
 TEST_CASE(L"Rpc:Collection_PropByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_PropByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_PropByval>(L"Collection_PropByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_PropByval::Instance();
@@ -646,7 +646,7 @@ TEST_CASE(L"Rpc:Collection_PropByval")
 
 TEST_CASE(L"Rpc:Collection_PropDefault")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_PropDefault>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Collection_PropDefault>(L"Collection_PropDefault", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Collection_PropDefault::Instance();
@@ -658,7 +658,7 @@ TEST_CASE(L"Rpc:Collection_PropDefault")
 
 TEST_CASE(L"Rpc:CollectionDict_Default")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Default>(L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Default>(L"CollectionDict_Default", L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Default::Instance();
@@ -670,7 +670,7 @@ TEST_CASE(L"Rpc:CollectionDict_Default")
 
 TEST_CASE(L"Rpc:CollectionDict_InByref_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_InByref_OutByref>(L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_InByref_OutByref>(L"CollectionDict_InByref_OutByref", L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_InByref_OutByref::Instance();
@@ -682,7 +682,7 @@ TEST_CASE(L"Rpc:CollectionDict_InByref_OutByref")
 
 TEST_CASE(L"Rpc:CollectionDict_InByref_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_InByref_OutByval>(L"[1A2B3C4D][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_InByref_OutByval>(L"CollectionDict_InByref_OutByval", L"[1A2B3C4D][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_InByref_OutByval::Instance();
@@ -694,7 +694,7 @@ TEST_CASE(L"Rpc:CollectionDict_InByref_OutByval")
 
 TEST_CASE(L"Rpc:CollectionDict_InByval_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_InByval_OutByref>(L"[1A2B3C][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_InByval_OutByref>(L"CollectionDict_InByval_OutByref", L"[1A2B3C][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_InByval_OutByref::Instance();
@@ -706,7 +706,7 @@ TEST_CASE(L"Rpc:CollectionDict_InByval_OutByref")
 
 TEST_CASE(L"Rpc:CollectionDict_InByval_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_InByval_OutByval>(L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_InByval_OutByval>(L"CollectionDict_InByval_OutByval", L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_InByval_OutByval::Instance();
@@ -718,7 +718,7 @@ TEST_CASE(L"Rpc:CollectionDict_InByval_OutByval")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_Default")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Default>(L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Default>(L"CollectionDict_Interface_Default", L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_Default::Instance();
@@ -731,7 +731,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_Default")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_InByref_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_InByref_OutByref>(L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_InByref_OutByref>(L"CollectionDict_Interface_InByref_OutByref", L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_InByref_OutByref::Instance();
@@ -744,7 +744,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_InByref_OutByref")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_InByref_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_InByref_OutByval>(L"[1A2B3C4D][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_InByref_OutByval>(L"CollectionDict_Interface_InByref_OutByval", L"[1A2B3C4D][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_InByref_OutByval::Instance();
@@ -757,7 +757,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_InByref_OutByval")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_InByval_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_InByval_OutByref>(L"[1A2B3C][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_InByval_OutByref>(L"CollectionDict_Interface_InByval_OutByref", L"[1A2B3C][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_InByval_OutByref::Instance();
@@ -770,7 +770,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_InByval_OutByref")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_InByval_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_InByval_OutByval>(L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_InByval_OutByval>(L"CollectionDict_Interface_InByval_OutByval", L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_InByval_OutByval::Instance();
@@ -783,7 +783,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_InByval_OutByval")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_Default")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_Default>(L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_Default>(L"CollectionDict_Interface_Nested_Default", L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_Default::Instance();
@@ -796,7 +796,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_Default")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_InByref_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByref_OutByref>(L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByref_OutByref>(L"CollectionDict_Interface_Nested_InByref_OutByref", L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByref_OutByref::Instance();
@@ -809,7 +809,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_InByref_OutByref")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_InByref_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByref_OutByval>(L"[1A2B3C4D][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByref_OutByval>(L"CollectionDict_Interface_Nested_InByref_OutByval", L"[1A2B3C4D][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByref_OutByval::Instance();
@@ -822,7 +822,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_InByref_OutByval")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_InByval_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByval_OutByref>(L"[1A2B3C][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByval_OutByref>(L"CollectionDict_Interface_Nested_InByval_OutByref", L"[1A2B3C][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByval_OutByref::Instance();
@@ -835,7 +835,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_InByval_OutByref")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_InByval_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByval_OutByval>(L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByval_OutByval>(L"CollectionDict_Interface_Nested_InByval_OutByval", L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_InByval_OutByval::Instance();
@@ -848,7 +848,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_InByval_OutByval")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_PropByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_PropByref>(L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_PropByref>(L"CollectionDict_Interface_Nested_PropByref", L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_PropByref::Instance();
@@ -861,7 +861,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_PropByref")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_PropByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_PropByval>(L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_PropByval>(L"CollectionDict_Interface_Nested_PropByval", L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_PropByval::Instance();
@@ -874,7 +874,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_PropByval")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_PropDefault")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_PropDefault>(L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_PropDefault>(L"CollectionDict_Interface_Nested_PropDefault", L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_Nested_PropDefault::Instance();
@@ -887,7 +887,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_Nested_PropDefault")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_PropByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_PropByref>(L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_PropByref>(L"CollectionDict_Interface_PropByref", L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_PropByref::Instance();
@@ -900,7 +900,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_PropByref")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_PropByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_PropByval>(L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_PropByval>(L"CollectionDict_Interface_PropByval", L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_PropByval::Instance();
@@ -913,7 +913,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_PropByval")
 
 TEST_CASE(L"Rpc:CollectionDict_Interface_PropDefault")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_PropDefault>(L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Interface_PropDefault>(L"CollectionDict_Interface_PropDefault", L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Interface_PropDefault::Instance();
@@ -926,7 +926,7 @@ TEST_CASE(L"Rpc:CollectionDict_Interface_PropDefault")
 
 TEST_CASE(L"Rpc:CollectionDict_Nested_Default")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_Default>(L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_Default>(L"CollectionDict_Nested_Default", L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Nested_Default::Instance();
@@ -938,7 +938,7 @@ TEST_CASE(L"Rpc:CollectionDict_Nested_Default")
 
 TEST_CASE(L"Rpc:CollectionDict_Nested_InByref_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_InByref_OutByref>(L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_InByref_OutByref>(L"CollectionDict_Nested_InByref_OutByref", L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Nested_InByref_OutByref::Instance();
@@ -950,7 +950,7 @@ TEST_CASE(L"Rpc:CollectionDict_Nested_InByref_OutByref")
 
 TEST_CASE(L"Rpc:CollectionDict_Nested_InByref_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_InByref_OutByval>(L"[1A2B3C4D][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_InByref_OutByval>(L"CollectionDict_Nested_InByref_OutByval", L"[1A2B3C4D][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Nested_InByref_OutByval::Instance();
@@ -962,7 +962,7 @@ TEST_CASE(L"Rpc:CollectionDict_Nested_InByref_OutByval")
 
 TEST_CASE(L"Rpc:CollectionDict_Nested_InByval_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_InByval_OutByref>(L"[1A2B3C][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_InByval_OutByref>(L"CollectionDict_Nested_InByval_OutByref", L"[1A2B3C][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Nested_InByval_OutByref::Instance();
@@ -974,7 +974,7 @@ TEST_CASE(L"Rpc:CollectionDict_Nested_InByval_OutByref")
 
 TEST_CASE(L"Rpc:CollectionDict_Nested_InByval_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_InByval_OutByval>(L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_InByval_OutByval>(L"CollectionDict_Nested_InByval_OutByval", L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Nested_InByval_OutByval::Instance();
@@ -986,7 +986,7 @@ TEST_CASE(L"Rpc:CollectionDict_Nested_InByval_OutByval")
 
 TEST_CASE(L"Rpc:CollectionDict_Nested_PropByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_PropByref>(L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_PropByref>(L"CollectionDict_Nested_PropByref", L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Nested_PropByref::Instance();
@@ -998,7 +998,7 @@ TEST_CASE(L"Rpc:CollectionDict_Nested_PropByref")
 
 TEST_CASE(L"Rpc:CollectionDict_Nested_PropByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_PropByval>(L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_PropByval>(L"CollectionDict_Nested_PropByval", L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Nested_PropByval::Instance();
@@ -1010,7 +1010,7 @@ TEST_CASE(L"Rpc:CollectionDict_Nested_PropByval")
 
 TEST_CASE(L"Rpc:CollectionDict_Nested_PropDefault")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_PropDefault>(L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_Nested_PropDefault>(L"CollectionDict_Nested_PropDefault", L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_Nested_PropDefault::Instance();
@@ -1022,7 +1022,7 @@ TEST_CASE(L"Rpc:CollectionDict_Nested_PropDefault")
 
 TEST_CASE(L"Rpc:CollectionDict_PropByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_PropByref>(L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_PropByref>(L"CollectionDict_PropByref", L"[1A2B3C4D5E][1A2B3C4D5E][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_PropByref::Instance();
@@ -1034,7 +1034,7 @@ TEST_CASE(L"Rpc:CollectionDict_PropByref")
 
 TEST_CASE(L"Rpc:CollectionDict_PropByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_PropByval>(L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_PropByval>(L"CollectionDict_PropByval", L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_PropByval::Instance();
@@ -1046,7 +1046,7 @@ TEST_CASE(L"Rpc:CollectionDict_PropByval")
 
 TEST_CASE(L"Rpc:CollectionDict_PropDefault")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_PropDefault>(L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionDict_PropDefault>(L"CollectionDict_PropDefault", L"[1A2B3C][1A2B3C4D][1A2B3C4D5E]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionDict_PropDefault::Instance();
@@ -1058,7 +1058,7 @@ TEST_CASE(L"Rpc:CollectionDict_PropDefault")
 
 TEST_CASE(L"Rpc:CollectionOblist_Default")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Default>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Default>(L"CollectionOblist_Default", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Default::Instance();
@@ -1070,7 +1070,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Default")
 
 TEST_CASE(L"Rpc:CollectionOblist_InByref_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_InByref_OutByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_InByref_OutByref>(L"CollectionOblist_InByref_OutByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_InByref_OutByref::Instance();
@@ -1082,7 +1082,7 @@ TEST_CASE(L"Rpc:CollectionOblist_InByref_OutByref")
 
 TEST_CASE(L"Rpc:CollectionOblist_InByref_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_InByref_OutByval>(L"[1234][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_InByref_OutByval>(L"CollectionOblist_InByref_OutByval", L"[1234][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_InByref_OutByval::Instance();
@@ -1094,7 +1094,7 @@ TEST_CASE(L"Rpc:CollectionOblist_InByref_OutByval")
 
 TEST_CASE(L"Rpc:CollectionOblist_InByval_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_InByval_OutByref>(L"[123][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_InByval_OutByref>(L"CollectionOblist_InByval_OutByref", L"[123][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_InByval_OutByref::Instance();
@@ -1106,7 +1106,7 @@ TEST_CASE(L"Rpc:CollectionOblist_InByval_OutByref")
 
 TEST_CASE(L"Rpc:CollectionOblist_InByval_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_InByval_OutByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_InByval_OutByval>(L"CollectionOblist_InByval_OutByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_InByval_OutByval::Instance();
@@ -1118,7 +1118,7 @@ TEST_CASE(L"Rpc:CollectionOblist_InByval_OutByval")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_Default")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Default>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Default>(L"CollectionOblist_Interface_Default", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_Default::Instance();
@@ -1131,7 +1131,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_Default")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_InByref_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_InByref_OutByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_InByref_OutByref>(L"CollectionOblist_Interface_InByref_OutByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_InByref_OutByref::Instance();
@@ -1144,7 +1144,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_InByref_OutByref")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_InByref_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_InByref_OutByval>(L"[1234][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_InByref_OutByval>(L"CollectionOblist_Interface_InByref_OutByval", L"[1234][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_InByref_OutByval::Instance();
@@ -1157,7 +1157,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_InByref_OutByval")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_InByval_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_InByval_OutByref>(L"[123][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_InByval_OutByref>(L"CollectionOblist_Interface_InByval_OutByref", L"[123][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_InByval_OutByref::Instance();
@@ -1170,7 +1170,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_InByval_OutByref")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_InByval_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_InByval_OutByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_InByval_OutByval>(L"CollectionOblist_Interface_InByval_OutByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_InByval_OutByval::Instance();
@@ -1183,7 +1183,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_InByval_OutByval")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_Default")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_Default>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_Default>(L"CollectionOblist_Interface_Nested_Default", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_Default::Instance();
@@ -1196,7 +1196,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_Default")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_InByref_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_InByref_OutByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_InByref_OutByref>(L"CollectionOblist_Interface_Nested_InByref_OutByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_InByref_OutByref::Instance();
@@ -1209,7 +1209,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_InByref_OutByref")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_InByref_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_InByref_OutByval>(L"[1234][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_InByref_OutByval>(L"CollectionOblist_Interface_Nested_InByref_OutByval", L"[1234][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_InByref_OutByval::Instance();
@@ -1222,7 +1222,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_InByref_OutByval")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_InByval_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_InByval_OutByref>(L"[123][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_InByval_OutByref>(L"CollectionOblist_Interface_Nested_InByval_OutByref", L"[123][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_InByval_OutByref::Instance();
@@ -1235,7 +1235,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_InByval_OutByref")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_InByval_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_InByval_OutByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_InByval_OutByval>(L"CollectionOblist_Interface_Nested_InByval_OutByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_InByval_OutByval::Instance();
@@ -1248,7 +1248,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_InByval_OutByval")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_PropByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_PropByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_PropByref>(L"CollectionOblist_Interface_Nested_PropByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_PropByref::Instance();
@@ -1261,7 +1261,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_PropByref")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_PropByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_PropByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_PropByval>(L"CollectionOblist_Interface_Nested_PropByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_PropByval::Instance();
@@ -1274,7 +1274,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_PropByval")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_PropDefault")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_PropDefault>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_PropDefault>(L"CollectionOblist_Interface_Nested_PropDefault", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_PropDefault::Instance();
@@ -1287,7 +1287,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_Nested_PropDefault")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_PropByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_PropByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_PropByref>(L"CollectionOblist_Interface_PropByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_PropByref::Instance();
@@ -1300,7 +1300,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_PropByref")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_PropByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_PropByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_PropByval>(L"CollectionOblist_Interface_PropByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_PropByval::Instance();
@@ -1313,7 +1313,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_PropByval")
 
 TEST_CASE(L"Rpc:CollectionOblist_Interface_PropDefault")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_PropDefault>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Interface_PropDefault>(L"CollectionOblist_Interface_PropDefault", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Interface_PropDefault::Instance();
@@ -1326,7 +1326,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Interface_PropDefault")
 
 TEST_CASE(L"Rpc:CollectionOblist_Nested_Default")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_Default>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_Default>(L"CollectionOblist_Nested_Default", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Nested_Default::Instance();
@@ -1338,7 +1338,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Nested_Default")
 
 TEST_CASE(L"Rpc:CollectionOblist_Nested_InByref_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_InByref_OutByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_InByref_OutByref>(L"CollectionOblist_Nested_InByref_OutByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Nested_InByref_OutByref::Instance();
@@ -1350,7 +1350,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Nested_InByref_OutByref")
 
 TEST_CASE(L"Rpc:CollectionOblist_Nested_InByref_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_InByref_OutByval>(L"[1234][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_InByref_OutByval>(L"CollectionOblist_Nested_InByref_OutByval", L"[1234][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Nested_InByref_OutByval::Instance();
@@ -1362,7 +1362,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Nested_InByref_OutByval")
 
 TEST_CASE(L"Rpc:CollectionOblist_Nested_InByval_OutByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_InByval_OutByref>(L"[123][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_InByval_OutByref>(L"CollectionOblist_Nested_InByval_OutByref", L"[123][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Nested_InByval_OutByref::Instance();
@@ -1374,7 +1374,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Nested_InByval_OutByref")
 
 TEST_CASE(L"Rpc:CollectionOblist_Nested_InByval_OutByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_InByval_OutByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_InByval_OutByval>(L"CollectionOblist_Nested_InByval_OutByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Nested_InByval_OutByval::Instance();
@@ -1386,7 +1386,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Nested_InByval_OutByval")
 
 TEST_CASE(L"Rpc:CollectionOblist_Nested_PropByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_PropByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_PropByref>(L"CollectionOblist_Nested_PropByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Nested_PropByref::Instance();
@@ -1398,7 +1398,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Nested_PropByref")
 
 TEST_CASE(L"Rpc:CollectionOblist_Nested_PropByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_PropByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_PropByval>(L"CollectionOblist_Nested_PropByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Nested_PropByval::Instance();
@@ -1410,7 +1410,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Nested_PropByval")
 
 TEST_CASE(L"Rpc:CollectionOblist_Nested_PropDefault")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_PropDefault>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_Nested_PropDefault>(L"CollectionOblist_Nested_PropDefault", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_Nested_PropDefault::Instance();
@@ -1422,7 +1422,7 @@ TEST_CASE(L"Rpc:CollectionOblist_Nested_PropDefault")
 
 TEST_CASE(L"Rpc:CollectionOblist_PropByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_PropByref>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_PropByref>(L"CollectionOblist_PropByref", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_PropByref::Instance();
@@ -1434,7 +1434,7 @@ TEST_CASE(L"Rpc:CollectionOblist_PropByref")
 
 TEST_CASE(L"Rpc:CollectionOblist_PropByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_PropByval>(L"[123][1234][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_PropByval>(L"CollectionOblist_PropByval", L"[123][1234][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_PropByval::Instance();
@@ -1446,7 +1446,7 @@ TEST_CASE(L"Rpc:CollectionOblist_PropByval")
 
 TEST_CASE(L"Rpc:CollectionOblist_PropDefault")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_PropDefault>(L"[12345][12345][12345]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_CollectionOblist_PropDefault>(L"CollectionOblist_PropDefault", L"[12345][12345][12345]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_CollectionOblist_PropDefault::Instance();
@@ -1458,7 +1458,7 @@ TEST_CASE(L"Rpc:CollectionOblist_PropDefault")
 
 TEST_CASE(L"Rpc:Dtor")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor>(L"[Not Deleted][Deleted]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor>(L"Dtor", L"[Not Deleted][Deleted]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Dtor::Instance();
@@ -1471,7 +1471,7 @@ TEST_CASE(L"Rpc:Dtor")
 
 TEST_CASE(L"Rpc:Dtor2")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor2>(L"[Not Deleted][Deleted]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor2>(L"Dtor2", L"[Not Deleted][Deleted]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Dtor2::Instance();
@@ -1484,7 +1484,7 @@ TEST_CASE(L"Rpc:Dtor2")
 
 TEST_CASE(L"Rpc:Dtor3")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor3>(L"[1][IContainer][IValue][2][IContainer][3][IValue][4]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Dtor3>(L"Dtor3", L"[1][IContainer][IValue][2][IContainer][3][IValue][4]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Dtor3::Instance();
@@ -1498,7 +1498,7 @@ TEST_CASE(L"Rpc:Dtor3")
 
 TEST_CASE(L"Rpc:DtorList")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_DtorList>(L"[a1][a2][IValue][a3][b1][b2][b3][IValue][c1][c2][c3][IValue][d1][d2][d3][IValue][e1][e2][e3][IValue][f1][f2][IValue][f3]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_DtorList>(L"DtorList", L"[a1][a2][IValue][a3][b1][b2][b3][IValue][c1][c2][c3][IValue][d1][d2][d3][IValue][e1][e2][e3][IValue][f1][f2][IValue][f3]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_DtorList::Instance();
@@ -1511,7 +1511,7 @@ TEST_CASE(L"Rpc:DtorList")
 
 TEST_CASE(L"Rpc:DtorList2")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_DtorList2>(L"[a1][a2][IValue][a3][b1][b2][b3][IValue][c1][c2][c3][IValue][d1][d2][d3][IValue][e1][e2][e3][IValue]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_DtorList2>(L"DtorList2", L"[a1][a2][IValue][a3][b1][b2][b3][IValue][c1][c2][c3][IValue][d1][d2][d3][IValue][e1][e2][e3][IValue]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_DtorList2::Instance();
@@ -1524,7 +1524,7 @@ TEST_CASE(L"Rpc:DtorList2")
 
 TEST_CASE(L"Rpc:DtorPropCached")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_DtorPropCached>(L"[1][Deleted:A][2][3][4][ValueChanged][5][6][Deleted:B][7][8][ValueChanged][9][Deleted:C]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_DtorPropCached>(L"DtorPropCached", L"[1][Deleted:A][2][3][4][ValueChanged][5][6][Deleted:B][7][8][ValueChanged][9][Deleted:C]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_DtorPropCached::Instance();
@@ -1540,7 +1540,7 @@ TEST_CASE(L"Rpc:DtorPropCached")
 
 TEST_CASE(L"Rpc:DtorPropCachedListByval")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_DtorPropCachedListByval>(L"[1][Deleted:A][2][3][4][ValueChanged][5][6][Deleted:B][7][8][ValueChanged][9][Deleted:C]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_DtorPropCachedListByval>(L"DtorPropCachedListByval", L"[1][Deleted:A][2][3][4][ValueChanged][5][6][Deleted:B][7][8][ValueChanged][9][Deleted:C]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_DtorPropCachedListByval::Instance();
@@ -1556,7 +1556,7 @@ TEST_CASE(L"Rpc:DtorPropCachedListByval")
 
 TEST_CASE(L"Rpc:DtorPropCachedListVByref")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_DtorPropCachedListVByref>(L"[1][Deleted:A][2][3][4][ValueChanged][5][6][Deleted:B][7][8][ValueChanged][9][Deleted:C]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_DtorPropCachedListVByref>(L"DtorPropCachedListVByref", L"[1][Deleted:A][2][3][4][ValueChanged][5][6][Deleted:B][7][8][ValueChanged][9][Deleted:C]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_DtorPropCachedListVByref::Instance();
@@ -1572,7 +1572,7 @@ TEST_CASE(L"Rpc:DtorPropCachedListVByref")
 
 TEST_CASE(L"Rpc:Event")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Event>(L"[clientMain:A][serviceMain:B]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Event>(L"Event", L"[clientMain:A][serviceMain:B]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Event::Instance();
@@ -1587,7 +1587,7 @@ TEST_CASE(L"Rpc:Event")
 
 TEST_CASE(L"Rpc:EventArgs")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_EventArgs>(L"[1][2][3][4][6]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_EventArgs>(L"EventArgs", L"[1][2][3][4][6]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_EventArgs::Instance();
@@ -1602,7 +1602,7 @@ TEST_CASE(L"Rpc:EventArgs")
 
 TEST_CASE(L"Rpc:EventOblist")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_EventOblist>(L"[clientMain:0,0,1][clientMain:1,0,1][clientMain:0,1,1][clientMain:1,1,0][clientMain:0,1,0][serviceMain:0,0,1][serviceMain:1,0,1][serviceMain:0,1,1][serviceMain:1,1,0][serviceMain:0,1,0]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_EventOblist>(L"EventOblist", L"[clientMain:0,0,1][clientMain:1,0,1][clientMain:0,1,1][clientMain:1,1,0][clientMain:0,1,0][serviceMain:0,0,1][serviceMain:1,0,1][serviceMain:0,1,1][serviceMain:1,1,0][serviceMain:0,1,0]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_EventOblist::Instance();
@@ -1614,7 +1614,7 @@ TEST_CASE(L"Rpc:EventOblist")
 
 TEST_CASE(L"Rpc:FailDoubleRegistration")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_FailDoubleRegistration>(L"[call][service:Received 1st][client:Received 2nd][call][service:Received 1st][exception][call][exception][call][exception]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_FailDoubleRegistration>(L"FailDoubleRegistration", L"[call][service:Received 1st][client:Received 2nd][call][service:Received 1st][exception][call][exception][call][exception]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_FailDoubleRegistration::Instance();
@@ -1627,7 +1627,7 @@ TEST_CASE(L"Rpc:FailDoubleRegistration")
 
 TEST_CASE(L"Rpc:LocalAndWrapper")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_LocalAndWrapper>(L"[false][true][true][false]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_LocalAndWrapper>(L"LocalAndWrapper", L"[false][true][true][false]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_LocalAndWrapper::Instance();
@@ -1641,7 +1641,7 @@ TEST_CASE(L"Rpc:LocalAndWrapper")
 
 TEST_CASE(L"Rpc:Nullable")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Nullable>(L"[abc][null][null][def]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Nullable>(L"Nullable", L"[abc][null][null][def]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Nullable::Instance();
@@ -1654,7 +1654,7 @@ TEST_CASE(L"Rpc:Nullable")
 
 TEST_CASE(L"Rpc:Overloading")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Overloading>(L"[123][true][abc][xyz][123,true,abc,xyz]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Overloading>(L"Overloading", L"[123][true][abc][xyz][123,true,abc,xyz]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Overloading::Instance();
@@ -1667,7 +1667,7 @@ TEST_CASE(L"Rpc:Overloading")
 
 TEST_CASE(L"Rpc:PrimitiveTypes")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_PrimitiveTypes>(L"[6][12][1.75][2.875][Hi!][false][Autumn][13,27]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_PrimitiveTypes>(L"PrimitiveTypes", L"[6][12][1.75][2.875][Hi!][false][Autumn][13,27]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_PrimitiveTypes::Instance();
@@ -1679,7 +1679,7 @@ TEST_CASE(L"Rpc:PrimitiveTypes")
 
 TEST_CASE(L"Rpc:PropCached")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_PropCached>(L"[A][A][ValueChanged][B]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_PropCached>(L"PropCached", L"[A][A][ValueChanged][B]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_PropCached::Instance();
@@ -1694,7 +1694,7 @@ TEST_CASE(L"Rpc:PropCached")
 
 TEST_CASE(L"Rpc:PropDefault")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_PropDefault>(L"[A][A][ValueChanged][B]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_PropDefault>(L"PropDefault", L"[A][A][ValueChanged][B]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_PropDefault::Instance();
@@ -1709,7 +1709,7 @@ TEST_CASE(L"Rpc:PropDefault")
 
 TEST_CASE(L"Rpc:PropDefaultInterface")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_PropDefaultInterface>(L"[A][A][ValueChanged][B]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_PropDefaultInterface>(L"PropDefaultInterface", L"[A][A][ValueChanged][B]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_PropDefaultInterface::Instance();
@@ -1725,7 +1725,7 @@ TEST_CASE(L"Rpc:PropDefaultInterface")
 
 TEST_CASE(L"Rpc:PropDefaultInterfaceList")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_PropDefaultInterfaceList>(L"[A][A][ValueChanged][BCD]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_PropDefaultInterfaceList>(L"PropDefaultInterfaceList", L"[A][A][ValueChanged][BCD]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_PropDefaultInterfaceList::Instance();
@@ -1741,7 +1741,7 @@ TEST_CASE(L"Rpc:PropDefaultInterfaceList")
 
 TEST_CASE(L"Rpc:PropDefaultList")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_PropDefaultList>(L"[A][A][ValueChanged][BCD]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_PropDefaultList>(L"PropDefaultList", L"[A][A][ValueChanged][BCD]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_PropDefaultList::Instance();
@@ -1756,7 +1756,7 @@ TEST_CASE(L"Rpc:PropDefaultList")
 
 TEST_CASE(L"Rpc:PropDynamic")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_PropDynamic>(L"[A][B][ValueChanged][B]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_PropDynamic>(L"PropDynamic", L"[A][B][ValueChanged][B]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_PropDynamic::Instance();
@@ -1771,7 +1771,7 @@ TEST_CASE(L"Rpc:PropDynamic")
 
 TEST_CASE(L"Rpc:RequestService")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_RequestService>(L"Hello",
+	RunRpcTestCase<::vl_workflow_global::Rpc_RequestService>(L"RequestService", L"Hello",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_RequestService::Instance();
@@ -1783,7 +1783,7 @@ TEST_CASE(L"Rpc:RequestService")
 
 TEST_CASE(L"Rpc:ServiceWrapper")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_ServiceWrapper>(L"[false][true]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_ServiceWrapper>(L"ServiceWrapper", L"[false][true]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_ServiceWrapper::Instance();
