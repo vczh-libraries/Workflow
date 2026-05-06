@@ -168,3 +168,18 @@ Task 2 verification:
 - `CppTest` passed on Debug x64 with 2/2 test files and 223/223 test cases.
 - Debug Win32 solution build passed.
 - `CppTest` passed on Debug Win32 with 2/2 test files and 223/223 test cases.
+
+### CODE CHANGE
+
+Task 3:
+- Updated RPC JSON `.d.ts` generation to match the latest `TODO_RPC_Json.md` shape from commit `83af71e7bce0a0a94994a60a0116759ebd9ea18b`.
+- Split unknown collection schemas into `UnknownType_List` for `list | oblist` and `UnknownType_Map` for `map` with tuple-pair entries.
+- Emitted map known types as `[K, V][]` and enum known values as `number`.
+- Added the generated `KnownTypeSchema` union to every RPC metadata declaration file.
+- Regenerated all 32-bit and 64-bit `Serialization_*.d.ts` files.
+
+### TASK 3 CONFIRMED
+
+Task 3 verification:
+- Built `CompilerTest_LoadAndCompile` Debug x64 through `UnitTest.sln`.
+- `CompilerTest_LoadAndCompile` passed on Debug x64 and regenerated RPC metadata outputs.
