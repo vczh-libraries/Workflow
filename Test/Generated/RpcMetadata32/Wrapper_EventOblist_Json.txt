@@ -151,20 +151,26 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 {
                     var target = (cast (RpcEventOblist::IService^) _lc.RefToPtr(ref));
                     target.ModifyHeldList();
-                    return null;
+                    var jsonLiteral0 = new (system::JsonLiteral^)();
+                    (jsonLiteral0.value = system::JsonLiteralValue::Null);
+                    return jsonLiteral0;
                 }
                 case rpcmethod_RpcEventOblist__IService_SetList:
                 {
                     var target = (cast (RpcEventOblist::IService^) _lc.RefToPtr(ref));
                     var jsonValue0 = rpcjson_Deserialize_Struct_system__RpcObjectReference((cast (system::JsonNode^) arguments[0]));
                     target.SetList((cast (observe ::system::Int32[]) system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) jsonValue0), _lc)));
-                    return null;
+                    var jsonLiteral1 = new (system::JsonLiteral^)();
+                    (jsonLiteral1.value = system::JsonLiteralValue::Null);
+                    return jsonLiteral1;
                 }
                 case rpcmethod_RpcEventOblist__IService_WatchHeldList:
                 {
                     var target = (cast (RpcEventOblist::IService^) _lc.RefToPtr(ref));
                     target.WatchHeldList();
-                    return null;
+                    var jsonLiteral0 = new (system::JsonLiteral^)();
+                    (jsonLiteral0.value = system::JsonLiteralValue::Null);
+                    return jsonLiteral0;
                 }
                 default:
                 raise "Unknown RPC method id.";

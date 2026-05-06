@@ -158,13 +158,17 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                     var target = (cast (RpcDtorPropCachedListVByref::IService^) _lc.RefToPtr(ref));
                     var jsonValue0 = rpcjson_Deserialize_Struct_system__RpcObjectReference((cast (system::JsonNode^) arguments[0]));
                     target.SetValue((cast (::RpcDtorPropCachedListVByref::IValue^[]) system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) jsonValue0), _lc)));
-                    return null;
+                    var jsonLiteral1 = new (system::JsonLiteral^)();
+                    (jsonLiteral1.value = system::JsonLiteralValue::Null);
+                    return jsonLiteral1;
                 }
                 case rpcmethod_RpcDtorPropCachedListVByref__IService_Signal:
                 {
                     var target = (cast (RpcDtorPropCachedListVByref::IService^) _lc.RefToPtr(ref));
                     target.Signal();
-                    return null;
+                    var jsonLiteral0 = new (system::JsonLiteral^)();
+                    (jsonLiteral0.value = system::JsonLiteralValue::Null);
+                    return jsonLiteral0;
                 }
                 default:
                 raise "Unknown RPC method id.";
