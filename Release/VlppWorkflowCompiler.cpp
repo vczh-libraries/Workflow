@@ -12120,7 +12120,7 @@ GenerateDtsFromRpcMetadata
 					}
 					if (context.enums && FindEnum(*context.enums, fullName) != -1)
 					{
-						return MakeDtsTypeName(fullName);
+						return L"number";
 					}
 					if (context.structs && FindStruct(*context.structs, fullName) != -1)
 					{
@@ -12155,7 +12155,7 @@ GenerateDtsFromRpcMetadata
 					{
 						if (map->key)
 						{
-							return L"Array<[" + GetDtsTypeFromType(context, map->key.Obj()) + L", " + GetDtsTypeFromType(context, map->value.Obj()) + L"]>";
+							return L"[" + GetDtsTypeFromType(context, map->key.Obj()) + L", " + GetDtsTypeFromType(context, map->value.Obj()) + L"][]";
 						}
 						return GetDtsTypeFromType(context, map->value.Obj()) + L"[]";
 					}
@@ -12333,8 +12333,17 @@ GenerateDtsFromRpcMetadata
 				{
 					dts += L"export interface UnknownType_List\r\n";
 					dts += L"{\r\n";
-					dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(L"list") + L" | " + EscapeDtsString(L"map") + L" | " + EscapeDtsString(L"oblist") + L";\r\n";
+					dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(L"list") + L" | " + EscapeDtsString(L"oblist") + L";\r\n";
 					dts += L"  values: UnknownTypeSchema[];\r\n";
+					dts += L"}\r\n\r\n";
+				}
+
+				void AppendUnknownTypeMap(WString& dts)
+				{
+					dts += L"export interface UnknownType_Map\r\n";
+					dts += L"{\r\n";
+					dts += L"  " + EscapeDtsString(L"$") + L": " + EscapeDtsString(L"map") + L";\r\n";
+					dts += L"  values: [UnknownTypeSchema, UnknownTypeSchema][];\r\n";
 					dts += L"}\r\n\r\n";
 				}
 
@@ -12344,6 +12353,7 @@ GenerateDtsFromRpcMetadata
 					dts += L"  | UnknownType_PrimitiveSchema\r\n";
 					dts += L"  | UnknownType_EnumSchema\r\n";
 					dts += L"  | UnknownType_List\r\n";
+					dts += L"  | UnknownType_Map\r\n";
 					for (auto&& model : structs)
 					{
 						dts += L"  | " + MakeUnknownStructDtsTypeName(model.fullName) + L"\r\n";
@@ -12364,10 +12374,6 @@ GenerateDtsFromRpcMetadata
 
 				void AppendKnownEnums(WString& dts, const List<DtsEnumModel>& enums)
 				{
-					if (enums.Count() > 0)
-					{
-						dts += L"// below are all known types\r\n\r\n";
-					}
 					for (auto&& model : enums)
 					{
 						dts += L"export enum " + MakeDtsTypeName(model.fullName) + L"\r\n";
@@ -12382,10 +12388,6 @@ GenerateDtsFromRpcMetadata
 
 				void AppendKnownStructs(WString& dts, DtsContext& context)
 				{
-					if (context.enums->Count() == 0 && context.structs->Count() > 0)
-					{
-						dts += L"// below are all known types\r\n\r\n";
-					}
 					for (auto&& model : *context.structs)
 					{
 						dts += L"export interface " + MakeDtsTypeName(model.fullName) + L"\r\n";
@@ -12396,6 +12398,23 @@ GenerateDtsFromRpcMetadata
 						}
 						dts += L"}\r\n\r\n";
 					}
+				}
+
+				void AppendKnownTypeSchema(WString& dts, const List<DtsStructModel>& structs)
+				{
+					dts += L"// All enum_type_full_name is omitted because in known type enums are just numbers\r\n";
+					dts += L"export type KnownTypeSchema =\r\n";
+					dts += L"  | number\r\n";
+					dts += L"  | true\r\n";
+					dts += L"  | false\r\n";
+					dts += L"  | string\r\n";
+					dts += L"  | KnownTypeSchema[]\r\n";
+					dts += L"  | [KnownTypeSchema, KnownTypeSchema][]\r\n";
+					for (auto&& model : structs)
+					{
+						dts += L"  | " + MakeDtsTypeName(model.fullName) + L"\r\n";
+					}
+					dts += L"  ;\r\n";
 				}
 			}
 
@@ -12423,10 +12442,13 @@ GenerateDtsFromRpcMetadata
 				AppendTypeListEnum(dts, enums);
 				AppendUnknownTypeEnumSchema(dts);
 				AppendUnknownTypeList(dts);
+				AppendUnknownTypeMap(dts);
 				AppendUnknownTypeSchemaUnion(dts, structs);
 				AppendUnknownStructSchemas(dts, context);
+				dts += L"// below are all known types\r\n\r\n";
 				AppendKnownEnums(dts, enums);
 				AppendKnownStructs(dts, context);
+				AppendKnownTypeSchema(dts, structs);
 				return dts;
 			}
 		}
@@ -13610,7 +13632,12 @@ namespace vl
 					if (IsVoidType(methodModel.returnType.Obj()))
 					{
 						AddStatement(block, CreateExpressionStatement(invoke));
-						AddStatement(block, CreateReturn(CreateNull()));
+						RpcJsonGenerationContext context;
+						context.manager = manager;
+						context.tempIndex = tempIndex;
+						auto nodeName = AddRpcJsonLiteral(block, context, L"Null");
+						tempIndex = context.tempIndex;
+						AddStatement(block, CreateReturn(CreateReference(nodeName)));
 					}
 					else
 					{
