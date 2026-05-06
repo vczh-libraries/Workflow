@@ -24,14 +24,21 @@ export type UnknownType_EnumSchema = [TypeList_Enum, number];
 
 export interface UnknownType_List
 {
-  "$": "list" | "map" | "oblist";
+  "$": "list" | "oblist";
   values: UnknownTypeSchema[];
+}
+
+export interface UnknownType_Map
+{
+  "$": "map";
+  values: [UnknownTypeSchema, UnknownTypeSchema][];
 }
 
 export type UnknownTypeSchema =
   | UnknownType_PrimitiveSchema
   | UnknownType_EnumSchema
   | UnknownType_List
+  | UnknownType_Map
   | UnknownType_system_RpcObjectReference
   ;
 
@@ -49,3 +56,13 @@ export interface system_RpcObjectReference
   typeId: number;
 }
 
+// All enum_type_full_name is omitted because in known type enums are just numbers
+export type KnownTypeSchema =
+  | number
+  | true
+  | false
+  | string
+  | KnownTypeSchema[]
+  | [KnownTypeSchema, KnownTypeSchema][]
+  | system_RpcObjectReference
+  ;
