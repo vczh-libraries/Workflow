@@ -7,6 +7,10 @@ You should complete tasks one by one.
 - I am a fan of crash early. When something should happen, it should just happen, do not play a game like "what if it is not the case" and silently covers the issue. One example is that, if an object should not be null, then we should just use it, if a nullable object should not be null, we should just cast it. No test is performed in this case, using it will crash if it is null, and we know there is a problem. Fix the actual problem instead of doing "error tolerance".
 - you have to follow complete instructions in `.github\Rules\verify-and-commit.md` to properly finish any task, before doing the next task.
 
+It is important to do task one by one strictly, by me designing tasks in this way, we can achieve:
+- Easy-to-understand commits for file changing that is easy to review.
+- Limit side effects so that you don't have to deal with massive of issues at the same time.
+
 ## Workflow Script Best Practice
 
 - Avoid explicit type specification whenever possible:
