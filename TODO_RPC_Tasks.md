@@ -9,14 +9,29 @@ investigate repro
 
 ## Task 1
 
-Update the current sample `Rpc/Inheritance`, the `IDerived` implementation of `SetOneValue` and `SetTwoValue`, raise exceptions "DoNotSetOneValue" and "DoNotSetTwoValue".
-In the `clientMain` function, just before returning `s`, add these code:
+Update the current sample `Rpc/Inheritance`, add following events to `IOne` and `ITwo`:
 ```Workflow
-try { derived.SetOneValue() } catch (ex) { s = $"$(s)[$(ex)]"; }
-try { derived.SetTwoValue() } catch (ex) { s = $"$(s)[$(ex)]"; }
+interface IOne
+{
+  event CrashAtServer();
+}
+
+interface ITwo
+{
+  event CrashAtClient();
+}
 ```
 
-And add additional postfix `[DoNotSetOneValue][DoNotSetTwoValue]` to `IndexRpc.txt`.
+In `CreateDerived`, the implementation will attach an handler to `CrashAtServer`, raise "CrashedAtServer".
+In `clientMain`, attach an handler to `CrashAtClient`, raise "CrashedAtClient".
+
+Now we have to call them to test the exception. Add these 2 functions to `IDerived` and implement like this:
+```Workflow
+```
+
+And add additional postfix `[CrashedAtServer][CrashedAtClient]` to `IndexRpc.txt`.
+
+----------------------------
 
 In order to make this work, you will have to declare a reflectable struct right below `RpcObjectReference`:
 ```C++
