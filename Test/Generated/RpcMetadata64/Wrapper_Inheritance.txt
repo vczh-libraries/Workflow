@@ -1,0 +1,727 @@
+﻿module RpcMetadata;
+
+var rpctype_RpcInheritance__IDerived : int = 0;
+
+var rpcmethod_RpcInheritance__IDerived_SetDerivedValue : int = 1;
+
+var rpctype_RpcInheritance__IOne : int = 2;
+
+var rpcmethod_RpcInheritance__IOne_SetOneValue : int = 3;
+
+var rpctype_RpcInheritance__IService : int = 4;
+
+var rpcmethod_RpcInheritance__IService_CreateDerived : int = 5;
+
+var rpcmethod_RpcInheritance__IService_CreateOne : int = 6;
+
+var rpcmethod_RpcInheritance__IService_CreateTwo : int = 7;
+
+var rpctype_RpcInheritance__ITwo : int = 8;
+
+var rpcmethod_RpcInheritance__ITwo_SetITwoValue : int = 9;
+
+var rpctype_RpcInheritance__IValue : int = 10;
+
+var rpcmethod_RpcInheritance__IValue_GetValue : int = 11;
+
+var rpcevent_RpcInheritance__IValue_ValueChanged : int = 12;
+
+func rpc_GetIds() : (int[string])
+{
+    var result : int[string] = {};
+    result.Set("RpcInheritance::IDerived", 0);
+    result.Set("RpcInheritance::IDerived.SetDerivedValue", 1);
+    result.Set("RpcInheritance::IOne", 2);
+    result.Set("RpcInheritance::IOne.SetOneValue", 3);
+    result.Set("RpcInheritance::IService", 4);
+    result.Set("RpcInheritance::IService.CreateDerived", 5);
+    result.Set("RpcInheritance::IService.CreateOne", 6);
+    result.Set("RpcInheritance::IService.CreateTwo", 7);
+    result.Set("RpcInheritance::ITwo", 8);
+    result.Set("RpcInheritance::ITwo.SetITwoValue", 9);
+    result.Set("RpcInheritance::IValue", 10);
+    result.Set("RpcInheritance::IValue.GetValue", 11);
+    result.Set("RpcInheritance::IValue.ValueChanged", 12);
+    return result;
+}
+
+func rpcwrapper_IsInterfaceTypeId(typeId : int) : (bool)
+{
+    if (((typeId >= -7) and (typeId <= -1)))
+    return true;
+    switch (typeId)
+    {
+        case rpctype_RpcInheritance__IValue:
+        return true;
+        case rpctype_RpcInheritance__IOne:
+        return true;
+        case rpctype_RpcInheritance__ITwo:
+        return true;
+        case rpctype_RpcInheritance__IDerived:
+        return true;
+        case rpctype_RpcInheritance__IService:
+        return true;
+        default:
+        return false;
+    }
+}
+
+func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
+{
+    switch (typeId)
+    {
+        case rpctype_RpcInheritance__IService:
+        return true;
+        default:
+        return false;
+    }
+}
+
+interface rpcops_IOps_Rpc_Inheritance
+{
+    func InvokeMethod_RpcInheritance__IValue_GetValue(ref : system::RpcObjectReference) : (::system::String);
+
+    func InvokeEvent_RpcInheritance__IValue_ValueChanged(ref : system::RpcObjectReference) : (void);
+
+    func InvokeMethod_RpcInheritance__IOne_SetOneValue(ref : system::RpcObjectReference) : (::system::Void);
+
+    func InvokeMethod_RpcInheritance__ITwo_SetITwoValue(ref : system::RpcObjectReference) : (::system::Void);
+
+    func InvokeMethod_RpcInheritance__IDerived_SetDerivedValue(ref : system::RpcObjectReference) : (::system::Void);
+
+    func InvokeMethod_RpcInheritance__IService_CreateDerived(ref : system::RpcObjectReference) : (::RpcInheritance::IDerived^);
+
+    func InvokeMethod_RpcInheritance__IService_CreateOne(ref : system::RpcObjectReference) : (::RpcInheritance::IOne^);
+
+    func InvokeMethod_RpcInheritance__IService_CreateTwo(ref : system::RpcObjectReference) : (::RpcInheritance::ITwo^);
+}
+
+func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+{
+    return new (system::IRpcObjectOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _slot : int = 0;
+
+        var _byvalReturnValues : object[int] = {};
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            switch (methodId)
+            {
+                case rpcmethod_RpcInheritance__IValue_GetValue:
+                {
+                    var target = (cast (RpcInheritance::IValue^) _lc.RefToPtr(ref));
+                    return target.GetValue();
+                }
+                case rpcmethod_RpcInheritance__IOne_SetOneValue:
+                {
+                    var target = (cast (RpcInheritance::IOne^) _lc.RefToPtr(ref));
+                    target.SetOneValue();
+                    return null;
+                }
+                case rpcmethod_RpcInheritance__ITwo_SetITwoValue:
+                {
+                    var target = (cast (RpcInheritance::ITwo^) _lc.RefToPtr(ref));
+                    target.SetITwoValue();
+                    return null;
+                }
+                case rpcmethod_RpcInheritance__IDerived_SetDerivedValue:
+                {
+                    var target = (cast (RpcInheritance::IDerived^) _lc.RefToPtr(ref));
+                    target.SetDerivedValue();
+                    return null;
+                }
+                case rpcmethod_RpcInheritance__IService_CreateDerived:
+                {
+                    var target = (cast (RpcInheritance::IService^) _lc.RefToPtr(ref));
+                    return system::IRpcLifecycle::RpcBoxByval(target.CreateDerived(), _lc);
+                }
+                case rpcmethod_RpcInheritance__IService_CreateOne:
+                {
+                    var target = (cast (RpcInheritance::IService^) _lc.RefToPtr(ref));
+                    return system::IRpcLifecycle::RpcBoxByval(target.CreateOne(), _lc);
+                }
+                case rpcmethod_RpcInheritance__IService_CreateTwo:
+                {
+                    var target = (cast (RpcInheritance::IService^) _lc.RefToPtr(ref));
+                    return system::IRpcLifecycle::RpcBoxByval(target.CreateTwo(), _lc);
+                }
+                default:
+                raise "Unknown RPC method id.";
+            }
+        }
+
+        override func EndInvokeMethod(slot : int) : (void)
+        {
+            _byvalReturnValues.Remove(slot);
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _lc.LocalObjectHold(ref, remoteClientId);
+            }
+            else
+            {
+                _lc.LocalObjectUnhold(ref, remoteClientId);
+            }
+        }
+
+        override func RegisterService(typeId : int, service : system::Interface^) : (void)
+        {
+            {
+                if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
+                {
+                    _lc.Dispatcher.RegisterService(typeId, _lc.PtrToRef(service));
+                }
+                else
+                {
+                    if (rpcwrapper_IsInterfaceTypeId(typeId))
+                    {
+                        raise "RPC service type id is not an @rpc:Ctor interface.";
+                    }
+                    else
+                    {
+                        raise "RPC service type id does not exist.";
+                    }
+                }
+            }
+        }
+    };
+}
+
+func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+{
+    return new (system::IRpcObjectEventOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+        {
+            _lc.Controller.SetEventSuppressedFlag(ref, eventId, true);
+            try
+            switch (eventId)
+            {
+                case rpcevent_RpcInheritance__IValue_ValueChanged:
+                {
+                    var target = (cast (RpcInheritance::IValue^) _lc.RefToPtr(ref));
+                    target.ValueChanged();
+                }
+                default:
+                raise "Unknown RPC event id.";
+            }
+            finally
+            {
+                _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
+            }
+        }
+    };
+}
+
+func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Inheritance^)
+{
+    return new (rpcops_IOps_Rpc_Inheritance^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcInheritance__IValue_GetValue(ref : system::RpcObjectReference) : (::system::String)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IValue_GetValue, arguments));
+        }
+
+        override func InvokeEvent_RpcInheritance__IValue_ValueChanged(ref : system::RpcObjectReference) : (void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            _lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IValue_ValueChanged, arguments);
+        }
+
+        override func InvokeMethod_RpcInheritance__IOne_SetOneValue(ref : system::RpcObjectReference) : (::system::Void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IOne_SetOneValue, arguments);
+        }
+
+        override func InvokeMethod_RpcInheritance__ITwo_SetITwoValue(ref : system::RpcObjectReference) : (::system::Void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__ITwo_SetITwoValue, arguments);
+        }
+
+        override func InvokeMethod_RpcInheritance__IDerived_SetDerivedValue(ref : system::RpcObjectReference) : (::system::Void)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IDerived_SetDerivedValue, arguments);
+        }
+
+        override func InvokeMethod_RpcInheritance__IService_CreateDerived(ref : system::RpcObjectReference) : (::RpcInheritance::IDerived^)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IService_CreateDerived, arguments), _lc) as (::RpcInheritance::IDerived^));
+        }
+
+        override func InvokeMethod_RpcInheritance__IService_CreateOne(ref : system::RpcObjectReference) : (::RpcInheritance::IOne^)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IService_CreateOne, arguments), _lc) as (::RpcInheritance::IOne^));
+        }
+
+        override func InvokeMethod_RpcInheritance__IService_CreateTwo(ref : system::RpcObjectReference) : (::RpcInheritance::ITwo^)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IService_CreateTwo, arguments), _lc) as (::RpcInheritance::ITwo^));
+        }
+    };
+}
+
+namespace RpcInheritance
+{
+    interface IRpcWrapper_IValue : RpcInheritance::IValue, system::IRpcWrapperBase
+    {
+        func _rpcInvalidate_Value() : (void);
+    }
+
+    interface IRpcWrapper_IOne : RpcInheritance::IOne, system::IRpcWrapperBase
+    {
+        func _rpcInvalidate_Value() : (void);
+    }
+
+    interface IRpcWrapper_ITwo : RpcInheritance::ITwo, system::IRpcWrapperBase
+    {
+        func _rpcInvalidate_Value() : (void);
+    }
+
+    interface IRpcWrapper_IDerived : RpcInheritance::IDerived, system::IRpcWrapperBase
+    {
+        func _rpcInvalidate_Value() : (void);
+    }
+
+    interface IRpcWrapper_IService : RpcInheritance::IService, system::IRpcWrapperBase
+    {
+    }
+}
+
+func rpclistener_RpcInheritance__IValue(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcInheritance::IValue*) : (void)
+{
+    attach(target.ValueChanged, func () : (void)
+    {
+        if (lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcInheritance__IValue_ValueChanged))
+        return;
+        var arguments : system::Array^ = {};
+        arguments.Resize(0);
+        lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IValue_ValueChanged, arguments);
+    });
+}
+
+func rpclistener_RpcInheritance__IOne(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcInheritance::IOne*) : (void)
+{
+    attach(target.ValueChanged, func () : (void)
+    {
+        if (lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcInheritance__IValue_ValueChanged))
+        return;
+        var arguments : system::Array^ = {};
+        arguments.Resize(0);
+        lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IValue_ValueChanged, arguments);
+    });
+}
+
+func rpclistener_RpcInheritance__ITwo(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcInheritance::ITwo*) : (void)
+{
+    attach(target.ValueChanged, func () : (void)
+    {
+        if (lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcInheritance__IValue_ValueChanged))
+        return;
+        var arguments : system::Array^ = {};
+        arguments.Resize(0);
+        lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IValue_ValueChanged, arguments);
+    });
+}
+
+func rpclistener_RpcInheritance__IDerived(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcInheritance::IDerived*) : (void)
+{
+    attach(target.ValueChanged, func () : (void)
+    {
+        if (lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcInheritance__IValue_ValueChanged))
+        return;
+        var arguments : system::Array^ = {};
+        arguments.Resize(0);
+        lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IValue_ValueChanged, arguments);
+    });
+}
+
+func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
+{
+    switch (typeId)
+    {
+        case rpctype_RpcInheritance__IValue:
+        {
+            rpclistener_RpcInheritance__IValue(lc, ref, (cast (RpcInheritance::IValue*) obj));
+            return;
+        }
+        case rpctype_RpcInheritance__IOne:
+        {
+            rpclistener_RpcInheritance__IOne(lc, ref, (cast (RpcInheritance::IOne*) obj));
+            return;
+        }
+        case rpctype_RpcInheritance__ITwo:
+        {
+            rpclistener_RpcInheritance__ITwo(lc, ref, (cast (RpcInheritance::ITwo*) obj));
+            return;
+        }
+        case rpctype_RpcInheritance__IDerived:
+        {
+            rpclistener_RpcInheritance__IDerived(lc, ref, (cast (RpcInheritance::IDerived*) obj));
+            return;
+        }
+        case rpctype_RpcInheritance__IService:
+        {
+            return;
+        }
+        default:
+        raise "Unknown RPC type id for listener attachment.";
+    }
+}
+
+func rpcwrapper_RpcInheritance__IValue(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Inheritance^) : (RpcInheritance::IRpcWrapper_IValue^)
+{
+    var proxy = new (RpcInheritance::IRpcWrapper_IValue^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        var _ops : rpcops_IOps_Rpc_Inheritance^ = ops;
+
+        var Value<Cached> : ::system::String = "";
+
+        var Value<Available> : bool = false;
+
+        override func _rpcInvalidate_Value() : (void)
+        {
+            (Value<Available> = false);
+        }
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+            (_ops = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
+            }
+        }
+
+        override func GetValue() : (::system::String)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            if (Value<Available>)
+            {
+                return Value<Cached>;
+            }
+            (Value<Cached> = _ops.InvokeMethod_RpcInheritance__IValue_GetValue(_ref));
+            (Value<Available> = true);
+            return Value<Cached>;
+        }
+    };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
+    attach((cast (RpcInheritance::IValue^) proxy).ValueChanged, func () : (void)
+    {
+        (cast (RpcInheritance::IRpcWrapper_IValue^) lc.RefToPtr(proxyRef))._rpcInvalidate_Value();
+    });
+    rpclistener_RpcInheritance__IValue(lc, proxyRef, (cast (RpcInheritance::IValue*) proxy));
+    return proxy;
+}
+
+func rpcwrapper_RpcInheritance__IOne(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Inheritance^) : (RpcInheritance::IRpcWrapper_IOne^)
+{
+    var proxy = new (RpcInheritance::IRpcWrapper_IOne^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        var _ops : rpcops_IOps_Rpc_Inheritance^ = ops;
+
+        var Value<Cached> : ::system::String = "";
+
+        var Value<Available> : bool = false;
+
+        override func _rpcInvalidate_Value() : (void)
+        {
+            (Value<Available> = false);
+        }
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+            (_ops = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
+            }
+        }
+
+        override func GetValue() : (::system::String)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            if (Value<Available>)
+            {
+                return Value<Cached>;
+            }
+            (Value<Cached> = _ops.InvokeMethod_RpcInheritance__IValue_GetValue(_ref));
+            (Value<Available> = true);
+            return Value<Cached>;
+        }
+
+        override func SetOneValue() : (::system::Void)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            _ops.InvokeMethod_RpcInheritance__IOne_SetOneValue(_ref);
+        }
+    };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
+    attach((cast (RpcInheritance::IOne^) proxy).ValueChanged, func () : (void)
+    {
+        (cast (RpcInheritance::IRpcWrapper_IOne^) lc.RefToPtr(proxyRef))._rpcInvalidate_Value();
+    });
+    rpclistener_RpcInheritance__IOne(lc, proxyRef, (cast (RpcInheritance::IOne*) proxy));
+    return proxy;
+}
+
+func rpcwrapper_RpcInheritance__ITwo(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Inheritance^) : (RpcInheritance::IRpcWrapper_ITwo^)
+{
+    var proxy = new (RpcInheritance::IRpcWrapper_ITwo^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        var _ops : rpcops_IOps_Rpc_Inheritance^ = ops;
+
+        var Value<Cached> : ::system::String = "";
+
+        var Value<Available> : bool = false;
+
+        override func _rpcInvalidate_Value() : (void)
+        {
+            (Value<Available> = false);
+        }
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+            (_ops = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
+            }
+        }
+
+        override func GetValue() : (::system::String)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            if (Value<Available>)
+            {
+                return Value<Cached>;
+            }
+            (Value<Cached> = _ops.InvokeMethod_RpcInheritance__IValue_GetValue(_ref));
+            (Value<Available> = true);
+            return Value<Cached>;
+        }
+
+        override func SetITwoValue() : (::system::Void)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            _ops.InvokeMethod_RpcInheritance__ITwo_SetITwoValue(_ref);
+        }
+    };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
+    attach((cast (RpcInheritance::ITwo^) proxy).ValueChanged, func () : (void)
+    {
+        (cast (RpcInheritance::IRpcWrapper_ITwo^) lc.RefToPtr(proxyRef))._rpcInvalidate_Value();
+    });
+    rpclistener_RpcInheritance__ITwo(lc, proxyRef, (cast (RpcInheritance::ITwo*) proxy));
+    return proxy;
+}
+
+func rpcwrapper_RpcInheritance__IDerived(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Inheritance^) : (RpcInheritance::IRpcWrapper_IDerived^)
+{
+    var proxy = new (RpcInheritance::IRpcWrapper_IDerived^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        var _ops : rpcops_IOps_Rpc_Inheritance^ = ops;
+
+        var Value<Cached> : ::system::String = "";
+
+        var Value<Available> : bool = false;
+
+        override func _rpcInvalidate_Value() : (void)
+        {
+            (Value<Available> = false);
+        }
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+            (_ops = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
+            }
+        }
+
+        override func GetValue() : (::system::String)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            if (Value<Available>)
+            {
+                return Value<Cached>;
+            }
+            (Value<Cached> = _ops.InvokeMethod_RpcInheritance__IValue_GetValue(_ref));
+            (Value<Available> = true);
+            return Value<Cached>;
+        }
+
+        override func SetOneValue() : (::system::Void)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            _ops.InvokeMethod_RpcInheritance__IOne_SetOneValue(_ref);
+        }
+
+        override func SetITwoValue() : (::system::Void)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            _ops.InvokeMethod_RpcInheritance__ITwo_SetITwoValue(_ref);
+        }
+
+        override func SetDerivedValue() : (::system::Void)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            _ops.InvokeMethod_RpcInheritance__IDerived_SetDerivedValue(_ref);
+        }
+    };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
+    attach((cast (RpcInheritance::IDerived^) proxy).ValueChanged, func () : (void)
+    {
+        (cast (RpcInheritance::IRpcWrapper_IDerived^) lc.RefToPtr(proxyRef))._rpcInvalidate_Value();
+    });
+    rpclistener_RpcInheritance__IDerived(lc, proxyRef, (cast (RpcInheritance::IDerived*) proxy));
+    return proxy;
+}
+
+func rpcwrapper_RpcInheritance__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Inheritance^) : (RpcInheritance::IRpcWrapper_IService^)
+{
+    var proxy = new (RpcInheritance::IRpcWrapper_IService^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        var _ops : rpcops_IOps_Rpc_Inheritance^ = ops;
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+            (_ops = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
+            }
+        }
+
+        override func CreateDerived() : (::RpcInheritance::IDerived^)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            return _ops.InvokeMethod_RpcInheritance__IService_CreateDerived(_ref);
+        }
+
+        override func CreateOne() : (::RpcInheritance::IOne^)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            return _ops.InvokeMethod_RpcInheritance__IService_CreateOne(_ref);
+        }
+
+        override func CreateTwo() : (::RpcInheritance::ITwo^)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            return _ops.InvokeMethod_RpcInheritance__IService_CreateTwo(_ref);
+        }
+    };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
+    return proxy;
+}
+
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*, ops : rpcops_IOps_Rpc_Inheritance^) : (system::IRpcWrapperBase^)
+{
+    switch (ref.typeId)
+    {
+        case rpctype_RpcInheritance__IValue:
+        {
+            return rpcwrapper_RpcInheritance__IValue(lc, ref, ops);
+        }
+        case rpctype_RpcInheritance__IOne:
+        {
+            return rpcwrapper_RpcInheritance__IOne(lc, ref, ops);
+        }
+        case rpctype_RpcInheritance__ITwo:
+        {
+            return rpcwrapper_RpcInheritance__ITwo(lc, ref, ops);
+        }
+        case rpctype_RpcInheritance__IDerived:
+        {
+            return rpcwrapper_RpcInheritance__IDerived(lc, ref, ops);
+        }
+        case rpctype_RpcInheritance__IService:
+        {
+            return rpcwrapper_RpcInheritance__IService(lc, ref, ops);
+        }
+        default:
+        raise "Unknown RPC type id for wrapper creation.";
+    }
+}

@@ -1,0 +1,70 @@
+﻿module RpcMetadata;
+
+namespace RpcInheritance
+{
+    @rpc:Interface
+    @rpc:IdString("RpcInheritance::IValue")
+    @rpc:IdNumber(10)
+    interface IValue
+    {
+        @rpc:Cached
+        prop Value : ::system::String{GetValue : ValueChanged}
+
+        @rpc:IdString("RpcInheritance::IValue.ValueChanged")
+        @rpc:IdNumber(12)
+        event ValueChanged();
+
+        @rpc:IdString("RpcInheritance::IValue.GetValue")
+        @rpc:IdNumber(11)
+        func GetValue() : (::system::String);
+    }
+
+    @rpc:Interface
+    @rpc:IdString("RpcInheritance::IOne")
+    @rpc:IdNumber(2)
+    interface IOne : ::RpcInheritance::IValue
+    {
+        @rpc:IdString("RpcInheritance::IOne.SetOneValue")
+        @rpc:IdNumber(3)
+        func SetOneValue() : (::system::Void);
+    }
+
+    @rpc:Interface
+    @rpc:IdString("RpcInheritance::ITwo")
+    @rpc:IdNumber(8)
+    interface ITwo : ::RpcInheritance::IValue
+    {
+        @rpc:IdString("RpcInheritance::ITwo.SetITwoValue")
+        @rpc:IdNumber(9)
+        func SetITwoValue() : (::system::Void);
+    }
+
+    @rpc:Interface
+    @rpc:IdString("RpcInheritance::IDerived")
+    @rpc:IdNumber(0)
+    interface IDerived : ::RpcInheritance::IOne, ::RpcInheritance::ITwo
+    {
+        @rpc:IdString("RpcInheritance::IDerived.SetDerivedValue")
+        @rpc:IdNumber(1)
+        func SetDerivedValue() : (::system::Void);
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    @rpc:IdString("RpcInheritance::IService")
+    @rpc:IdNumber(4)
+    interface IService
+    {
+        @rpc:IdString("RpcInheritance::IService.CreateDerived")
+        @rpc:IdNumber(5)
+        func CreateDerived() : (::RpcInheritance::IDerived^);
+
+        @rpc:IdString("RpcInheritance::IService.CreateOne")
+        @rpc:IdNumber(6)
+        func CreateOne() : (::RpcInheritance::IOne^);
+
+        @rpc:IdString("RpcInheritance::IService.CreateTwo")
+        @rpc:IdNumber(7)
+        func CreateTwo() : (::RpcInheritance::ITwo^);
+    }
+}
