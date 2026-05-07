@@ -11087,6 +11087,68 @@ namespace vl
 					return false;
 				}
 
+				bool ContainsPropertyModel(const List<const RpcPropertyModel*>& properties, const WString& name)
+				{
+					for (auto propertyModel : properties)
+					{
+						if (propertyModel->name == name)
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+
+				bool ContainsMethodModel(const List<const RpcMethodModel*>& methods, const WString& fullName)
+				{
+					for (auto methodModel : methods)
+					{
+						if (methodModel->fullName == fullName)
+						{
+							return true;
+						}
+					}
+					return false;
+				}
+
+				void CollectInterfaceProperties(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces, List<const RpcPropertyModel*>& properties)
+				{
+					for (auto&& baseFullName : interfaceModel.baseFullNames)
+					{
+						if (auto baseModel = FindInterfaceModel(interfaces, baseFullName))
+						{
+							CollectInterfaceProperties(*baseModel, interfaces, properties);
+						}
+					}
+
+					for (auto&& propertyModel : interfaceModel.properties)
+					{
+						if (!ContainsPropertyModel(properties, propertyModel.name))
+						{
+							properties.Add(&propertyModel);
+						}
+					}
+				}
+
+				void CollectInterfaceMethods(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces, List<const RpcMethodModel*>& methods)
+				{
+					for (auto&& baseFullName : interfaceModel.baseFullNames)
+					{
+						if (auto baseModel = FindInterfaceModel(interfaces, baseFullName))
+						{
+							CollectInterfaceMethods(*baseModel, interfaces, methods);
+						}
+					}
+
+					for (auto&& methodModel : interfaceModel.methods)
+					{
+						if (!ContainsMethodModel(methods, methodModel.fullName))
+						{
+							methods.Add(&methodModel);
+						}
+					}
+				}
+
 				void CollectInterfaceEvents(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces, List<const RpcEventModel*>& events)
 				{
 					for (auto&& baseFullName : interfaceModel.baseFullNames)
@@ -11150,8 +11212,11 @@ namespace vl
 					return CreateReference(GetPropertyCacheValueName(propertyModel));
 				}
 
-				Ptr<WfDeclaration> GenerateWrapperInterface(const RpcInterfaceModel& interfaceModel)
+				Ptr<WfDeclaration> GenerateWrapperInterface(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces)
 				{
+					List<const RpcPropertyModel*> properties;
+					CollectInterfaceProperties(interfaceModel, interfaces, properties);
+
 					auto interfaceDecl = Ptr(new WfClassDeclaration);
 					interfaceDecl->name.value = L"IRpcWrapper_" + interfaceModel.interfaceName;
 					interfaceDecl->kind = WfClassKind::Interface;
@@ -11169,12 +11234,12 @@ namespace vl
 						interfaceDecl->baseTypes.Add(baseType);
 					}
 
-					for (auto&& propertyModel : interfaceModel.properties)
+					for (auto propertyModel : properties)
 					{
-						if (propertyModel.cached && propertyModel.valueChangedEvent != L"")
+						if (propertyModel->cached && propertyModel->valueChangedEvent != L"")
 						{
 							auto invalidateDecl = Ptr(new WfFunctionDeclaration);
-							invalidateDecl->name.value = GetPropertyCacheResetFunctionName(propertyModel);
+							invalidateDecl->name.value = GetPropertyCacheResetFunctionName(*propertyModel);
 							invalidateDecl->returnType = CreatePredefinedType(WfPredefinedTypeName::Void);
 							invalidateDecl->functionKind = WfFunctionKind::Normal;
 							invalidateDecl->anonymity = WfFunctionAnonymity::Named;
@@ -11519,6 +11584,10 @@ namespace vl
 				{
 					auto mangledName = MangleRpcFullName(interfaceModel.fullName);
 					auto wrapperInterfaceFullName = interfaceModel.fullName.Sub(0, interfaceModel.fullName.Length() - interfaceModel.interfaceName.Length()) + L"IRpcWrapper_" + interfaceModel.interfaceName;
+					List<const RpcPropertyModel*> properties;
+					CollectInterfaceProperties(interfaceModel, interfaces, properties);
+					List<const RpcMethodModel*> methods;
+					CollectInterfaceMethods(interfaceModel, interfaces, methods);
 					List<const RpcEventModel*> events;
 					CollectInterfaceEvents(interfaceModel, interfaces, events);
 
@@ -11532,22 +11601,22 @@ namespace vl
 					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
 					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_ref", CreateQualifiedType(L"system::RpcObjectReference"), CreateReference(L"proxyRef")));
 					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_ops", CreateSharedType(opsInterfaceName), CreateReference(L"ops")));
-					for (auto&& propertyModel : interfaceModel.properties)
+					for (auto propertyModel : properties)
 					{
-						if (propertyModel.cached)
+						if (propertyModel->cached)
 						{
-							proxyExpr->declarations.Add(CreateVariableDeclaration(GetPropertyCacheValueName(propertyModel), CopyType(propertyModel.type.Obj()), CreateRpcCachedPropertyInitialValue(propertyModel)));
-							proxyExpr->declarations.Add(CreateVariableDeclaration(GetPropertyCacheAvailableName(propertyModel), CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
+							proxyExpr->declarations.Add(CreateVariableDeclaration(GetPropertyCacheValueName(*propertyModel), CopyType(propertyModel->type.Obj()), CreateRpcCachedPropertyInitialValue(*propertyModel)));
+							proxyExpr->declarations.Add(CreateVariableDeclaration(GetPropertyCacheAvailableName(*propertyModel), CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
 						}
 					}
 
-					for (auto&& propertyModel : interfaceModel.properties)
+					for (auto propertyModel : properties)
 					{
-						if (propertyModel.cached && propertyModel.valueChangedEvent != L"")
+						if (propertyModel->cached && propertyModel->valueChangedEvent != L"")
 						{
-							auto invalidateDecl = CreateFunctionDeclaration(GetPropertyCacheResetFunctionName(propertyModel), CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+							auto invalidateDecl = CreateFunctionDeclaration(GetPropertyCacheResetFunctionName(*propertyModel), CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
 							auto invalidateBlock = invalidateDecl->statement.Cast<WfBlockStatement>();
-							AddStatement(invalidateBlock, CreateExpressionStatement(CreateAssign(CreateReference(GetPropertyCacheAvailableName(propertyModel)), CreateBool(false))));
+							AddStatement(invalidateBlock, CreateExpressionStatement(CreateAssign(CreateReference(GetPropertyCacheAvailableName(*propertyModel)), CreateBool(false))));
 							proxyExpr->declarations.Add(invalidateDecl);
 						}
 					}
@@ -11592,23 +11661,23 @@ namespace vl
 						proxyExpr->declarations.Add(dtorDecl);
 					}
 
-					for (auto&& methodModel : interfaceModel.methods)
+					for (auto methodModel : methods)
 					{
 						const RpcPropertyModel* cachedProperty = nullptr;
-						if (methodModel.kind == RpcMethodKind::PropertyGetter)
+						if (methodModel->kind == RpcMethodKind::PropertyGetter)
 						{
-							for (auto&& propertyModel : interfaceModel.properties)
+							for (auto propertyModel : properties)
 							{
-								if (propertyModel.cached && propertyModel.getterName == methodModel.name)
+								if (propertyModel->cached && propertyModel->getterName == methodModel->name)
 								{
-									cachedProperty = &propertyModel;
+									cachedProperty = propertyModel;
 									break;
 								}
 							}
 						}
 
-						auto methodDecl = CreateFunctionDeclaration(methodModel.name, CopyType(methodModel.returnType.Obj()), WfFunctionKind::Override);
-						for (auto&& paramModel : methodModel.params)
+						auto methodDecl = CreateFunctionDeclaration(methodModel->name, CopyType(methodModel->returnType.Obj()), WfFunctionKind::Override);
+						for (auto&& paramModel : methodModel->params)
 						{
 							methodDecl->arguments.Add(CreateFunctionArgument(paramModel.name, CopyType(paramModel.type.Obj())));
 						}
@@ -11630,14 +11699,14 @@ namespace vl
 						}
 
 						auto invoke = Ptr(new WfCallExpression);
-						invoke->function = CreateMember(CreateReference(L"_ops"), GetRpcOpsInvokeMethodName(methodModel));
+						invoke->function = CreateMember(CreateReference(L"_ops"), GetRpcOpsInvokeMethodName(*methodModel));
 						invoke->arguments.Add(CreateReference(L"_ref"));
-						for (auto&& paramModel : methodModel.params)
+						for (auto&& paramModel : methodModel->params)
 						{
 							invoke->arguments.Add(CreateReference(paramModel.name));
 						}
 
-						if (IsVoidType(methodModel.returnType.Obj()))
+						if (IsVoidType(methodModel->returnType.Obj()))
 						{
 							AddStatement(methodBlock, CreateExpressionStatement(invoke));
 						}
@@ -11674,15 +11743,15 @@ namespace vl
 							)
 						);
 
-					for (auto&& propertyModel : interfaceModel.properties)
+					for (auto propertyModel : properties)
 					{
-						if (propertyModel.cached && propertyModel.valueChangedEvent != L"")
+						if (propertyModel->cached && propertyModel->valueChangedEvent != L"")
 						{
-							if (auto eventModel = FindInterfaceEvent(events, propertyModel.valueChangedEvent))
+							if (auto eventModel = FindInterfaceEvent(events, propertyModel->valueChangedEvent))
 							{
 								auto lambdaBody = CreateBlock();
 								auto invalidateTarget = CreateCast(CreateSharedType(wrapperInterfaceFullName), CreateCall(CreateMember(CreateReference(L"lc"), L"RefToPtr"), CreateReference(L"proxyRef")));
-								AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(invalidateTarget, GetPropertyCacheResetFunctionName(propertyModel)))));
+								AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(invalidateTarget, GetPropertyCacheResetFunctionName(*propertyModel)))));
 
 								auto attach = Ptr(new WfAttachEventExpression);
 								attach->event = CreateMember(CreateCast(CreateSharedType(interfaceModel.fullName), CreateReference(L"proxy")), eventModel->name);
@@ -11791,7 +11860,7 @@ namespace vl
 					List<WString> namespaceFragments;
 					SplitTypeFullName(interfaceModel.fullName, namespaceFragments);
 					namespaceFragments.RemoveAt(namespaceFragments.Count() - 1);
-					AddDeclarationToNamespaces(wrapperDeclarations, wrapperNamespaces, namespaceFragments, GenerateWrapperInterface(interfaceModel));
+					AddDeclarationToNamespaces(wrapperDeclarations, wrapperNamespaces, namespaceFragments, GenerateWrapperInterface(interfaceModel, interfaces));
 				}
 				for (auto declaration : wrapperDeclarations)
 				{

@@ -106,6 +106,7 @@
 #include "EventArgsReflection.h"
 #include "EventOblistReflection.h"
 #include "FailDoubleRegistrationReflection.h"
+#include "InheritanceReflection.h"
 #include "LocalAndWrapperReflection.h"
 #include "NullableReflection.h"
 #include "OverloadingReflection.h"
@@ -239,6 +240,7 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_EventArgsTypes();
 	 LoadRpc_EventOblistTypes();
 	 LoadRpc_FailDoubleRegistrationTypes();
+	 LoadRpc_InheritanceTypes();
 	 LoadRpc_LocalAndWrapperTypes();
 	 LoadRpc_NullableTypes();
 	 LoadRpc_OverloadingTypes();
@@ -1623,6 +1625,25 @@ TEST_CASE(L"Rpc:FailDoubleRegistration")
 			return RpcTypeId_NotFound;
 		},
 		nullptr);
+});
+
+TEST_CASE(L"Rpc:Inheritance")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_Inheritance>(L"Inheritance", L"[][One][][Two][][Derived]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_Inheritance::Instance();
+			if (dynamic_cast<::RpcInheritance::IDerived*>(obj)) return instance.rpctype_RpcInheritance__IDerived;
+			if (dynamic_cast<::RpcInheritance::IOne*>(obj)) return instance.rpctype_RpcInheritance__IOne;
+			if (dynamic_cast<::RpcInheritance::ITwo*>(obj)) return instance.rpctype_RpcInheritance__ITwo;
+			if (dynamic_cast<::RpcInheritance::IValue*>(obj)) return instance.rpctype_RpcInheritance__IValue;
+			if (dynamic_cast<::RpcInheritance::IService*>(obj)) return instance.rpctype_RpcInheritance__IService;
+			return RpcTypeId_NotFound;
+		},
+		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj)
+		{
+			::vl_workflow_global::Rpc_Inheritance::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);
+		});
 });
 
 TEST_CASE(L"Rpc:LocalAndWrapper")
