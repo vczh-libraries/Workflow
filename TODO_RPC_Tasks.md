@@ -25,11 +25,15 @@ interface ITwo
 In `CreateDerived`, the implementation will attach an handler to `CrashAtServer`, raise "CrashedAtServer".
 In `clientMain`, attach an handler to `CrashAtClient`, raise "CrashedAtClient".
 
-Now we have to call them to test the exception. Add these 2 functions to `IDerived` and implement like this:
+Now we have to call them to test the exception. Add these function `GuardCrashAtClient` to `IDerived` and `clientMain` call them this:
 ```Workflow
+try { derived.CrashAtServer(); } catch (ex) { $"$(s)[$(ex)]"; }
+$"$(s)[$(derived.GuardCrashAtClient)]";
 ```
 
-And add additional postfix `[CrashedAtServer][CrashedAtClient]` to `IndexRpc.txt`.
+The `GuardCrashAtCliebt` calls the event and return the exception.
+New calls will be added right before returning s therefore,
+add additional postfix `[CrashedAtServer][CrashedAtClient]` to `IndexRpc.txt`.
 
 ----------------------------
 
