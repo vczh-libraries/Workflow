@@ -94,9 +94,9 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcInheritance__IService_CreateTwo, ref);
 				}
-				void InvokeMethod_RpcInheritance__ITwo_SetITwoValue(::vl::rpc_controller::RpcObjectReference ref) override
+				void InvokeMethod_RpcInheritance__ITwo_SetTwoValue(::vl::rpc_controller::RpcObjectReference ref) override
 				{
-					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcInheritance__ITwo_SetITwoValue, ref);
+					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcInheritance__ITwo_SetTwoValue, ref);
 				}
 				::vl::WString InvokeMethod_RpcInheritance__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override
 				{
@@ -129,9 +129,9 @@ namespace vl
 			END_INTERFACE_PROXY(::RpcInheritance::IRpcWrapper_IValue)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcInheritance::ITwo, ::RpcInheritance::IValue)
-				void SetITwoValue() override
+				void SetTwoValue() override
 				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(SetITwoValue);
+					INVOKE_INTERFACE_PROXY_NOPARAMS(SetTwoValue);
 				}
 			END_INTERFACE_PROXY(::RpcInheritance::ITwo)
 

@@ -300,73 +300,126 @@ Global Functions
 		return [&](){ ::vl::rpc_controller::RpcObjectReference __vwsn_temp__; __vwsn_temp__.clientId = jsonValue19; __vwsn_temp__.objectId = jsonValue22; __vwsn_temp__.typeId = jsonValue25; return __vwsn_temp__; }();
 	}
 
+	::vl::Ptr<::vl::glr::json::JsonNode> Rpc_PrimitiveTypes::rpcjson_Serialize_Struct_system__RpcException(::vl::rpc_controller::RpcException value)
+	{
+		auto object = ::vl::Ptr<::vl::glr::json::JsonObject>(new ::vl::glr::json::JsonObject());
+		auto jsonString26 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+		(::vl::__vwsn::This(jsonString26.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = value.message; return __vwsn_temp__; }());
+		auto jsonField27 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
+		(::vl::__vwsn::This(jsonField27.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"message"); return __vwsn_temp__; }());
+		(::vl::__vwsn::This(jsonField27.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString26));
+		::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField27));
+		return ::vl::Ptr<::vl::glr::json::JsonNode>(object);
+	}
+
+	::vl::rpc_controller::RpcException Rpc_PrimitiveTypes::rpcjson_Deserialize_Struct_system__RpcException(::vl::Ptr<::vl::glr::json::JsonNode> node)
+	{
+		auto object = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(node.Obj()));
+		auto jsonFieldValue28 = ::vl::Ptr<::vl::glr::json::JsonNode>();
+		{
+			auto __vwsn_for_enumerable_jsonField29 = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields));
+			auto __vwsn_for_enumerator_jsonField29 = ::vl::__vwsn::This(__vwsn_for_enumerable_jsonField29.Obj())->CreateEnumerator();
+			while (::vl::__vwsn::This(__vwsn_for_enumerator_jsonField29.Obj())->Next())
+			{
+				auto jsonField29 = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_jsonField29.Obj())->GetCurrent());
+				{
+					if ((::vl::__vwsn::This(jsonField29.Obj())->name.value == ::vl::WString::Unmanaged(L"message")))
+						(jsonFieldValue28 = ::vl::__vwsn::This(jsonField29.Obj())->value);
+				}
+			}
+		}
+		if ((! static_cast<bool>(jsonFieldValue28)))
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"JSON object field not found: message"));
+		auto jsonValue30 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(jsonFieldValue28.Obj())).Obj())->content.value;
+		return [&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = jsonValue30; return __vwsn_temp__; }();
+	}
+
 	::vl::Ptr<::vl::glr::json::JsonNode> Rpc_PrimitiveTypes::rpcjson_Serialize(const ::vl::reflection::description::Value& value)
 	{
 		auto value_RpcPrimitiveTest__Season = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::RpcPrimitiveTest::Season>>(value);
 		if (static_cast<bool>(value_RpcPrimitiveTest__Season))
 		{
-			auto jsonNode26 = GLOBAL_NAME rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(value_RpcPrimitiveTest__Season.Value());
-			auto jsonString28 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString28.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"RpcPrimitiveTest::Season"); return __vwsn_temp__; }());
-			auto jsonArray27 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray27.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString28));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray27.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonNode26));
-			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray27);
+			auto jsonNode31 = GLOBAL_NAME rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(value_RpcPrimitiveTest__Season.Value());
+			auto jsonString33 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+			(::vl::__vwsn::This(jsonString33.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"RpcPrimitiveTest::Season"); return __vwsn_temp__; }());
+			auto jsonArray32 = ::vl::Ptr<::vl::glr::json::JsonArray>(new ::vl::glr::json::JsonArray());
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray32.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonString33));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(jsonArray32.Obj())->items).Obj())->Add(::vl::__vwsn::Box(jsonNode31));
+			return ::vl::Ptr<::vl::glr::json::JsonNode>(jsonArray32);
 		}
 		auto value_test__Point = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::test::Point>>(value);
 		if (static_cast<bool>(value_test__Point))
 		{
 			auto object = ::vl::Ptr<::vl::glr::json::JsonObject>(new ::vl::glr::json::JsonObject());
-			auto jsonString29 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString29.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"test::Point"); return __vwsn_temp__; }());
-			auto jsonField30 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField30.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField30.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString29));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField30));
-			auto value31 = value_test__Point.Value();
-			auto jsonNumber32 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber32.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value31.x); return __vwsn_temp__; }());
-			auto jsonField33 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField33.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"x"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField33.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber32));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField33));
-			auto jsonNumber34 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber34.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value31.y); return __vwsn_temp__; }());
+			auto jsonString34 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+			(::vl::__vwsn::This(jsonString34.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"test::Point"); return __vwsn_temp__; }());
 			auto jsonField35 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField35.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"y"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField35.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber34));
+			(::vl::__vwsn::This(jsonField35.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField35.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString34));
 			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField35));
+			auto value36 = value_test__Point.Value();
+			auto jsonNumber37 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+			(::vl::__vwsn::This(jsonNumber37.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value36.x); return __vwsn_temp__; }());
+			auto jsonField38 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
+			(::vl::__vwsn::This(jsonField38.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"x"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField38.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber37));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField38));
+			auto jsonNumber39 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+			(::vl::__vwsn::This(jsonNumber39.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value36.y); return __vwsn_temp__; }());
+			auto jsonField40 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
+			(::vl::__vwsn::This(jsonField40.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"y"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField40.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber39));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField40));
 			return ::vl::Ptr<::vl::glr::json::JsonNode>(object);
 		}
 		auto value_system__RpcObjectReference = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcObjectReference>>(value);
 		if (static_cast<bool>(value_system__RpcObjectReference))
 		{
 			auto object = ::vl::Ptr<::vl::glr::json::JsonObject>(new ::vl::glr::json::JsonObject());
-			auto jsonString36 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-			(::vl::__vwsn::This(jsonString36.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"system::RpcObjectReference"); return __vwsn_temp__; }());
-			auto jsonField37 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField37.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField37.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString36));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField37));
-			auto value38 = value_system__RpcObjectReference.Value();
-			auto jsonNumber39 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber39.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value38.clientId); return __vwsn_temp__; }());
-			auto jsonField40 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField40.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"clientId"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField40.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber39));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField40));
-			auto jsonNumber41 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber41.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value38.objectId); return __vwsn_temp__; }());
+			auto jsonString41 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+			(::vl::__vwsn::This(jsonString41.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"system::RpcObjectReference"); return __vwsn_temp__; }());
 			auto jsonField42 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField42.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"objectId"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField42.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber41));
+			(::vl::__vwsn::This(jsonField42.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField42.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString41));
 			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField42));
-			auto jsonNumber43 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-			(::vl::__vwsn::This(jsonNumber43.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value38.typeId); return __vwsn_temp__; }());
-			auto jsonField44 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
-			(::vl::__vwsn::This(jsonField44.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"typeId"); return __vwsn_temp__; }());
-			(::vl::__vwsn::This(jsonField44.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber43));
-			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField44));
+			auto value43 = value_system__RpcObjectReference.Value();
+			auto jsonNumber44 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+			(::vl::__vwsn::This(jsonNumber44.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value43.clientId); return __vwsn_temp__; }());
+			auto jsonField45 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
+			(::vl::__vwsn::This(jsonField45.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"clientId"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField45.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber44));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField45));
+			auto jsonNumber46 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+			(::vl::__vwsn::This(jsonNumber46.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value43.objectId); return __vwsn_temp__; }());
+			auto jsonField47 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
+			(::vl::__vwsn::This(jsonField47.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"objectId"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField47.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber46));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField47));
+			auto jsonNumber48 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+			(::vl::__vwsn::This(jsonNumber48.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(value43.typeId); return __vwsn_temp__; }());
+			auto jsonField49 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
+			(::vl::__vwsn::This(jsonField49.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"typeId"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField49.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonNumber48));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField49));
+			return ::vl::Ptr<::vl::glr::json::JsonNode>(object);
+		}
+		auto value_system__RpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(value);
+		if (static_cast<bool>(value_system__RpcException))
+		{
+			auto object = ::vl::Ptr<::vl::glr::json::JsonObject>(new ::vl::glr::json::JsonObject());
+			auto jsonString50 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+			(::vl::__vwsn::This(jsonString50.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"system::RpcException"); return __vwsn_temp__; }());
+			auto jsonField51 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
+			(::vl::__vwsn::This(jsonField51.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"$"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField51.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString50));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField51));
+			auto value52 = value_system__RpcException.Value();
+			auto jsonString53 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+			(::vl::__vwsn::This(jsonString53.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = value52.message; return __vwsn_temp__; }());
+			auto jsonField54 = ::vl::Ptr<::vl::glr::json::JsonObjectField>(new ::vl::glr::json::JsonObjectField());
+			(::vl::__vwsn::This(jsonField54.Obj())->name = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::WString::Unmanaged(L"message"); return __vwsn_temp__; }());
+			(::vl::__vwsn::This(jsonField54.Obj())->value = ::vl::Ptr<::vl::glr::json::JsonNode>(jsonString53));
+			::vl::__vwsn::This(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields).Obj())->Add(::vl::__vwsn::Box(jsonField54));
 			return ::vl::Ptr<::vl::glr::json::JsonNode>(object);
 		}
 		return ::vl::rpc_controller::JsonSerializePredefinedTypes(value, ::vl::Func<::vl::Ptr<::vl::glr::json::JsonNode>(const ::vl::reflection::description::Value&)>(GLOBAL_OBJ, &GLOBAL_SYMBOL rpcjson_Serialize));
@@ -387,28 +440,30 @@ Global Functions
 		auto object = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(node.Obj());
 		if (static_cast<bool>(object))
 		{
-			auto jsonFieldValue45 = ::vl::Ptr<::vl::glr::json::JsonNode>();
+			auto jsonFieldValue55 = ::vl::Ptr<::vl::glr::json::JsonNode>();
 			{
-				auto __vwsn_for_enumerable_jsonField46 = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields));
-				auto __vwsn_for_enumerator_jsonField46 = ::vl::__vwsn::This(__vwsn_for_enumerable_jsonField46.Obj())->CreateEnumerator();
-				while (::vl::__vwsn::This(__vwsn_for_enumerator_jsonField46.Obj())->Next())
+				auto __vwsn_for_enumerable_jsonField56 = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields));
+				auto __vwsn_for_enumerator_jsonField56 = ::vl::__vwsn::This(__vwsn_for_enumerable_jsonField56.Obj())->CreateEnumerator();
+				while (::vl::__vwsn::This(__vwsn_for_enumerator_jsonField56.Obj())->Next())
 				{
-					auto jsonField46 = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_jsonField46.Obj())->GetCurrent());
+					auto jsonField56 = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_jsonField56.Obj())->GetCurrent());
 					{
-						if ((::vl::__vwsn::This(jsonField46.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
-							(jsonFieldValue45 = ::vl::__vwsn::This(jsonField46.Obj())->value);
+						if ((::vl::__vwsn::This(jsonField56.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
+							(jsonFieldValue55 = ::vl::__vwsn::This(jsonField56.Obj())->value);
 					}
 				}
 			}
-			if ((! static_cast<bool>(jsonFieldValue45)))
+			if ((! static_cast<bool>(jsonFieldValue55)))
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"JSON object field not found: $"));
-			auto keyword = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(jsonFieldValue45.Obj())).Obj())->content.value;
+			auto keyword = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(jsonFieldValue55.Obj())).Obj())->content.value;
 			{
 				auto __vwsn_switch_6 = keyword;
 				if ((__vwsn_switch_6 == ::vl::WString::Unmanaged(L"test::Point")))
 					return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Deserialize_Struct_test__Point(::vl::Ptr<::vl::glr::json::JsonNode>(object)));
 				else if ((__vwsn_switch_6 == ::vl::WString::Unmanaged(L"system::RpcObjectReference")))
 					return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::Ptr<::vl::glr::json::JsonNode>(object)));
+				else if ((__vwsn_switch_6 == ::vl::WString::Unmanaged(L"system::RpcException")))
+					return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Deserialize_Struct_system__RpcException(::vl::Ptr<::vl::glr::json::JsonNode>(object)));
 			}
 		}
 		return ::vl::rpc_controller::JsonDeserializePredefinedTypes(::vl::__vwsn::Box(node), ::vl::Func<::vl::reflection::description::Value(::vl::Ptr<::vl::glr::json::JsonNode>)>(GLOBAL_OBJ, &GLOBAL_SYMBOL rpcjson_Deserialize));
@@ -500,50 +555,60 @@ Closures
 
 	::vl::reflection::description::Value __vwsnc2_Rpc_PrimitiveTypes_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
+		try
 		{
-			auto __vwsn_switch_2 = methodId;
-			if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessBool))
 			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessBool(::vl::__vwsn::Unbox<bool>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
+				auto __vwsn_switch_2 = methodId;
+				if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessBool))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessBool(::vl::__vwsn::Unbox<bool>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
+				}
+				else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessDouble))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessDouble(::vl::__vwsn::Unbox<double>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
+				}
+				else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessEnum))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessEnum(::vl::__vwsn::Unbox<::RpcPrimitiveTest::Season>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
+				}
+				else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessFloat))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessFloat(::vl::__vwsn::Unbox<float>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
+				}
+				else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessInt))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessInt(::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
+				}
+				else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessString))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessString(::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
+				}
+				else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessStruct(::vl::__vwsn::Unbox<::test::Point>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
+				}
+				else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessUInt))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessUInt(::vl::__vwsn::Unbox<::vl::vuint64_t>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
+				}
+				else
+					throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
 			}
-			else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessDouble))
+		}
+		catch(const ::vl::Exception& __vwsne_0)
+		{
+			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessDouble(::vl::__vwsn::Unbox<double>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
+				return ::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }());
 			}
-			else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessEnum))
-			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessEnum(::vl::__vwsn::Unbox<::RpcPrimitiveTest::Season>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
-			}
-			else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessFloat))
-			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessFloat(::vl::__vwsn::Unbox<float>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
-			}
-			else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessInt))
-			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessInt(::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
-			}
-			else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessString))
-			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessString(::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
-			}
-			else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct))
-			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessStruct(::vl::__vwsn::Unbox<::test::Point>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
-			}
-			else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessUInt))
-			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->ProcessUInt(::vl::__vwsn::Unbox<::vl::vuint64_t>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L))))));
-			}
-			else
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
 		}
 	}
 
@@ -627,7 +692,13 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(arg_value));
-		return ::vl::__vwsn::Unbox<bool>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		return ::vl::__vwsn::Unbox<bool>(invokeResult);
 	}
 
 	double __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessDouble(::vl::rpc_controller::RpcObjectReference ref, double arg_value)
@@ -635,7 +706,13 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(arg_value));
-		return ::vl::__vwsn::Unbox<double>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		return ::vl::__vwsn::Unbox<double>(invokeResult);
 	}
 
 	::RpcPrimitiveTest::Season __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessEnum(::vl::rpc_controller::RpcObjectReference ref, ::RpcPrimitiveTest::Season arg_value)
@@ -643,7 +720,13 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(arg_value));
-		return ::vl::__vwsn::Unbox<::RpcPrimitiveTest::Season>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		return ::vl::__vwsn::Unbox<::RpcPrimitiveTest::Season>(invokeResult);
 	}
 
 	float __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessFloat(::vl::rpc_controller::RpcObjectReference ref, float arg_value)
@@ -651,7 +734,13 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(arg_value));
-		return ::vl::__vwsn::Unbox<float>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		return ::vl::__vwsn::Unbox<float>(invokeResult);
 	}
 
 	::vl::vint64_t __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t arg_value)
@@ -659,7 +748,13 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(arg_value));
-		return ::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		return ::vl::__vwsn::Unbox<::vl::vint64_t>(invokeResult);
 	}
 
 	::vl::WString __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessString(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_value)
@@ -667,7 +762,13 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(arg_value));
-		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		return ::vl::__vwsn::Unbox<::vl::WString>(invokeResult);
 	}
 
 	::test::Point __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(::vl::rpc_controller::RpcObjectReference ref, ::test::Point arg_value)
@@ -675,7 +776,13 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(arg_value));
-		return ::vl::__vwsn::Unbox<::test::Point>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		return ::vl::__vwsn::Unbox<::test::Point>(invokeResult);
 	}
 
 	::vl::vuint64_t __vwsnc4_Rpc_PrimitiveTypes_rpcops_IOps_Create__rpcops_IOps_Rpc_PrimitiveTypes::InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(::vl::rpc_controller::RpcObjectReference ref, ::vl::vuint64_t arg_value)
@@ -683,7 +790,13 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(arg_value));
-		return ::vl::__vwsn::Unbox<::vl::vuint64_t>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		return ::vl::__vwsn::Unbox<::vl::vuint64_t>(invokeResult);
 	}
 
 	//-------------------------------------------------------------------
@@ -793,75 +906,85 @@ Closures
 
 	::vl::reflection::description::Value __vwsnc7_Rpc_PrimitiveTypes_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
+		try
 		{
-			auto __vwsn_switch_7 = methodId;
-			if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessBool))
 			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				auto jsonValue0 = (::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonLiteral>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))).Obj())).Obj())->value == ::vl::glr::json::JsonLiteralValue::True);
-				auto jsonLiteral1 = ::vl::Ptr<::vl::glr::json::JsonLiteral>(new ::vl::glr::json::JsonLiteral());
-				if (::vl::__vwsn::This(target.Obj())->ProcessBool(jsonValue0))
-					(::vl::__vwsn::This(jsonLiteral1.Obj())->value = ::vl::glr::json::JsonLiteralValue::True);
+				auto __vwsn_switch_7 = methodId;
+				if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessBool))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					auto jsonValue0 = (::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonLiteral>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))).Obj())).Obj())->value == ::vl::glr::json::JsonLiteralValue::True);
+					auto jsonLiteral1 = ::vl::Ptr<::vl::glr::json::JsonLiteral>(new ::vl::glr::json::JsonLiteral());
+					if (::vl::__vwsn::This(target.Obj())->ProcessBool(jsonValue0))
+						(::vl::__vwsn::This(jsonLiteral1.Obj())->value = ::vl::glr::json::JsonLiteralValue::True);
+					else
+						(::vl::__vwsn::This(jsonLiteral1.Obj())->value = ::vl::glr::json::JsonLiteralValue::False);
+					return ::vl::__vwsn::Box(jsonLiteral1);
+				}
+				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessDouble))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					auto jsonValue0 = ::vl::__vwsn::Parse<double>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))).Obj())).Obj())->content.value);
+					auto jsonNumber1 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+					(::vl::__vwsn::This(jsonNumber1.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(::vl::__vwsn::This(target.Obj())->ProcessDouble(jsonValue0)); return __vwsn_temp__; }());
+					return ::vl::__vwsn::Box(jsonNumber1);
+				}
+				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessEnum))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))));
+					auto jsonNode1 = GLOBAL_NAME rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(::vl::__vwsn::This(target.Obj())->ProcessEnum(jsonValue0));
+					return ::vl::__vwsn::Box(jsonNode1);
+				}
+				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessFloat))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					auto jsonValue0 = ::vl::__vwsn::Parse<float>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))).Obj())).Obj())->content.value);
+					auto jsonNumber1 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+					(::vl::__vwsn::This(jsonNumber1.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(::vl::__vwsn::This(target.Obj())->ProcessFloat(jsonValue0)); return __vwsn_temp__; }());
+					return ::vl::__vwsn::Box(jsonNumber1);
+				}
+				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessInt))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					auto jsonValue0 = ::vl::__vwsn::Parse<::vl::vint64_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))).Obj())).Obj())->content.value);
+					auto jsonNumber1 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+					(::vl::__vwsn::This(jsonNumber1.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(::vl::__vwsn::This(target.Obj())->ProcessInt(jsonValue0)); return __vwsn_temp__; }());
+					return ::vl::__vwsn::Box(jsonNumber1);
+				}
+				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessString))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					auto jsonValue0 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))).Obj())).Obj())->content.value;
+					auto jsonString1 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+					(::vl::__vwsn::This(jsonString1.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::This(target.Obj())->ProcessString(jsonValue0); return __vwsn_temp__; }());
+					return ::vl::__vwsn::Box(jsonString1);
+				}
+				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize_Struct_test__Point(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))));
+					auto jsonNode1 = GLOBAL_NAME rpcjson_Serialize_Struct_test__Point(::vl::__vwsn::This(target.Obj())->ProcessStruct(jsonValue0));
+					return ::vl::__vwsn::Box(jsonNode1);
+				}
+				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessUInt))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					auto jsonValue0 = ::vl::__vwsn::Parse<::vl::vuint64_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))).Obj())).Obj())->content.value);
+					auto jsonNumber1 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
+					(::vl::__vwsn::This(jsonNumber1.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(::vl::__vwsn::This(target.Obj())->ProcessUInt(jsonValue0)); return __vwsn_temp__; }());
+					return ::vl::__vwsn::Box(jsonNumber1);
+				}
 				else
-					(::vl::__vwsn::This(jsonLiteral1.Obj())->value = ::vl::glr::json::JsonLiteralValue::False);
-				return ::vl::__vwsn::Box(jsonLiteral1);
+					throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
 			}
-			else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessDouble))
+		}
+		catch(const ::vl::Exception& __vwsne_0)
+		{
+			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
 			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				auto jsonValue0 = ::vl::__vwsn::Parse<double>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))).Obj())).Obj())->content.value);
-				auto jsonNumber1 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-				(::vl::__vwsn::This(jsonNumber1.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(::vl::__vwsn::This(target.Obj())->ProcessDouble(jsonValue0)); return __vwsn_temp__; }());
-				return ::vl::__vwsn::Box(jsonNumber1);
+				return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }())));
 			}
-			else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessEnum))
-			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))));
-				auto jsonNode1 = GLOBAL_NAME rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(::vl::__vwsn::This(target.Obj())->ProcessEnum(jsonValue0));
-				return ::vl::__vwsn::Box(jsonNode1);
-			}
-			else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessFloat))
-			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				auto jsonValue0 = ::vl::__vwsn::Parse<float>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))).Obj())).Obj())->content.value);
-				auto jsonNumber1 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-				(::vl::__vwsn::This(jsonNumber1.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(::vl::__vwsn::This(target.Obj())->ProcessFloat(jsonValue0)); return __vwsn_temp__; }());
-				return ::vl::__vwsn::Box(jsonNumber1);
-			}
-			else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessInt))
-			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				auto jsonValue0 = ::vl::__vwsn::Parse<::vl::vint64_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))).Obj())).Obj())->content.value);
-				auto jsonNumber1 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-				(::vl::__vwsn::This(jsonNumber1.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(::vl::__vwsn::This(target.Obj())->ProcessInt(jsonValue0)); return __vwsn_temp__; }());
-				return ::vl::__vwsn::Box(jsonNumber1);
-			}
-			else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessString))
-			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				auto jsonValue0 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))).Obj())).Obj())->content.value;
-				auto jsonString1 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-				(::vl::__vwsn::This(jsonString1.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::This(target.Obj())->ProcessString(jsonValue0); return __vwsn_temp__; }());
-				return ::vl::__vwsn::Box(jsonString1);
-			}
-			else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct))
-			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize_Struct_test__Point(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))));
-				auto jsonNode1 = GLOBAL_NAME rpcjson_Serialize_Struct_test__Point(::vl::__vwsn::This(target.Obj())->ProcessStruct(jsonValue0));
-				return ::vl::__vwsn::Box(jsonNode1);
-			}
-			else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessUInt))
-			{
-				auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPrimitiveTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-				auto jsonValue0 = ::vl::__vwsn::Parse<::vl::vuint64_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))).Obj())).Obj())->content.value);
-				auto jsonNumber1 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
-				(::vl::__vwsn::This(jsonNumber1.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(::vl::__vwsn::This(target.Obj())->ProcessUInt(jsonValue0)); return __vwsn_temp__; }());
-				return ::vl::__vwsn::Box(jsonNumber1);
-			}
-			else
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
 		}
 	}
 
@@ -950,7 +1073,46 @@ Closures
 		else
 			(::vl::__vwsn::This(jsonLiteral0.Obj())->value = ::vl::glr::json::JsonLiteralValue::False);
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(jsonLiteral0));
-		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		auto rpcExceptionJson = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		if (static_cast<bool>(rpcExceptionJson))
+		{
+			auto rpcExceptionObject = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(rpcExceptionJson.Obj());
+			if (static_cast<bool>(rpcExceptionObject))
+			{
+				auto rpcExceptionTypeNode = ::vl::Ptr<::vl::glr::json::JsonNode>();
+				{
+					auto __vwsn_for_enumerable_rpcExceptionField = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(rpcExceptionObject.Obj())->fields));
+					auto __vwsn_for_enumerator_rpcExceptionField = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcExceptionField.Obj())->CreateEnumerator();
+					while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->Next())
+					{
+						auto rpcExceptionField = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->GetCurrent());
+						{
+							if ((::vl::__vwsn::This(rpcExceptionField.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
+								(rpcExceptionTypeNode = ::vl::__vwsn::This(rpcExceptionField.Obj())->value);
+						}
+					}
+				}
+				if (static_cast<bool>(rpcExceptionTypeNode))
+				{
+					auto rpcExceptionType = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(rpcExceptionTypeNode.Obj())).Obj())->content.value;
+					if ((rpcExceptionType == ::vl::WString::Unmanaged(L"system::RpcException")))
+					{
+						auto rpcJsonException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(GLOBAL_NAME rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode>(rpcExceptionObject)));
+						if (static_cast<bool>(rpcJsonException))
+						{
+							throw ::vl::Exception(rpcJsonException.Value().message);
+						}
+					}
+				}
+			}
+		}
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
 		auto jsonValue1 = (::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonLiteral>(jsonResult.Obj())).Obj())->value == ::vl::glr::json::JsonLiteralValue::True);
 		return jsonValue1;
 	}
@@ -962,7 +1124,46 @@ Closures
 		auto jsonNumber0 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
 		(::vl::__vwsn::This(jsonNumber0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(arg_value); return __vwsn_temp__; }());
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(jsonNumber0));
-		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		auto rpcExceptionJson = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		if (static_cast<bool>(rpcExceptionJson))
+		{
+			auto rpcExceptionObject = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(rpcExceptionJson.Obj());
+			if (static_cast<bool>(rpcExceptionObject))
+			{
+				auto rpcExceptionTypeNode = ::vl::Ptr<::vl::glr::json::JsonNode>();
+				{
+					auto __vwsn_for_enumerable_rpcExceptionField = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(rpcExceptionObject.Obj())->fields));
+					auto __vwsn_for_enumerator_rpcExceptionField = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcExceptionField.Obj())->CreateEnumerator();
+					while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->Next())
+					{
+						auto rpcExceptionField = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->GetCurrent());
+						{
+							if ((::vl::__vwsn::This(rpcExceptionField.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
+								(rpcExceptionTypeNode = ::vl::__vwsn::This(rpcExceptionField.Obj())->value);
+						}
+					}
+				}
+				if (static_cast<bool>(rpcExceptionTypeNode))
+				{
+					auto rpcExceptionType = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(rpcExceptionTypeNode.Obj())).Obj())->content.value;
+					if ((rpcExceptionType == ::vl::WString::Unmanaged(L"system::RpcException")))
+					{
+						auto rpcJsonException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(GLOBAL_NAME rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode>(rpcExceptionObject)));
+						if (static_cast<bool>(rpcJsonException))
+						{
+							throw ::vl::Exception(rpcJsonException.Value().message);
+						}
+					}
+				}
+			}
+		}
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
 		auto jsonValue1 = ::vl::__vwsn::Parse<double>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(jsonResult.Obj())).Obj())->content.value);
 		return jsonValue1;
 	}
@@ -973,7 +1174,46 @@ Closures
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
 		auto jsonNode0 = GLOBAL_NAME rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(arg_value);
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(jsonNode0));
-		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		auto rpcExceptionJson = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		if (static_cast<bool>(rpcExceptionJson))
+		{
+			auto rpcExceptionObject = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(rpcExceptionJson.Obj());
+			if (static_cast<bool>(rpcExceptionObject))
+			{
+				auto rpcExceptionTypeNode = ::vl::Ptr<::vl::glr::json::JsonNode>();
+				{
+					auto __vwsn_for_enumerable_rpcExceptionField = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(rpcExceptionObject.Obj())->fields));
+					auto __vwsn_for_enumerator_rpcExceptionField = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcExceptionField.Obj())->CreateEnumerator();
+					while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->Next())
+					{
+						auto rpcExceptionField = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->GetCurrent());
+						{
+							if ((::vl::__vwsn::This(rpcExceptionField.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
+								(rpcExceptionTypeNode = ::vl::__vwsn::This(rpcExceptionField.Obj())->value);
+						}
+					}
+				}
+				if (static_cast<bool>(rpcExceptionTypeNode))
+				{
+					auto rpcExceptionType = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(rpcExceptionTypeNode.Obj())).Obj())->content.value;
+					if ((rpcExceptionType == ::vl::WString::Unmanaged(L"system::RpcException")))
+					{
+						auto rpcJsonException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(GLOBAL_NAME rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode>(rpcExceptionObject)));
+						if (static_cast<bool>(rpcJsonException))
+						{
+							throw ::vl::Exception(rpcJsonException.Value().message);
+						}
+					}
+				}
+			}
+		}
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
 		auto jsonValue1 = GLOBAL_NAME rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season(jsonResult);
 		return jsonValue1;
 	}
@@ -985,7 +1225,46 @@ Closures
 		auto jsonNumber0 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
 		(::vl::__vwsn::This(jsonNumber0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(arg_value); return __vwsn_temp__; }());
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(jsonNumber0));
-		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		auto rpcExceptionJson = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		if (static_cast<bool>(rpcExceptionJson))
+		{
+			auto rpcExceptionObject = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(rpcExceptionJson.Obj());
+			if (static_cast<bool>(rpcExceptionObject))
+			{
+				auto rpcExceptionTypeNode = ::vl::Ptr<::vl::glr::json::JsonNode>();
+				{
+					auto __vwsn_for_enumerable_rpcExceptionField = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(rpcExceptionObject.Obj())->fields));
+					auto __vwsn_for_enumerator_rpcExceptionField = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcExceptionField.Obj())->CreateEnumerator();
+					while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->Next())
+					{
+						auto rpcExceptionField = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->GetCurrent());
+						{
+							if ((::vl::__vwsn::This(rpcExceptionField.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
+								(rpcExceptionTypeNode = ::vl::__vwsn::This(rpcExceptionField.Obj())->value);
+						}
+					}
+				}
+				if (static_cast<bool>(rpcExceptionTypeNode))
+				{
+					auto rpcExceptionType = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(rpcExceptionTypeNode.Obj())).Obj())->content.value;
+					if ((rpcExceptionType == ::vl::WString::Unmanaged(L"system::RpcException")))
+					{
+						auto rpcJsonException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(GLOBAL_NAME rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode>(rpcExceptionObject)));
+						if (static_cast<bool>(rpcJsonException))
+						{
+							throw ::vl::Exception(rpcJsonException.Value().message);
+						}
+					}
+				}
+			}
+		}
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
 		auto jsonValue1 = ::vl::__vwsn::Parse<float>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(jsonResult.Obj())).Obj())->content.value);
 		return jsonValue1;
 	}
@@ -997,7 +1276,46 @@ Closures
 		auto jsonNumber0 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
 		(::vl::__vwsn::This(jsonNumber0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(arg_value); return __vwsn_temp__; }());
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(jsonNumber0));
-		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		auto rpcExceptionJson = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		if (static_cast<bool>(rpcExceptionJson))
+		{
+			auto rpcExceptionObject = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(rpcExceptionJson.Obj());
+			if (static_cast<bool>(rpcExceptionObject))
+			{
+				auto rpcExceptionTypeNode = ::vl::Ptr<::vl::glr::json::JsonNode>();
+				{
+					auto __vwsn_for_enumerable_rpcExceptionField = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(rpcExceptionObject.Obj())->fields));
+					auto __vwsn_for_enumerator_rpcExceptionField = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcExceptionField.Obj())->CreateEnumerator();
+					while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->Next())
+					{
+						auto rpcExceptionField = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->GetCurrent());
+						{
+							if ((::vl::__vwsn::This(rpcExceptionField.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
+								(rpcExceptionTypeNode = ::vl::__vwsn::This(rpcExceptionField.Obj())->value);
+						}
+					}
+				}
+				if (static_cast<bool>(rpcExceptionTypeNode))
+				{
+					auto rpcExceptionType = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(rpcExceptionTypeNode.Obj())).Obj())->content.value;
+					if ((rpcExceptionType == ::vl::WString::Unmanaged(L"system::RpcException")))
+					{
+						auto rpcJsonException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(GLOBAL_NAME rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode>(rpcExceptionObject)));
+						if (static_cast<bool>(rpcJsonException))
+						{
+							throw ::vl::Exception(rpcJsonException.Value().message);
+						}
+					}
+				}
+			}
+		}
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
 		auto jsonValue1 = ::vl::__vwsn::Parse<::vl::vint64_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(jsonResult.Obj())).Obj())->content.value);
 		return jsonValue1;
 	}
@@ -1009,7 +1327,46 @@ Closures
 		auto jsonString0 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
 		(::vl::__vwsn::This(jsonString0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = arg_value; return __vwsn_temp__; }());
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(jsonString0));
-		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		auto rpcExceptionJson = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		if (static_cast<bool>(rpcExceptionJson))
+		{
+			auto rpcExceptionObject = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(rpcExceptionJson.Obj());
+			if (static_cast<bool>(rpcExceptionObject))
+			{
+				auto rpcExceptionTypeNode = ::vl::Ptr<::vl::glr::json::JsonNode>();
+				{
+					auto __vwsn_for_enumerable_rpcExceptionField = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(rpcExceptionObject.Obj())->fields));
+					auto __vwsn_for_enumerator_rpcExceptionField = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcExceptionField.Obj())->CreateEnumerator();
+					while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->Next())
+					{
+						auto rpcExceptionField = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->GetCurrent());
+						{
+							if ((::vl::__vwsn::This(rpcExceptionField.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
+								(rpcExceptionTypeNode = ::vl::__vwsn::This(rpcExceptionField.Obj())->value);
+						}
+					}
+				}
+				if (static_cast<bool>(rpcExceptionTypeNode))
+				{
+					auto rpcExceptionType = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(rpcExceptionTypeNode.Obj())).Obj())->content.value;
+					if ((rpcExceptionType == ::vl::WString::Unmanaged(L"system::RpcException")))
+					{
+						auto rpcJsonException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(GLOBAL_NAME rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode>(rpcExceptionObject)));
+						if (static_cast<bool>(rpcJsonException))
+						{
+							throw ::vl::Exception(rpcJsonException.Value().message);
+						}
+					}
+				}
+			}
+		}
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
 		auto jsonValue1 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(jsonResult.Obj())).Obj())->content.value;
 		return jsonValue1;
 	}
@@ -1020,7 +1377,46 @@ Closures
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
 		auto jsonNode0 = GLOBAL_NAME rpcjson_Serialize_Struct_test__Point(arg_value);
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(jsonNode0));
-		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		auto rpcExceptionJson = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		if (static_cast<bool>(rpcExceptionJson))
+		{
+			auto rpcExceptionObject = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(rpcExceptionJson.Obj());
+			if (static_cast<bool>(rpcExceptionObject))
+			{
+				auto rpcExceptionTypeNode = ::vl::Ptr<::vl::glr::json::JsonNode>();
+				{
+					auto __vwsn_for_enumerable_rpcExceptionField = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(rpcExceptionObject.Obj())->fields));
+					auto __vwsn_for_enumerator_rpcExceptionField = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcExceptionField.Obj())->CreateEnumerator();
+					while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->Next())
+					{
+						auto rpcExceptionField = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->GetCurrent());
+						{
+							if ((::vl::__vwsn::This(rpcExceptionField.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
+								(rpcExceptionTypeNode = ::vl::__vwsn::This(rpcExceptionField.Obj())->value);
+						}
+					}
+				}
+				if (static_cast<bool>(rpcExceptionTypeNode))
+				{
+					auto rpcExceptionType = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(rpcExceptionTypeNode.Obj())).Obj())->content.value;
+					if ((rpcExceptionType == ::vl::WString::Unmanaged(L"system::RpcException")))
+					{
+						auto rpcJsonException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(GLOBAL_NAME rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode>(rpcExceptionObject)));
+						if (static_cast<bool>(rpcJsonException))
+						{
+							throw ::vl::Exception(rpcJsonException.Value().message);
+						}
+					}
+				}
+			}
+		}
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
 		auto jsonValue1 = GLOBAL_NAME rpcjson_Deserialize_Struct_test__Point(jsonResult);
 		return jsonValue1;
 	}
@@ -1032,7 +1428,46 @@ Closures
 		auto jsonNumber0 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());
 		(::vl::__vwsn::This(jsonNumber0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::ToString(arg_value); return __vwsn_temp__; }());
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(jsonNumber0));
-		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments);
+		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
+		if (static_cast<bool>(rpcException))
+		{
+			throw ::vl::Exception(rpcException.Value().message);
+		}
+		auto rpcExceptionJson = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		if (static_cast<bool>(rpcExceptionJson))
+		{
+			auto rpcExceptionObject = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(rpcExceptionJson.Obj());
+			if (static_cast<bool>(rpcExceptionObject))
+			{
+				auto rpcExceptionTypeNode = ::vl::Ptr<::vl::glr::json::JsonNode>();
+				{
+					auto __vwsn_for_enumerable_rpcExceptionField = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(rpcExceptionObject.Obj())->fields));
+					auto __vwsn_for_enumerator_rpcExceptionField = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcExceptionField.Obj())->CreateEnumerator();
+					while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->Next())
+					{
+						auto rpcExceptionField = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->GetCurrent());
+						{
+							if ((::vl::__vwsn::This(rpcExceptionField.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
+								(rpcExceptionTypeNode = ::vl::__vwsn::This(rpcExceptionField.Obj())->value);
+						}
+					}
+				}
+				if (static_cast<bool>(rpcExceptionTypeNode))
+				{
+					auto rpcExceptionType = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(rpcExceptionTypeNode.Obj())).Obj())->content.value;
+					if ((rpcExceptionType == ::vl::WString::Unmanaged(L"system::RpcException")))
+					{
+						auto rpcJsonException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(GLOBAL_NAME rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode>(rpcExceptionObject)));
+						if (static_cast<bool>(rpcJsonException))
+						{
+							throw ::vl::Exception(rpcJsonException.Value().message);
+						}
+					}
+				}
+			}
+		}
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
 		auto jsonValue1 = ::vl::__vwsn::Parse<::vl::vuint64_t>(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonNumber>(jsonResult.Obj())).Obj())->content.value);
 		return jsonValue1;
 	}

@@ -1629,7 +1629,7 @@ TEST_CASE(L"Rpc:FailDoubleRegistration")
 
 TEST_CASE(L"Rpc:Inheritance")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Inheritance>(L"Inheritance", L"[][One][][Two][][Derived]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Inheritance>(L"Inheritance", L"[][One][][Two][][Derived][DoNotSetOneValue][DoNotSetTwoValue]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Inheritance::Instance();

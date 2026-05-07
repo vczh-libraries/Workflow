@@ -43,6 +43,7 @@ export type UnknownTypeSchema =
   | UnknownType_Map
   | UnknownType_test_Point
   | UnknownType_system_RpcObjectReference
+  | UnknownType_system_RpcException
   ;
 
 export interface UnknownType_test_Point extends test_Point
@@ -53,6 +54,11 @@ export interface UnknownType_test_Point extends test_Point
 export interface UnknownType_system_RpcObjectReference extends system_RpcObjectReference
 {
   "$": "system::RpcObjectReference";
+}
+
+export interface UnknownType_system_RpcException extends system_RpcException
+{
+  "$": "system::RpcException";
 }
 
 // below are all known types
@@ -78,6 +84,11 @@ export interface system_RpcObjectReference
   typeId: number;
 }
 
+export interface system_RpcException
+{
+  message: string;
+}
+
 // All enum_type_full_name is omitted because in known type enums are just numbers
 export type KnownTypeSchema =
   | number
@@ -88,4 +99,5 @@ export type KnownTypeSchema =
   | [KnownTypeSchema, KnownTypeSchema][]
   | test_Point
   | system_RpcObjectReference
+  | system_RpcException
   ;

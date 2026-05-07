@@ -129,7 +129,7 @@ namespace RpcInheritance
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ITwo>;
 #endif
 	public:
-		virtual void SetITwoValue() = 0;
+		virtual void SetTwoValue() = 0;
 	};
 
 	class IDerived : public virtual ::RpcInheritance::IOne, public virtual ::RpcInheritance::ITwo, public ::vl::reflection::Description<IDerived>
@@ -169,7 +169,7 @@ public:
 	virtual ::vl::WString InvokeMethod_RpcInheritance__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeEvent_RpcInheritance__IValue_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeMethod_RpcInheritance__IOne_SetOneValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
-	virtual void InvokeMethod_RpcInheritance__ITwo_SetITwoValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual void InvokeMethod_RpcInheritance__ITwo_SetTwoValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeMethod_RpcInheritance__IDerived_SetDerivedValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual ::vl::Ptr<::RpcInheritance::IDerived> InvokeMethod_RpcInheritance__IService_CreateDerived(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual ::vl::Ptr<::RpcInheritance::IOne> InvokeMethod_RpcInheritance__IService_CreateOne(::vl::rpc_controller::RpcObjectReference ref) = 0;
@@ -196,7 +196,7 @@ namespace vl_workflow_global
 		::vl::vint64_t rpcmethod_RpcInheritance__IService_CreateOne = 0;
 		::vl::vint64_t rpcmethod_RpcInheritance__IService_CreateTwo = 0;
 		::vl::vint64_t rpctype_RpcInheritance__ITwo = 0;
-		::vl::vint64_t rpcmethod_RpcInheritance__ITwo_SetITwoValue = 0;
+		::vl::vint64_t rpcmethod_RpcInheritance__ITwo_SetTwoValue = 0;
 		::vl::vint64_t rpctype_RpcInheritance__IValue = 0;
 		::vl::vint64_t rpcmethod_RpcInheritance__IValue_GetValue = 0;
 		::vl::vint64_t rpcevent_RpcInheritance__IValue_ValueChanged = 0;
@@ -222,6 +222,8 @@ namespace vl_workflow_global
 		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance> ops);
 		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_system__RpcObjectReference(::vl::rpc_controller::RpcObjectReference value);
 		::vl::rpc_controller::RpcObjectReference rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::Ptr<::vl::glr::json::JsonNode> node);
+		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_system__RpcException(::vl::rpc_controller::RpcException value);
+		::vl::rpc_controller::RpcException rpcjson_Deserialize_Struct_system__RpcException(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize(const ::vl::reflection::description::Value& value);
 		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::rpc_controller::IRpcSerializer> rpcops_IRpcSerializer();
@@ -330,7 +332,7 @@ Closures
 		void DisconnectFromLifecycle() override;
 		~__vwsnc10_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo__RpcInheritance_IRpcWrapper_ITwo();
 		::vl::WString GetValue() override;
-		void SetITwoValue() override;
+		void SetTwoValue() override;
 	};
 
 	class __vwsnc11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived__RpcInheritance_IRpcWrapper_IDerived : public ::vl::Object, public virtual ::RpcInheritance::IRpcWrapper_IDerived
@@ -348,7 +350,7 @@ Closures
 		~__vwsnc11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived__RpcInheritance_IRpcWrapper_IDerived();
 		::vl::WString GetValue() override;
 		void SetOneValue() override;
-		void SetITwoValue() override;
+		void SetTwoValue() override;
 		void SetDerivedValue() override;
 	};
 
@@ -408,7 +410,7 @@ Closures
 		::vl::WString InvokeMethod_RpcInheritance__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeEvent_RpcInheritance__IValue_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcInheritance__IOne_SetOneValue(::vl::rpc_controller::RpcObjectReference ref) override;
-		void InvokeMethod_RpcInheritance__ITwo_SetITwoValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeMethod_RpcInheritance__ITwo_SetTwoValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcInheritance__IDerived_SetDerivedValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcInheritance::IDerived> InvokeMethod_RpcInheritance__IService_CreateDerived(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcInheritance::IOne> InvokeMethod_RpcInheritance__IService_CreateOne(::vl::rpc_controller::RpcObjectReference ref) override;
@@ -446,7 +448,7 @@ Closures
 
 		::vl::WString value;
 		::vl::WString GetValue() override;
-		void SetITwoValue() override;
+		void SetTwoValue() override;
 	};
 
 	class __vwsnc4_Rpc_Inheritance_serviceMain_CreateDerived__RpcInheritance_IDerived : public ::vl::Object, public virtual ::RpcInheritance::IDerived
@@ -459,7 +461,7 @@ Closures
 		::vl::WString value;
 		::vl::WString GetValue() override;
 		void SetOneValue() override;
-		void SetITwoValue() override;
+		void SetTwoValue() override;
 		void SetDerivedValue() override;
 	};
 
@@ -495,7 +497,7 @@ Closures
 		::vl::WString InvokeMethod_RpcInheritance__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeEvent_RpcInheritance__IValue_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcInheritance__IOne_SetOneValue(::vl::rpc_controller::RpcObjectReference ref) override;
-		void InvokeMethod_RpcInheritance__ITwo_SetITwoValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeMethod_RpcInheritance__ITwo_SetTwoValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcInheritance__IDerived_SetDerivedValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcInheritance::IDerived> InvokeMethod_RpcInheritance__IService_CreateDerived(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcInheritance::IOne> InvokeMethod_RpcInheritance__IService_CreateOne(::vl::rpc_controller::RpcObjectReference ref) override;

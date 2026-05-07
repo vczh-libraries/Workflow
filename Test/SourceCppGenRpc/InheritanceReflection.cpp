@@ -98,7 +98,7 @@ namespace vl
 			BEGIN_INTERFACE_MEMBER(::RpcInheritance::ITwo)
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Interface)
 				CLASS_MEMBER_BASE(::RpcInheritance::IValue)
-				CLASS_MEMBER_METHOD(SetITwoValue, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(SetTwoValue, NO_PARAMETER)
 			END_INTERFACE_MEMBER(::RpcInheritance::ITwo)
 
 			BEGIN_INTERFACE_MEMBER(::RpcInheritance::IValue)
@@ -117,7 +117,7 @@ namespace vl
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcInheritance__IService_CreateDerived, { L"ref" })
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcInheritance__IService_CreateOne, { L"ref" })
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcInheritance__IService_CreateTwo, { L"ref" })
-				CLASS_MEMBER_METHOD(InvokeMethod_RpcInheritance__ITwo_SetITwoValue, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcInheritance__ITwo_SetTwoValue, { L"ref" })
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcInheritance__IValue_GetValue, { L"ref" })
 			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Inheritance)
 

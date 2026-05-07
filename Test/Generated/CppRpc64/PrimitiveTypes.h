@@ -136,6 +136,8 @@ namespace vl_workflow_global
 		::test::Point rpcjson_Deserialize_Struct_test__Point(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_system__RpcObjectReference(::vl::rpc_controller::RpcObjectReference value);
 		::vl::rpc_controller::RpcObjectReference rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::Ptr<::vl::glr::json::JsonNode> node);
+		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_system__RpcException(::vl::rpc_controller::RpcException value);
+		::vl::rpc_controller::RpcException rpcjson_Deserialize_Struct_system__RpcException(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize(const ::vl::reflection::description::Value& value);
 		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::rpc_controller::IRpcSerializer> rpcops_IRpcSerializer();
