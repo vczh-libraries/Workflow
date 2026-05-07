@@ -15,11 +15,10 @@
 
 ## ToDo
 
+- Review JSON related constructions.
 - Continue to add more test cases until all features are covered.
   - Sending cached property values proactively from remote to wrapper.
   - Interface inheritance.
-- Generate JSON from "RPC metadata in Workflow syntax".
-  - Review JSON related constructions.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
 - Document RPC
   - use `TODO_RPC_(Definition|Json|GeneratedWrappers).md`
