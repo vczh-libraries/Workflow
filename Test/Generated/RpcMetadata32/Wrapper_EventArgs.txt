@@ -63,6 +63,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
+            try
             switch (methodId)
             {
                 case rpcmethod_RpcEventArgs__IService_AddElement:
@@ -79,6 +80,10 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 }
                 default:
                 raise "Unknown RPC method id.";
+            }
+            catch (ex)
+            {
+                return {message : ex.Message;} of (system::RpcException);
             }
         }
 
@@ -160,14 +165,24 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_EventArg
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventArgs__IService_AddElement, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventArgs__IService_AddElement, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
         }
 
         override func InvokeMethod_RpcEventArgs__IService_MakeItHappen(ref : system::RpcObjectReference) : (::system::Void)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventArgs__IService_MakeItHappen, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventArgs__IService_MakeItHappen, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
         }
 
         override func InvokeEvent_RpcEventArgs__IService_SomethingHappened(ref : system::RpcObjectReference, arg_arg0 : ::system::Int32[], arg_arg1 : observe ::system::Int32[]) : (void)

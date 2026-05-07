@@ -63,6 +63,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
+            try
             switch (methodId)
             {
                 case rpcmethod_RpcFailDoubleRegistrationTest__IObject_GetName:
@@ -77,6 +78,10 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 }
                 default:
                 raise "Unknown RPC method id.";
+            }
+            catch (ex)
+            {
+                return {message : ex.Message;} of (system::RpcException);
             }
         }
 
@@ -153,7 +158,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_FailDoub
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcFailDoubleRegistrationTest__IObject_GetName, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcFailDoubleRegistrationTest__IObject_GetName, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::String) invokeResult);
         }
 
         override func InvokeMethod_RpcFailDoubleRegistrationTest__IService_SetObject(ref : system::RpcObjectReference, arg_obj : ::RpcFailDoubleRegistrationTest::IObject^, arg_index : ::system::Int64) : (::RpcFailDoubleRegistrationTest::IObject^)
@@ -162,7 +173,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_FailDoub
             arguments.Resize(2);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg_obj, _lc));
             arguments.Set(1, arg_index);
-            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcFailDoubleRegistrationTest__IService_SetObject, arguments), _lc) as (::RpcFailDoubleRegistrationTest::IObject^));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcFailDoubleRegistrationTest__IService_SetObject, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (system::IRpcLifecycle::RpcUnboxByval(invokeResult, _lc) as (::RpcFailDoubleRegistrationTest::IObject^));
         }
     };
 }

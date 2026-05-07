@@ -1,0 +1,81 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+@rpc:Interface
+interface IMy
+{
+    func M() : (system::RpcObjectReference);
+}
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+@rpc:Interface
+interface IMy
+{
+    func M() : (system::RpcObjectReference);
+}
+
+========================================================
+Errors
+========================================================
+Line: 7, Column: 3, Message: H10: @rpc:Interface cannot be applied to interface "IMy" because its member "IMy.M" uses reserved RPC type "system::RpcObjectReference" in a return value.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 7, "column": 0, "index": 110}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 7, "column": 0, "index": 110}, "codeIndex": -1}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 3, "column": 13, "index": 47}, "codeIndex": -1}},
+            "category": { "value": "rpc", "codeRange": {"start": {"row": 3, "column": 1, "index": 35}, "end": {"row": 3, "column": 3, "index": 37}, "codeIndex": -1}},
+            "name": { "value": "Interface", "codeRange": {"start": {"row": 3, "column": 5, "index": 39}, "end": {"row": 3, "column": 13, "index": 47}, "codeIndex": -1}},
+            "value": null
+        }],
+        "name": { "value": "IMy", "codeRange": {"start": {"row": 4, "column": 10, "index": 60}, "end": {"row": 4, "column": 12, "index": 62}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 6, "column": 2, "index": 70}, "end": {"row": 6, "column": 39, "index": 107}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "M", "codeRange": {"start": {"row": 6, "column": 7, "index": 75}, "end": {"row": 6, "column": 7, "index": 75}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "ChildType", "codeRange": {"start": {"row": 6, "column": 13, "index": 81}, "end": {"row": 6, "column": 38, "index": 106}, "codeIndex": -1}},
+                "name": { "value": "RpcObjectReference", "codeRange": {"start": {"row": 6, "column": 21, "index": 89}, "end": {"row": 6, "column": 38, "index": 106}, "codeIndex": -1}},
+                "parent": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 6, "column": 13, "index": 81}, "end": {"row": 6, "column": 18, "index": 86}, "codeIndex": -1}},
+                    "name": { "value": "system", "codeRange": {"start": {"row": 6, "column": 13, "index": 81}, "end": {"row": 6, "column": 18, "index": 86}, "codeIndex": -1}}
+                }
+            },
+            "statement": null
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

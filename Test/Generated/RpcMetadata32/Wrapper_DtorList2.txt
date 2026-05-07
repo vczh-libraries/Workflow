@@ -73,6 +73,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
+            try
             switch (methodId)
             {
                 case rpcmethod_RpcDtorList2__IService_Clear:
@@ -100,6 +101,10 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 }
                 default:
                 raise "Unknown RPC method id.";
+            }
+            catch (ex)
+            {
+                return {message : ex.Message;} of (system::RpcException);
             }
         }
 
@@ -176,28 +181,49 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_DtorList
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtorList2__IService_Clear, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtorList2__IService_Clear, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
         }
 
         override func InvokeMethod_RpcDtorList2__IService_Hold(ref : system::RpcObjectReference) : (::system::Void)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtorList2__IService_Hold, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtorList2__IService_Hold, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
         }
 
         override func InvokeMethod_RpcDtorList2__IService_Make(ref : system::RpcObjectReference) : (::RpcDtorList2::IValue^[])
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::RpcDtorList2::IValue^[]) system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtorList2__IService_Make, arguments)), _lc));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtorList2__IService_Make, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::RpcDtorList2::IValue^[]) system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) invokeResult), _lc));
         }
 
         override func InvokeMethod_RpcDtorList2__IService_Unhold(ref : system::RpcObjectReference) : (::system::Void)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtorList2__IService_Unhold, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtorList2__IService_Unhold, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
         }
     };
 }

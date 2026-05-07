@@ -63,6 +63,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
+            try
             switch (methodId)
             {
                 case rpcmethod_RpcEventOblist__IService_ModifyHeldList:
@@ -85,6 +86,10 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 }
                 default:
                 raise "Unknown RPC method id.";
+            }
+            catch (ex)
+            {
+                return {message : ex.Message;} of (system::RpcException);
             }
         }
 
@@ -161,7 +166,12 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_EventObl
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventOblist__IService_ModifyHeldList, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventOblist__IService_ModifyHeldList, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
         }
 
         override func InvokeMethod_RpcEventOblist__IService_SetList(ref : system::RpcObjectReference, arg_xs : observe ::system::Int32[]) : (::system::Void)
@@ -169,14 +179,24 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_EventObl
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByref(arg_xs, _lc));
-            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventOblist__IService_SetList, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventOblist__IService_SetList, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
         }
 
         override func InvokeMethod_RpcEventOblist__IService_WatchHeldList(ref : system::RpcObjectReference) : (::system::Void)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventOblist__IService_WatchHeldList, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventOblist__IService_WatchHeldList, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
         }
     };
 }

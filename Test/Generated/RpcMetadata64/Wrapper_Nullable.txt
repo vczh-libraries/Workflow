@@ -63,6 +63,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
+            try
             switch (methodId)
             {
                 case rpcmethod_RpcNullable__IValue_GetValue:
@@ -77,6 +78,10 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 }
                 default:
                 raise "Unknown RPC method id.";
+            }
+            catch (ex)
+            {
+                return {message : ex.Message;} of (system::RpcException);
             }
         }
 
@@ -153,7 +158,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Nullable
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcNullable__IValue_GetValue, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcNullable__IValue_GetValue, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::String) invokeResult);
         }
 
         override func InvokeMethod_RpcNullable__IService_Print(ref : system::RpcObjectReference, arg_value : ::system::String?, arg_v : ::RpcNullable::IValue^) : (::system::String)
@@ -162,7 +173,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Nullable
             arguments.Resize(2);
             arguments.Set(0, arg_value);
             arguments.Set(1, system::IRpcLifecycle::RpcBoxByval(arg_v, _lc));
-            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcNullable__IService_Print, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcNullable__IService_Print, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::String) invokeResult);
         }
     };
 }

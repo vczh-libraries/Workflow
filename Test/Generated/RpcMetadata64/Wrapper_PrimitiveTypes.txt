@@ -88,6 +88,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
+            try
             switch (methodId)
             {
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessBool:
@@ -132,6 +133,10 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 }
                 default:
                 raise "Unknown RPC method id.";
+            }
+            catch (ex)
+            {
+                return {message : ex.Message;} of (system::RpcException);
             }
         }
 
@@ -209,7 +214,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Primitiv
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, arg_value);
-            return (cast (::system::Boolean) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::Boolean) invokeResult);
         }
 
         override func InvokeMethod_RpcPrimitiveTest__IService_ProcessDouble(ref : system::RpcObjectReference, arg_value : ::system::Double) : (::system::Double)
@@ -217,7 +228,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Primitiv
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, arg_value);
-            return (cast (::system::Double) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::Double) invokeResult);
         }
 
         override func InvokeMethod_RpcPrimitiveTest__IService_ProcessEnum(ref : system::RpcObjectReference, arg_value : ::RpcPrimitiveTest::Season) : (::RpcPrimitiveTest::Season)
@@ -225,7 +242,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Primitiv
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, arg_value);
-            return (cast (::RpcPrimitiveTest::Season) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::RpcPrimitiveTest::Season) invokeResult);
         }
 
         override func InvokeMethod_RpcPrimitiveTest__IService_ProcessFloat(ref : system::RpcObjectReference, arg_value : ::system::Single) : (::system::Single)
@@ -233,7 +256,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Primitiv
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, arg_value);
-            return (cast (::system::Single) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::Single) invokeResult);
         }
 
         override func InvokeMethod_RpcPrimitiveTest__IService_ProcessInt(ref : system::RpcObjectReference, arg_value : ::system::Int64) : (::system::Int64)
@@ -241,7 +270,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Primitiv
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, arg_value);
-            return (cast (::system::Int64) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::Int64) invokeResult);
         }
 
         override func InvokeMethod_RpcPrimitiveTest__IService_ProcessString(ref : system::RpcObjectReference, arg_value : ::system::String) : (::system::String)
@@ -249,7 +284,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Primitiv
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, arg_value);
-            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::String) invokeResult);
         }
 
         override func InvokeMethod_RpcPrimitiveTest__IService_ProcessStruct(ref : system::RpcObjectReference, arg_value : ::test::Point) : (::test::Point)
@@ -257,7 +298,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Primitiv
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, arg_value);
-            return (cast (::test::Point) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::test::Point) invokeResult);
         }
 
         override func InvokeMethod_RpcPrimitiveTest__IService_ProcessUInt(ref : system::RpcObjectReference, arg_value : ::system::UInt64) : (::system::UInt64)
@@ -265,7 +312,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Primitiv
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, arg_value);
-            return (cast (::system::UInt64) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::UInt64) invokeResult);
         }
     };
 }

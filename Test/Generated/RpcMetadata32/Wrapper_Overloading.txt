@@ -83,6 +83,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
+            try
             switch (methodId)
             {
                 case rpcmethod_RpcOverloadingTest__IStringRepresentable_GetStringValue:
@@ -117,6 +118,10 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 }
                 default:
                 raise "Unknown RPC method id.";
+            }
+            catch (ex)
+            {
+                return {message : ex.Message;} of (system::RpcException);
             }
         }
 
@@ -193,7 +198,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Overload
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IStringRepresentable_GetStringValue, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IStringRepresentable_GetStringValue, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::String) invokeResult);
         }
 
         override func InvokeMethod_RpcOverloadingTest__IService_ToString_value__1(ref : system::RpcObjectReference, arg_value : ::system::Boolean) : (::system::String)
@@ -201,7 +212,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Overload
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, arg_value);
-            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToString_value__1, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToString_value__1, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::String) invokeResult);
         }
 
         override func InvokeMethod_RpcOverloadingTest__IService_ToString_value__2(ref : system::RpcObjectReference, arg_value : ::system::String) : (::system::String)
@@ -209,7 +226,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Overload
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, arg_value);
-            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToString_value__2, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToString_value__2, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::String) invokeResult);
         }
 
         override func InvokeMethod_RpcOverloadingTest__IService_ToString_value__3(ref : system::RpcObjectReference, arg_value : ::RpcOverloadingTest::IStringRepresentable^) : (::system::String)
@@ -217,7 +240,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Overload
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg_value, _lc));
-            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToString_value__3, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToString_value__3, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::String) invokeResult);
         }
 
         override func InvokeMethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_(ref : system::RpcObjectReference, arg_value1 : ::system::Int32, arg_value2 : ::system::Boolean, arg_value3 : ::system::String, arg_value4 : ::RpcOverloadingTest::IStringRepresentable^) : (::system::String)
@@ -228,7 +257,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Overload
             arguments.Set(1, arg_value2);
             arguments.Set(2, arg_value3);
             arguments.Set(3, system::IRpcLifecycle::RpcBoxByval(arg_value4, _lc));
-            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToString_value1_value2_value3_value4_, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::String) invokeResult);
         }
 
         override func InvokeMethod_RpcOverloadingTest__IService_ToStringInt(ref : system::RpcObjectReference, arg_value : ::system::Int32) : (::system::String)
@@ -236,7 +271,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Overload
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, arg_value);
-            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToStringInt, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOverloadingTest__IService_ToStringInt, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::String) invokeResult);
         }
     };
 }

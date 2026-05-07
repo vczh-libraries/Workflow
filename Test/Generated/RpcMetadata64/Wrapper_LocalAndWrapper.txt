@@ -68,6 +68,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
+            try
             switch (methodId)
             {
                 case rpcmethod_RpcWrapperTest__IService_Exchange1:
@@ -82,6 +83,10 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 }
                 default:
                 raise "Unknown RPC method id.";
+            }
+            catch (ex)
+            {
+                return {message : ex.Message;} of (system::RpcException);
             }
         }
 
@@ -159,7 +164,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_LocalAnd
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg_o, _lc));
-            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcWrapperTest__IService_Exchange1, arguments), _lc) as (::RpcWrapperTest::IObj2^));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcWrapperTest__IService_Exchange1, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (system::IRpcLifecycle::RpcUnboxByval(invokeResult, _lc) as (::RpcWrapperTest::IObj2^));
         }
 
         override func InvokeMethod_RpcWrapperTest__IService_Exchange2(ref : system::RpcObjectReference, arg_o : ::RpcWrapperTest::IObj2^) : (::RpcWrapperTest::IObj1^)
@@ -167,7 +178,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_LocalAnd
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg_o, _lc));
-            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcWrapperTest__IService_Exchange2, arguments), _lc) as (::RpcWrapperTest::IObj1^));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcWrapperTest__IService_Exchange2, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (system::IRpcLifecycle::RpcUnboxByval(invokeResult, _lc) as (::RpcWrapperTest::IObj1^));
         }
     };
 }

@@ -18,7 +18,7 @@ var rpcmethod_RpcInheritance__IService_CreateTwo : int = 7;
 
 var rpctype_RpcInheritance__ITwo : int = 8;
 
-var rpcmethod_RpcInheritance__ITwo_SetITwoValue : int = 9;
+var rpcmethod_RpcInheritance__ITwo_SetTwoValue : int = 9;
 
 var rpctype_RpcInheritance__IValue : int = 10;
 
@@ -38,7 +38,7 @@ func rpc_GetIds() : (int[string])
     result.Set("RpcInheritance::IService.CreateOne", 6);
     result.Set("RpcInheritance::IService.CreateTwo", 7);
     result.Set("RpcInheritance::ITwo", 8);
-    result.Set("RpcInheritance::ITwo.SetITwoValue", 9);
+    result.Set("RpcInheritance::ITwo.SetTwoValue", 9);
     result.Set("RpcInheritance::IValue", 10);
     result.Set("RpcInheritance::IValue.GetValue", 11);
     result.Set("RpcInheritance::IValue.ValueChanged", 12);
@@ -85,7 +85,7 @@ interface rpcops_IOps_Rpc_Inheritance
 
     func InvokeMethod_RpcInheritance__IOne_SetOneValue(ref : system::RpcObjectReference) : (::system::Void);
 
-    func InvokeMethod_RpcInheritance__ITwo_SetITwoValue(ref : system::RpcObjectReference) : (::system::Void);
+    func InvokeMethod_RpcInheritance__ITwo_SetTwoValue(ref : system::RpcObjectReference) : (::system::Void);
 
     func InvokeMethod_RpcInheritance__IDerived_SetDerivedValue(ref : system::RpcObjectReference) : (::system::Void);
 
@@ -108,6 +108,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
+            try
             switch (methodId)
             {
                 case rpcmethod_RpcInheritance__IValue_GetValue:
@@ -121,10 +122,10 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                     target.SetOneValue();
                     return null;
                 }
-                case rpcmethod_RpcInheritance__ITwo_SetITwoValue:
+                case rpcmethod_RpcInheritance__ITwo_SetTwoValue:
                 {
                     var target = (cast (RpcInheritance::ITwo^) _lc.RefToPtr(ref));
-                    target.SetITwoValue();
+                    target.SetTwoValue();
                     return null;
                 }
                 case rpcmethod_RpcInheritance__IDerived_SetDerivedValue:
@@ -150,6 +151,10 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 }
                 default:
                 raise "Unknown RPC method id.";
+            }
+            catch (ex)
+            {
+                return {message : ex.Message;} of (system::RpcException);
             }
         }
 
@@ -231,7 +236,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Inherita
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (cast (::system::String) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IValue_GetValue, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IValue_GetValue, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (::system::String) invokeResult);
         }
 
         override func InvokeEvent_RpcInheritance__IValue_ValueChanged(ref : system::RpcObjectReference) : (void)
@@ -245,42 +256,75 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Inherita
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IOne_SetOneValue, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IOne_SetOneValue, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
         }
 
-        override func InvokeMethod_RpcInheritance__ITwo_SetITwoValue(ref : system::RpcObjectReference) : (::system::Void)
+        override func InvokeMethod_RpcInheritance__ITwo_SetTwoValue(ref : system::RpcObjectReference) : (::system::Void)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__ITwo_SetITwoValue, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__ITwo_SetTwoValue, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
         }
 
         override func InvokeMethod_RpcInheritance__IDerived_SetDerivedValue(ref : system::RpcObjectReference) : (::system::Void)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IDerived_SetDerivedValue, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IDerived_SetDerivedValue, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
         }
 
         override func InvokeMethod_RpcInheritance__IService_CreateDerived(ref : system::RpcObjectReference) : (::RpcInheritance::IDerived^)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IService_CreateDerived, arguments), _lc) as (::RpcInheritance::IDerived^));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IService_CreateDerived, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (system::IRpcLifecycle::RpcUnboxByval(invokeResult, _lc) as (::RpcInheritance::IDerived^));
         }
 
         override func InvokeMethod_RpcInheritance__IService_CreateOne(ref : system::RpcObjectReference) : (::RpcInheritance::IOne^)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IService_CreateOne, arguments), _lc) as (::RpcInheritance::IOne^));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IService_CreateOne, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (system::IRpcLifecycle::RpcUnboxByval(invokeResult, _lc) as (::RpcInheritance::IOne^));
         }
 
         override func InvokeMethod_RpcInheritance__IService_CreateTwo(ref : system::RpcObjectReference) : (::RpcInheritance::ITwo^)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IService_CreateTwo, arguments), _lc) as (::RpcInheritance::ITwo^));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IService_CreateTwo, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (system::IRpcLifecycle::RpcUnboxByval(invokeResult, _lc) as (::RpcInheritance::ITwo^));
         }
     };
 }
@@ -556,11 +600,11 @@ func rpcwrapper_RpcInheritance__ITwo(lc : system::IRpcLifecycle*, proxyRef : sys
             return Value<Cached>;
         }
 
-        override func SetITwoValue() : (::system::Void)
+        override func SetTwoValue() : (::system::Void)
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            _ops.InvokeMethod_RpcInheritance__ITwo_SetITwoValue(_ref);
+            _ops.InvokeMethod_RpcInheritance__ITwo_SetTwoValue(_ref);
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
@@ -625,11 +669,11 @@ func rpcwrapper_RpcInheritance__IDerived(lc : system::IRpcLifecycle*, proxyRef :
             _ops.InvokeMethod_RpcInheritance__IOne_SetOneValue(_ref);
         }
 
-        override func SetITwoValue() : (::system::Void)
+        override func SetTwoValue() : (::system::Void)
         {
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
-            _ops.InvokeMethod_RpcInheritance__ITwo_SetITwoValue(_ref);
+            _ops.InvokeMethod_RpcInheritance__ITwo_SetTwoValue(_ref);
         }
 
         override func SetDerivedValue() : (::system::Void)

@@ -73,6 +73,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
+            try
             switch (methodId)
             {
                 case rpcmethod_RpcDtorPropCachedListByval__IService_GetValue:
@@ -101,6 +102,10 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 }
                 default:
                 raise "Unknown RPC method id.";
+            }
+            catch (ex)
+            {
+                return {message : ex.Message;} of (system::RpcException);
             }
         }
 
@@ -183,7 +188,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_DtorProp
             var arguments : system::Array^ = {};
             arguments.Resize(0);
             var objectOps = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
-            var byvalReturnValue = (cast (system::RpcByvalReturnValue^) objectOps.InvokeMethod(ref, rpcmethod_RpcDtorPropCachedListByval__IService_GetValue, arguments));
+            var invokeResult = objectOps.InvokeMethod(ref, rpcmethod_RpcDtorPropCachedListByval__IService_GetValue, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            var byvalReturnValue = (cast (system::RpcByvalReturnValue^) invokeResult);
             var result = (cast (::RpcDtorPropCachedListByval::IValue^[]) system::IRpcLifecycle::RpcUnboxByval(byvalReturnValue.value, _lc));
             objectOps.EndInvokeMethod(byvalReturnValue.slot);
             return result;
@@ -194,14 +205,24 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_DtorProp
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByref(arg_value, _lc));
-            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtorPropCachedListByval__IService_SetValue, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtorPropCachedListByval__IService_SetValue, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
         }
 
         override func InvokeMethod_RpcDtorPropCachedListByval__IService_Signal(ref : system::RpcObjectReference) : (::system::Void)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtorPropCachedListByval__IService_Signal, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtorPropCachedListByval__IService_Signal, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
         }
 
         override func InvokeEvent_RpcDtorPropCachedListByval__IService_ValueChanged(ref : system::RpcObjectReference) : (void)

@@ -63,6 +63,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
+            try
             switch (methodId)
             {
                 case rpcmethod_RpcDtor2Test__IService_MakeValue:
@@ -77,6 +78,10 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 }
                 default:
                 raise "Unknown RPC method id.";
+            }
+            catch (ex)
+            {
+                return {message : ex.Message;} of (system::RpcException);
             }
         }
 
@@ -153,7 +158,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Dtor2^)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtor2Test__IService_MakeValue, arguments), _lc) as (::RpcDtor2Test::IValue^));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtor2Test__IService_MakeValue, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (system::IRpcLifecycle::RpcUnboxByval(invokeResult, _lc) as (::RpcDtor2Test::IValue^));
         }
 
         override func InvokeMethod_RpcDtor2Test__IService_ReviewValue(ref : system::RpcObjectReference, arg_value : ::RpcDtor2Test::IValue^) : (::RpcDtor2Test::IValue^)
@@ -161,7 +172,13 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Dtor2^)
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg_value, _lc));
-            return (system::IRpcLifecycle::RpcUnboxByval(_lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtor2Test__IService_ReviewValue, arguments), _lc) as (::RpcDtor2Test::IValue^));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtor2Test__IService_ReviewValue, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (system::IRpcLifecycle::RpcUnboxByval(invokeResult, _lc) as (::RpcDtor2Test::IValue^));
         }
     };
 }

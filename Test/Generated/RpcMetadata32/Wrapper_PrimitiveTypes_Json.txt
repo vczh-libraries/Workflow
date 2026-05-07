@@ -111,73 +111,119 @@ func rpcjson_Deserialize_Struct_system__RpcObjectReference(node : system::JsonNo
     return {clientId : jsonValue19; objectId : jsonValue22; typeId : jsonValue25;};
 }
 
+func rpcjson_Serialize_Struct_system__RpcException(value : ::system::RpcException) : (system::JsonNode^)
+{
+    var object = new (system::JsonObject^)();
+    var jsonString26 = new (system::JsonString^)();
+    (jsonString26.content = {value : (cast (string) value.message);});
+    var jsonField27 = new (system::JsonObjectField^)();
+    (jsonField27.name = {value : "message";});
+    (jsonField27.value = jsonString26);
+    object.fields.Add(jsonField27);
+    return object;
+}
+
+func rpcjson_Deserialize_Struct_system__RpcException(node : system::JsonNode^) : (::system::RpcException)
+{
+    var object = (cast (system::JsonObject^) node);
+    var jsonFieldValue28 : system::JsonNode^ = null;
+    for (jsonField29 in object.fields)
+    {
+        if ((jsonField29.name.value == "message"))
+        (jsonFieldValue28 = jsonField29.value);
+    }
+    if (jsonFieldValue28 is null)
+    raise "JSON object field not found: message";
+    var jsonValue30 = (cast (::system::String) (cast (system::JsonString^) jsonFieldValue28).content.value);
+    return {message : jsonValue30;};
+}
+
 func rpcjson_Serialize(value : object) : (system::JsonNode^)
 {
     var value_RpcPrimitiveTest__Season = (value as (::RpcPrimitiveTest::Season?));
     if (value_RpcPrimitiveTest__Season is not null)
     {
-        var jsonNode26 = rpcjson_Serialize_Enum_RpcPrimitiveTest__Season((cast (::RpcPrimitiveTest::Season) value_RpcPrimitiveTest__Season));
-        var jsonString28 = new (system::JsonString^)();
-        (jsonString28.content = {value : "RpcPrimitiveTest::Season";});
-        var jsonArray27 = new (system::JsonArray^)();
-        jsonArray27.items.Add(jsonString28);
-        jsonArray27.items.Add(jsonNode26);
-        return jsonArray27;
+        var jsonNode31 = rpcjson_Serialize_Enum_RpcPrimitiveTest__Season((cast (::RpcPrimitiveTest::Season) value_RpcPrimitiveTest__Season));
+        var jsonString33 = new (system::JsonString^)();
+        (jsonString33.content = {value : "RpcPrimitiveTest::Season";});
+        var jsonArray32 = new (system::JsonArray^)();
+        jsonArray32.items.Add(jsonString33);
+        jsonArray32.items.Add(jsonNode31);
+        return jsonArray32;
     }
     var value_test__Point = (value as (::test::Point?));
     if (value_test__Point is not null)
     {
         var object = new (system::JsonObject^)();
-        var jsonString29 = new (system::JsonString^)();
-        (jsonString29.content = {value : "test::Point";});
-        var jsonField30 = new (system::JsonObjectField^)();
-        (jsonField30.name = {value : "$";});
-        (jsonField30.value = jsonString29);
-        object.fields.Add(jsonField30);
-        var value31 = (cast (::test::Point) value_test__Point);
-        var jsonNumber32 = new (system::JsonNumber^)();
-        (jsonNumber32.content = {value : (cast (string) value31.x);});
-        var jsonField33 = new (system::JsonObjectField^)();
-        (jsonField33.name = {value : "x";});
-        (jsonField33.value = jsonNumber32);
-        object.fields.Add(jsonField33);
-        var jsonNumber34 = new (system::JsonNumber^)();
-        (jsonNumber34.content = {value : (cast (string) value31.y);});
+        var jsonString34 = new (system::JsonString^)();
+        (jsonString34.content = {value : "test::Point";});
         var jsonField35 = new (system::JsonObjectField^)();
-        (jsonField35.name = {value : "y";});
-        (jsonField35.value = jsonNumber34);
+        (jsonField35.name = {value : "$";});
+        (jsonField35.value = jsonString34);
         object.fields.Add(jsonField35);
+        var value36 = (cast (::test::Point) value_test__Point);
+        var jsonNumber37 = new (system::JsonNumber^)();
+        (jsonNumber37.content = {value : (cast (string) value36.x);});
+        var jsonField38 = new (system::JsonObjectField^)();
+        (jsonField38.name = {value : "x";});
+        (jsonField38.value = jsonNumber37);
+        object.fields.Add(jsonField38);
+        var jsonNumber39 = new (system::JsonNumber^)();
+        (jsonNumber39.content = {value : (cast (string) value36.y);});
+        var jsonField40 = new (system::JsonObjectField^)();
+        (jsonField40.name = {value : "y";});
+        (jsonField40.value = jsonNumber39);
+        object.fields.Add(jsonField40);
         return object;
     }
     var value_system__RpcObjectReference = (value as (::system::RpcObjectReference?));
     if (value_system__RpcObjectReference is not null)
     {
         var object = new (system::JsonObject^)();
-        var jsonString36 = new (system::JsonString^)();
-        (jsonString36.content = {value : "system::RpcObjectReference";});
-        var jsonField37 = new (system::JsonObjectField^)();
-        (jsonField37.name = {value : "$";});
-        (jsonField37.value = jsonString36);
-        object.fields.Add(jsonField37);
-        var value38 = (cast (::system::RpcObjectReference) value_system__RpcObjectReference);
-        var jsonNumber39 = new (system::JsonNumber^)();
-        (jsonNumber39.content = {value : (cast (string) value38.clientId);});
-        var jsonField40 = new (system::JsonObjectField^)();
-        (jsonField40.name = {value : "clientId";});
-        (jsonField40.value = jsonNumber39);
-        object.fields.Add(jsonField40);
-        var jsonNumber41 = new (system::JsonNumber^)();
-        (jsonNumber41.content = {value : (cast (string) value38.objectId);});
+        var jsonString41 = new (system::JsonString^)();
+        (jsonString41.content = {value : "system::RpcObjectReference";});
         var jsonField42 = new (system::JsonObjectField^)();
-        (jsonField42.name = {value : "objectId";});
-        (jsonField42.value = jsonNumber41);
+        (jsonField42.name = {value : "$";});
+        (jsonField42.value = jsonString41);
         object.fields.Add(jsonField42);
-        var jsonNumber43 = new (system::JsonNumber^)();
-        (jsonNumber43.content = {value : (cast (string) value38.typeId);});
-        var jsonField44 = new (system::JsonObjectField^)();
-        (jsonField44.name = {value : "typeId";});
-        (jsonField44.value = jsonNumber43);
-        object.fields.Add(jsonField44);
+        var value43 = (cast (::system::RpcObjectReference) value_system__RpcObjectReference);
+        var jsonNumber44 = new (system::JsonNumber^)();
+        (jsonNumber44.content = {value : (cast (string) value43.clientId);});
+        var jsonField45 = new (system::JsonObjectField^)();
+        (jsonField45.name = {value : "clientId";});
+        (jsonField45.value = jsonNumber44);
+        object.fields.Add(jsonField45);
+        var jsonNumber46 = new (system::JsonNumber^)();
+        (jsonNumber46.content = {value : (cast (string) value43.objectId);});
+        var jsonField47 = new (system::JsonObjectField^)();
+        (jsonField47.name = {value : "objectId";});
+        (jsonField47.value = jsonNumber46);
+        object.fields.Add(jsonField47);
+        var jsonNumber48 = new (system::JsonNumber^)();
+        (jsonNumber48.content = {value : (cast (string) value43.typeId);});
+        var jsonField49 = new (system::JsonObjectField^)();
+        (jsonField49.name = {value : "typeId";});
+        (jsonField49.value = jsonNumber48);
+        object.fields.Add(jsonField49);
+        return object;
+    }
+    var value_system__RpcException = (value as (::system::RpcException?));
+    if (value_system__RpcException is not null)
+    {
+        var object = new (system::JsonObject^)();
+        var jsonString50 = new (system::JsonString^)();
+        (jsonString50.content = {value : "system::RpcException";});
+        var jsonField51 = new (system::JsonObjectField^)();
+        (jsonField51.name = {value : "$";});
+        (jsonField51.value = jsonString50);
+        object.fields.Add(jsonField51);
+        var value52 = (cast (::system::RpcException) value_system__RpcException);
+        var jsonString53 = new (system::JsonString^)();
+        (jsonString53.content = {value : (cast (string) value52.message);});
+        var jsonField54 = new (system::JsonObjectField^)();
+        (jsonField54.name = {value : "message";});
+        (jsonField54.value = jsonString53);
+        object.fields.Add(jsonField54);
         return object;
     }
     return system::IRpcLifecycle::JsonSerializePredefinedTypes(value, rpcjson_Serialize);
@@ -198,21 +244,23 @@ func rpcjson_Deserialize(node : system::JsonNode^) : (object)
     var object = (node as (system::JsonObject^));
     if (object is not null)
     {
-        var jsonFieldValue45 : system::JsonNode^ = null;
-        for (jsonField46 in object.fields)
+        var jsonFieldValue55 : system::JsonNode^ = null;
+        for (jsonField56 in object.fields)
         {
-            if ((jsonField46.name.value == "$"))
-            (jsonFieldValue45 = jsonField46.value);
+            if ((jsonField56.name.value == "$"))
+            (jsonFieldValue55 = jsonField56.value);
         }
-        if (jsonFieldValue45 is null)
+        if (jsonFieldValue55 is null)
         raise "JSON object field not found: $";
-        var keyword = (cast (system::JsonString^) jsonFieldValue45).content.value;
+        var keyword = (cast (system::JsonString^) jsonFieldValue55).content.value;
         switch (keyword)
         {
             case "test::Point":
             return rpcjson_Deserialize_Struct_test__Point(object);
             case "system::RpcObjectReference":
             return rpcjson_Deserialize_Struct_system__RpcObjectReference(object);
+            case "system::RpcException":
+            return rpcjson_Deserialize_Struct_system__RpcException(object);
         }
     }
     return system::IRpcLifecycle::JsonDeserializePredefinedTypes(node, rpcjson_Deserialize);
@@ -247,6 +295,7 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
+            try
             switch (methodId)
             {
                 case rpcmethod_RpcPrimitiveTest__IService_ProcessBool:
@@ -316,6 +365,10 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 }
                 default:
                 raise "Unknown RPC method id.";
+            }
+            catch (ex)
+            {
+                return rpcjson_Serialize({message : ex.Message;} of (system::RpcException));
             }
         }
 
@@ -398,7 +451,39 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
             else
             (jsonLiteral0.value = system::JsonLiteralValue::False);
             arguments.Set(0, jsonLiteral0);
-            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessBool, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            var rpcExceptionJson = (invokeResult as (system::JsonNode^));
+            if (rpcExceptionJson is not null)
+            {
+                var rpcExceptionObject = (rpcExceptionJson as (system::JsonObject^));
+                if (rpcExceptionObject is not null)
+                {
+                    var rpcExceptionTypeNode : system::JsonNode^ = null;
+                    for (rpcExceptionField in rpcExceptionObject.fields)
+                    {
+                        if ((rpcExceptionField.name.value == "$"))
+                        (rpcExceptionTypeNode = rpcExceptionField.value);
+                    }
+                    if (rpcExceptionTypeNode is not null)
+                    {
+                        var rpcExceptionType = (cast (system::JsonString^) rpcExceptionTypeNode).content.value;
+                        if ((rpcExceptionType == "system::RpcException"))
+                        {
+                            var rpcJsonException = (rpcjson_Deserialize(rpcExceptionObject) as (system::RpcException?));
+                            if (rpcJsonException is not null)
+                            {
+                                raise (cast (system::RpcException) rpcJsonException).message;
+                            }
+                        }
+                    }
+                }
+            }
+            var jsonResult = (cast (system::JsonNode^) invokeResult);
             var jsonValue1 = ((cast (system::JsonLiteral^) jsonResult).value == system::JsonLiteralValue::True);
             return jsonValue1;
         }
@@ -410,7 +495,39 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
             var jsonNumber0 = new (system::JsonNumber^)();
             (jsonNumber0.content = {value : (cast (string) arg_value);});
             arguments.Set(0, jsonNumber0);
-            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessDouble, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            var rpcExceptionJson = (invokeResult as (system::JsonNode^));
+            if (rpcExceptionJson is not null)
+            {
+                var rpcExceptionObject = (rpcExceptionJson as (system::JsonObject^));
+                if (rpcExceptionObject is not null)
+                {
+                    var rpcExceptionTypeNode : system::JsonNode^ = null;
+                    for (rpcExceptionField in rpcExceptionObject.fields)
+                    {
+                        if ((rpcExceptionField.name.value == "$"))
+                        (rpcExceptionTypeNode = rpcExceptionField.value);
+                    }
+                    if (rpcExceptionTypeNode is not null)
+                    {
+                        var rpcExceptionType = (cast (system::JsonString^) rpcExceptionTypeNode).content.value;
+                        if ((rpcExceptionType == "system::RpcException"))
+                        {
+                            var rpcJsonException = (rpcjson_Deserialize(rpcExceptionObject) as (system::RpcException?));
+                            if (rpcJsonException is not null)
+                            {
+                                raise (cast (system::RpcException) rpcJsonException).message;
+                            }
+                        }
+                    }
+                }
+            }
+            var jsonResult = (cast (system::JsonNode^) invokeResult);
             var jsonValue1 = (cast (::system::Double) (cast (system::JsonNumber^) jsonResult).content.value);
             return jsonValue1;
         }
@@ -421,7 +538,39 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
             arguments.Resize(1);
             var jsonNode0 = rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(arg_value);
             arguments.Set(0, jsonNode0);
-            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessEnum, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            var rpcExceptionJson = (invokeResult as (system::JsonNode^));
+            if (rpcExceptionJson is not null)
+            {
+                var rpcExceptionObject = (rpcExceptionJson as (system::JsonObject^));
+                if (rpcExceptionObject is not null)
+                {
+                    var rpcExceptionTypeNode : system::JsonNode^ = null;
+                    for (rpcExceptionField in rpcExceptionObject.fields)
+                    {
+                        if ((rpcExceptionField.name.value == "$"))
+                        (rpcExceptionTypeNode = rpcExceptionField.value);
+                    }
+                    if (rpcExceptionTypeNode is not null)
+                    {
+                        var rpcExceptionType = (cast (system::JsonString^) rpcExceptionTypeNode).content.value;
+                        if ((rpcExceptionType == "system::RpcException"))
+                        {
+                            var rpcJsonException = (rpcjson_Deserialize(rpcExceptionObject) as (system::RpcException?));
+                            if (rpcJsonException is not null)
+                            {
+                                raise (cast (system::RpcException) rpcJsonException).message;
+                            }
+                        }
+                    }
+                }
+            }
+            var jsonResult = (cast (system::JsonNode^) invokeResult);
             var jsonValue1 = rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season(jsonResult);
             return jsonValue1;
         }
@@ -433,7 +582,39 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
             var jsonNumber0 = new (system::JsonNumber^)();
             (jsonNumber0.content = {value : (cast (string) arg_value);});
             arguments.Set(0, jsonNumber0);
-            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessFloat, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            var rpcExceptionJson = (invokeResult as (system::JsonNode^));
+            if (rpcExceptionJson is not null)
+            {
+                var rpcExceptionObject = (rpcExceptionJson as (system::JsonObject^));
+                if (rpcExceptionObject is not null)
+                {
+                    var rpcExceptionTypeNode : system::JsonNode^ = null;
+                    for (rpcExceptionField in rpcExceptionObject.fields)
+                    {
+                        if ((rpcExceptionField.name.value == "$"))
+                        (rpcExceptionTypeNode = rpcExceptionField.value);
+                    }
+                    if (rpcExceptionTypeNode is not null)
+                    {
+                        var rpcExceptionType = (cast (system::JsonString^) rpcExceptionTypeNode).content.value;
+                        if ((rpcExceptionType == "system::RpcException"))
+                        {
+                            var rpcJsonException = (rpcjson_Deserialize(rpcExceptionObject) as (system::RpcException?));
+                            if (rpcJsonException is not null)
+                            {
+                                raise (cast (system::RpcException) rpcJsonException).message;
+                            }
+                        }
+                    }
+                }
+            }
+            var jsonResult = (cast (system::JsonNode^) invokeResult);
             var jsonValue1 = (cast (::system::Single) (cast (system::JsonNumber^) jsonResult).content.value);
             return jsonValue1;
         }
@@ -445,7 +626,39 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
             var jsonNumber0 = new (system::JsonNumber^)();
             (jsonNumber0.content = {value : (cast (string) arg_value);});
             arguments.Set(0, jsonNumber0);
-            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessInt, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            var rpcExceptionJson = (invokeResult as (system::JsonNode^));
+            if (rpcExceptionJson is not null)
+            {
+                var rpcExceptionObject = (rpcExceptionJson as (system::JsonObject^));
+                if (rpcExceptionObject is not null)
+                {
+                    var rpcExceptionTypeNode : system::JsonNode^ = null;
+                    for (rpcExceptionField in rpcExceptionObject.fields)
+                    {
+                        if ((rpcExceptionField.name.value == "$"))
+                        (rpcExceptionTypeNode = rpcExceptionField.value);
+                    }
+                    if (rpcExceptionTypeNode is not null)
+                    {
+                        var rpcExceptionType = (cast (system::JsonString^) rpcExceptionTypeNode).content.value;
+                        if ((rpcExceptionType == "system::RpcException"))
+                        {
+                            var rpcJsonException = (rpcjson_Deserialize(rpcExceptionObject) as (system::RpcException?));
+                            if (rpcJsonException is not null)
+                            {
+                                raise (cast (system::RpcException) rpcJsonException).message;
+                            }
+                        }
+                    }
+                }
+            }
+            var jsonResult = (cast (system::JsonNode^) invokeResult);
             var jsonValue1 = (cast (::system::Int32) (cast (system::JsonNumber^) jsonResult).content.value);
             return jsonValue1;
         }
@@ -457,7 +670,39 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
             var jsonString0 = new (system::JsonString^)();
             (jsonString0.content = {value : (cast (string) arg_value);});
             arguments.Set(0, jsonString0);
-            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessString, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            var rpcExceptionJson = (invokeResult as (system::JsonNode^));
+            if (rpcExceptionJson is not null)
+            {
+                var rpcExceptionObject = (rpcExceptionJson as (system::JsonObject^));
+                if (rpcExceptionObject is not null)
+                {
+                    var rpcExceptionTypeNode : system::JsonNode^ = null;
+                    for (rpcExceptionField in rpcExceptionObject.fields)
+                    {
+                        if ((rpcExceptionField.name.value == "$"))
+                        (rpcExceptionTypeNode = rpcExceptionField.value);
+                    }
+                    if (rpcExceptionTypeNode is not null)
+                    {
+                        var rpcExceptionType = (cast (system::JsonString^) rpcExceptionTypeNode).content.value;
+                        if ((rpcExceptionType == "system::RpcException"))
+                        {
+                            var rpcJsonException = (rpcjson_Deserialize(rpcExceptionObject) as (system::RpcException?));
+                            if (rpcJsonException is not null)
+                            {
+                                raise (cast (system::RpcException) rpcJsonException).message;
+                            }
+                        }
+                    }
+                }
+            }
+            var jsonResult = (cast (system::JsonNode^) invokeResult);
             var jsonValue1 = (cast (::system::String) (cast (system::JsonString^) jsonResult).content.value);
             return jsonValue1;
         }
@@ -468,7 +713,39 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
             arguments.Resize(1);
             var jsonNode0 = rpcjson_Serialize_Struct_test__Point(arg_value);
             arguments.Set(0, jsonNode0);
-            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessStruct, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            var rpcExceptionJson = (invokeResult as (system::JsonNode^));
+            if (rpcExceptionJson is not null)
+            {
+                var rpcExceptionObject = (rpcExceptionJson as (system::JsonObject^));
+                if (rpcExceptionObject is not null)
+                {
+                    var rpcExceptionTypeNode : system::JsonNode^ = null;
+                    for (rpcExceptionField in rpcExceptionObject.fields)
+                    {
+                        if ((rpcExceptionField.name.value == "$"))
+                        (rpcExceptionTypeNode = rpcExceptionField.value);
+                    }
+                    if (rpcExceptionTypeNode is not null)
+                    {
+                        var rpcExceptionType = (cast (system::JsonString^) rpcExceptionTypeNode).content.value;
+                        if ((rpcExceptionType == "system::RpcException"))
+                        {
+                            var rpcJsonException = (rpcjson_Deserialize(rpcExceptionObject) as (system::RpcException?));
+                            if (rpcJsonException is not null)
+                            {
+                                raise (cast (system::RpcException) rpcJsonException).message;
+                            }
+                        }
+                    }
+                }
+            }
+            var jsonResult = (cast (system::JsonNode^) invokeResult);
             var jsonValue1 = rpcjson_Deserialize_Struct_test__Point(jsonResult);
             return jsonValue1;
         }
@@ -480,7 +757,39 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Prim
             var jsonNumber0 = new (system::JsonNumber^)();
             (jsonNumber0.content = {value : (cast (string) arg_value);});
             arguments.Set(0, jsonNumber0);
-            var jsonResult = (cast (system::JsonNode^) _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcPrimitiveTest__IService_ProcessUInt, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            var rpcExceptionJson = (invokeResult as (system::JsonNode^));
+            if (rpcExceptionJson is not null)
+            {
+                var rpcExceptionObject = (rpcExceptionJson as (system::JsonObject^));
+                if (rpcExceptionObject is not null)
+                {
+                    var rpcExceptionTypeNode : system::JsonNode^ = null;
+                    for (rpcExceptionField in rpcExceptionObject.fields)
+                    {
+                        if ((rpcExceptionField.name.value == "$"))
+                        (rpcExceptionTypeNode = rpcExceptionField.value);
+                    }
+                    if (rpcExceptionTypeNode is not null)
+                    {
+                        var rpcExceptionType = (cast (system::JsonString^) rpcExceptionTypeNode).content.value;
+                        if ((rpcExceptionType == "system::RpcException"))
+                        {
+                            var rpcJsonException = (rpcjson_Deserialize(rpcExceptionObject) as (system::RpcException?));
+                            if (rpcJsonException is not null)
+                            {
+                                raise (cast (system::RpcException) rpcJsonException).message;
+                            }
+                        }
+                    }
+                }
+            }
+            var jsonResult = (cast (system::JsonNode^) invokeResult);
             var jsonValue1 = (cast (::system::UInt32) (cast (system::JsonNumber^) jsonResult).content.value);
             return jsonValue1;
         }
