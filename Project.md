@@ -33,6 +33,7 @@ Here is a list of unit test projects in `REPO-ROOT/Test/UnitTest/{NAME}/{NAME}.v
 - `CppTest`: Generated C++ code from executable test cases.
 - `CppTest_Metaonly`: Generated C++ code from executable test cases.
 - `CppTest_Reflection`: Generated C++ code from executable test cases.
+- In `REPO-ROOT/Test/TypeScript` there is a TypeScript package, it will becomes available after running `CompilerTest_LoadAndCompiler` and `CppTest`. You need to run `npm run build` and ensure you don't see any error. This project verifies if JSON serialization of Workflow RPC is properly implemented.
 
 When any *.h or *.cpp file is changed, unit test is required to run.
 When any test case fails, you must fix the issue immediately, even those errors are unrelated to the issue you are working on.
