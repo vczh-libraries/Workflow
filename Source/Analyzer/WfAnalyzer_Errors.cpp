@@ -926,6 +926,21 @@ WfErrors
 				return MakeParsingError(node, L"H9: RPC generated " + category + L" name \"" + generatedName + L"\" is duplicated.");
 			}
 
+			glr::ParsingError WfErrors::RpcReservedTypeInReturnValue(WfDeclaration* node, const WString& interfaceFullName, const WString& memberName, const WString& typeName)
+			{
+				return MakeParsingError(node, L"H10: @rpc:Interface cannot be applied to interface \"" + interfaceFullName + L"\" because its member \"" + memberName + L"\" uses reserved RPC type \"" + typeName + L"\" in a return value.");
+			}
+
+			glr::ParsingError WfErrors::RpcReservedTypeInFunctionArgument(WfFunctionArgument* node, const WString& interfaceFullName, const WString& memberName, const WString& typeName)
+			{
+				return MakeParsingError(node, L"H11: @rpc:Interface cannot be applied to interface \"" + interfaceFullName + L"\" because its function argument \"" + memberName + L"\" uses reserved RPC type \"" + typeName + L"\".");
+			}
+
+			glr::ParsingError WfErrors::RpcReservedTypeInEventArgument(WfType* node, const WString& interfaceFullName, const WString& memberName, const WString& typeName)
+			{
+				return MakeParsingError(node, L"H12: @rpc:Interface cannot be applied to interface \"" + interfaceFullName + L"\" because its event argument \"" + memberName + L"\" uses reserved RPC type \"" + typeName + L"\".");
+			}
+
 			glr::ParsingError WfErrors::RpcWrapperGenerationRequiresPropertyMode(WfPropertyDeclaration* node, const WString& memberName)
 			{
 				return MakeParsingError(node, L"I0: RPC wrapper generation requires property \"" + memberName + L"\" to have @rpc:Cached or @rpc:Dynamic.");

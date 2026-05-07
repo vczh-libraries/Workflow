@@ -2,158 +2,103 @@
 
 # PROBLEM DESCRIPTION
 
-Follow
-- `.github\Rules\new-sample.md`
-- `.github\Rules\new-sample-rpc.md`
-- `.github\Rules\verify-and-commit.md`
-to add new samples, indentation should be double spaces no matter how the code below is written:
+- you have to follow `REPO-ROOT/.github/Guidelines/Coding.md` when coding.
+- you have to run unit test to make sure your change works.
+- you have to follow complete instructions in `.github\Rules\verify-and-commit.md` to properly finish any task, before doing the next task.
+  - It is important to do task one by one strictly, by me designing tasks in this way, we can achieve:
+  - Easy-to-understand commits for file changing that is easy to review.
+  - Limit side effects so that you don't have to deal with massive of issues at the same time.
 
-RPC samples are split into two files:
-- `Rpc\SAMPLE.txt` contains only RPC definitions.
-- `Rpc\SAMPLE_Test.txt` contains executable test logic, including globals, helpers, `serviceMain`, and `clientMain`.
+## Task 1
 
-Only `SAMPLE` is added to `IndexRpc.txt`. Both files must appear in `CompilerTest_LoadAndCompile` under `Resource Files\Rpc`.
-
-## Sample Rpc\Inheritance.txt
-
+Update the current sample `Rpc/Inheritance`, the `IDerived` implementation of `SetOneValue` and `SetTwoValue`, raise exceptions "DoNotSetOneValue" and "DoNotSetTwoValue".
+In the `clientMain` function, just before returning `s`, add these code:
 ```Workflow
-module Rpc;
-using system::*;
+try { derived.SetOneValue() } catch (ex) { s = $"$(s)[$(ex)]"; }
+try { derived.SetTwoValue() } catch (ex) { s = $"$(s)[$(ex)]"; }
+```
 
-namespace YourFavoriteNamespace // use RpcInheritance
+And add additional postfix `[DoNotSetOneValue][DoNotSetTwoValue]` to `IndexRpc.txt`.
+
+In order to make this work, you will have to declare a reflectable struct right below `RpcObjectReference`:
+```C++
+struct RpcException
 {
-  @rpc:Interface
-  interface IDerived : IOne, ITwo
-  {
-    func SetDerivedValue() : void;
-  }
-
-  @rpc:Interface
-  interface IValue
-  {
-    @rpc:Cached
-    prop Value : string {const, observe}
-  }
-
-  @rpc:Interface
-  interface IOne : IValue
-  {
-    func SetOneValue() : void;
-  }
-
-  @rpc:Interface
-  interface ITwo : IValue
-  {
-    func SetITwoValue() : void;
-  }
-
-	@rpc:Interface
-	@rpc:Ctor
-	interface IService
-	{
-    func CreateOne() : IOne^;
-    func CreateTwo() : ITwo^;
-    func CreateDerivec() : IDerived^;
-	}
+  WString message;
 }
 ```
 
-## Sample Rpc\Inheritance_Test.txt
+It should also be JSON serialized just like `RpcException`. Following thing will be affected:
+- In `TODO_RPC_Definition.md`, you have to add that `RpcException` and `RpcObjectReference` could not be in any function return values, or function/event arguments.
+  - Implement it.
+  - Make three errors, one for return value, two for function/event arguments.
+  - Error code begins with H, continue the H series numbers.
+  - You will need to add enough AnalyzerError for it.
+- In `TODO_RPC_Json.md` you have to mention that `RpcException` is serialized just like `RpcObjectReference` in the standard way, and fix the `## Expected format of generated .d.ts files` section.
+  - Implement it.
+- In `IRpcObjectOps::InvokeMethod` which calls the actual method, you need to try-catch it, and when exception happens, return `RpcException`. Because `RpcException` will never be the return type, it is safe without ambiguity.
+- During serialization, handle it properly.
+- In a wrapper calling `IRpcObjectOps::InvokeMethod`, if the return value is `RpcException`, it raises an exception with that message, and `EndInvokeMethod` don't need to call.
 
-```Workflow
-module Rpc;
-using system::*;
-using RpcWrapperTest::*;
-using YourFavoriteNamespace::*;
-
-var s = "";
-
-func serviceMain(lc : IRpcLifecycle*) : void
-{
-	var serviceObj = new (YourFavoriteNamespace::IService^)
-	{
-    override func CreateOne() : IOne^
-    {
-      return new IOne^
-      {
-        var value : string = "";
-        override func GetValue() : string { return value; }
-        override func SetOneValue() : void
-        {
-          value = "One";
-          ValueChanged();
-        }
-      }
-    }
-    
-    override func CreateTwo() : ITwo^
-    {
-      // Copy CreateOne but set the value to "Two"
-    }
-    
-    override func CreateDerived() : IDerived^
-    {
-      // Copy CreateOne but set the value to "Derived"
-      // Meanwhile Set(One|Two)Value should raise exception
-    }
-	};
-	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
-}
-
-func clientMain(lc : IRpcLifecycle*) : string
-{
-	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
-  var one = cast (IOne^) service.CreateOne();
-  // repeat for two and derived
-
-  s = $"$(s)[$(one.Value)]";
-  one.SetOneValue();
-  s = $"$(s)[$(one.Value)]";
-  // repeat for two and derived
-
-  return s; // [][One][][Two][][Derived]
-}
-```
-
-## Goal
-
-In this task you are going to build and run test cases to verify if these cases are working, according to `TODO_RPC_Definition.md`
-This test is to ensure that:
-- Wrapper Workflow Script code generation take members of base types of interfaces into consideration recursively.
-
-If the current implemention is correct, the added samples should just pass the test.
+At the end, since new JSON protocols are added, you need to go to `Test/TypeScript`, run `prepare.ps1` followed by `npm run build`.
+And make sure these documents are updated:
+- `TODO_RPC_Definition.md` mentioning the new error.
+- `TODO_RPC_Json.md` mentioning additional JSON serialization thing.
+- `TODO_RPC_GeneratedWrappers.md` if necessary.
 
 # UPDATES
 
 # TEST [CONFIRMED]
 
-Add an RPC sample pair `Rpc\Inheritance.txt` and `Rpc\Inheritance_Test.txt` to verify that generated RPC wrapper Workflow Script code recursively includes inherited interface members. The definition file should contain only RPC interfaces in namespace `RpcInheritance`; the test file should implement `IService`, create `IOne`, `ITwo`, and `IDerived` values, read the inherited cached `Value` property through wrappers, and mutate through valid interface methods.
+Update the existing `Rpc\Inheritance` sample so the derived wrapper calls inherited methods that intentionally raise service-side exceptions. The expected `IndexRpc.txt` result should become `[][One][][Two][][Derived][DoNotSetOneValue][DoNotSetTwoValue]`, proving exceptions raised by the callee cross the RPC wrapper boundary and surface in `clientMain`.
+
+Add AnalyzerError samples for forbidden RPC internal transport types:
+- method return values using `system::RpcObjectReference` or `system::RpcException` should report the return-value H-series error;
+- method arguments using those types should report the function-argument H-series error;
+- event arguments using those types should report the event-argument H-series error.
 
 Success criteria:
-- `IndexRpc.txt` contains only `Inheritance=[][One][][Two][][Derived]`.
-- Both sample files are included as `Resource Files\Rpc` in `CompilerTest_LoadAndCompile`.
-- `CompilerTest_LoadAndCompile` passes after adding the sample.
-- Runtime and generated C++ RPC execution pass, proving the generated wrappers handle recursive base interface members.
+- `CompilerTest_LoadAndCompile` accepts the updated `Rpc\Inheritance` sample after implementation and rejects the new AnalyzerError samples with the expected H-series prefixes.
+- Runtime and generated C++ RPC execution return the updated inheritance postfix.
+- JSON RPC wrapper generation includes `system::RpcException` alongside `system::RpcObjectReference`, and `Test\TypeScript\prepare.ps1` followed by `npm run build` passes.
+- Required unit test projects pass according to `Project.md` and `.github\Rules\verify-and-commit.md`.
 
 # PROPOSALS
 
-- No.1 Add the RPC inheritance sample pair and wire it into the RPC sample index and compiler test project [CONFIRMED]
+- No.1 Add `RpcException` as an internal RPC transport result and reject it from user RPC signatures [CONFIRMED]
 
-## No.1 Add the RPC inheritance sample pair and wire it into the RPC sample index and compiler test project
+## No.1 Add `RpcException` as an internal RPC transport result and reject it from user RPC signatures
 
 ### CODE CHANGE
 
-- Added split RPC sample files `Test\Resources\Rpc\Inheritance.txt` and `Test\Resources\Rpc\Inheritance_Test.txt` in namespace `RpcInheritance`.
-- Added `Inheritance=[][One][][Two][][Derived]` to `Test\Resources\IndexRpc.txt`.
-- Added both sample files to `CompilerTest_LoadAndCompile` under `Resource Files\Rpc`.
-- Added generated C++ RPC and reflection source entries for the new sample to `Generated_CppRpc.vcxitems` and `Generated_ReflectionRpc.vcxitems`.
-- Updated RPC wrapper generation in `WfAnalyzer_GenerateRpc.cpp` to collect inherited RPC properties and methods recursively, matching the existing recursive event collection. Generated wrapper interfaces and wrapper factories now implement inherited cached property invalidators, getters, and base interface methods.
+Implemented `system::RpcException` as a reflectable RPC-internal transport struct next to `RpcObjectReference`, including library reflection registration, JSON serialization support, and generated TypeScript declaration output.
+
+Updated RPC validation so `RpcObjectReference` and `RpcException` are rejected anywhere they would conflict with transport semantics:
+- H10 reports reserved transport types in RPC return values and RPC property values.
+- H11 reports reserved transport types in RPC method arguments.
+- H12 reports reserved transport types in RPC event arguments.
+
+Updated normal and JSON RPC wrapper generation:
+- service-side `IRpcObjectOps::InvokeMethod` and JSON `InvokeMethod` wrap actual method calls in `try/catch`;
+- caught exceptions are returned as `RpcException { message = ex.Message }`;
+- client-side generated wrappers detect the returned `RpcException`, raise its message locally, and therefore skip `EndInvokeMethod` naturally on exception paths.
+
+Updated `Rpc/Inheritance` so the derived implementation raises `DoNotSetOneValue` and `DoNotSetTwoValue`, and the client appends the caught exception messages before returning. The catch blocks use `ex.Message` because Workflow catch variables are `system::Exception^`.
+
+Updated documentation in `TODO_RPC_Definition.md`, `TODO_RPC_Json.md`, and `TODO_RPC_GeneratedWrappers.md`, including the reserved-type errors and `RpcException` JSON/DTS behavior.
+
+Added AnalyzerError samples for both `RpcObjectReference` and `RpcException` in return, method argument, and event argument positions, and regenerated the RPC/text/C++ outputs.
 
 ### CONFIRMED
 
-- The initial sample reproduced the generator issue: `CompilerTest_LoadAndCompile` failed with `Interface method not implemented` errors in `Parsing.Rpc.Inheritance.txt` for inherited `GetValue`, `SetOneValue`, and `SetITwoValue`.
-- After updating wrapper generation, `CompilerTest_LoadAndCompile` passed on Debug x64.
-- The first generated-code build failed with unresolved `Rpc_Inheritance` symbols until the new generated C++ RPC and reflection files were added to the shared vcxitems files; after that, Debug x64 and Win32 builds passed.
-- `Wrapper_Inheritance.txt` now shows `IRpcWrapper_IOne`, `IRpcWrapper_ITwo`, and `IRpcWrapper_IDerived` declaring inherited `_rpcInvalidate_Value`, and the generated wrapper objects implement inherited `GetValue`, `SetOneValue`, and `SetITwoValue` where applicable.
-- Debug x64 and Win32 `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` all passed. The new `Rpc:Inheritance` case returned `[][One][][Two][][Derived]` in runtime and all generated C++ variants.
-- The full release `Build.ps1 Workflow` pass completed successfully.
+The proposal is confirmed. The updated analyzer rejects reserved RPC transport structs with the new H10, H11, and H12 errors, and the updated RPC inheritance sample proves service-side exceptions cross generated wrappers and reappear as local Workflow exceptions.
+
+Verification passed:
+- Debug build: Win32 and x64.
+- `LibraryTest`: Win32 and x64, 14/14.
+- `CompilerTest_GenerateMetadata`: Win32 and x64, 2/2.
+- `CompilerTest_LoadAndCompile`: x64.
+- `RuntimeTest`: Win32 and x64, 258/258. `Rpc/Inheritance` actual output matched `[][One][][Two][][Derived][DoNotSetOneValue][DoNotSetTwoValue]`.
+- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`: Win32 and x64, each 224/224.
+- `Test\TypeScript\prepare.ps1`.
+- `npm run build` in `Test\TypeScript`.

@@ -546,6 +546,13 @@ namespace vl
 					return Ptr(new WfConstructorExpression);
 				}
 
+				Ptr<WfExpression> CreateRpcExceptionExpression(Ptr<WfExpression> message)
+				{
+					auto constructor = CreateConstructor();
+					constructor->arguments.Add(CreateConstructorArgument(CreateReference(L"message"), message));
+					return CreateInfer(constructor, CreateQualifiedType(L"system::RpcException"));
+				}
+
 				Ptr<WfExpression> CreateNewClass(Ptr<WfType> type)
 				{
 					auto expression = Ptr(new WfNewClassExpression);
@@ -578,6 +585,13 @@ namespace vl
 				{
 					auto statement = Ptr(new WfRaiseExceptionStatement);
 					statement->expression = CreateString(message);
+					return statement;
+				}
+
+				Ptr<WfStatement> CreateRaise(Ptr<WfExpression> expression)
+				{
+					auto statement = Ptr(new WfRaiseExceptionStatement);
+					statement->expression = expression;
 					return statement;
 				}
 
@@ -619,6 +633,15 @@ namespace vl
 					return statement;
 				}
 
+				Ptr<WfStatement> CreateTryCatch(Ptr<WfStatement> protectedStatement, const WString& name, Ptr<WfStatement> catchStatement)
+				{
+					auto statement = Ptr(new WfTryStatement);
+					statement->protectedStatement = protectedStatement;
+					statement->name.value = name;
+					statement->catchStatement = catchStatement;
+					return statement;
+				}
+
 				Ptr<WfStatement> CreateRpcWhile(Ptr<WfExpression> condition, Ptr<WfStatement> body)
 				{
 					auto statement = Ptr(new WfWhileStatement);
@@ -645,6 +668,14 @@ namespace vl
 				void AddStatement(Ptr<WfBlockStatement> block, Ptr<WfStatement> statement)
 				{
 					block->statements.Add(statement);
+				}
+
+				void AddRpcExceptionCheck(Ptr<WfBlockStatement> block, Ptr<WfExpression> value)
+				{
+					AddStatement(block, CreateInferredVariableStatement(L"rpcException", CreateWeakCast(CreateNullableType(L"system::RpcException"), value)));
+					auto trueBranch = CreateBlock();
+					AddStatement(trueBranch, CreateRaise(CreateMember(CreateCast(CreateQualifiedType(L"system::RpcException"), CreateReference(L"rpcException")), L"message")));
+					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(L"rpcException")), trueBranch));
 				}
 
 				Ptr<WfFunctionArgument> CreateFunctionArgument(const WString& name, Ptr<WfType> type)
@@ -1362,7 +1393,9 @@ namespace vl
 						invokeMethod->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
 						invokeMethod->arguments.Add(CreateFunctionArgument(L"methodId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 						invokeMethod->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
-						AddStatement(invokeMethod->statement.Cast<WfBlockStatement>(), BuildDispatchChain(interfaces, false));
+						auto catchBlock = CreateBlock();
+						AddStatement(catchBlock, CreateReturn(CreateRpcExceptionExpression(CreateMember(CreateReference(L"ex"), L"Message"))));
+						AddStatement(invokeMethod->statement.Cast<WfBlockStatement>(), CreateTryCatch(BuildDispatchChain(interfaces, false), L"ex", catchBlock));
 						newOps->declarations.Add(invokeMethod);
 					}
 
@@ -1860,15 +1893,18 @@ namespace vl
 					if (IsVoidType(methodModel.returnType.Obj()))
 					{
 						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
-						AddStatement(block, CreateExpressionStatement(invoke));
+						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
+						AddRpcExceptionCheck(block, CreateReference(L"invokeResult"));
 					}
 					else if (IsRpcByvalReturn(methodModel))
 					{
 						AddStatement(block, CreateInferredVariableStatement(L"objectOps", CreateRpcOpsObjectOps()));
 						auto invoke = CreateRpcOpsObjectInvoke(methodModel, CreateReference(L"objectOps"));
+						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
+						AddRpcExceptionCheck(block, CreateReference(L"invokeResult"));
 						AddStatement(block, CreateInferredVariableStatement(
 							L"byvalReturnValue",
-							CreateCast(CreateSharedType(L"system::RpcByvalReturnValue"), invoke)));
+							CreateCast(CreateSharedType(L"system::RpcByvalReturnValue"), CreateReference(L"invokeResult"))));
 						AddStatement(block, CreateInferredVariableStatement(
 							L"result",
 							CreateRpcUnboxExpression(
@@ -1885,7 +1921,9 @@ namespace vl
 					else
 					{
 						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
-						AddStatement(block, CreateReturn(CreateRpcUnboxExpression(methodModel.returnTypeInfo, methodModel.returnType, methodModel.returnByref, invoke, CreateReference(L"_lc"))));
+						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
+						AddRpcExceptionCheck(block, CreateReference(L"invokeResult"));
+						AddStatement(block, CreateReturn(CreateRpcUnboxExpression(methodModel.returnTypeInfo, methodModel.returnType, methodModel.returnByref, CreateReference(L"invokeResult"), CreateReference(L"_lc"))));
 					}
 
 					return functionDecl;

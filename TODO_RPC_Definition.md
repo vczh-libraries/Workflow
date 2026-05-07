@@ -32,6 +32,8 @@ All types below count as serializable types, but serialization itself is optiona
   - Weak typed collection types, like `system::Enumerable` and all others, are just trivial interfaces, they are not serializable because they do not have `@rpc:Interface`.
 - Interface with `@rpc:Interface`. Only shared pointer `T^` is acceptable, `T*` is not.
 
+`system::RpcObjectReference` and `system::RpcException` are internal RPC transport structs. Generated infrastructure serializes them when needed, but user-authored RPC interfaces cannot use them in function return values, function arguments, or event arguments.
+
 ## Compile Errors:
 
 - There are multiple types of property definitions, all count as properties.
@@ -55,6 +57,12 @@ All types below count as serializable types, but serialization itself is optiona
 - `@rpc:Interface` cannot be applied to interface `FULL-NAME` because its member `MEMBER-NAME` is not serializable.
   - Triggered when the interface type has unserializable members.
   - Triggered for each inqualify member.
+- `@rpc:Interface` cannot be applied to interface `FULL-NAME` because its member `MEMBER-NAME` uses reserved RPC type `FULL-NAME` in a return value.
+  - Triggered when a function return value or property value contains `system::RpcObjectReference` or `system::RpcException`.
+- `@rpc:Interface` cannot be applied to interface `FULL-NAME` because its function argument `MEMBER-NAME` uses reserved RPC type `FULL-NAME`.
+  - Triggered when a function argument contains `system::RpcObjectReference` or `system::RpcException`.
+- `@rpc:Interface` cannot be applied to interface `FULL-NAME` because its event argument `MEMBER-NAME` uses reserved RPC type `FULL-NAME`.
+  - Triggered when an event argument contains `system::RpcObjectReference` or `system::RpcException`.
 
 ## @rpc:Ctor
 

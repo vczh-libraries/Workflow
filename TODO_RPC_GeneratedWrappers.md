@@ -44,6 +44,8 @@ A wrapper method finishes synchronously. It boxes all arguments according to the
 
 On the receiving lifecycle, generated `IRpcObjectOps::InvokeMethod` switches on `methodId`, converts `ref` back to the target object through `RefToPtr(ref)`, unboxes arguments, calls the real object method, boxes the return value, and returns it to the caller. Unknown method ids raise an exception.
 
+Generated `IRpcObjectOps::InvokeMethod` catches exceptions raised by the real object method and returns `system::RpcException` with the exception message. User RPC signatures cannot return or accept `system::RpcException`, so caller-side ops can distinguish this transport value from successful method results. A generated caller-side op checks the raw `InvokeMethod` result before unboxing; if it is `system::RpcException`, it raises the contained message and skips any `EndInvokeMethod` cleanup.
+
 When the return value is an `@rpc:Byval` collection, generated object ops return `system::RpcByvalReturnValue` instead of the raw boxed collection. Its `value` field contains the boxed transfer value, and its `slot` field identifies a recursive copy of the returned collection cached in the callee-side ops object. Generated caller-side ops cast the result directly to `system::RpcByvalReturnValue^`, unbox `value` into the real return variable, call `EndInvokeMethod(slot)` on the same object ops, and then return that variable. Non-byval return values keep the direct return path.
 
 Object lifetime is completed through hold and unhold messages. Wrapper creation sends `ObjectHold(..., true)` to the owner lifecycle. Wrapper destruction sends `ObjectHold(..., false)`. The owner lifecycle updates local-object interest counts through `LocalObjectHold` and `LocalObjectUnhold`.
@@ -57,6 +59,8 @@ Service registration finishes by validating that the type id exists and represen
 JSON caller-side ops box arguments first, serialize each boxed value to a `JsonNode`, and put those nodes into the argument array. They send the method call through the same dispatcher path, receive a `JsonNode` result, deserialize it, unbox it to the expected return type, and return it.
 
 JSON callee-side object ops deserialize each incoming `JsonNode` argument before unboxing it to the declared Workflow type. After calling the target method, they box the return value, serialize it to `JsonNode`, and return that node to the caller.
+
+When a JSON callee-side object op catches an exception, it serializes `system::RpcException` using the unknown-struct JSON schema and returns that `JsonNode`. JSON caller-side ops check the raw result before the normal known-type deserialization path; if the raw result or serialized JSON result represents `system::RpcException`, they raise the contained message. For byval collection returns, this check happens before casting the result to `system::RpcByvalReturnValue^`, so `EndInvokeMethod` is not called on exceptional results.
 
 For an `@rpc:Byval` collection return, JSON object ops still serialize the transfer value as a `JsonNode`, but that node is stored in `system::RpcByvalReturnValue.value` and the recursive copied collection is cached by `slot` on the callee. JSON caller-side ops cast the `InvokeMethod` result directly to `system::RpcByvalReturnValue^`, deserialize `value`, unbox the real return value, call `EndInvokeMethod(slot)`, and then return the unboxed result. Non-byval JSON returns still receive a direct `JsonNode`.
 

@@ -476,6 +476,55 @@ ValidateModuleRPC_Ast
 					return IsSerializableType(type, rpcInterfaceAttrTd, rpcInterfaceTds);
 				}
 
+				ITypeDescriptor* GetReservedRpcType(ITypeInfo* type)
+				{
+					if (!type) return nullptr;
+					switch (type->GetDecorator())
+					{
+					case ITypeInfo::Nullable:
+					case ITypeInfo::RawPtr:
+						return GetReservedRpcType(type->GetElementType());
+					case ITypeInfo::SharedPtr:
+						{
+							auto elementType = type->GetElementType();
+							if (!elementType) return nullptr;
+							if (elementType->GetDecorator() == ITypeInfo::Generic)
+							{
+								for (vint i = 0; i < elementType->GetGenericArgumentCount(); i++)
+								{
+									if (auto td = GetReservedRpcType(elementType->GetGenericArgument(i)))
+									{
+										return td;
+									}
+								}
+								return nullptr;
+							}
+							return GetReservedRpcType(elementType);
+						}
+					case ITypeInfo::TypeDescriptor:
+						{
+							auto td = type->GetTypeDescriptor();
+							if (td == GetTypeDescriptor<vl::rpc_controller::RpcObjectReference>()
+								|| td == GetTypeDescriptor<vl::rpc_controller::RpcException>())
+							{
+								return td;
+							}
+							return nullptr;
+						}
+					default:
+						return nullptr;
+					}
+				}
+
+				WString GetReservedRpcTypeName(ITypeInfo* type)
+				{
+					if (auto td = GetReservedRpcType(type))
+					{
+						return td->GetTypeName();
+					}
+					return L"";
+				}
+
 				WString GetDeferredAttributeName(RpcDeferredKind kind)
 				{
 					switch (kind)
@@ -784,6 +833,14 @@ ValidateModuleRPC_Reflection
 									manager->errors.Add(WfErrors::RpcInterfaceMemberNotSerializable(memberDeclMap.Values()[declIndex].Obj(), td->GetTypeName(), td->GetTypeName() + L"." + propertyInfo->GetName()));
 								}
 							}
+							else if (auto typeName = GetReservedRpcTypeName(propertyInfo->GetReturn()); typeName != L"")
+							{
+								auto declIndex = memberDeclMap.Keys().IndexOf(propertyInfo);
+								if (declIndex != -1)
+								{
+									manager->errors.Add(WfErrors::RpcReservedTypeInReturnValue(memberDeclMap.Values()[declIndex].Obj(), td->GetTypeName(), td->GetTypeName() + L"." + propertyInfo->GetName(), typeName));
+								}
+							}
 						}
 
 						for (vint i = 0; i < td->GetMethodGroupCount(); i++)
@@ -812,7 +869,14 @@ ValidateModuleRPC_Reflection
 								for (vint k = 0; k < methodInfo->GetParameterCount(); k++)
 								{
 									auto parameterInfo = methodInfo->GetParameter(k);
-									if (!IsSerializableType(parameterInfo->GetType(), rpcInterfaceAttrTd, allWorkflowRpcInterfaceTds))
+									if (auto typeName = GetReservedRpcTypeName(parameterInfo->GetType()); typeName != L"")
+									{
+										if (auto argument = FindFunctionArgument(functionDecl.Obj(), parameterInfo->GetName(), k))
+										{
+											manager->errors.Add(WfErrors::RpcReservedTypeInFunctionArgument(argument.Obj(), td->GetTypeName(), td->GetTypeName() + L"." + methodInfo->GetName() + L"(" + parameterInfo->GetName() + L")", typeName));
+										}
+									}
+									else if (!IsSerializableType(parameterInfo->GetType(), rpcInterfaceAttrTd, allWorkflowRpcInterfaceTds))
 									{
 										if (auto argument = FindFunctionArgument(functionDecl.Obj(), parameterInfo->GetName(), k))
 										{
@@ -821,9 +885,47 @@ ValidateModuleRPC_Reflection
 									}
 								}
 
-								if (!IsSerializableReturnType(methodInfo->GetReturn(), rpcInterfaceAttrTd, allWorkflowRpcInterfaceTds))
+								if (auto typeName = GetReservedRpcTypeName(methodInfo->GetReturn()); typeName != L"")
+								{
+									manager->errors.Add(WfErrors::RpcReservedTypeInReturnValue(functionDecl.Obj(), td->GetTypeName(), td->GetTypeName() + L"." + methodInfo->GetName(), typeName));
+								}
+								else if (!IsSerializableReturnType(methodInfo->GetReturn(), rpcInterfaceAttrTd, allWorkflowRpcInterfaceTds))
 								{
 									manager->errors.Add(WfErrors::RpcInterfaceMemberNotSerializable(functionDecl.Obj(), td->GetTypeName(), td->GetTypeName() + L"." + methodInfo->GetName()));
+								}
+							}
+						}
+
+						for (vint i = 0; i < td->GetEventCount(); i++)
+						{
+							auto eventInfo = td->GetEvent(i);
+							if (eventInfo->GetOwnerTypeDescriptor() != td)
+							{
+								continue;
+							}
+
+							Ptr<WfEventDeclaration> eventDecl;
+							auto declIndex = memberDeclMap.Keys().IndexOf(eventInfo);
+							if (declIndex != -1)
+							{
+								eventDecl = memberDeclMap.Values()[declIndex].Cast<WfEventDeclaration>();
+							}
+							auto handlerType = eventInfo->GetHandlerType();
+							if (handlerType && handlerType->GetDecorator() == ITypeInfo::SharedPtr)
+							{
+								auto genericType = handlerType->GetElementType();
+								if (genericType && genericType->GetDecorator() == ITypeInfo::Generic)
+								{
+									for (vint j = 1; j < genericType->GetGenericArgumentCount(); j++)
+									{
+										if (auto typeName = GetReservedRpcTypeName(genericType->GetGenericArgument(j)); typeName != L"")
+										{
+											if (eventDecl && j - 1 < eventDecl->arguments.Count())
+											{
+												manager->errors.Add(WfErrors::RpcReservedTypeInEventArgument(eventDecl->arguments[j - 1].Obj(), td->GetTypeName(), td->GetTypeName() + L"." + eventInfo->GetName() + L"(" + itow(j - 1) + L")", typeName));
+											}
+										}
+									}
 								}
 							}
 						}

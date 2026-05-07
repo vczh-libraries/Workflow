@@ -12,8 +12,8 @@ There are two kinds of JSON schema for RPC serializable types:
     - `func rpcjson_Serialize(value : object) : (system::JsonNode^)`
     - `func rpcjson_Deserialize(node : system::JsonNode^) : (object)`
 
-Pay attention to the `RpcObjectReference` type, it is treated like a struct. But serialization for `RpcObjectReference` is always needed.
-Types listed here should include every typed appear in `WfLexicalScopeManager::rpcMetadata`, but when `RpcObjectReference` also appears in the list, do not duplicate `RpcObjectReference` processing.
+Pay attention to the `RpcObjectReference` and `RpcException` types, they are treated like structs. Serialization for both types is always needed, even when they do not appear in RPC metadata.
+Types listed here should include every type appearing in `WfLexicalScopeManager::rpcMetadata`, but when `RpcObjectReference` or `RpcException` also appears in the list, do not duplicate its processing.
 
 ## Schema for Known Types
 
@@ -49,6 +49,7 @@ See `UnknownType_PrimitiveSchema` in `## Expected format of generated .d.ts file
 3) struct types
 
 `{ "$": "struct::type::full::name", strong-type-version-of-this-struct...}`
+`system::RpcObjectReference` and `system::RpcException` use this standard unknown-struct schema whenever they cross a JSON RPC boundary as dynamically typed transport values.
 
 4) collection types
 
@@ -127,7 +128,7 @@ export interface UnknownType_Map
 
 export interface UnknownType_struct_type_full_name extends struct_type_full_name
 {
-  "$": "struct::type::full::name",
+  "$": "struct::type::full::name";
 }
 
 export type UnknownTypeSchema =
@@ -138,6 +139,9 @@ export type UnknownTypeSchema =
   | UnknownType_struct_type_full_name
   | ...
   ...
+
+// UnknownType_* interfaces are generated for all structs, including
+// system::RpcObjectReference and system::RpcException.
 
 // below are all known types
 
@@ -151,6 +155,8 @@ export interface struct_type_full_name
 {
   field: value_type;
 }
+
+// system::RpcObjectReference and system::RpcException are always generated here.
 
 // All enum_type_full_name is omitted because in known type enums are just numbers
 export type KnownTypeSchema =

@@ -38,7 +38,7 @@ func serviceMain(lc : IRpcLifecycle*) : void
           return value;
         }
 
-        override func SetITwoValue() : void
+        override func SetTwoValue() : void
         {
           value = "Two";
           ValueChanged();
@@ -59,12 +59,12 @@ func serviceMain(lc : IRpcLifecycle*) : void
 
         override func SetOneValue() : void
         {
-          raise "IDerived.SetOneValue should not be accepted";
+          raise "DoNotSetOneValue";
         }
 
-        override func SetITwoValue() : void
+        override func SetTwoValue() : void
         {
-          raise "IDerived.SetITwoValue should not be accepted";
+          raise "DoNotSetTwoValue";
         }
 
         override func SetDerivedValue() : void
@@ -89,42 +89,15 @@ func clientMain(lc : IRpcLifecycle*) : string
 
   var two = service.CreateTwo();
   s = $"$(s)[$(two.Value)]";
-  two.SetITwoValue();
+  two.SetTwoValue();
   s = $"$(s)[$(two.Value)]";
 
   var derived = service.CreateDerived();
   s = $"$(s)[$(derived.Value)]";
-
-  var setOneSucceeded = true;
-  try
-  {
-    derived.SetOneValue();
-  }
-  catch (ex)
-  {
-    setOneSucceeded = false;
-  }
-  if (setOneSucceeded)
-  {
-    raise "IDerived.SetOneValue should raise an exception";
-  }
-
-  var setTwoSucceeded = true;
-  try
-  {
-    derived.SetITwoValue();
-  }
-  catch (ex)
-  {
-    setTwoSucceeded = false;
-  }
-  if (setTwoSucceeded)
-  {
-    raise "IDerived.SetITwoValue should raise an exception";
-  }
-
   derived.SetDerivedValue();
   s = $"$(s)[$(derived.Value)]";
+  try { derived.SetOneValue(); } catch (ex) { s = $"$(s)[$(ex.Message)]"; }
+  try { derived.SetTwoValue(); } catch (ex) { s = $"$(s)[$(ex.Message)]"; }
 
   return s;
 }

@@ -37,6 +37,7 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::StateMachine, system::StateMachine)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Versioning, system::Versioning)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcObjectReference, system::RpcObjectReference)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcException, system::RpcException)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcByvalReturnValue, system::RpcByvalReturnValue)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcSerializer, system::IRpcSerializer)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListOps, system::IRpcListOps)
@@ -127,6 +128,10 @@ WfLoadLibraryTypes
 				STRUCT_MEMBER(objectId)
 				STRUCT_MEMBER(typeId)
 			END_STRUCT_MEMBER(vl::rpc_controller::RpcObjectReference)
+
+			BEGIN_STRUCT_MEMBER(vl::rpc_controller::RpcException)
+				STRUCT_MEMBER(message)
+			END_STRUCT_MEMBER(vl::rpc_controller::RpcException)
 
 			BEGIN_CLASS_MEMBER(vl::rpc_controller::RpcByvalReturnValue)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<vl::rpc_controller::RpcByvalReturnValue>(), NO_PARAMETER)

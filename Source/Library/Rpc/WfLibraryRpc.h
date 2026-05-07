@@ -30,6 +30,13 @@ namespace vl
 			auto operator<=>(const RpcObjectReference&) const = default;
 		};
 
+		struct RpcException
+		{
+			WString							message;
+
+			auto operator<=>(const RpcException&) const = default;
+		};
+
 		class RpcByvalReturnValue
 			: public Object
 			, public reflection::Description<RpcByvalReturnValue>

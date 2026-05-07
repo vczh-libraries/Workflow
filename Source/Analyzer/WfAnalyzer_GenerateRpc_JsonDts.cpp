@@ -404,15 +404,13 @@ GenerateDtsFromRpcMetadata
 					}
 				}
 
-				void AddRpcObjectReferenceDtsStruct(List<DtsStructModel>& structs)
+				void AddRpcBuiltinDtsStruct(List<DtsStructModel>& structs, const WString& fullName, ITypeDescriptor* td)
 				{
-					auto fullName = WString::Unmanaged(L"system::RpcObjectReference");
 					if (FindStruct(structs, fullName) != -1)
 					{
 						return;
 					}
 
-					auto td = GetTypeDescriptor<vl::rpc_controller::RpcObjectReference>();
 					if (!td)
 					{
 						return;
@@ -601,7 +599,8 @@ GenerateDtsFromRpcMetadata
 				List<DtsEnumModel> enums;
 				List<DtsStructModel> structs;
 				AddDtsTypesFromDeclarations(manager->rpcMetadata->metadataModule->declarations, L"", enums, structs);
-				AddRpcObjectReferenceDtsStruct(structs);
+				AddRpcBuiltinDtsStruct(structs, WString::Unmanaged(L"system::RpcObjectReference"), GetTypeDescriptor<vl::rpc_controller::RpcObjectReference>());
+				AddRpcBuiltinDtsStruct(structs, WString::Unmanaged(L"system::RpcException"), GetTypeDescriptor<vl::rpc_controller::RpcException>());
 
 				DtsContext context;
 				context.manager = manager;

@@ -62,6 +62,7 @@ Predefined Types
 			F(StateMachine)					\
 			F(Versioning)					\
 			F(vl::rpc_controller::RpcObjectReference)\
+			F(vl::rpc_controller::RpcException)\
 			F(vl::rpc_controller::RpcByvalReturnValue)\
 			F(vl::rpc_controller::IRpcSerializer)\
 			F(vl::rpc_controller::IRpcListOps)\

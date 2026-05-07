@@ -793,6 +793,9 @@ Error Messages
 				static glr::ParsingError					RpcAttributeCanOnlyApplyToProperty(WfAttribute* node, const WString& attributeName);
 				static glr::ParsingError					RpcAttributeCannotCoexistWithOther(WfAttribute* node, const WString& attributeName, const WString& otherAttributeName, const WString& memberName);
 				static glr::ParsingError					RpcGeneratedNameConflict(WfDeclaration* node, const WString& category, const WString& generatedName);
+				static glr::ParsingError					RpcReservedTypeInReturnValue(WfDeclaration* node, const WString& interfaceFullName, const WString& memberName, const WString& typeName);
+				static glr::ParsingError					RpcReservedTypeInFunctionArgument(WfFunctionArgument* node, const WString& interfaceFullName, const WString& memberName, const WString& typeName);
+				static glr::ParsingError					RpcReservedTypeInEventArgument(WfType* node, const WString& interfaceFullName, const WString& memberName, const WString& typeName);
 				static glr::ParsingError					RpcWrapperGenerationRequiresPropertyMode(WfPropertyDeclaration* node, const WString& memberName);
 				static glr::ParsingError					RpcWrapperGenerationRequiresCollectionReturnTransfer(WfFunctionDeclaration* node, const WString& memberName);
 				static glr::ParsingError					RpcWrapperGenerationRequiresCollectionParameterTransfer(WfFunctionArgument* node, const WString& memberName);
