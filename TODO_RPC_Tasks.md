@@ -9,7 +9,7 @@ investigate repro
 
 ## Task 1
 
-Update the current sample `Rpc/Inheritance`, add following events to `IOne` and `ITwo`:
+Update the current sample `Rpc/Inheritance`, add following events to `IOne` and `ITwo`, and add `GuardCrashAtClient` to `IDerived`:
 ```Workflow
 interface IOne
 {
@@ -20,45 +20,67 @@ interface ITwo
 {
   event CrashAtClient();
 }
-```
 
-In `CreateDerived`, the implementation will attach an handler to `CrashAtServer`, raise "CrashedAtServer".
-In `clientMain`, attach an handler to `CrashAtClient`, raise "CrashedAtClient".
-
-Now we have to call them to test the exception. Add these function `GuardCrashAtClient` to `IDerived` and `clientMain` call them this:
-```Workflow
-try { derived.CrashAtServer(); } catch (ex) { $"$(s)[$(ex)]"; }
-$"$(s)[$(derived.GuardCrashAtClient)]";
-```
-
-The `GuardCrashAtCliebt` calls the event and return the exception.
-New calls will be added right before returning s therefore,
-add additional postfix `[CrashedAtServer][CrashedAtClient]` to `IndexRpc.txt`.
-
-----------------------------
-
-In order to make this work, you will have to declare a reflectable struct right below `RpcObjectReference`:
-```C++
-struct RpcException
+interface IDerived : IOne, ITwo
 {
-  WString message;
+  func GuardCrashAtClient() : string;
 }
 ```
 
-It should also be JSON serialized just like `RpcException`. Following thing will be affected:
-- In `TODO_RPC_Definition.md`, you have to add that `RpcException` and `RpcObjectReference` could not be in any function return values, or function/event arguments.
-  - Implement it.
-  - Make three errors, one for return value, two for function/event arguments.
-  - Error code begins with H, continue the H series numbers.
-  - You will need to add enough AnalyzerError for it.
-- In `TODO_RPC_Json.md` you have to mention that `RpcException` is serialized just like `RpcObjectReference` in the standard way, and fix the `## Expected format of generated .d.ts files` section.
-  - Implement it.
-- In `IRpcObjectOps::InvokeMethod` which calls the actual method, you need to try-catch it, and when exception happens, return `RpcException`. Because `RpcException` will never be the return type, it is safe without ambiguity.
-- During serialization, handle it properly.
-- In a wrapper calling `IRpcObjectOps::InvokeMethod`, if the return value is `RpcException`, it raises an exception with that message, and `EndInvokeMethod` don't need to call.
+In `CreateDerived`, the implementation will attach a handler to `CrashAtServer` and raise `"CrashedAtServer"`.
+In `clientMain`, attach a handler to `CrashAtClient` and raise `"CrashedAtClient"`.
 
-At the end, since new JSON protocols are added, you need to go to `Test/TypeScript`, run `prepare.ps1` followed by `npm run build`.
-And make sure these documents are updated:
-- `TODO_RPC_Definition.md` mentioning the new error.
-- `TODO_RPC_Json.md` mentioning additional JSON serialization thing.
-- `TODO_RPC_GeneratedWrappers.md` if necessary.
+Now we have to call them to test the exception. `clientMain` calls them like this:
+```Workflow
+try { derived.CrashAtServer(); } catch (ex) { s = $"$(s)[$(ex)]"; }
+s = $"$(s)[$(derived.GuardCrashAtClient())]";
+```
+
+`GuardCrashAtClient` calls the event and returns the exception message:
+```Workflow
+override func GuardCrashAtClient() : string
+{
+  try { CrashAtClient(); } catch (ex) { return ex; }
+  return "";
+}
+```
+
+New calls will be added right before returning `s`, therefore add additional postfix `[CrashedAtServer][CrashedAtClient]` to `IndexRpc.txt`.
+
+----------------------------
+
+In order to make this work, update `IRpcObjectEventOps::InvokeEvent` to return `system::RpcException[int]` instead of `void`.
+`RpcException` already exists. The key of the returned dictionary is the client id of the lifecycle whose event handler raised an exception. The value is the `RpcException` containing that exception message.
+
+The expected behavior is:
+- An event broadcast must attempt to deliver the event to every lifecycle that should receive it.
+- If only part of the lifecycles raise exceptions while handling the event, the result dictionary contains only those lifecycles.
+- If no lifecycle raises an exception, the result dictionary is empty.
+- If multiple lifecycles raise exceptions, the lifecycle that triggered the event receives all of them together, keyed by client id.
+- Exceptions from one lifecycle must not prevent other lifecycles from receiving the same event.
+
+Following things will be affected:
+- In `IRpcObjectEventOps::InvokeEvent`, which calls the actual event, you need to try-catch it, and when exception happens, return a dictionary containing one item: `_lc.ClientId` to `RpcException`.
+  - Keep the event suppression flag set before raising the local event.
+  - Keep clearing the event suppression flag in `finally`, even when an exception is caught and converted to the dictionary.
+  - Unknown event ids should still behave consistently with the new return value path.
+- In a generated local event listener, after calling `IRpcDispatcher::BroadcastFromClient_ObjectEventOps(...)->InvokeEvent(...)`, check the returned `RpcException[int]`.
+  - If the dictionary is empty, finish normally.
+  - If the dictionary is not empty, raise an exception on the lifecycle that triggered the event.
+  - The returned dictionary is an internal transport value. It must not be exposed to Workflow script catch variables; `catch (ex)` still receives a string exception message.
+- In the dispatcher or broadcast object-event ops implementation, aggregate all dictionaries returned from target lifecycles.
+  - Do not stop at the first returned exception.
+  - Preserve the client id keys from every target lifecycle.
+  - This should work when only one lifecycle raises and when multiple lifecycles raise.
+- During JSON serialization, reuse the existing support for serializing `RpcException[int]`.
+  - The dictionary key is the lifecycle client id.
+  - JSON event receiving should deserialize arguments before raising the local event, catch exceptions into the returned dictionary, and serialize the dictionary back to the trigger lifecycle.
+  - JSON event sending should deserialize the returned dictionary before deciding whether to raise an exception.
+- Update generated wrappers and reflection declarations to use the new return type of `IRpcObjectEventOps::InvokeEvent` everywhere.
+- Update mocks and tests that implement or wrap `IRpcObjectEventOps`, including JSON mocks, so they aggregate and forward event exceptions instead of dropping them.
+
+At the end, make sure these documents are updated:
+- `TODO_RPC_GeneratedWrappers.md` mentioning how generated object event ops return `RpcException[int]` and how generated event senders raise exceptions for non-empty dictionaries without exposing client ids to Workflow script.
+- `TODO_RPC_Definition.md` if the definition document needs to mention the new event exception behavior.
+
+`TODO_RPC_Json.md` does not need an update for this task, because the exception map uses the existing JSON serialization support.
