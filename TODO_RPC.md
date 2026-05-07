@@ -17,7 +17,7 @@
 
 - Review JSON related constructions.
 - Continue to add more test cases until all features are covered.
-  - Remote Exception Handling, adding to `Inheritance.txt` sample.
+  - Remote Exception Handling in event handlers, `InvokeEvent` might need to return a map.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
 - Document RPC
   - use `TODO_RPC_(Definition|Json|GeneratedWrappers).md`

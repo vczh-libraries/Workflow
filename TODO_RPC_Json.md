@@ -40,27 +40,7 @@ For dictionary: array of `[key, value]`, both are schema for known types.
 
 1) primitive types
 
-```TypeScript
-export type UnknownType_PrimitiveSchema =
-  | ["UInt8", number]
-  | ["UInt16", number]
-  | ["UInt32", number]
-  | ["UInt64", number]
-  | ["Int8", number]
-  | ["Int16", number]
-  | ["Int32", number]
-  | ["Int64", number]
-  | ["Single", number]
-  | ["Double", number]
-  | ["Char", string]
-  | ["DateTime", string]
-  | ["Locale", string]
-  | null
-  | true
-  | false
-  | string
-  ;
-```
+See `UnknownType_PrimitiveSchema` in `## Expected format of generated .d.ts files`
 
 2) enum types
 
