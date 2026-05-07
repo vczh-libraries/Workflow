@@ -17,8 +17,7 @@
 
 - Review JSON related constructions.
 - Continue to add more test cases until all features are covered.
-  - Sending cached property values proactively from remote to wrapper.
-  - Interface inheritance.
+  - Remote Exception Handling, adding to `Inheritance.txt` sample.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
 - Document RPC
   - use `TODO_RPC_(Definition|Json|GeneratedWrappers).md`

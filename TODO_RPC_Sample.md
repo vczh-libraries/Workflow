@@ -12,32 +12,51 @@ RPC samples are split into two files:
 
 Only `SAMPLE` is added to `IndexRpc.txt`. Both files must appear in `CompilerTest_LoadAndCompile` under `Resource Files\Rpc`.
 
-## Sample Rpc\EventArgs.txt
+## Sample Rpc\Inheritance.txt
 
 ```Workflow
 module Rpc;
 using system::*;
-using RpcWrapperTest::*;
 
-namespace YourFavoriteNamespace // use RpcEventArgs
+namespace YourFavoriteNamespace // use RpcInheritance
 {
+  @rpc:Interface
+  interface IDerived : IOne, ITwo
+  {
+    func SetDerivedValue() : void;
+  }
+
   @rpc:Interface
   interface IValue
   {
     @rpc:Cached
-    prop Value : string {const, not observe}
+    prop Value : string {const, observe}
+  }
+
+  @rpc:Interface
+  interface IOne : IValue
+  {
+    func SetOneValue() : void;
+  }
+
+  @rpc:Interface
+  interface ITwo : IValue
+  {
+    func SetITwoValue() : void;
   }
 
 	@rpc:Interface
 	@rpc:Ctor
 	interface IService
 	{
-    func Print(s : string?, v : IValue^) : string;
+    func CreateOne() : IOne^;
+    func CreateTwo() : ITwo^;
+    func CreateDerivec() : IDerived^;
 	}
 }
 ```
 
-## Sample Rpc\EventArgs_Test.txt
+## Sample Rpc\Inheritance_Test.txt
 
 ```Workflow
 module Rpc;
@@ -51,9 +70,29 @@ func serviceMain(lc : IRpcLifecycle*) : void
 {
 	var serviceObj = new (YourFavoriteNamespace::IService^)
 	{
-    override func Print(s : string?, v : IValue^) : string
+    override func CreateOne() : IOne^
     {
-      return $"[$(cast string s ?? 'null')][$(v.Value ?? 'null')]";
+      return new IOne^
+      {
+        var value : string = "";
+        override func GetValue() : string { return value; }
+        override func SetOneValue() : void
+        {
+          value = "One";
+          ValueChanged();
+        }
+      }
+    }
+    
+    override func CreateTwo() : ITwo^
+    {
+      // Copy CreateOne but set the value to "Two"
+    }
+    
+    override func CreateDerived() : IDerived^
+    {
+      // Copy CreateOne but set the value to "Derived"
+      // Meanwhile Set(One|Two)Value should raise exception
     }
 	};
 	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
@@ -62,11 +101,15 @@ func serviceMain(lc : IRpcLifecycle*) : void
 func clientMain(lc : IRpcLifecycle*) : string
 {
 	var service = cast (YourFavoriteNamespace::IService^) lc.RequestService("YourFavoriteNamespace::IService");
+  var one = cast (IOne^) service.CreateOne();
+  // repeat for two and derived
 
-  s = $"$(s)$(service.Print("abc", null))";
-  s = $"$(s)$(service.Print(null, new IValue^ { override func GetValue() { return "def"; } }))";
+  s = $"$(s)[$(one.Value)]";
+  one.SetOneValue();
+  s = $"$(s)[$(one.Value)]";
+  // repeat for two and derived
 
-  return s; // [abc][null][null][def]
+  return s; // [][One][][Two][][Derived]
 }
 ```
 
@@ -74,10 +117,6 @@ func clientMain(lc : IRpcLifecycle*) : string
 
 In this task you are going to build and run test cases to verify if these cases are working, according to `TODO_RPC_Definition.md`
 This test is to ensure that:
-- Since all primitive types are serializable, nullable type could only be applied to primitive types, so it should also be serializable.
-  - If nullable types is rejected with PRC specific errors, it should be fixed.
-  - There are also limited types that could be used with the nullable operator "?". Verify if such types are all serializable. If yes, it is easy to say all nullable types are also serializable. If no, then you need to look into `T` when you see `T?`. Answer this question when you finish the work.
-- Passing null is handled properly.
-  - If passing null crashes, `Rpc(B|Unb)oxBy(val|ref)` should be the first thing to look at.
+- Wrapper Workflow Script code generation take members of base types of interfaces into consideration recursively.
 
 If the current implemention is correct, the added samples should just pass the test.
