@@ -1,0 +1,130 @@
+module Rpc;
+using system::*;
+using RpcInheritance::*;
+
+var s = "";
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcInheritance::IService^)
+  {
+    override func CreateOne() : IOne^
+    {
+      return new IOne^
+      {
+        var value : string = "";
+
+        override func GetValue() : string
+        {
+          return value;
+        }
+
+        override func SetOneValue() : void
+        {
+          value = "One";
+          ValueChanged();
+        }
+      };
+    }
+
+    override func CreateTwo() : ITwo^
+    {
+      return new ITwo^
+      {
+        var value : string = "";
+
+        override func GetValue() : string
+        {
+          return value;
+        }
+
+        override func SetITwoValue() : void
+        {
+          value = "Two";
+          ValueChanged();
+        }
+      };
+    }
+
+    override func CreateDerived() : IDerived^
+    {
+      return new IDerived^
+      {
+        var value : string = "";
+
+        override func GetValue() : string
+        {
+          return value;
+        }
+
+        override func SetOneValue() : void
+        {
+          raise "IDerived.SetOneValue should not be accepted";
+        }
+
+        override func SetITwoValue() : void
+        {
+          raise "IDerived.SetITwoValue should not be accepted";
+        }
+
+        override func SetDerivedValue() : void
+        {
+          value = "Derived";
+          ValueChanged();
+        }
+      };
+    }
+  };
+  lc.RegisterService("RpcInheritance::IService", serviceObj);
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (RpcInheritance::IService^) lc.RequestService("RpcInheritance::IService");
+
+  var one = service.CreateOne();
+  s = $"$(s)[$(one.Value)]";
+  one.SetOneValue();
+  s = $"$(s)[$(one.Value)]";
+
+  var two = service.CreateTwo();
+  s = $"$(s)[$(two.Value)]";
+  two.SetITwoValue();
+  s = $"$(s)[$(two.Value)]";
+
+  var derived = service.CreateDerived();
+  s = $"$(s)[$(derived.Value)]";
+
+  var setOneSucceeded = true;
+  try
+  {
+    derived.SetOneValue();
+  }
+  catch (ex)
+  {
+    setOneSucceeded = false;
+  }
+  if (setOneSucceeded)
+  {
+    raise "IDerived.SetOneValue should raise an exception";
+  }
+
+  var setTwoSucceeded = true;
+  try
+  {
+    derived.SetITwoValue();
+  }
+  catch (ex)
+  {
+    setTwoSucceeded = false;
+  }
+  if (setTwoSucceeded)
+  {
+    raise "IDerived.SetITwoValue should raise an exception";
+  }
+
+  derived.SetDerivedValue();
+  s = $"$(s)[$(derived.Value)]";
+
+  return s;
+}

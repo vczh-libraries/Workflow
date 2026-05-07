@@ -1,0 +1,39 @@
+module Rpc;
+using system::*;
+
+namespace RpcInheritance
+{
+  @rpc:Interface
+  interface IValue
+  {
+    @rpc:Cached
+    prop Value : string {const}
+  }
+
+  @rpc:Interface
+  interface IOne : IValue
+  {
+    func SetOneValue() : void;
+  }
+
+  @rpc:Interface
+  interface ITwo : IValue
+  {
+    func SetITwoValue() : void;
+  }
+
+  @rpc:Interface
+  interface IDerived : IOne, ITwo
+  {
+    func SetDerivedValue() : void;
+  }
+
+  @rpc:Interface
+  @rpc:Ctor
+  interface IService
+  {
+    func CreateOne() : IOne^;
+    func CreateTwo() : ITwo^;
+    func CreateDerived() : IDerived^;
+  }
+}
