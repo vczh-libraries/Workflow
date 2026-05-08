@@ -9,29 +9,84 @@ investigate repro
 
 ## Task 1
 
-When `IObjectEventOps::InvokeEvent` does not raise exception, it should return null.
-When it raises exception, the exception message should be formatted like `clientId:message;...`. The last semicolon should exist, it is not just a delimeter.
-But the wrapper should still verify if it is not null and not empty to raise the exception.
-It will affect the last two block of `Rpc/Inheritance` sample's expected test result in `IndexRpc.txt`.
+General Workflow script AST building improvements:
+- `try-catch` and `try-finally` cound be merged into one single `WfTryStatement`. You are going to also find if such pattern appear anywhere else and fix them as well.
+
+Just like `ReadEventException`, you are going to add a `ReadMethodException`.
+In generated `rpcops_IOps_CreateJson`, between calling `objectOps.InvokeMethod` and processing actual return value, exception handling are identical among every methods.
+Rewrite this piece of code in C++ and the script could just call `IRpcLifecycle::ReadMethodException`.
+`ReadMethodException` will read return value directly from `InvokeMethod`, if there is an exception it raise an exception, otherwise nothing happens.
+So A call to `ReadMethodException` without worrying about the return value is enough.
+
+In generated `rpcops_IRpcObjectEventOpsJson`:
+- `raise "Unknown RPC event id.";` is not an exception raised in any remote event handlers, it is a local error. So it cannot be turned into a record in the returned map.
+- The key of the returned map is actually the remote client id which raise the exception, not the local client.
+  - The same to `IRpcListEventOps` implementation in `WfLibraryRpcWrappers.(h|cpp)`.
+  - A few test results in `IndexRpc.txt` may be impacted.
+  - In `rpcops_IRpcObjectEventOpsJson` you are not able to obtainer such information, they should be done in C++ authored `IRpcDispatcher` implementation.
+- When the RPC definition has no event, the whole function could be collapsed to one single `raise "Unknown RPC event id.";` instead of a big piece of boilerplate code.
+  - This also matches the semantic after fixing, because only exceptions raised in remote event handlers are put into the map.
+
+In generated `rpcops_IRpcObjectOpsJson`:
+- `raise "Unknown RPC method id.";` is not an exception raised in any remote method call, it is a local error. So it cannot be turned into `RpcException`.
+
+To keep the generated code clean, when handling unknown id exceptions, you could first `var unknownId = false`, and set it to true in the `default` case.
+In this way you are able to check this variable in the no-exception branch and raise the exception accordingly.
+Only do this when raising the unknown id exception directly isn't work because it is guarded in a try-catch which turn the exception into something else, otherwise you should still raise the exception directly.
+
+Don't handle exceptions in any ops interface implementation, instead we should do it in `IRpcDispatcher` in this way:
+- This section only talks about wrappers which read the remote return value and turn it back into an exception, not including ops interfaces which catch the exception and turn into serializable exception value to pass it back.
+- Rename `RpcDualDispatcherMock` to `RpcDualDispatcherMockBase`.
+- Create a `RpcDualDispatcherMock` inheriting from `RpcDualDispatcherMockBase`, doing things like `RpcDualJsonDispatcherMock` that create one more indirection of 8 ops interface instances.
+- Now you got JSON version and non-JSON version of ops interface wrappers for dispatcher mocks, you are going to read the return value of `InvokeMethod`, `InvokeEvent` and `OnItemChanged`, to see if the return value is representing an exception, and throw it directly.
+  - `InvokeEvent` and `OnItemChanged` returns a map, but in the dual mock there is only one remote client, so when exception happens you will know the "remote client id", the code would be simpler.
+- In this way all code that calls the dispatcher don't need to worry about the exception anymore.
+  - Unless in `rpcops_IRpcObjectEventOpsJson` you still need to call `SetEventSuppressedFlag` when event happens.
 
 ## Task 2
 
-I would like to split `Rpc/Inheritance` sample into 3, keep the `s` thing, All 4 interfaces and their inheritance relationship remain in all 3 samples:
-- `Rpc/Inheritance`: No event is declared. No member raise exception and no try-catch (except `IDerived::Set(One|Two)Value`, they still raise exceptions, to make sure they will not be called in the test case). No `GuardCrashAtClient` is declared.
-- `Rpc/Inheritance_MethodException`: No event is declared, `CreateOne`, `CreateTwo`, `GuardCrashAtClient` is not declared. `Value` property and `SetDerivedValue` is not declared. It only calls `Set(One|Two)Value` and test their exceptions.
-- `Rpc/Inheritance_EventException`: Deleting all members except events and `GuardCrashAndClient`. It only trigger two events and test their exceptions.
+`Rpc/Oblist_EventException` should attach the handler which raise an exception in `serviceMain`. The current test case `clientMain` attach an event handler to raise exception, and it raise the event, that would be a local exception not a remote exception. It doesn't do the expected test. Fix it like this:
 
-All 3 samples should remain calling involved members just like the original sample, so the first one leaving 4 `[]`, and the other leaving 2 `[]`, in the test result.
+```Workflow
+module Rpc;
+using system::*;
+using RpcOblistEventException::*;
 
-## Task 3
+func CrashItemChanged(index : int, oldCount : int, newCount : int) : void
+{
+  raise $"$(index),$(oldCount),$(newCount)";
+}
 
-Now `IRpcListEventOps::OnItemChanged` will accept exceptions just like `IObjectEventOps::InvokeEvent`.
-You need to create a `Rpc/Oblist_EventException`, the `IServer::GetOblist` creates an `observe int[]`, handle its `ItemChanged` event to raise an exception (need to format all arguments to the exception message), save it in a field and return it. Now `clientMain` inside a try-catch, it adds 0 to the list, triggering `ItemChanged` and catch the exception and return.
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serverObj = new (IServer^)
+  {
+    var _List : observe int[] = null;
 
-Unlike object and wrappers, container related stuff are all implemented in C++, mainly in `WfLibraryRpcWrappers.(h|cpp)`.
-You can register a static function `IRpcLifecycle::ReadEventException`, in both object wrappers and container wrappers, call it with the return value from `InvokeEvent` and `OnItemChanged`:
-- When the argument is null or is empty, nothing happens.
-- When the argument has anything, format the exception message and raise it, using `vl::Exception`.
-- In this way we DRY.
+    override func GetOblist() : observe int[]
+    {
+      _List = {};
+      attach(_List.ItemChanged, CrashItemChanged);
+      return _List;
+    }
+  };
+  lc.RegisterService("RpcOblistEventException::IServer", serverObj);
+}
 
-Remember to update documents and `Rpc.d.ts`.
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var server = cast (IServer^) lc.RequestService("RpcOblistEventException::IServer");
+  var xs = server.GetOblist();
+
+  try
+  {
+    xs.Add(0);
+  }
+  catch (ex)
+  {
+    return ex.Message;
+  }
+
+  return "No Exception";
+}
+```

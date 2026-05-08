@@ -15,8 +15,7 @@
 
 ## ToDo
 
-- `Rpc/Oblist_EventException` should attach the handler in `serviceMain`.
-- Handle `IRpcListOps`  exceptions.
+- Handle `IRpcListOps` exceptions.
 - Review JSON related constructions.
   - Normalize error handling in both `RpcLifecycleBase` and `IRpcDispatcher`.
   - All 4 RPC compiler cpp files to ensure visitors are used proactively.
@@ -26,10 +25,13 @@
   - Triple threading demo only for metaonly. Meanwhile no reflection logs JSON values.
   - TeatCasesRpc.h test macros and include different header files.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
-- Document RPC
+
+## Document
+
+- RPC
   - use `TODO_RPC_(Definition|Json|GeneratedWrappers).md`
   - how to start up
-- Document compiler process.
-- Document AST building helper functions.
+- Compiler processing and passes.
+- AST building helper functions.
   - Refactor is needed to scan if some functions in RPC code generation is duplicating those in `WfAnalyzer.h`.
-- Document Workflow best practices, language features and syntax sugars are invented to keep the code clean, prefer them.
+- Workflow best practices, language features and syntax sugars are invented to keep the code clean, prefer them.
