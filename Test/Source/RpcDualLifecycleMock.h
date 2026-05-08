@@ -15,6 +15,8 @@ namespace vl
 		private:
 			RpcDualLifecycleMock*													lifecycle1 = nullptr;
 			RpcDualLifecycleMock*													lifecycle2 = nullptr;
+			Ptr<rpc_controller::IRpcObjectEventOps>									objectEventBroadcastOps1;
+			Ptr<rpc_controller::IRpcObjectEventOps>									objectEventBroadcastOps2;
 			collections::Dictionary<vint, rpc_controller::RpcObjectReference>		services;
 
 			RpcDualLifecycleMock*													GetLifecycle(vint clientId)const;

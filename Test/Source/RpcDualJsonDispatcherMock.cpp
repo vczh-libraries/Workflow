@@ -109,10 +109,10 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 				}
 
-				void InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)override
+				RpcEventExceptionMap InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)override
 				{
 					dispatcher->RecordJsonArguments(arguments);
-					ops->InvokeEvent(ref, eventId, arguments);
+					return ops->InvokeEvent(ref, eventId, arguments);
 				}
 			};
 
@@ -381,15 +381,18 @@ namespace vl
 
 		IRpcObjectEventOps* RpcDualJsonDispatcherMock::BroadcastFromClient_ObjectEventOps(vint selfClientId)
 		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonDispatcherMock::BroadcastFromClient_ObjectEventOps(vint)#"
 			auto ops = RpcDualDispatcherMock::BroadcastFromClient_ObjectEventOps(selfClientId);
-			return WrapOps<IRpcObjectEventOps, RpcJsonObjectEventOpsMock>(
-				this,
-				ops,
-				lifecycle1->GetController()->GetObjectEventOps(),
-				lifecycle2->GetController()->GetObjectEventOps(),
-				objectEventOps1,
-				objectEventOps2
-				);
+			Ptr<IRpcObjectEventOps>* opsPtr = nullptr;
+			if (lifecycle1 && lifecycle1->GetClientId() == selfClientId) opsPtr = &objectEventOps1;
+			if (lifecycle2 && lifecycle2->GetClientId() == selfClientId) opsPtr = &objectEventOps2;
+			CHECK_ERROR(opsPtr, ERROR_MESSAGE_PREFIX L"Unknown client id.");
+			if (!*opsPtr)
+			{
+				*opsPtr = Ptr(new RpcJsonObjectEventOpsMock(this, ops));
+			}
+			return opsPtr->Obj();
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 		IRpcListOps* RpcDualJsonDispatcherMock::SendToClient_ListOps(vint targetClientId)

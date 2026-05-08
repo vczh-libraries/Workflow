@@ -39,7 +39,14 @@ namespace
 	class StubObjectEventOps : public Object, public IRpcObjectEventOps
 	{
 	public:
-		void InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)override { (void)ref; (void)eventId; (void)arguments; CHECK_FAIL(L"Not Supported!"); }
+		RpcEventExceptionMap InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)override
+		{
+			(void)ref;
+			(void)eventId;
+			(void)arguments;
+			CHECK_FAIL(L"Not Supported!");
+			return CreateRpcEventExceptionMap();
+		}
 	};
 
 	struct RpcTestContext

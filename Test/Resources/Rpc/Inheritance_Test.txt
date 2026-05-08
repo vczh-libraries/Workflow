@@ -48,7 +48,7 @@ func serviceMain(lc : IRpcLifecycle*) : void
 
     override func CreateDerived() : IDerived^
     {
-      return new IDerived^
+      var derived = new IDerived^
       {
         var value : string = "";
 
@@ -72,7 +72,18 @@ func serviceMain(lc : IRpcLifecycle*) : void
           value = "Derived";
           ValueChanged();
         }
+
+        override func GuardCrashAtClient() : string
+        {
+          try { CrashAtClient(); } catch (ex) { return ex.Message; }
+          return "";
+        }
       };
+      attach(derived.CrashAtServer, func() : void
+      {
+        raise "CrashedAtServer";
+      });
+      return derived;
     }
   };
   lc.RegisterService("RpcInheritance::IService", serviceObj);
@@ -98,6 +109,12 @@ func clientMain(lc : IRpcLifecycle*) : string
   s = $"$(s)[$(derived.Value)]";
   try { derived.SetOneValue(); } catch (ex) { s = $"$(s)[$(ex.Message)]"; }
   try { derived.SetTwoValue(); } catch (ex) { s = $"$(s)[$(ex.Message)]"; }
+  attach(derived.CrashAtClient, func() : void
+  {
+    raise "CrashedAtClient";
+  });
+  try { derived.CrashAtServer(); } catch (ex) { s = $"$(s)[$(ex.Message)]"; }
+  s = $"$(s)[$(derived.GuardCrashAtClient())]";
 
   return s;
 }

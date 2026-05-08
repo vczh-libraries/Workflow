@@ -52,6 +52,7 @@ namespace vl
 				Ptr<WfConstructorArgument> CreateConstructorArgument(Ptr<WfExpression> key, Ptr<WfExpression> value);
 				Ptr<WfConstructorExpression> CreateConstructor();
 				Ptr<WfExpression> CreateRpcExceptionExpression(Ptr<WfExpression> message);
+				Ptr<WfType> CreateRpcEventExceptionMapType();
 				Ptr<WfExpression> CreateNewClass(Ptr<WfType> type);
 				Ptr<WfExpression> CreateNewInterface(Ptr<WfType> type);
 				Ptr<WfStatement> CreateExpressionStatement(Ptr<WfExpression> expression);
@@ -68,6 +69,8 @@ namespace vl
 				Ptr<WfBlockStatement> CreateBlock();
 				void AddStatement(Ptr<WfBlockStatement> block, Ptr<WfStatement> statement);
 				void AddRpcExceptionCheck(Ptr<WfBlockStatement> block, Ptr<WfExpression> value);
+				void AddRpcEventExceptionMapSet(Ptr<WfBlockStatement> block, const WString& mapName, Ptr<WfExpression> clientId, Ptr<WfExpression> message);
+				void AddRpcEventExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value);
 				Ptr<WfFunctionArgument> CreateFunctionArgument(const WString& name, Ptr<WfType> type);
 				Ptr<WfFunctionDeclaration> CreateFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind, WfFunctionAnonymity anonymity = WfFunctionAnonymity::Named);
 				void AddSwitchCase(Ptr<WfSwitchStatement> switchStat, Ptr<WfExpression> expression, Ptr<WfStatement> statement);
@@ -1348,15 +1351,21 @@ namespace vl
 					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
 
 					{
-						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
+						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreateRpcEventExceptionMapType(), WfFunctionKind::Override);
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"eventId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
 						auto block = invokeEvent->statement.Cast<WfBlockStatement>();
+						AddStatement(block, CreateVariableStatement(L"rpcEventExceptions", CreateRpcEventExceptionMapType(), CreateConstructor()));
 						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(true))));
 						auto finallyBlock = CreateBlock();
 						AddStatement(finallyBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(false))));
-						AddStatement(block, CreateTryFinally(BuildDispatchChainJson(manager, interfaces, true), finallyBlock));
+						auto catchBlock = CreateBlock();
+						AddRpcEventExceptionMapSet(catchBlock, L"rpcEventExceptions", CreateMember(CreateReference(L"_lc"), L"ClientId"), CreateMember(CreateReference(L"ex"), L"Message"));
+						AddStatement(block, CreateTryFinally(CreateTryCatch(BuildDispatchChainJson(manager, interfaces, true), L"ex", catchBlock), finallyBlock));
+						AddStatement(block, CreateReturn(CreateCast(CreateRpcEventExceptionMapType(), CreateCall(
+							CreateReference(L"rpcjson_Deserialize"),
+							CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"rpcEventExceptions"))))));
 						newOps->declarations.Add(invokeEvent);
 					}
 
@@ -1451,7 +1460,9 @@ namespace vl
 
 					vint tempIndex = 0;
 					AddRpcOpsArgumentsArrayJson(manager, block, eventModel.params, tempIndex);
-					AddStatement(block, CreateExpressionStatement(CreateRpcOpsObjectEventInvoke(eventModel)));
+					AddRpcEventExceptionRaise(block, CreateCast(CreateRpcEventExceptionMapType(), CreateCall(
+						CreateReference(L"rpcjson_Deserialize"),
+						CreateCall(CreateReference(L"rpcjson_Serialize"), CreateRpcOpsObjectEventInvoke(eventModel)))));
 					return functionDecl;
 				}
 

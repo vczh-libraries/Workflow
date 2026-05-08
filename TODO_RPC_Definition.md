@@ -231,6 +231,8 @@ Events are broadcast from the client that observed or raised the event. The broa
 
 This rule applies whether the event is raised from a local object or from a wrapper. If a wrapper raises an event, the owner client is still just another client in the broadcast target set unless it is the caller client.
 
+Object event broadcasts return `system::RpcException[int]`, keyed by the lifecycle client id that caught an event handler exception. A broadcast should attempt every target lifecycle even when earlier targets report exceptions, then aggregate all returned maps. The lifecycle that triggered the event receives the aggregate map internally; generated send-side code raises a normal Workflow exception message when the aggregate is non-empty and does not expose client ids to script.
+
 In the dual-client test implementation, broadcasting can be implemented by returning event ops from the lifecycle whose client id is not `selfClientId`.
 
 ### Event Suppression
@@ -254,6 +256,7 @@ When `IRpcObjectEventOps::InvokeEvent(ref, eventId, arguments)` receives a remot
 
 - Call `lc.Controller.SetEventSuppressedFlag(ref, eventId, true)`.
 - Unbox arguments and raise the local event.
+- Catch exceptions into a returned `system::RpcException[int]` map keyed by `lc.ClientId`.
 - Call `lc.Controller.SetEventSuppressedFlag(ref, eventId, false)` in a `finally` block.
 
 Generated `rpclistener_*` handlers should check `lc.Controller.GetEventSuppressedFlag(ref, eventId)` before boxing arguments. If the flag is set, the handler returns immediately. Otherwise it boxes arguments and broadcasts through `IRpcDispatcher`.

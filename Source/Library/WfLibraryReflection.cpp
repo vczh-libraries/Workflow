@@ -80,6 +80,20 @@ WfLoadLibraryTypes
 
 #define _ ,
 
+			template<typename TClass, typename T>
+			class CustomMethodInfoImplWithReturn {};
+
+			template<typename TClass, typename R, typename ...TArgs>
+			class CustomMethodInfoImplWithReturn<TClass, R(TArgs...)> : public CustomMethodInfoImpl<TClass, R(TArgs...)>
+			{
+			public:
+				CustomMethodInfoImplWithReturn(const wchar_t* parameterNames[], R(__thiscall TClass::* _method)(TArgs...), const wchar_t* _invokeTemplate, const wchar_t* _closureTemplate, Ptr<ITypeInfo> _returnInfo)
+					: CustomMethodInfoImpl<TClass, R(TArgs...)>(parameterNames, _method, _invokeTemplate, _closureTemplate)
+				{
+					this->returnInfo = _returnInfo;
+				}
+			};
+
 			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_cpp_File)
 				STRUCT_MEMBER(argument)
 			END_STRUCT_MEMBER(vl::__vwsn::att_cpp_File)
@@ -181,7 +195,20 @@ WfLoadLibraryTypes
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectOps)
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectEventOps)
-				CLASS_MEMBER_METHOD(InvokeEvent, { L"ref" _ L"eventId" _ L"arguments" })
+				{
+					using MethodType = decltype(&ClassType::InvokeEvent);
+					const wchar_t* parameterNames[] = { L"ref" _ L"eventId" _ L"arguments" };
+					auto methodInfo = Ptr(new CustomMethodInfoImplWithReturn<ClassType, vl::function_lambda::LambdaRetriveType<MethodType>::FunctionType>(
+						parameterNames,
+						(MethodType)&ClassType::InvokeEvent,
+						nullptr,
+						nullptr,
+						TypeInfoRetriver<collections::Dictionary<vint, vl::rpc_controller::RpcException>>::CreateTypeInfo()
+						));
+					AddMethod(L"InvokeEvent", methodInfo);
+					MethodPointerBinaryDataRetriver<MethodType> binaryDataRetriver(&ClassType::InvokeEvent);
+					MethodPointerBinaryDataRecorder<ClassType, TDFlags>::RecordMethod(binaryDataRetriver.GetBinaryData(), this, methodInfo.Obj());
+				}
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectEventOps)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcOperations)

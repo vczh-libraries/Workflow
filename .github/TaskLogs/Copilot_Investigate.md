@@ -11,94 +11,144 @@
 
 ## Task 1
 
-Update the current sample `Rpc/Inheritance`, the `IDerived` implementation of `SetOneValue` and `SetTwoValue`, raise exceptions "DoNotSetOneValue" and "DoNotSetTwoValue".
-In the `clientMain` function, just before returning `s`, add these code:
+Update the current sample `Rpc/Inheritance`, add following events to `IOne` and `ITwo`, and add `GuardCrashAtClient` to `IDerived`:
 ```Workflow
-try { derived.SetOneValue() } catch (ex) { s = $"$(s)[$(ex)]"; }
-try { derived.SetTwoValue() } catch (ex) { s = $"$(s)[$(ex)]"; }
-```
-
-And add additional postfix `[DoNotSetOneValue][DoNotSetTwoValue]` to `IndexRpc.txt`.
-
-In order to make this work, you will have to declare a reflectable struct right below `RpcObjectReference`:
-```C++
-struct RpcException
+interface IOne
 {
-  WString message;
+  event CrashAtServer();
+}
+
+interface ITwo
+{
+  event CrashAtClient();
+}
+
+interface IDerived : IOne, ITwo
+{
+  func GuardCrashAtClient() : string;
 }
 ```
 
-It should also be JSON serialized just like `RpcException`. Following thing will be affected:
-- In `TODO_RPC_Definition.md`, you have to add that `RpcException` and `RpcObjectReference` could not be in any function return values, or function/event arguments.
-  - Implement it.
-  - Make three errors, one for return value, two for function/event arguments.
-  - Error code begins with H, continue the H series numbers.
-  - You will need to add enough AnalyzerError for it.
-- In `TODO_RPC_Json.md` you have to mention that `RpcException` is serialized just like `RpcObjectReference` in the standard way, and fix the `## Expected format of generated .d.ts files` section.
-  - Implement it.
-- In `IRpcObjectOps::InvokeMethod` which calls the actual method, you need to try-catch it, and when exception happens, return `RpcException`. Because `RpcException` will never be the return type, it is safe without ambiguity.
-- During serialization, handle it properly.
-- In a wrapper calling `IRpcObjectOps::InvokeMethod`, if the return value is `RpcException`, it raises an exception with that message, and `EndInvokeMethod` don't need to call.
+In `CreateDerived`, the implementation will attach a handler to `CrashAtServer` and raise `"CrashedAtServer"`.
+In `clientMain`, attach a handler to `CrashAtClient` and raise `"CrashedAtClient"`.
 
-At the end, since new JSON protocols are added, you need to go to `Test/TypeScript`, run `prepare.ps1` followed by `npm run build`.
-And make sure these documents are updated:
-- `TODO_RPC_Definition.md` mentioning the new error.
-- `TODO_RPC_Json.md` mentioning additional JSON serialization thing.
-- `TODO_RPC_GeneratedWrappers.md` if necessary.
+Now we have to call them to test the exception. `clientMain` calls them like this:
+```Workflow
+try { derived.CrashAtServer(); } catch (ex) { s = $"$(s)[$(ex)]"; }
+s = $"$(s)[$(derived.GuardCrashAtClient())]";
+```
+
+`GuardCrashAtClient` calls the event and returns the exception message:
+```Workflow
+override func GuardCrashAtClient() : string
+{
+  try { CrashAtClient(); } catch (ex) { return ex; }
+  return "";
+}
+```
+
+New calls will be added right before returning `s`, therefore add additional postfix `[CrashedAtServer][CrashedAtClient]` to `IndexRpc.txt`.
+
+----------------------------
+
+In order to make this work, update `IRpcObjectEventOps::InvokeEvent` to return `system::RpcException[int]` instead of `void`.
+`RpcException` already exists. The key of the returned dictionary is the client id of the lifecycle whose event handler raised an exception. The value is the `RpcException` containing that exception message.
+
+The expected behavior is:
+- An event broadcast must attempt to deliver the event to every lifecycle that should receive it.
+- If only part of the lifecycles raise exceptions while handling the event, the result dictionary contains only those lifecycles.
+- If no lifecycle raises an exception, the result dictionary is empty.
+- If multiple lifecycles raise exceptions, the lifecycle that triggered the event receives all of them together, keyed by client id.
+- Exceptions from one lifecycle must not prevent other lifecycles from receiving the same event.
+
+Following things will be affected:
+- In `IRpcObjectEventOps::InvokeEvent`, which calls the actual event, you need to try-catch it, and when exception happens, return a dictionary containing one item: `_lc.ClientId` to `RpcException`.
+  - Keep the event suppression flag set before raising the local event.
+  - Keep clearing the event suppression flag in `finally`, even when an exception is caught and converted to the dictionary.
+  - Unknown event ids should still behave consistently with the new return value path.
+- In a generated local event listener, after calling `IRpcDispatcher::BroadcastFromClient_ObjectEventOps(...)->InvokeEvent(...)`, check the returned `RpcException[int]`.
+  - If the dictionary is empty, finish normally.
+  - If the dictionary is not empty, raise an exception on the lifecycle that triggered the event.
+  - The returned dictionary is an internal transport value. It must not be exposed to Workflow script catch variables; `catch (ex)` still receives a string exception message.
+- In the dispatcher or broadcast object-event ops implementation, aggregate all dictionaries returned from target lifecycles.
+  - Do not stop at the first returned exception.
+  - Preserve the client id keys from every target lifecycle.
+  - This should work when only one lifecycle raises and when multiple lifecycles raise.
+- During JSON serialization, reuse the existing support for serializing `RpcException[int]`.
+  - The dictionary key is the lifecycle client id.
+  - JSON event receiving should deserialize arguments before raising the local event, catch exceptions into the returned dictionary, and serialize the dictionary back to the trigger lifecycle.
+  - JSON event sending should deserialize the returned dictionary before deciding whether to raise an exception.
+- Update generated wrappers and reflection declarations to use the new return type of `IRpcObjectEventOps::InvokeEvent` everywhere.
+- Update mocks and tests that implement or wrap `IRpcObjectEventOps`, including JSON mocks, so they aggregate and forward event exceptions instead of dropping them.
+
+At the end, make sure these documents are updated:
+- `TODO_RPC_GeneratedWrappers.md` mentioning how generated object event ops return `RpcException[int]` and how generated event senders raise exceptions for non-empty dictionaries without exposing client ids to Workflow script.
+- `TODO_RPC_Definition.md` if the definition document needs to mention the new event exception behavior.
+
+`TODO_RPC_Json.md` does not need an update for this task, because the exception map uses the existing JSON serialization support.
 
 # UPDATES
 
 # TEST [CONFIRMED]
 
-Update the existing `Rpc\Inheritance` sample so the derived wrapper calls inherited methods that intentionally raise service-side exceptions. The expected `IndexRpc.txt` result should become `[][One][][Two][][Derived][DoNotSetOneValue][DoNotSetTwoValue]`, proving exceptions raised by the callee cross the RPC wrapper boundary and surface in `clientMain`.
+Update the existing `Rpc\Inheritance` sample so inherited RPC events can throw on both service and client lifecycles:
+- `CrashAtServer` is handled in `CreateDerived` and raises `CrashedAtServer`.
+- `CrashAtClient` is handled in `clientMain` and raises `CrashedAtClient`.
+- `clientMain` catches the server-side event exception directly from `derived.CrashAtServer()`.
+- `GuardCrashAtClient` catches the client-side event exception raised while the service triggers `CrashAtClient()`.
 
-Add AnalyzerError samples for forbidden RPC internal transport types:
-- method return values using `system::RpcObjectReference` or `system::RpcException` should report the return-value H-series error;
-- method arguments using those types should report the function-argument H-series error;
-- event arguments using those types should report the event-argument H-series error.
+The expected `IndexRpc.txt` result should become `[][One][][Two][][Derived][DoNotSetOneValue][DoNotSetTwoValue][CrashedAtServer][CrashedAtClient]`, proving generated event senders convert a non-empty internal `system::RpcException[int]` map into a normal Workflow string exception message without exposing client ids.
 
 Success criteria:
-- `CompilerTest_LoadAndCompile` accepts the updated `Rpc\Inheritance` sample after implementation and rejects the new AnalyzerError samples with the expected H-series prefixes.
+- Event broadcasts deliver to all target lifecycles even when one or more handlers throw, aggregating returned exception maps by lifecycle client id.
+- `CompilerTest_LoadAndCompile` accepts the updated `Rpc\Inheritance` sample and regenerates RPC wrappers with `IRpcObjectEventOps::InvokeEvent` returning `system::RpcException[int]`.
 - Runtime and generated C++ RPC execution return the updated inheritance postfix.
-- JSON RPC wrapper generation includes `system::RpcException` alongside `system::RpcObjectReference`, and `Test\TypeScript\prepare.ps1` followed by `npm run build` passes.
+- Existing JSON RPC tests/mocks continue to compile and pass, using existing JSON support for `system::RpcException[int]`.
 - Required unit test projects pass according to `Project.md` and `.github\Rules\verify-and-commit.md`.
 
 # PROPOSALS
 
-- No.1 Add `RpcException` as an internal RPC transport result and reject it from user RPC signatures [CONFIRMED]
+- No.1 Return and propagate object event exception maps [CONFIRMED]
 
-## No.1 Add `RpcException` as an internal RPC transport result and reject it from user RPC signatures
+## No.1 Return and propagate object event exception maps
 
 ### CODE CHANGE
 
-Implemented `system::RpcException` as a reflectable RPC-internal transport struct next to `RpcObjectReference`, including library reflection registration, JSON serialization support, and generated TypeScript declaration output.
+Updated the RPC object-event transport so `IRpcObjectEventOps::InvokeEvent` returns the internal exception map `system::RpcException[int]` instead of `void`.
 
-Updated RPC validation so `RpcObjectReference` and `RpcException` are rejected anywhere they would conflict with transport semantics:
-- H10 reports reserved transport types in RPC return values and RPC property values.
-- H11 reports reserved transport types in RPC method arguments.
-- H12 reports reserved transport types in RPC event arguments.
+Implemented exception-map construction and merging in the RPC library layer, updated reflection declarations and C++ proxy glue for the new return value, and adjusted generated normal and JSON RPC wrappers to:
+- set and clear event suppression around local event invocation using `try`/`finally`;
+- catch local event handler exceptions and return `{ _lc.ClientId : RpcException { message = ex.Message } }`;
+- aggregate all returned exception maps during event broadcast without stopping at the first failing lifecycle;
+- raise a normal Workflow string exception at the triggering lifecycle when the aggregated map is non-empty, without exposing lifecycle client ids to script `catch (ex)` variables.
 
-Updated normal and JSON RPC wrapper generation:
-- service-side `IRpcObjectOps::InvokeMethod` and JSON `InvokeMethod` wrap actual method calls in `try/catch`;
-- caught exceptions are returned as `RpcException { message = ex.Message }`;
-- client-side generated wrappers detect the returned `RpcException`, raise its message locally, and therefore skip `EndInvokeMethod` naturally on exception paths.
+Updated JSON RPC object-event receiving and sending to serialize and deserialize the returned exception map with the existing `RpcException[int]` JSON support.
 
-Updated `Rpc/Inheritance` so the derived implementation raises `DoNotSetOneValue` and `DoNotSetTwoValue`, and the client appends the caught exception messages before returning. The catch blocks use `ex.Message` because Workflow catch variables are `system::Exception^`.
+Updated RPC mocks used by unit tests so object-event broadcasts aggregate exception maps and JSON mock dispatching wraps the broadcast ops rather than assuming a lifecycle-local object-event ops instance.
 
-Updated documentation in `TODO_RPC_Definition.md`, `TODO_RPC_Json.md`, and `TODO_RPC_GeneratedWrappers.md`, including the reserved-type errors and `RpcException` JSON/DTS behavior.
+Updated `Rpc/Inheritance`:
+- `IOne` declares `CrashAtServer`;
+- `ITwo` declares `CrashAtClient`;
+- `IDerived` declares `GuardCrashAtClient`;
+- `CreateDerived` raises `CrashedAtServer` from the service-side event handler;
+- `clientMain` raises `CrashedAtClient` from the client-side event handler and appends both caught messages.
 
-Added AnalyzerError samples for both `RpcObjectReference` and `RpcException` in return, method argument, and event argument positions, and regenerated the RPC/text/C++ outputs.
+Updated `TODO_RPC_GeneratedWrappers.md` and `TODO_RPC_Definition.md` with the new object-event exception behavior. `TODO_RPC_Json.md` was intentionally unchanged because the feature reuses existing exception-map JSON serialization.
+
+Regenerated metadata, Workflow text outputs, and C++ RPC generated outputs.
 
 ### CONFIRMED
 
-The proposal is confirmed. The updated analyzer rejects reserved RPC transport structs with the new H10, H11, and H12 errors, and the updated RPC inheritance sample proves service-side exceptions cross generated wrappers and reappear as local Workflow exceptions.
+The proposal is confirmed. The updated `Rpc/Inheritance` sample returns `[][One][][Two][][Derived][DoNotSetOneValue][DoNotSetTwoValue][CrashedAtServer][CrashedAtClient]`, proving both service-side and client-side event handler exceptions cross the object-event broadcast path and surface as ordinary Workflow string exceptions.
 
 Verification passed:
 - Debug build: Win32 and x64.
-- `LibraryTest`: Win32 and x64, 14/14.
+- `CppTest`: Win32 and x64, 224/224.
+- `CppTest_Metaonly`: Win32 and x64, 224/224.
+- `CppTest_Reflection`: Win32 and x64, 224/224.
+- `RuntimeTest`: Win32 and x64, 258/258.
+- `CompilerTest_LoadAndCompile`: Win32 and x64, 706/706 for both generated target passes.
 - `CompilerTest_GenerateMetadata`: Win32 and x64, 2/2.
-- `CompilerTest_LoadAndCompile`: x64.
-- `RuntimeTest`: Win32 and x64, 258/258. `Rpc/Inheritance` actual output matched `[][One][][Two][][Derived][DoNotSetOneValue][DoNotSetTwoValue]`.
-- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`: Win32 and x64, each 224/224.
+- `LibraryTest`: Win32 and x64, 14/14.
 - `Test\TypeScript\prepare.ps1`.
-- `npm run build` in `Test\TypeScript`.
+- `npm ci` in `Test\TypeScript`, then `npm run build`.

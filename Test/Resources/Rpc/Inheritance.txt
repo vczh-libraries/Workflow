@@ -13,12 +13,14 @@ namespace RpcInheritance
   @rpc:Interface
   interface IOne : IValue
   {
+    event CrashAtServer();
     func SetOneValue() : void;
   }
 
   @rpc:Interface
   interface ITwo : IValue
   {
+    event CrashAtClient();
     func SetTwoValue() : void;
   }
 
@@ -26,6 +28,7 @@ namespace RpcInheritance
   interface IDerived : IOne, ITwo
   {
     func SetDerivedValue() : void;
+    func GuardCrashAtClient() : string;
   }
 
   @rpc:Interface

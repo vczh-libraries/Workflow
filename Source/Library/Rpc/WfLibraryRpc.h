@@ -37,6 +37,24 @@ namespace vl
 			auto operator<=>(const RpcException&) const = default;
 		};
 
+		using RpcEventExceptionMap = Ptr<reflection::description::IValueDictionary>;
+
+		inline RpcEventExceptionMap CreateRpcEventExceptionMap()
+		{
+			return reflection::description::IValueDictionary::Create();
+		}
+
+		inline void MergeRpcEventExceptionMap(RpcEventExceptionMap target, RpcEventExceptionMap source)
+		{
+			if (!source) return;
+			auto keys = source->GetKeys();
+			for (vint i = 0; i < keys->GetCount(); i++)
+			{
+				auto key = keys->Get(i);
+				target->Set(key, source->Get(key));
+			}
+		}
+
 		class RpcByvalReturnValue
 			: public Object
 			, public reflection::Description<RpcByvalReturnValue>
@@ -111,7 +129,7 @@ namespace vl
 			, public reflection::Description<IRpcObjectEventOps>
 		{
 		public:
-			virtual void											InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments) = 0;
+			virtual RpcEventExceptionMap							InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments) = 0;
 		};
 
 /***********************************************************************

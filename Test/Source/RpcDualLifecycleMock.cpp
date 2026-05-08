@@ -7,6 +7,31 @@ namespace vl
 		using namespace rpc_controller;
 		using namespace collections;
 
+		namespace
+		{
+			class RpcBroadcastObjectEventOpsMock : public Object, public IRpcObjectEventOps
+			{
+			private:
+				List<IRpcObjectEventOps*> targets;
+
+			public:
+				void AddTarget(IRpcObjectEventOps* target)
+				{
+					targets.Add(target);
+				}
+
+				RpcEventExceptionMap InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments)override
+				{
+					auto exceptions = CreateRpcEventExceptionMap();
+					for (auto target : targets)
+					{
+						MergeRpcEventExceptionMap(exceptions, target->InvokeEvent(ref, eventId, arguments));
+					}
+					return exceptions;
+				}
+			};
+		}
+
 /***********************************************************************
 * RpcDualLifecycleMock
 ***********************************************************************/
@@ -65,6 +90,8 @@ namespace vl
 		{
 			lifecycle2->Finalize();
 			lifecycle1->Finalize();
+			objectEventBroadcastOps2 = nullptr;
+			objectEventBroadcastOps1 = nullptr;
 			services.Clear();
 		}
 
@@ -98,7 +125,19 @@ namespace vl
 
 		IRpcObjectEventOps* RpcDualDispatcherMock::BroadcastFromClient_ObjectEventOps(vint selfClientId)
 		{
-			return GetOtherLifecycle(selfClientId)->GetController()->GetObjectEventOps();
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualDispatcherMock::BroadcastFromClient_ObjectEventOps(vint)#"
+			Ptr<IRpcObjectEventOps>* broadcastOps = nullptr;
+			if (lifecycle1 && lifecycle1->GetClientId() == selfClientId) broadcastOps = &objectEventBroadcastOps1;
+			if (lifecycle2 && lifecycle2->GetClientId() == selfClientId) broadcastOps = &objectEventBroadcastOps2;
+			CHECK_ERROR(broadcastOps, ERROR_MESSAGE_PREFIX L"Unknown client id.");
+			if (!*broadcastOps)
+			{
+				auto ops = Ptr(new RpcBroadcastObjectEventOpsMock);
+				ops->AddTarget(GetOtherLifecycle(selfClientId)->GetController()->GetObjectEventOps());
+				*broadcastOps = ops;
+			}
+			return broadcastOps->Obj();
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 		IRpcListOps* RpcDualDispatcherMock::SendToClient_ListOps(vint targetClientId)
