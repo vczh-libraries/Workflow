@@ -1,0 +1,224 @@
+﻿module RpcMetadata;
+
+var rpctype_RpcOblistEventException__IServer : int = 0;
+
+var rpcmethod_RpcOblistEventException__IServer_GetOblist : int = 1;
+
+func rpc_GetIds() : (int[string])
+{
+    var result : int[string] = {};
+    result.Set("RpcOblistEventException::IServer", 0);
+    result.Set("RpcOblistEventException::IServer.GetOblist", 1);
+    return result;
+}
+
+func rpcwrapper_IsInterfaceTypeId(typeId : int) : (bool)
+{
+    if (((typeId >= -7) and (typeId <= -1)))
+    return true;
+    switch (typeId)
+    {
+        case rpctype_RpcOblistEventException__IServer:
+        return true;
+        default:
+        return false;
+    }
+}
+
+func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
+{
+    switch (typeId)
+    {
+        case rpctype_RpcOblistEventException__IServer:
+        return true;
+        default:
+        return false;
+    }
+}
+
+interface rpcops_IOps_Rpc_Oblist_EventException
+{
+    func InvokeMethod_RpcOblistEventException__IServer_GetOblist(ref : system::RpcObjectReference) : (observe ::system::Int64[]);
+}
+
+func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+{
+    return new (system::IRpcObjectOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _slot : int = 0;
+
+        var _byvalReturnValues : object[int] = {};
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            try
+            switch (methodId)
+            {
+                case rpcmethod_RpcOblistEventException__IServer_GetOblist:
+                {
+                    var target = (cast (RpcOblistEventException::IServer^) _lc.RefToPtr(ref));
+                    return system::IRpcLifecycle::RpcBoxByref(target.GetOblist(), _lc);
+                }
+                default:
+                raise "Unknown RPC method id.";
+            }
+            catch (ex)
+            {
+                return {message : ex.Message;} of (system::RpcException);
+            }
+        }
+
+        override func EndInvokeMethod(slot : int) : (void)
+        {
+            _byvalReturnValues.Remove(slot);
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _lc.LocalObjectHold(ref, remoteClientId);
+            }
+            else
+            {
+                _lc.LocalObjectUnhold(ref, remoteClientId);
+            }
+        }
+
+        override func RegisterService(typeId : int, service : system::Interface^) : (void)
+        {
+            {
+                if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
+                {
+                    _lc.Dispatcher.RegisterService(typeId, _lc.PtrToRef(service));
+                }
+                else
+                {
+                    if (rpcwrapper_IsInterfaceTypeId(typeId))
+                    {
+                        raise "RPC service type id is not an @rpc:Ctor interface.";
+                    }
+                    else
+                    {
+                        raise "RPC service type id does not exist.";
+                    }
+                }
+            }
+        }
+    };
+}
+
+func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+{
+    return new (system::IRpcObjectEventOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (system::RpcException[int])
+        {
+            var rpcEventExceptions : system::RpcException[int] = {};
+            _lc.Controller.SetEventSuppressedFlag(ref, eventId, true);
+            try
+            try
+            switch (eventId)
+            {
+                default:
+                raise "Unknown RPC event id.";
+            }
+            catch (ex)
+            {
+                rpcEventExceptions.Set(_lc.ClientId, {message : ex.Message;} of (system::RpcException));
+            }
+            finally
+            {
+                _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
+            }
+            if ((rpcEventExceptions.Count > 0))
+            {
+                return rpcEventExceptions;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    };
+}
+
+func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Oblist_EventException^)
+{
+    return new (rpcops_IOps_Rpc_Oblist_EventException^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcOblistEventException__IServer_GetOblist(ref : system::RpcObjectReference) : (observe ::system::Int64[])
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOblistEventException__IServer_GetOblist, arguments);
+            var rpcException = (invokeResult as (system::RpcException?));
+            if (rpcException is not null)
+            {
+                raise (cast (system::RpcException) rpcException).message;
+            }
+            return (cast (observe ::system::Int64[]) system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) invokeResult), _lc));
+        }
+    };
+}
+
+namespace RpcOblistEventException
+{
+    interface IRpcWrapper_IServer : RpcOblistEventException::IServer, system::IRpcWrapperBase
+    {
+    }
+}
+
+func rpcwrapper_RpcOblistEventException__IServer(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_Oblist_EventException^) : (RpcOblistEventException::IRpcWrapper_IServer^)
+{
+    var proxy = new (RpcOblistEventException::IRpcWrapper_IServer^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        var _ops : rpcops_IOps_Rpc_Oblist_EventException^ = ops;
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+            (_ops = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
+            }
+        }
+
+        override func GetOblist() : (observe ::system::Int64[])
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            return _ops.InvokeMethod_RpcOblistEventException__IServer_GetOblist(_ref);
+        }
+    };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
+    return proxy;
+}
+
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*, ops : rpcops_IOps_Rpc_Oblist_EventException^) : (system::IRpcWrapperBase^)
+{
+    switch (ref.typeId)
+    {
+        case rpctype_RpcOblistEventException__IServer:
+        {
+            return rpcwrapper_RpcOblistEventException__IServer(lc, ref, ops);
+        }
+        default:
+        raise "Unknown RPC type id for wrapper creation.";
+    }
+}
