@@ -17,8 +17,11 @@
 
 - Review JSON related constructions.
 - Review all 4 RPC compiler cpp files to ensure visitors are used proactively.
-- Continue to add more test cases until all features are covered.
-  - Remote Exception Handling in event handlers, `InvokeEvent` might need to return a map.
+- JSON schema for rpc interfaces.
+  - JSON async dispatcher with JSON channel
+  - logging from JSON channel
+  - Triple threading demo only for metaonly. Meanwhile no reflection logs JSON values.
+  - TeatCasesRpc.h test macros and include different header files.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
 - Document RPC
   - use `TODO_RPC_(Definition|Json|GeneratedWrappers).md`
