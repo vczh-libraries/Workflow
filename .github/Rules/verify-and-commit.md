@@ -17,3 +17,11 @@ If `CompilerTest_LoadAndCompiler` succeeded but following test projects fail:
       - `Test\UnitTest\Generated_*`
   - Otherwise, One commit is good.
 - DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
+
+## RPC Specific
+
+- If `IRpc*Ops` interfaces in `WfLibraryRpc.h` are changed, `Test/TypeScript/Rpc.d.ts` should also be changed according to the document.
+- You are recommended to read them for context:
+  - `TODO_RPC_Definition.md`
+  - `TODO_RPC_Json.md`
+  - `TODO_RPC_GeneratedWrappers.md`

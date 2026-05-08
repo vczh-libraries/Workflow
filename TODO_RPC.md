@@ -15,6 +15,8 @@
 
 ## ToDo
 
+- Exceptions from `InvokeEvent` should be formatted to `id:message; ...`, last semicolon not omitted.
+- Handle `IRpcListOps` and `IRpcListEventOps` exceptions.
 - Review JSON related constructions.
 - Review all 4 RPC compiler cpp files to ensure visitors are used proactively.
 - JSON schema for rpc interfaces.

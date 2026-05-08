@@ -9,6 +9,50 @@ investigate repro
 
 ## Task 1
 
+You are going to create Test/TypeScript/Rpc.d.ts. You must read TODO_RPC_(Json|Definition).md with source codes in Source/Library/Rpc for more understanding of the interface and schema
+
+Rpc.d.ts basically contains a JSON schema that is supposed to represent IRpcDispatcher. For example, we can call IRpcDispatcher::BroadcastFromClient_ObjectEventOps::InvokeEvent`, and in the document we knows it either returns null or RpcException[int]. and such dictionary will be serialized to `null | [number, system_RpcException][]`. So the schema of the type looks like this
+
+```TypeScript
+export interface IObjectEventOps_InvokeEvent_Request<T>
+{
+  rpcMethod: "IObjectEventOps_InvokeEvent";
+  sourceClientId : number;
+  // SendToClient::* would have an additional targetClientId because this is not broadcasting
+  ref : system_RpcObjectReference;
+  eventId : number;
+  arguments: T[];
+}
+
+export interface IObjectEventOps_InvokeEvent_Response
+{
+  rpcMethod: "IObjectEventOps_InvokeEvent";
+  // a response is sent from the client being requested to the client requesting.
+  // so it is one to one regardless SendToClient::* or BroadcastFromClient::*
+  sourceClientId : number;
+  targetClientId : number;
+  response : null | [number, system_RpcException][]; // for functions returning void, there will be no response
+}
+
+export type Request<T> =
+  | IObjectEventOps_InvokeEvent_Response<T>
+  | ...
+  ;
+
+export type Response =
+  | IObjectEventOps_InvokeEvent_Response
+  | ...
+  ;
+```
+
+Both `Request` and `Response` should contains all methods in all 4 ops interfaces.
+`T` would be `KnownTypeSchema | UnknownTypeSchema`, but since the `Rpc.d.ts` is shared but schemas are generated, so there is no choice but to use generic.
+You will have to determine of `T` will be used in any interface or not, only add `<T>` if yes.
+
+Update `TODO_RPC_Json.md` about `Type/TypeScript/Rpc.d.ts`, and rules of how `.d.ts` connects to C++ interfaces using your own words.
+
+## Task 2
+
 Update the current sample `Rpc/Inheritance`, add following events to `IOne` and `ITwo`, and add `GuardCrashAtClient` to `IDerived`:
 ```Workflow
 interface IOne
