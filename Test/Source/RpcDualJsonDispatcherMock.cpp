@@ -87,9 +87,9 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 				}
 
-				void OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override
+				RpcEventExceptionMap OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override
 				{
-					ops->OnItemChanged(ref, index, oldCount, newCount);
+					return ops->OnItemChanged(ref, index, oldCount, newCount);
 				}
 			};
 

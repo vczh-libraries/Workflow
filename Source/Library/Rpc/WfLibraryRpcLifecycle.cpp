@@ -161,7 +161,7 @@ namespace vl
 					{
 						return;
 					}
-					this->GetDispatcher()->BroadcastFromClient_ListEventOps(this->GetClientId())->OnItemChanged(ref, index, oldCount, newCount);
+					ReadEventException(this->GetDispatcher()->BroadcastFromClient_ListEventOps(this->GetClientId())->OnItemChanged(ref, index, oldCount, newCount));
 				});
 				props->eventHandler = handler;
 			}

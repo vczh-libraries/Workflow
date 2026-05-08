@@ -211,7 +211,7 @@ namespace vl
 		public:
 			RpcCalleeListEventBridge(IRpcLifecycle* lc, IRpcSerializer* _serializer);
 
-			void											OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
+			RpcEventExceptionMap							OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
 		};
 	}
 }

@@ -717,16 +717,22 @@ namespace vl
 			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
 		}
 
-		void RpcCalleeListEventBridge::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
+		RpcEventExceptionMap RpcCalleeListEventBridge::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
 		{
 			auto controller = lifecycle->GetController();
+			auto obj = lifecycle->RefToPtr(ref);
+			auto observable = Ptr(obj.Obj()->SafeAggregationCast<IValueObservableList>());
+			CHECK_ERROR(observable, L"RpcCalleeListEventBridge::OnItemChanged cannot find the target observable list.");
 			controller->SetItemChangedSuppressedFlag(ref, true);
+			RpcEventExceptionMap exceptions;
 			try
 			{
-				auto obj = lifecycle->RefToPtr(ref);
-				auto observable = Ptr(obj.Obj()->SafeAggregationCast<IValueObservableList>());
-				CHECK_ERROR(observable, L"RpcCalleeListEventBridge::OnItemChanged cannot find the target observable list.");
 				observable->ItemChanged(index, oldCount, newCount);
+			}
+			catch (const Exception& ex)
+			{
+				exceptions = CreateRpcEventExceptionMap();
+				exceptions->Set(BoxValue(lifecycle->GetClientId()), BoxValue(RpcException{ ex.Message() }));
 			}
 			catch (...)
 			{
@@ -734,6 +740,7 @@ namespace vl
 				throw;
 			}
 			controller->SetItemChangedSuppressedFlag(ref, false);
+			return exceptions;
 		}
 		
 /***********************************************************************

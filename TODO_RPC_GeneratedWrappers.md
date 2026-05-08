@@ -54,6 +54,8 @@ A generated local event listener first checks the lifecycle controller's event s
 
 On the receive side, generated `IRpcObjectEventOps::InvokeEvent` returns `system::RpcException[int]`. It sets the suppression flag, raises the local event, catches any exception into a one-entry map keyed by the receiver lifecycle's client id, and clears the flag in a `finally` block. Unknown event ids use the same return path, so they are reported through the returned map instead of escaping before suppression cleanup.
 
+Predefined observable-list wrappers use the same exception map for `IRpcListEventOps::OnItemChanged`. The receive-side bridge replays the remote list notification under the item-changed suppression flag, catches local handler exceptions into a one-entry map keyed by the receiver lifecycle's client id, and the send-side native list handler calls `IRpcLifecycle::ReadEventException` on the returned map.
+
 Service registration finishes by validating that the type id exists and represents an `@rpc:Ctor` interface. The generated ops convert the service pointer to a reference with `PtrToRef`, then register that reference in the dispatcher. Service lookup finishes through the lifecycle: it asks the dispatcher for the service reference and converts that reference to a local pointer or wrapper.
 
 ## How Generated JSON Serialization Functions Finish Their Work

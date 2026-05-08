@@ -121,7 +121,7 @@ namespace vl
 			, public reflection::Description<IRpcListEventOps>
 		{
 		public:
-			virtual void											OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount) = 0;
+			virtual RpcEventExceptionMap							OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount) = 0;
 		};
 
 		class IRpcObjectEventOps

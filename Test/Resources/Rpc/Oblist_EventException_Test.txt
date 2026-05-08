@@ -1,0 +1,41 @@
+module Rpc;
+using system::*;
+using RpcOblistEventException::*;
+
+func CrashItemChanged(index : int, oldCount : int, newCount : int) : void
+{
+  raise $"$(index),$(oldCount),$(newCount)";
+}
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serverObj = new (IServer^)
+  {
+    var _List : observe int[] = null;
+
+    override func GetOblist() : observe int[]
+    {
+      _List = {};
+      return _List;
+    }
+  };
+  lc.RegisterService("RpcOblistEventException::IServer", serverObj);
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var server = cast (IServer^) lc.RequestService("RpcOblistEventException::IServer");
+  var xs = server.GetOblist();
+  attach(xs.ItemChanged, CrashItemChanged);
+
+  try
+  {
+    xs.Add(0);
+  }
+  catch (ex)
+  {
+    return ex.Message;
+  }
+
+  return "No Exception";
+}

@@ -233,9 +233,9 @@ Interface Implementation Proxy (Implement)
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcObjectOps)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcListEventOps)
-				void OnItemChanged(vl::rpc_controller::RpcObjectReference ref, vl::vint index, vl::vint oldCount, vl::vint newCount)override
+				vl::rpc_controller::RpcEventExceptionMap OnItemChanged(vl::rpc_controller::RpcObjectReference ref, vl::vint index, vl::vint oldCount, vl::vint newCount)override
 				{
-					INVOKE_INTERFACE_PROXY(OnItemChanged, ref, index, oldCount, newCount);
+					INVOKEGET_INTERFACE_PROXY(OnItemChanged, ref, index, oldCount, newCount);
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcListEventOps)
 

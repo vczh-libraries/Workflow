@@ -432,6 +432,7 @@ export interface IListEventOps_OnItemChanged_Response
   rpcMethod: "IListEventOps_OnItemChanged";
   sourceClientId: number;
   targetClientId: number;
+  response: RpcEventExceptionMap;
 }
 
 export interface IObjectEventOps_InvokeEvent_Request<T>

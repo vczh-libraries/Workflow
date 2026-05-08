@@ -231,7 +231,7 @@ Events are broadcast from the client that observed or raised the event. The broa
 
 This rule applies whether the event is raised from a local object or from a wrapper. If a wrapper raises an event, the owner client is still just another client in the broadcast target set unless it is the caller client.
 
-Object event broadcasts return `system::RpcException[int]`, keyed by the lifecycle client id that caught an event handler exception. A broadcast should attempt every target lifecycle even when earlier targets report exceptions, then aggregate all returned maps. The lifecycle that triggered the event receives the aggregate map internally; generated send-side code raises a normal Workflow exception message when the aggregate is non-empty and does not expose client ids to script.
+Event broadcasts return `system::RpcException[int]`, keyed by the lifecycle client id that caught an event handler exception. A broadcast should attempt every target lifecycle even when earlier targets report exceptions, then aggregate all returned maps. The lifecycle that triggered the event receives the aggregate map internally; generated object-event send-side code and predefined container-event send-side code call `system::IRpcLifecycle::ReadEventException`, which raises a normal Workflow exception message when the aggregate is non-empty.
 
 In the dual-client test implementation, broadcasting can be implemented by returning event ops from the lifecycle whose client id is not `selfClientId`.
 
@@ -261,7 +261,7 @@ When `IRpcObjectEventOps::InvokeEvent(ref, eventId, arguments)` receives a remot
 
 Generated `rpclistener_*` handlers should check `lc.Controller.GetEventSuppressedFlag(ref, eventId)` before boxing arguments. If the flag is set, the handler returns immediately. Otherwise it boxes arguments and broadcasts through `IRpcDispatcher`.
 
-List events use the same shape without an event id. When receive-side `OnItemChanged(ref, index, oldCount, newCount)` replays a remote list notification locally, it should set `SetItemChangedSuppressedFlag(ref, true)`, raise the local list notification, and clear the flag in a `finally` block. The locally attached native list event handler should check `GetItemChangedSuppressedFlag(ref)` before broadcasting.
+List events use the same shape without an event id. When receive-side `OnItemChanged(ref, index, oldCount, newCount)` replays a remote list notification locally, it should set `SetItemChangedSuppressedFlag(ref, true)`, raise the local list notification, catch exceptions into a returned `system::RpcException[int]` map keyed by `lc.ClientId`, and clear the flag in a `finally` block. The locally attached native list event handler should check `GetItemChangedSuppressedFlag(ref)` before broadcasting, and should call `system::IRpcLifecycle::ReadEventException` on the returned map.
 
 ## Byval Return Collection Lifecycle
 

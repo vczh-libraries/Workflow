@@ -90,7 +90,7 @@ The declarations map directly to the C++ ops interfaces in `Source/Library/Rpc/W
 
 Request envelopes model how `IRpcDispatcher` chooses an ops object. Calls made through `SendToClient_ListOps` or `SendToClient_ObjectOps` include both `sourceClientId` and `targetClientId`. Calls made through `BroadcastFromClient_ListEventOps` or `BroadcastFromClient_ObjectEventOps` include only `sourceClientId` because the dispatcher expands the broadcast target list. Response envelopes are always one-to-one from the receiving client back to the requesting client, so they always contain both client ids.
 
-The stable internal transport structs are declared in `Rpc.d.ts` itself: `system_RpcObjectReference`, `system_RpcException`, and `system_RpcByvalReturnValue<T>`. Void-returning ops still have response envelopes, but no `response` field. Value-returning ops put the serialized value in `response`. `IRpcObjectEventOps::InvokeEvent` returns `null | [number, system_RpcException][]`, matching the JSON form of `system::RpcException[int]`.
+The stable internal transport structs are declared in `Rpc.d.ts` itself: `system_RpcObjectReference`, `system_RpcException`, and `system_RpcByvalReturnValue<T>`. Void-returning ops still have response envelopes, but no `response` field. Value-returning ops put the serialized value in `response`. `IRpcObjectEventOps::InvokeEvent` and `IRpcListEventOps::OnItemChanged` return `null | [number, system_RpcException][]`, matching the JSON form of `system::RpcException[int]`.
 
 ## Other Strict Rules
 

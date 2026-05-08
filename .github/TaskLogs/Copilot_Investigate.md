@@ -92,3 +92,24 @@ Confirmed by Win32 and x64 builds plus unit tests. Runtime and generated C++ RPC
 - `RuntimeTest` Win32 and x64
 - `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection` Win32 and x64
 - `Test/TypeScript/prepare.ps1`, `npm run build`
+
+- No.3 Propagate oblist event exceptions [CONFIRMED]
+
+## No.3 Propagate oblist event exceptions
+
+### CODE CHANGE
+
+- Changed `IRpcListEventOps::OnItemChanged` to return the shared RPC event exception map.
+- Updated observable-list event send/receive paths to return and read the map through `IRpcLifecycle::ReadEventException`.
+- Added `Rpc/Oblist_EventException`, updated RPC docs and `Rpc.d.ts`, and regenerated metadata/C++ artifacts.
+
+### CONFIRMED
+
+- `CompilerTest_LoadAndCompile` x64
+- `CompilerTest_GenerateMetadata` Win32 and x64
+- `copilotBuild.ps1 -Configuration Debug -Platform x64`
+- `copilotBuild.ps1 -Configuration Debug -Platform Win32`
+- `RuntimeTest` Win32 and x64
+- `LibraryTest` Win32 and x64
+- `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection` Win32 and x64
+- `Test/TypeScript/prepare.ps1`, `npm run build`
