@@ -285,7 +285,14 @@ func rpcops_IRpcObjectEventOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcO
             {
                 _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
             }
-            return (cast (system::RpcException[int]) rpcjson_Deserialize(rpcjson_Serialize(rpcEventExceptions)));
+            if ((rpcEventExceptions.Count > 0))
+            {
+                return (cast (system::RpcException[int]) rpcjson_Deserialize(rpcjson_Serialize(rpcEventExceptions)));
+            }
+            else
+            {
+                return null;
+            }
         }
     };
 }

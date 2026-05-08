@@ -205,7 +205,14 @@ func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjec
             {
                 _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
             }
-            return rpcEventExceptions;
+            if ((rpcEventExceptions.Count > 0))
+            {
+                return rpcEventExceptions;
+            }
+            else
+            {
+                return null;
+            }
         }
     };
 }

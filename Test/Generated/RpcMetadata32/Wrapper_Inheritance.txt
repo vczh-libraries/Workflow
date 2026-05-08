@@ -258,7 +258,14 @@ func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjec
             {
                 _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
             }
-            return rpcEventExceptions;
+            if ((rpcEventExceptions.Count > 0))
+            {
+                return rpcEventExceptions;
+            }
+            else
+            {
+                return null;
+            }
         }
     };
 }
@@ -286,24 +293,7 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Inherita
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            var rpcEventExceptions = _lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IValue_ValueChanged, arguments);
-            if ((rpcEventExceptions.Count > 0))
-            {
-                var rpcEventExceptionMessage : string = "";
-                for (rpcEventExceptionKey in rpcEventExceptions.Keys)
-                {
-                    var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
-                    if ((rpcEventExceptionMessage == ""))
-                    {
-                        (rpcEventExceptionMessage = rpcEventException.message);
-                    }
-                    else
-                    {
-                        (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
-                    }
-                }
-                raise rpcEventExceptionMessage;
-            }
+            system::IRpcLifecycle::ReadEventException(_lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IValue_ValueChanged, arguments));
         }
 
         override func InvokeMethod_RpcInheritance__IOne_SetOneValue(ref : system::RpcObjectReference) : (::system::Void)
@@ -322,24 +312,7 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Inherita
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            var rpcEventExceptions = _lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IOne_CrashAtServer, arguments);
-            if ((rpcEventExceptions.Count > 0))
-            {
-                var rpcEventExceptionMessage : string = "";
-                for (rpcEventExceptionKey in rpcEventExceptions.Keys)
-                {
-                    var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
-                    if ((rpcEventExceptionMessage == ""))
-                    {
-                        (rpcEventExceptionMessage = rpcEventException.message);
-                    }
-                    else
-                    {
-                        (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
-                    }
-                }
-                raise rpcEventExceptionMessage;
-            }
+            system::IRpcLifecycle::ReadEventException(_lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IOne_CrashAtServer, arguments));
         }
 
         override func InvokeMethod_RpcInheritance__ITwo_SetTwoValue(ref : system::RpcObjectReference) : (::system::Void)
@@ -358,24 +331,7 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Inherita
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            var rpcEventExceptions = _lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__ITwo_CrashAtClient, arguments);
-            if ((rpcEventExceptions.Count > 0))
-            {
-                var rpcEventExceptionMessage : string = "";
-                for (rpcEventExceptionKey in rpcEventExceptions.Keys)
-                {
-                    var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
-                    if ((rpcEventExceptionMessage == ""))
-                    {
-                        (rpcEventExceptionMessage = rpcEventException.message);
-                    }
-                    else
-                    {
-                        (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
-                    }
-                }
-                raise rpcEventExceptionMessage;
-            }
+            system::IRpcLifecycle::ReadEventException(_lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__ITwo_CrashAtClient, arguments));
         }
 
         override func InvokeMethod_RpcInheritance__IDerived_GuardCrashAtClient(ref : system::RpcObjectReference) : (::system::String)
@@ -479,24 +435,7 @@ func rpclistener_RpcInheritance__IValue(lc : system::IRpcLifecycle*, ref : syste
         return;
         var arguments : system::Array^ = {};
         arguments.Resize(0);
-        var rpcEventExceptions = lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IValue_ValueChanged, arguments);
-        if ((rpcEventExceptions.Count > 0))
-        {
-            var rpcEventExceptionMessage : string = "";
-            for (rpcEventExceptionKey in rpcEventExceptions.Keys)
-            {
-                var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
-                if ((rpcEventExceptionMessage == ""))
-                {
-                    (rpcEventExceptionMessage = rpcEventException.message);
-                }
-                else
-                {
-                    (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
-                }
-            }
-            raise rpcEventExceptionMessage;
-        }
+        system::IRpcLifecycle::ReadEventException(lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IValue_ValueChanged, arguments));
     });
 }
 
@@ -508,24 +447,7 @@ func rpclistener_RpcInheritance__IOne(lc : system::IRpcLifecycle*, ref : system:
         return;
         var arguments : system::Array^ = {};
         arguments.Resize(0);
-        var rpcEventExceptions = lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IValue_ValueChanged, arguments);
-        if ((rpcEventExceptions.Count > 0))
-        {
-            var rpcEventExceptionMessage : string = "";
-            for (rpcEventExceptionKey in rpcEventExceptions.Keys)
-            {
-                var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
-                if ((rpcEventExceptionMessage == ""))
-                {
-                    (rpcEventExceptionMessage = rpcEventException.message);
-                }
-                else
-                {
-                    (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
-                }
-            }
-            raise rpcEventExceptionMessage;
-        }
+        system::IRpcLifecycle::ReadEventException(lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IValue_ValueChanged, arguments));
     });
     attach(target.CrashAtServer, func () : (void)
     {
@@ -533,24 +455,7 @@ func rpclistener_RpcInheritance__IOne(lc : system::IRpcLifecycle*, ref : system:
         return;
         var arguments : system::Array^ = {};
         arguments.Resize(0);
-        var rpcEventExceptions = lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IOne_CrashAtServer, arguments);
-        if ((rpcEventExceptions.Count > 0))
-        {
-            var rpcEventExceptionMessage : string = "";
-            for (rpcEventExceptionKey in rpcEventExceptions.Keys)
-            {
-                var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
-                if ((rpcEventExceptionMessage == ""))
-                {
-                    (rpcEventExceptionMessage = rpcEventException.message);
-                }
-                else
-                {
-                    (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
-                }
-            }
-            raise rpcEventExceptionMessage;
-        }
+        system::IRpcLifecycle::ReadEventException(lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IOne_CrashAtServer, arguments));
     });
 }
 
@@ -562,24 +467,7 @@ func rpclistener_RpcInheritance__ITwo(lc : system::IRpcLifecycle*, ref : system:
         return;
         var arguments : system::Array^ = {};
         arguments.Resize(0);
-        var rpcEventExceptions = lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IValue_ValueChanged, arguments);
-        if ((rpcEventExceptions.Count > 0))
-        {
-            var rpcEventExceptionMessage : string = "";
-            for (rpcEventExceptionKey in rpcEventExceptions.Keys)
-            {
-                var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
-                if ((rpcEventExceptionMessage == ""))
-                {
-                    (rpcEventExceptionMessage = rpcEventException.message);
-                }
-                else
-                {
-                    (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
-                }
-            }
-            raise rpcEventExceptionMessage;
-        }
+        system::IRpcLifecycle::ReadEventException(lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IValue_ValueChanged, arguments));
     });
     attach(target.CrashAtClient, func () : (void)
     {
@@ -587,24 +475,7 @@ func rpclistener_RpcInheritance__ITwo(lc : system::IRpcLifecycle*, ref : system:
         return;
         var arguments : system::Array^ = {};
         arguments.Resize(0);
-        var rpcEventExceptions = lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__ITwo_CrashAtClient, arguments);
-        if ((rpcEventExceptions.Count > 0))
-        {
-            var rpcEventExceptionMessage : string = "";
-            for (rpcEventExceptionKey in rpcEventExceptions.Keys)
-            {
-                var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
-                if ((rpcEventExceptionMessage == ""))
-                {
-                    (rpcEventExceptionMessage = rpcEventException.message);
-                }
-                else
-                {
-                    (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
-                }
-            }
-            raise rpcEventExceptionMessage;
-        }
+        system::IRpcLifecycle::ReadEventException(lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__ITwo_CrashAtClient, arguments));
     });
 }
 
@@ -616,24 +487,7 @@ func rpclistener_RpcInheritance__IDerived(lc : system::IRpcLifecycle*, ref : sys
         return;
         var arguments : system::Array^ = {};
         arguments.Resize(0);
-        var rpcEventExceptions = lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IValue_ValueChanged, arguments);
-        if ((rpcEventExceptions.Count > 0))
-        {
-            var rpcEventExceptionMessage : string = "";
-            for (rpcEventExceptionKey in rpcEventExceptions.Keys)
-            {
-                var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
-                if ((rpcEventExceptionMessage == ""))
-                {
-                    (rpcEventExceptionMessage = rpcEventException.message);
-                }
-                else
-                {
-                    (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
-                }
-            }
-            raise rpcEventExceptionMessage;
-        }
+        system::IRpcLifecycle::ReadEventException(lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IValue_ValueChanged, arguments));
     });
     attach(target.CrashAtServer, func () : (void)
     {
@@ -641,24 +495,7 @@ func rpclistener_RpcInheritance__IDerived(lc : system::IRpcLifecycle*, ref : sys
         return;
         var arguments : system::Array^ = {};
         arguments.Resize(0);
-        var rpcEventExceptions = lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IOne_CrashAtServer, arguments);
-        if ((rpcEventExceptions.Count > 0))
-        {
-            var rpcEventExceptionMessage : string = "";
-            for (rpcEventExceptionKey in rpcEventExceptions.Keys)
-            {
-                var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
-                if ((rpcEventExceptionMessage == ""))
-                {
-                    (rpcEventExceptionMessage = rpcEventException.message);
-                }
-                else
-                {
-                    (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
-                }
-            }
-            raise rpcEventExceptionMessage;
-        }
+        system::IRpcLifecycle::ReadEventException(lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__IOne_CrashAtServer, arguments));
     });
     attach(target.CrashAtClient, func () : (void)
     {
@@ -666,24 +503,7 @@ func rpclistener_RpcInheritance__IDerived(lc : system::IRpcLifecycle*, ref : sys
         return;
         var arguments : system::Array^ = {};
         arguments.Resize(0);
-        var rpcEventExceptions = lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__ITwo_CrashAtClient, arguments);
-        if ((rpcEventExceptions.Count > 0))
-        {
-            var rpcEventExceptionMessage : string = "";
-            for (rpcEventExceptionKey in rpcEventExceptions.Keys)
-            {
-                var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
-                if ((rpcEventExceptionMessage == ""))
-                {
-                    (rpcEventExceptionMessage = rpcEventException.message);
-                }
-                else
-                {
-                    (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
-                }
-            }
-            raise rpcEventExceptionMessage;
-        }
+        system::IRpcLifecycle::ReadEventException(lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritance__ITwo_CrashAtClient, arguments));
     });
 }
 

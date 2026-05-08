@@ -298,7 +298,14 @@ func rpcops_IRpcObjectEventOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcO
             {
                 _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
             }
-            return (cast (system::RpcException[int]) rpcjson_Deserialize(rpcjson_Serialize(rpcEventExceptions)));
+            if ((rpcEventExceptions.Count > 0))
+            {
+                return (cast (system::RpcException[int]) rpcjson_Deserialize(rpcjson_Serialize(rpcEventExceptions)));
+            }
+            else
+            {
+                return null;
+            }
         }
     };
 }
@@ -432,24 +439,7 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Dtor
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            var rpcEventExceptions = (cast (system::RpcException[int]) rpcjson_Deserialize(rpcjson_Serialize(_lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcDtorPropCachedListVByref__IService_ValueChanged, arguments))));
-            if ((rpcEventExceptions.Count > 0))
-            {
-                var rpcEventExceptionMessage : string = "";
-                for (rpcEventExceptionKey in rpcEventExceptions.Keys)
-                {
-                    var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
-                    if ((rpcEventExceptionMessage == ""))
-                    {
-                        (rpcEventExceptionMessage = rpcEventException.message);
-                    }
-                    else
-                    {
-                        (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
-                    }
-                }
-                raise rpcEventExceptionMessage;
-            }
+            system::IRpcLifecycle::ReadEventException((cast (system::RpcException[int]) rpcjson_Deserialize(rpcjson_Serialize(_lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcDtorPropCachedListVByref__IService_ValueChanged, arguments)))));
         }
     };
 }

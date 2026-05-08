@@ -157,7 +157,14 @@ func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjec
             {
                 _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
             }
-            return rpcEventExceptions;
+            if ((rpcEventExceptions.Count > 0))
+            {
+                return rpcEventExceptions;
+            }
+            else
+            {
+                return null;
+            }
         }
     };
 }
@@ -197,24 +204,7 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Event^)
             var arguments : system::Array^ = {};
             arguments.Resize(1);
             arguments.Set(0, arg_arg0);
-            var rpcEventExceptions = _lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcEvent__IService_SomethingHappened, arguments);
-            if ((rpcEventExceptions.Count > 0))
-            {
-                var rpcEventExceptionMessage : string = "";
-                for (rpcEventExceptionKey in rpcEventExceptions.Keys)
-                {
-                    var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
-                    if ((rpcEventExceptionMessage == ""))
-                    {
-                        (rpcEventExceptionMessage = rpcEventException.message);
-                    }
-                    else
-                    {
-                        (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
-                    }
-                }
-                raise rpcEventExceptionMessage;
-            }
+            system::IRpcLifecycle::ReadEventException(_lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcEvent__IService_SomethingHappened, arguments));
         }
     };
 }
@@ -245,24 +235,7 @@ func rpclistener_RpcEvent__IService(lc : system::IRpcLifecycle*, ref : system::R
                 (rpcArgumentIndex = (rpcArgumentIndex + 1));
             }
         }
-        var rpcEventExceptions = lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcEvent__IService_SomethingHappened, arguments);
-        if ((rpcEventExceptions.Count > 0))
-        {
-            var rpcEventExceptionMessage : string = "";
-            for (rpcEventExceptionKey in rpcEventExceptions.Keys)
-            {
-                var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
-                if ((rpcEventExceptionMessage == ""))
-                {
-                    (rpcEventExceptionMessage = rpcEventException.message);
-                }
-                else
-                {
-                    (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
-                }
-            }
-            raise rpcEventExceptionMessage;
-        }
+        system::IRpcLifecycle::ReadEventException(lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcEvent__IService_SomethingHappened, arguments));
     });
 }
 
