@@ -105,6 +105,7 @@
 #include "EventReflection.h"
 #include "EventArgsReflection.h"
 #include "EventOblistReflection.h"
+#include "Oblist_EventExceptionReflection.h"
 #include "FailDoubleRegistrationReflection.h"
 #include "InheritanceReflection.h"
 #include "Inheritance_MethodExceptionReflection.h"
@@ -241,6 +242,7 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_EventTypes();
 	 LoadRpc_EventArgsTypes();
 	 LoadRpc_EventOblistTypes();
+	 LoadRpc_Oblist_EventExceptionTypes();
 	 LoadRpc_FailDoubleRegistrationTypes();
 	 LoadRpc_InheritanceTypes();
 	 LoadRpc_Inheritance_MethodExceptionTypes();
@@ -1613,6 +1615,18 @@ TEST_CASE(L"Rpc:EventOblist")
 		{
 			auto& instance = ::vl_workflow_global::Rpc_EventOblist::Instance();
 			if (dynamic_cast<::RpcEventOblist::IService*>(obj)) return instance.rpctype_RpcEventOblist__IService;
+			return RpcTypeId_NotFound;
+		},
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:Oblist_EventException")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_Oblist_EventException>(L"Oblist_EventException", L"2:0,0,1;",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_Oblist_EventException::Instance();
+			if (dynamic_cast<::RpcOblistEventException::IServer*>(obj)) return instance.rpctype_RpcOblistEventException__IServer;
 			return RpcTypeId_NotFound;
 		},
 		nullptr);
