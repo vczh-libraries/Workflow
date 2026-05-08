@@ -77,6 +77,21 @@ Throw an exception if all type testings fail.
 
 When an RPC method returns an `@rpc:Byval` collection, JSON serialization still uses the same known-type or unknown-type schema for the collection value. The generated object ops put the resulting `JsonNode` in `system::RpcByvalReturnValue.value` and use `system::RpcByvalReturnValue.slot` to keep the recursive copied collection alive until the caller calls `EndInvokeMethod(slot)`. Non-byval JSON returns still return the `JsonNode` directly.
 
+## TypeScript Schema for Dispatcher Messages
+
+`Test/TypeScript/Rpc.d.ts` describes the JSON message envelopes for the generic RPC ops boundary represented by `IRpcDispatcher`. It does not know the generated RPC metadata for a sample, so every field that contains a serialized `JsonNode` uses a generic type parameter `T`. A concrete test should read `T` as `KnownTypeSchema | UnknownTypeSchema` from the generated `Serialization_*.d.ts` file for that sample.
+
+The declarations map directly to the C++ ops interfaces in `Source/Library/Rpc/WfLibraryRpc.h`:
+
+- `IListOps_*` maps to `IRpcListOps`.
+- `IObjectOps_*` maps to `IRpcObjectOps`.
+- `IListEventOps_*` maps to `IRpcListEventOps`.
+- `IObjectEventOps_*` maps to `IRpcObjectEventOps`.
+
+Request envelopes model how `IRpcDispatcher` chooses an ops object. Calls made through `SendToClient_ListOps` or `SendToClient_ObjectOps` include both `sourceClientId` and `targetClientId`. Calls made through `BroadcastFromClient_ListEventOps` or `BroadcastFromClient_ObjectEventOps` include only `sourceClientId` because the dispatcher expands the broadcast target list. Response envelopes are always one-to-one from the receiving client back to the requesting client, so they always contain both client ids.
+
+The stable internal transport structs are declared in `Rpc.d.ts` itself: `system_RpcObjectReference`, `system_RpcException`, and `system_RpcByvalReturnValue<T>`. Void-returning ops still have response envelopes, but no `response` field. Value-returning ops put the serialized value in `response`. `IRpcObjectEventOps::InvokeEvent` returns `null | [number, system_RpcException][]`, matching the JSON form of `system::RpcException[int]`.
+
 ## Other Strict Rules
 
 DO NOT generate any helper function that is not mentioned here, especially which just builds any `system::JsonNode^`.
