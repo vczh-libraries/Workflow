@@ -107,6 +107,8 @@
 #include "EventOblistReflection.h"
 #include "FailDoubleRegistrationReflection.h"
 #include "InheritanceReflection.h"
+#include "Inheritance_MethodExceptionReflection.h"
+#include "Inheritance_EventExceptionReflection.h"
 #include "LocalAndWrapperReflection.h"
 #include "NullableReflection.h"
 #include "OverloadingReflection.h"
@@ -241,6 +243,8 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_EventOblistTypes();
 	 LoadRpc_FailDoubleRegistrationTypes();
 	 LoadRpc_InheritanceTypes();
+	 LoadRpc_Inheritance_MethodExceptionTypes();
+	 LoadRpc_Inheritance_EventExceptionTypes();
 	 LoadRpc_LocalAndWrapperTypes();
 	 LoadRpc_NullableTypes();
 	 LoadRpc_OverloadingTypes();
@@ -1629,7 +1633,7 @@ TEST_CASE(L"Rpc:FailDoubleRegistration")
 
 TEST_CASE(L"Rpc:Inheritance")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Inheritance>(L"Inheritance", L"[][One][][Two][][Derived][DoNotSetOneValue][DoNotSetTwoValue][1:CrashedAtServer;][2:CrashedAtClient;]",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Inheritance>(L"Inheritance", L"[][One][][Two][][][Derived]",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Inheritance::Instance();
@@ -1640,9 +1644,41 @@ TEST_CASE(L"Rpc:Inheritance")
 			if (dynamic_cast<::RpcInheritance::IService*>(obj)) return instance.rpctype_RpcInheritance__IService;
 			return RpcTypeId_NotFound;
 		},
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:Inheritance_MethodException")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_Inheritance_MethodException>(L"Inheritance_MethodException", L"[][DoNotSetOneValue][][DoNotSetTwoValue]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_Inheritance_MethodException::Instance();
+			if (dynamic_cast<::RpcInheritanceMethodException::IDerived*>(obj)) return instance.rpctype_RpcInheritanceMethodException__IDerived;
+			if (dynamic_cast<::RpcInheritanceMethodException::IOne*>(obj)) return instance.rpctype_RpcInheritanceMethodException__IOne;
+			if (dynamic_cast<::RpcInheritanceMethodException::ITwo*>(obj)) return instance.rpctype_RpcInheritanceMethodException__ITwo;
+			if (dynamic_cast<::RpcInheritanceMethodException::IValue*>(obj)) return instance.rpctype_RpcInheritanceMethodException__IValue;
+			if (dynamic_cast<::RpcInheritanceMethodException::IService*>(obj)) return instance.rpctype_RpcInheritanceMethodException__IService;
+			return RpcTypeId_NotFound;
+		},
+		nullptr);
+});
+
+TEST_CASE(L"Rpc:Inheritance_EventException")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_Inheritance_EventException>(L"Inheritance_EventException", L"[][1:CrashedAtServer;][][2:CrashedAtClient;]",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_Inheritance_EventException::Instance();
+			if (dynamic_cast<::RpcInheritanceEventException::IDerived*>(obj)) return instance.rpctype_RpcInheritanceEventException__IDerived;
+			if (dynamic_cast<::RpcInheritanceEventException::IOne*>(obj)) return instance.rpctype_RpcInheritanceEventException__IOne;
+			if (dynamic_cast<::RpcInheritanceEventException::ITwo*>(obj)) return instance.rpctype_RpcInheritanceEventException__ITwo;
+			if (dynamic_cast<::RpcInheritanceEventException::IValue*>(obj)) return instance.rpctype_RpcInheritanceEventException__IValue;
+			if (dynamic_cast<::RpcInheritanceEventException::IService*>(obj)) return instance.rpctype_RpcInheritanceEventException__IService;
+			return RpcTypeId_NotFound;
+		},
 		[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj)
 		{
-			::vl_workflow_global::Rpc_Inheritance::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);
+			::vl_workflow_global::Rpc_Inheritance_EventException::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);
 		});
 });
 

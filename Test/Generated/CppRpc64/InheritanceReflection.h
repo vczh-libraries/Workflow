@@ -70,22 +70,6 @@ namespace vl
 			END_INTERFACE_PROXY(::RpcInheritance::IValue)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_Inheritance)
-				void InvokeEvent_RpcInheritance__IOne_CrashAtServer(::vl::rpc_controller::RpcObjectReference ref) override
-				{
-					INVOKE_INTERFACE_PROXY(InvokeEvent_RpcInheritance__IOne_CrashAtServer, ref);
-				}
-				void InvokeEvent_RpcInheritance__ITwo_CrashAtClient(::vl::rpc_controller::RpcObjectReference ref) override
-				{
-					INVOKE_INTERFACE_PROXY(InvokeEvent_RpcInheritance__ITwo_CrashAtClient, ref);
-				}
-				void InvokeEvent_RpcInheritance__IValue_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override
-				{
-					INVOKE_INTERFACE_PROXY(InvokeEvent_RpcInheritance__IValue_ValueChanged, ref);
-				}
-				::vl::WString InvokeMethod_RpcInheritance__IDerived_GuardCrashAtClient(::vl::rpc_controller::RpcObjectReference ref) override
-				{
-					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcInheritance__IDerived_GuardCrashAtClient, ref);
-				}
 				void InvokeMethod_RpcInheritance__IDerived_SetDerivedValue(::vl::rpc_controller::RpcObjectReference ref) override
 				{
 					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcInheritance__IDerived_SetDerivedValue, ref);
@@ -124,20 +108,12 @@ namespace vl
 			END_INTERFACE_PROXY(::RpcInheritance::IOne)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcInheritance::IRpcWrapper_IOne, ::RpcInheritance::IOne, ::vl::rpc_controller::IRpcWrapperBase)
-				void _rpcInvalidate_Value() override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(_rpcInvalidate_Value);
-				}
 			END_INTERFACE_PROXY(::RpcInheritance::IRpcWrapper_IOne)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcInheritance::IRpcWrapper_IService, ::RpcInheritance::IService, ::vl::rpc_controller::IRpcWrapperBase)
 			END_INTERFACE_PROXY(::RpcInheritance::IRpcWrapper_IService)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcInheritance::IRpcWrapper_IValue, ::RpcInheritance::IValue, ::vl::rpc_controller::IRpcWrapperBase)
-				void _rpcInvalidate_Value() override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(_rpcInvalidate_Value);
-				}
 			END_INTERFACE_PROXY(::RpcInheritance::IRpcWrapper_IValue)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcInheritance::ITwo, ::RpcInheritance::IValue)
@@ -148,10 +124,6 @@ namespace vl
 			END_INTERFACE_PROXY(::RpcInheritance::ITwo)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcInheritance::IDerived, ::RpcInheritance::IOne, ::RpcInheritance::ITwo)
-				::vl::WString GuardCrashAtClient() override
-				{
-					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GuardCrashAtClient);
-				}
 				void SetDerivedValue() override
 				{
 					INVOKE_INTERFACE_PROXY_NOPARAMS(SetDerivedValue);
@@ -159,17 +131,9 @@ namespace vl
 			END_INTERFACE_PROXY(::RpcInheritance::IDerived)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcInheritance::IRpcWrapper_IDerived, ::RpcInheritance::IDerived, ::vl::rpc_controller::IRpcWrapperBase)
-				void _rpcInvalidate_Value() override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(_rpcInvalidate_Value);
-				}
 			END_INTERFACE_PROXY(::RpcInheritance::IRpcWrapper_IDerived)
 
 			BEGIN_INTERFACE_PROXY_SHAREDPTR(::RpcInheritance::IRpcWrapper_ITwo, ::RpcInheritance::ITwo, ::vl::rpc_controller::IRpcWrapperBase)
-				void _rpcInvalidate_Value() override
-				{
-					INVOKE_INTERFACE_PROXY_NOPARAMS(_rpcInvalidate_Value);
-				}
 			END_INTERFACE_PROXY(::RpcInheritance::IRpcWrapper_ITwo)
 #endif
 #endif

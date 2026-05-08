@@ -39,21 +39,17 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Inheritance)
 
 		instance.s = ::vl::WString::Unmanaged(L"");
 		instance.rpctype_RpcInheritance__IDerived = static_cast<::vl::vint64_t>(0L);
-		instance.rpcmethod_RpcInheritance__IDerived_GuardCrashAtClient = static_cast<::vl::vint64_t>(1L);
-		instance.rpcmethod_RpcInheritance__IDerived_SetDerivedValue = static_cast<::vl::vint64_t>(2L);
-		instance.rpctype_RpcInheritance__IOne = static_cast<::vl::vint64_t>(3L);
-		instance.rpcevent_RpcInheritance__IOne_CrashAtServer = static_cast<::vl::vint64_t>(4L);
-		instance.rpcmethod_RpcInheritance__IOne_SetOneValue = static_cast<::vl::vint64_t>(5L);
-		instance.rpctype_RpcInheritance__IService = static_cast<::vl::vint64_t>(6L);
-		instance.rpcmethod_RpcInheritance__IService_CreateDerived = static_cast<::vl::vint64_t>(7L);
-		instance.rpcmethod_RpcInheritance__IService_CreateOne = static_cast<::vl::vint64_t>(8L);
-		instance.rpcmethod_RpcInheritance__IService_CreateTwo = static_cast<::vl::vint64_t>(9L);
-		instance.rpctype_RpcInheritance__ITwo = static_cast<::vl::vint64_t>(10L);
-		instance.rpcevent_RpcInheritance__ITwo_CrashAtClient = static_cast<::vl::vint64_t>(11L);
-		instance.rpcmethod_RpcInheritance__ITwo_SetTwoValue = static_cast<::vl::vint64_t>(12L);
-		instance.rpctype_RpcInheritance__IValue = static_cast<::vl::vint64_t>(13L);
-		instance.rpcmethod_RpcInheritance__IValue_GetValue = static_cast<::vl::vint64_t>(14L);
-		instance.rpcevent_RpcInheritance__IValue_ValueChanged = static_cast<::vl::vint64_t>(15L);
+		instance.rpcmethod_RpcInheritance__IDerived_SetDerivedValue = static_cast<::vl::vint64_t>(1L);
+		instance.rpctype_RpcInheritance__IOne = static_cast<::vl::vint64_t>(2L);
+		instance.rpcmethod_RpcInheritance__IOne_SetOneValue = static_cast<::vl::vint64_t>(3L);
+		instance.rpctype_RpcInheritance__IService = static_cast<::vl::vint64_t>(4L);
+		instance.rpcmethod_RpcInheritance__IService_CreateDerived = static_cast<::vl::vint64_t>(5L);
+		instance.rpcmethod_RpcInheritance__IService_CreateOne = static_cast<::vl::vint64_t>(6L);
+		instance.rpcmethod_RpcInheritance__IService_CreateTwo = static_cast<::vl::vint64_t>(7L);
+		instance.rpctype_RpcInheritance__ITwo = static_cast<::vl::vint64_t>(8L);
+		instance.rpcmethod_RpcInheritance__ITwo_SetTwoValue = static_cast<::vl::vint64_t>(9L);
+		instance.rpctype_RpcInheritance__IValue = static_cast<::vl::vint64_t>(10L);
+		instance.rpcmethod_RpcInheritance__IValue_GetValue = static_cast<::vl::vint64_t>(11L);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -84,49 +80,10 @@ Global Functions
 		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(two.Obj())->GetValue()) + ::vl::WString::Unmanaged(L"]")));
 		auto derived = ::vl::__vwsn::This(service.Obj())->CreateDerived();
 		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(derived.Obj())->GetValue()) + ::vl::WString::Unmanaged(L"]")));
+		auto value = ::vl::__vwsn::Ensure(::vl::Ptr<::RpcInheritance::IValue>(derived));
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(value.Obj())->GetValue()) + ::vl::WString::Unmanaged(L"]")));
 		::vl::__vwsn::This(derived.Obj())->SetDerivedValue();
 		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(derived.Obj())->GetValue()) + ::vl::WString::Unmanaged(L"]")));
-		try
-		{
-			{
-				::vl::__vwsn::This(derived.Obj())->SetOneValue();
-			}
-		}
-		catch(const ::vl::Exception& __vwsne_0)
-		{
-			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
-			{
-				(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString::Unmanaged(L"]")));
-			}
-		}
-		try
-		{
-			{
-				::vl::__vwsn::This(derived.Obj())->SetTwoValue();
-			}
-		}
-		catch(const ::vl::Exception& __vwsne_1)
-		{
-			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_1.Message());
-			{
-				(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString::Unmanaged(L"]")));
-			}
-		}
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(derived.Obj())->CrashAtClient, vl::Func(::vl_workflow_global::__vwsnf2_Rpc_Inheritance_clientMain_()));
-		try
-		{
-			{
-				::vl::__vwsn::EventInvoke(::vl::__vwsn::This(derived.Obj())->CrashAtServer)();
-			}
-		}
-		catch(const ::vl::Exception& __vwsne_2)
-		{
-			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_2.Message());
-			{
-				(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(ex.Obj())->GetMessage()) + ::vl::WString::Unmanaged(L"]")));
-			}
-		}
-		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(derived.Obj())->GuardCrashAtClient()) + ::vl::WString::Unmanaged(L"]")));
 		return GLOBAL_NAME s;
 	}
 
@@ -134,21 +91,17 @@ Global Functions
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IDerived")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(0L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IDerived.GuardCrashAtClient")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(1L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IDerived.SetDerivedValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IOne")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(3L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IOne.CrashAtServer")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IOne.SetOneValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(5L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(6L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IService.CreateDerived")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(7L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IService.CreateOne")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(8L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IService.CreateTwo")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(9L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::ITwo")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(10L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::ITwo.CrashAtClient")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(11L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::ITwo.SetTwoValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(12L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(13L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IValue.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(14L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IValue.ValueChanged")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(15L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IDerived.SetDerivedValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(1L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IOne")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IOne.SetOneValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(3L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IService.CreateDerived")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(5L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IService.CreateOne")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(6L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IService.CreateTwo")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(7L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::ITwo")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(8L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::ITwo.SetTwoValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(9L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(10L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcInheritance::IValue.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(11L)));
 		return result;
 	}
 
@@ -199,69 +152,10 @@ Global Functions
 		return ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance>(new ::vl_workflow_global::__vwsnc7_Rpc_Inheritance_rpcops_IOps_Create__rpcops_IOps_Rpc_Inheritance(lc));
 	}
 
-	void Rpc_Inheritance::rpclistener_RpcInheritance__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcInheritance::IValue* target)
-	{
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(target)->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf3_Rpc_Inheritance_rpclistener_RpcInheritance__IValue_(lc, ref)));
-	}
-
-	void Rpc_Inheritance::rpclistener_RpcInheritance__IOne(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcInheritance::IOne* target)
-	{
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(target)->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf4_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_(lc, ref)));
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(target)->CrashAtServer, vl::Func(::vl_workflow_global::__vwsnf5_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_(lc, ref)));
-	}
-
-	void Rpc_Inheritance::rpclistener_RpcInheritance__ITwo(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcInheritance::ITwo* target)
-	{
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(target)->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf6_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_(lc, ref)));
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(target)->CrashAtClient, vl::Func(::vl_workflow_global::__vwsnf7_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_(lc, ref)));
-	}
-
-	void Rpc_Inheritance::rpclistener_RpcInheritance__IDerived(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcInheritance::IDerived* target)
-	{
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(target)->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf8_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_(lc, ref)));
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(target)->CrashAtServer, vl::Func(::vl_workflow_global::__vwsnf9_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_(lc, ref)));
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(target)->CrashAtClient, vl::Func(::vl_workflow_global::__vwsnf10_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_(lc, ref)));
-	}
-
-	void Rpc_Inheritance::rpclistener_Attach(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::reflection::IDescriptable* obj)
-	{
-		{
-			auto __vwsn_switch_4 = typeId;
-			if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcInheritance__IValue))
-			{
-				GLOBAL_NAME rpclistener_RpcInheritance__IValue(lc, ref, ::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::RpcInheritance::IValue>(obj)));
-				return;
-			}
-			else if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcInheritance__IOne))
-			{
-				GLOBAL_NAME rpclistener_RpcInheritance__IOne(lc, ref, ::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::RpcInheritance::IOne>(obj)));
-				return;
-			}
-			else if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcInheritance__ITwo))
-			{
-				GLOBAL_NAME rpclistener_RpcInheritance__ITwo(lc, ref, ::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::RpcInheritance::ITwo>(obj)));
-				return;
-			}
-			else if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcInheritance__IDerived))
-			{
-				GLOBAL_NAME rpclistener_RpcInheritance__IDerived(lc, ref, ::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::RpcInheritance::IDerived>(obj)));
-				return;
-			}
-			else if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcInheritance__IService))
-			{
-				return;
-			}
-			else
-				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for listener attachment."));
-		}
-	}
-
 	::vl::Ptr<::RpcInheritance::IRpcWrapper_IValue> Rpc_Inheritance::rpcwrapper_RpcInheritance__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance> ops)
 	{
 		auto proxy = ::vl::Ptr<::RpcInheritance::IRpcWrapper_IValue>(new ::vl_workflow_global::__vwsnc8_Rpc_Inheritance_rpcwrapper_RpcInheritance__IValue__RpcInheritance_IRpcWrapper_IValue(lc, ops, proxyRef));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->SendToClient_ObjectOps(proxyRef.clientId))->ObjectHold(proxyRef, ::vl::__vwsn::This(lc)->GetClientId(), true);
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::Ptr<::RpcInheritance::IValue>(proxy)).Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IValue_(lc, proxyRef)));
-		GLOBAL_NAME rpclistener_RpcInheritance__IValue(lc, proxyRef, ::vl::__vwsn::Ensure(static_cast<::RpcInheritance::IValue*>(proxy.Obj())));
 		return proxy;
 	}
 
@@ -269,8 +163,6 @@ Global Functions
 	{
 		auto proxy = ::vl::Ptr<::RpcInheritance::IRpcWrapper_IOne>(new ::vl_workflow_global::__vwsnc9_Rpc_Inheritance_rpcwrapper_RpcInheritance__IOne__RpcInheritance_IRpcWrapper_IOne(lc, ops, proxyRef));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->SendToClient_ObjectOps(proxyRef.clientId))->ObjectHold(proxyRef, ::vl::__vwsn::This(lc)->GetClientId(), true);
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::Ptr<::RpcInheritance::IOne>(proxy)).Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf12_Rpc_Inheritance_rpcwrapper_RpcInheritance__IOne_(lc, proxyRef)));
-		GLOBAL_NAME rpclistener_RpcInheritance__IOne(lc, proxyRef, ::vl::__vwsn::Ensure(static_cast<::RpcInheritance::IOne*>(proxy.Obj())));
 		return proxy;
 	}
 
@@ -278,8 +170,6 @@ Global Functions
 	{
 		auto proxy = ::vl::Ptr<::RpcInheritance::IRpcWrapper_ITwo>(new ::vl_workflow_global::__vwsnc10_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo__RpcInheritance_IRpcWrapper_ITwo(lc, ops, proxyRef));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->SendToClient_ObjectOps(proxyRef.clientId))->ObjectHold(proxyRef, ::vl::__vwsn::This(lc)->GetClientId(), true);
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::Ptr<::RpcInheritance::ITwo>(proxy)).Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf13_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo_(lc, proxyRef)));
-		GLOBAL_NAME rpclistener_RpcInheritance__ITwo(lc, proxyRef, ::vl::__vwsn::Ensure(static_cast<::RpcInheritance::ITwo*>(proxy.Obj())));
 		return proxy;
 	}
 
@@ -287,8 +177,6 @@ Global Functions
 	{
 		auto proxy = ::vl::Ptr<::RpcInheritance::IRpcWrapper_IDerived>(new ::vl_workflow_global::__vwsnc11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived__RpcInheritance_IRpcWrapper_IDerived(lc, ops, proxyRef));
 		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->SendToClient_ObjectOps(proxyRef.clientId))->ObjectHold(proxyRef, ::vl::__vwsn::This(lc)->GetClientId(), true);
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::Ptr<::RpcInheritance::IDerived>(proxy)).Obj())->ValueChanged, vl::Func(::vl_workflow_global::__vwsnf14_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived_(lc, proxyRef)));
-		GLOBAL_NAME rpclistener_RpcInheritance__IDerived(lc, proxyRef, ::vl::__vwsn::Ensure(static_cast<::RpcInheritance::IDerived*>(proxy.Obj())));
 		return proxy;
 	}
 
@@ -302,24 +190,24 @@ Global Functions
 	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> Rpc_Inheritance::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance> ops)
 	{
 		{
-			auto __vwsn_switch_5 = ref.typeId;
-			if ((__vwsn_switch_5 == GLOBAL_NAME rpctype_RpcInheritance__IValue))
+			auto __vwsn_switch_4 = ref.typeId;
+			if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcInheritance__IValue))
 			{
 				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcInheritance__IValue(lc, ref, ops));
 			}
-			else if ((__vwsn_switch_5 == GLOBAL_NAME rpctype_RpcInheritance__IOne))
+			else if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcInheritance__IOne))
 			{
 				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcInheritance__IOne(lc, ref, ops));
 			}
-			else if ((__vwsn_switch_5 == GLOBAL_NAME rpctype_RpcInheritance__ITwo))
+			else if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcInheritance__ITwo))
 			{
 				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcInheritance__ITwo(lc, ref, ops));
 			}
-			else if ((__vwsn_switch_5 == GLOBAL_NAME rpctype_RpcInheritance__IDerived))
+			else if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcInheritance__IDerived))
 			{
 				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcInheritance__IDerived(lc, ref, ops));
 			}
-			else if ((__vwsn_switch_5 == GLOBAL_NAME rpctype_RpcInheritance__IService))
+			else if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_RpcInheritance__IService))
 			{
 				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_RpcInheritance__IService(lc, ref, ops));
 			}
@@ -517,10 +405,10 @@ Global Functions
 				throw ::vl::Exception(::vl::WString::Unmanaged(L"JSON object field not found: $"));
 			auto keyword = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(jsonFieldValue34.Obj())).Obj())->content.value;
 			{
-				auto __vwsn_switch_6 = keyword;
-				if ((__vwsn_switch_6 == ::vl::WString::Unmanaged(L"system::RpcObjectReference")))
+				auto __vwsn_switch_5 = keyword;
+				if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"system::RpcObjectReference")))
 					return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::Ptr<::vl::glr::json::JsonNode>(object)));
-				else if ((__vwsn_switch_6 == ::vl::WString::Unmanaged(L"system::RpcException")))
+				else if ((__vwsn_switch_5 == ::vl::WString::Unmanaged(L"system::RpcException")))
 					return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Deserialize_Struct_system__RpcException(::vl::Ptr<::vl::glr::json::JsonNode>(object)));
 			}
 		}
@@ -558,229 +446,11 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnf10_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_::__vwsnf10_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref)
-		:lc(__vwsnctor_lc)
-		, ref(__vwsnctor_ref)
-	{
-	}
-
-	void __vwsnf10_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_::operator()() const
-	{
-		if (::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->GetEventSuppressedFlag(ref, GLOBAL_NAME rpcevent_RpcInheritance__ITwo_CrashAtClient))
-			return;
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcInheritance__ITwo_CrashAtClient, arguments))));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IValue_::__vwsnf11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IValue_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
-		:lc(__vwsnctor_lc)
-		, proxyRef(__vwsnctor_proxyRef)
-	{
-	}
-
-	void __vwsnf11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IValue_::operator()() const
-	{
-		::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IRpcWrapper_IValue>(::vl::__vwsn::This(lc)->RefToPtr(proxyRef).Obj())).Obj())->_rpcInvalidate_Value();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf12_Rpc_Inheritance_rpcwrapper_RpcInheritance__IOne_::__vwsnf12_Rpc_Inheritance_rpcwrapper_RpcInheritance__IOne_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
-		:lc(__vwsnctor_lc)
-		, proxyRef(__vwsnctor_proxyRef)
-	{
-	}
-
-	void __vwsnf12_Rpc_Inheritance_rpcwrapper_RpcInheritance__IOne_::operator()() const
-	{
-		::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IRpcWrapper_IOne>(::vl::__vwsn::This(lc)->RefToPtr(proxyRef).Obj())).Obj())->_rpcInvalidate_Value();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf13_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo_::__vwsnf13_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
-		:lc(__vwsnctor_lc)
-		, proxyRef(__vwsnctor_proxyRef)
-	{
-	}
-
-	void __vwsnf13_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo_::operator()() const
-	{
-		::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IRpcWrapper_ITwo>(::vl::__vwsn::This(lc)->RefToPtr(proxyRef).Obj())).Obj())->_rpcInvalidate_Value();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf14_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived_::__vwsnf14_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
-		:lc(__vwsnctor_lc)
-		, proxyRef(__vwsnctor_proxyRef)
-	{
-	}
-
-	void __vwsnf14_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived_::operator()() const
-	{
-		::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IRpcWrapper_IDerived>(::vl::__vwsn::This(lc)->RefToPtr(proxyRef).Obj())).Obj())->_rpcInvalidate_Value();
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf1_Rpc_Inheritance_serviceMain_CreateDerived_::__vwsnf1_Rpc_Inheritance_serviceMain_CreateDerived_(::RpcInheritance::IService* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
-	{
-	}
-
-	void __vwsnf1_Rpc_Inheritance_serviceMain_CreateDerived_::operator()() const
-	{
-		throw ::vl::Exception(::vl::WString::Unmanaged(L"CrashedAtServer"));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf2_Rpc_Inheritance_clientMain_::__vwsnf2_Rpc_Inheritance_clientMain_()
-	{
-	}
-
-	void __vwsnf2_Rpc_Inheritance_clientMain_::operator()() const
-	{
-		throw ::vl::Exception(::vl::WString::Unmanaged(L"CrashedAtClient"));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf3_Rpc_Inheritance_rpclistener_RpcInheritance__IValue_::__vwsnf3_Rpc_Inheritance_rpclistener_RpcInheritance__IValue_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref)
-		:lc(__vwsnctor_lc)
-		, ref(__vwsnctor_ref)
-	{
-	}
-
-	void __vwsnf3_Rpc_Inheritance_rpclistener_RpcInheritance__IValue_::operator()() const
-	{
-		if (::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->GetEventSuppressedFlag(ref, GLOBAL_NAME rpcevent_RpcInheritance__IValue_ValueChanged))
-			return;
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcInheritance__IValue_ValueChanged, arguments))));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf4_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_::__vwsnf4_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref)
-		:lc(__vwsnctor_lc)
-		, ref(__vwsnctor_ref)
-	{
-	}
-
-	void __vwsnf4_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_::operator()() const
-	{
-		if (::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->GetEventSuppressedFlag(ref, GLOBAL_NAME rpcevent_RpcInheritance__IValue_ValueChanged))
-			return;
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcInheritance__IValue_ValueChanged, arguments))));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf5_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_::__vwsnf5_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref)
-		:lc(__vwsnctor_lc)
-		, ref(__vwsnctor_ref)
-	{
-	}
-
-	void __vwsnf5_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_::operator()() const
-	{
-		if (::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->GetEventSuppressedFlag(ref, GLOBAL_NAME rpcevent_RpcInheritance__IOne_CrashAtServer))
-			return;
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcInheritance__IOne_CrashAtServer, arguments))));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf6_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_::__vwsnf6_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref)
-		:lc(__vwsnctor_lc)
-		, ref(__vwsnctor_ref)
-	{
-	}
-
-	void __vwsnf6_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_::operator()() const
-	{
-		if (::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->GetEventSuppressedFlag(ref, GLOBAL_NAME rpcevent_RpcInheritance__IValue_ValueChanged))
-			return;
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcInheritance__IValue_ValueChanged, arguments))));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf7_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_::__vwsnf7_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref)
-		:lc(__vwsnctor_lc)
-		, ref(__vwsnctor_ref)
-	{
-	}
-
-	void __vwsnf7_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_::operator()() const
-	{
-		if (::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->GetEventSuppressedFlag(ref, GLOBAL_NAME rpcevent_RpcInheritance__ITwo_CrashAtClient))
-			return;
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcInheritance__ITwo_CrashAtClient, arguments))));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf8_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_::__vwsnf8_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref)
-		:lc(__vwsnctor_lc)
-		, ref(__vwsnctor_ref)
-	{
-	}
-
-	void __vwsnf8_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_::operator()() const
-	{
-		if (::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->GetEventSuppressedFlag(ref, GLOBAL_NAME rpcevent_RpcInheritance__IValue_ValueChanged))
-			return;
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcInheritance__IValue_ValueChanged, arguments))));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnf9_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_::__vwsnf9_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref)
-		:lc(__vwsnctor_lc)
-		, ref(__vwsnctor_ref)
-	{
-	}
-
-	void __vwsnf9_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_::operator()() const
-	{
-		if (::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->GetEventSuppressedFlag(ref, GLOBAL_NAME rpcevent_RpcInheritance__IOne_CrashAtServer))
-			return;
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcInheritance__IOne_CrashAtServer, arguments))));
-	}
-
-	//-------------------------------------------------------------------
-
 	__vwsnc10_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo__RpcInheritance_IRpcWrapper_ITwo::__vwsnc10_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo__RpcInheritance_IRpcWrapper_ITwo(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
 	{
 		this->_lc = __vwsnctor_lc;
 		this->_ref = __vwsnctor_proxyRef;
 		this->_ops = __vwsnctor_ops;
-		this->__vwsn_Cached_ = ::vl::WString::Unmanaged(L"");
-		this->__vwsn_Available_ = false;
-	}
-
-	void __vwsnc10_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo__RpcInheritance_IRpcWrapper_ITwo::_rpcInvalidate_Value()
-	{
-		(__vwsn_Available_ = false);
 	}
 
 	void __vwsnc10_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo__RpcInheritance_IRpcWrapper_ITwo::DisconnectFromLifecycle()
@@ -801,13 +471,7 @@ Closures
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		if (__vwsn_Available_)
-		{
-			return __vwsn_Cached_;
-		}
-		(__vwsn_Cached_ = ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcInheritance__IValue_GetValue(_ref));
-		(__vwsn_Available_ = true);
-		return __vwsn_Cached_;
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcInheritance__IValue_GetValue(_ref);
 	}
 
 	void __vwsnc10_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo__RpcInheritance_IRpcWrapper_ITwo::SetTwoValue()
@@ -824,13 +488,6 @@ Closures
 		this->_lc = __vwsnctor_lc;
 		this->_ref = __vwsnctor_proxyRef;
 		this->_ops = __vwsnctor_ops;
-		this->__vwsn_Cached_ = ::vl::WString::Unmanaged(L"");
-		this->__vwsn_Available_ = false;
-	}
-
-	void __vwsnc11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived__RpcInheritance_IRpcWrapper_IDerived::_rpcInvalidate_Value()
-	{
-		(__vwsn_Available_ = false);
 	}
 
 	void __vwsnc11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived__RpcInheritance_IRpcWrapper_IDerived::DisconnectFromLifecycle()
@@ -851,13 +508,7 @@ Closures
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		if (__vwsn_Available_)
-		{
-			return __vwsn_Cached_;
-		}
-		(__vwsn_Cached_ = ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcInheritance__IValue_GetValue(_ref));
-		(__vwsn_Available_ = true);
-		return __vwsn_Cached_;
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcInheritance__IValue_GetValue(_ref);
 	}
 
 	void __vwsnc11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived__RpcInheritance_IRpcWrapper_IDerived::SetOneValue()
@@ -872,13 +523,6 @@ Closures
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
 		::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcInheritance__ITwo_SetTwoValue(_ref);
-	}
-
-	::vl::WString __vwsnc11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived__RpcInheritance_IRpcWrapper_IDerived::GuardCrashAtClient()
-	{
-		if ((_lc == nullptr))
-			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcInheritance__IDerived_GuardCrashAtClient(_ref);
 	}
 
 	void __vwsnc11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived__RpcInheritance_IRpcWrapper_IDerived::SetDerivedValue()
@@ -963,15 +607,15 @@ Closures
 		try
 		{
 			{
-				auto __vwsn_switch_7 = methodId;
-				if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcInheritance__IValue_GetValue))
+				auto __vwsn_switch_6 = methodId;
+				if ((__vwsn_switch_6 == GLOBAL_NAME rpcmethod_RpcInheritance__IValue_GetValue))
 				{
 					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IValue>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 					auto jsonString0 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
 					(::vl::__vwsn::This(jsonString0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::This(target.Obj())->GetValue(); return __vwsn_temp__; }());
 					return ::vl::__vwsn::Box(jsonString0);
 				}
-				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcInheritance__IOne_SetOneValue))
+				else if ((__vwsn_switch_6 == GLOBAL_NAME rpcmethod_RpcInheritance__IOne_SetOneValue))
 				{
 					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IOne>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 					::vl::__vwsn::This(target.Obj())->SetOneValue();
@@ -979,7 +623,7 @@ Closures
 					(::vl::__vwsn::This(jsonLiteral0.Obj())->value = ::vl::glr::json::JsonLiteralValue::Null);
 					return ::vl::__vwsn::Box(jsonLiteral0);
 				}
-				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcInheritance__ITwo_SetTwoValue))
+				else if ((__vwsn_switch_6 == GLOBAL_NAME rpcmethod_RpcInheritance__ITwo_SetTwoValue))
 				{
 					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::ITwo>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 					::vl::__vwsn::This(target.Obj())->SetTwoValue();
@@ -987,14 +631,7 @@ Closures
 					(::vl::__vwsn::This(jsonLiteral0.Obj())->value = ::vl::glr::json::JsonLiteralValue::Null);
 					return ::vl::__vwsn::Box(jsonLiteral0);
 				}
-				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcInheritance__IDerived_GuardCrashAtClient))
-				{
-					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IDerived>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-					auto jsonString0 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
-					(::vl::__vwsn::This(jsonString0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::This(target.Obj())->GuardCrashAtClient(); return __vwsn_temp__; }());
-					return ::vl::__vwsn::Box(jsonString0);
-				}
-				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcInheritance__IDerived_SetDerivedValue))
+				else if ((__vwsn_switch_6 == GLOBAL_NAME rpcmethod_RpcInheritance__IDerived_SetDerivedValue))
 				{
 					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IDerived>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 					::vl::__vwsn::This(target.Obj())->SetDerivedValue();
@@ -1002,21 +639,21 @@ Closures
 					(::vl::__vwsn::This(jsonLiteral0.Obj())->value = ::vl::glr::json::JsonLiteralValue::Null);
 					return ::vl::__vwsn::Box(jsonLiteral0);
 				}
-				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcInheritance__IService_CreateDerived))
+				else if ((__vwsn_switch_6 == GLOBAL_NAME rpcmethod_RpcInheritance__IService_CreateDerived))
 				{
 					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 					auto jsonValue0 = ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->CreateDerived()), _lc);
 					auto jsonNode1 = GLOBAL_NAME rpcjson_Serialize(jsonValue0);
 					return ::vl::__vwsn::Box(jsonNode1);
 				}
-				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcInheritance__IService_CreateOne))
+				else if ((__vwsn_switch_6 == GLOBAL_NAME rpcmethod_RpcInheritance__IService_CreateOne))
 				{
 					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 					auto jsonValue0 = ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->CreateOne()), _lc);
 					auto jsonNode1 = GLOBAL_NAME rpcjson_Serialize(jsonValue0);
 					return ::vl::__vwsn::Box(jsonNode1);
 				}
-				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_RpcInheritance__IService_CreateTwo))
+				else if ((__vwsn_switch_6 == GLOBAL_NAME rpcmethod_RpcInheritance__IService_CreateTwo))
 				{
 					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 					auto jsonValue0 = ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->CreateTwo()), _lc);
@@ -1097,24 +734,8 @@ Closures
 					try
 					{
 						{
-							auto __vwsn_switch_8 = eventId;
-							if ((__vwsn_switch_8 == GLOBAL_NAME rpcevent_RpcInheritance__IValue_ValueChanged))
-							{
-								auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IValue>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-								::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->ValueChanged)();
-							}
-							else if ((__vwsn_switch_8 == GLOBAL_NAME rpcevent_RpcInheritance__IOne_CrashAtServer))
-							{
-								auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IOne>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-								::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->CrashAtServer)();
-							}
-							else if ((__vwsn_switch_8 == GLOBAL_NAME rpcevent_RpcInheritance__ITwo_CrashAtClient))
-							{
-								auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::ITwo>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-								::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->CrashAtClient)();
-							}
-							else
-								throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
+							auto __vwsn_switch_7 = eventId;
+							throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
 						}
 					}
 					catch(const ::vl::Exception& __vwsne_1)
@@ -1194,13 +815,6 @@ Closures
 		return jsonValue0;
 	}
 
-	void __vwsnc16_Rpc_Inheritance_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Inheritance::InvokeEvent_RpcInheritance__IValue_ValueChanged(::vl::rpc_controller::RpcObjectReference ref)
-	{
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(GLOBAL_NAME rpcjson_Deserialize(GLOBAL_NAME rpcjson_Serialize(::vl::__vwsn::Box(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcInheritance__IValue_ValueChanged, arguments))))))));
-	}
-
 	void __vwsnc16_Rpc_Inheritance_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Inheritance::InvokeMethod_RpcInheritance__IOne_SetOneValue(::vl::rpc_controller::RpcObjectReference ref)
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
@@ -1246,13 +860,6 @@ Closures
 		}
 	}
 
-	void __vwsnc16_Rpc_Inheritance_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Inheritance::InvokeEvent_RpcInheritance__IOne_CrashAtServer(::vl::rpc_controller::RpcObjectReference ref)
-	{
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(GLOBAL_NAME rpcjson_Deserialize(GLOBAL_NAME rpcjson_Serialize(::vl::__vwsn::Box(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcInheritance__IOne_CrashAtServer, arguments))))))));
-	}
-
 	void __vwsnc16_Rpc_Inheritance_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Inheritance::InvokeMethod_RpcInheritance__ITwo_SetTwoValue(::vl::rpc_controller::RpcObjectReference ref)
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
@@ -1296,61 +903,6 @@ Closures
 				}
 			}
 		}
-	}
-
-	void __vwsnc16_Rpc_Inheritance_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Inheritance::InvokeEvent_RpcInheritance__ITwo_CrashAtClient(::vl::rpc_controller::RpcObjectReference ref)
-	{
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(GLOBAL_NAME rpcjson_Deserialize(GLOBAL_NAME rpcjson_Serialize(::vl::__vwsn::Box(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcInheritance__ITwo_CrashAtClient, arguments))))))));
-	}
-
-	::vl::WString __vwsnc16_Rpc_Inheritance_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Inheritance::InvokeMethod_RpcInheritance__IDerived_GuardCrashAtClient(::vl::rpc_controller::RpcObjectReference ref)
-	{
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcInheritance__IDerived_GuardCrashAtClient, arguments);
-		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
-		if (static_cast<bool>(rpcException))
-		{
-			throw ::vl::Exception(rpcException.Value().message);
-		}
-		auto rpcExceptionJson = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
-		if (static_cast<bool>(rpcExceptionJson))
-		{
-			auto rpcExceptionObject = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(rpcExceptionJson.Obj());
-			if (static_cast<bool>(rpcExceptionObject))
-			{
-				auto rpcExceptionTypeNode = ::vl::Ptr<::vl::glr::json::JsonNode>();
-				{
-					auto __vwsn_for_enumerable_rpcExceptionField = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(rpcExceptionObject.Obj())->fields));
-					auto __vwsn_for_enumerator_rpcExceptionField = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcExceptionField.Obj())->CreateEnumerator();
-					while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->Next())
-					{
-						auto rpcExceptionField = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->GetCurrent());
-						{
-							if ((::vl::__vwsn::This(rpcExceptionField.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
-								(rpcExceptionTypeNode = ::vl::__vwsn::This(rpcExceptionField.Obj())->value);
-						}
-					}
-				}
-				if (static_cast<bool>(rpcExceptionTypeNode))
-				{
-					auto rpcExceptionType = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(rpcExceptionTypeNode.Obj())).Obj())->content.value;
-					if ((rpcExceptionType == ::vl::WString::Unmanaged(L"system::RpcException")))
-					{
-						auto rpcJsonException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(GLOBAL_NAME rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode>(rpcExceptionObject)));
-						if (static_cast<bool>(rpcJsonException))
-						{
-							throw ::vl::Exception(rpcJsonException.Value().message);
-						}
-					}
-				}
-			}
-		}
-		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
-		auto jsonValue0 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(jsonResult.Obj())).Obj())->content.value;
-		return jsonValue0;
 	}
 
 	void __vwsnc16_Rpc_Inheritance_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Inheritance::InvokeMethod_RpcInheritance__IDerived_SetDerivedValue(::vl::rpc_controller::RpcObjectReference ref)
@@ -1561,7 +1113,6 @@ Closures
 	::vl::Ptr<::RpcInheritance::IDerived> __vwsnc1_Rpc_Inheritance_serviceMain__RpcInheritance_IService::CreateDerived()
 	{
 		auto derived = ::vl::Ptr<::RpcInheritance::IDerived>(new ::vl_workflow_global::__vwsnc4_Rpc_Inheritance_serviceMain_CreateDerived__RpcInheritance_IDerived(this));
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(derived.Obj())->CrashAtServer, vl::Func(::vl_workflow_global::__vwsnf1_Rpc_Inheritance_serviceMain_CreateDerived_(this)));
 		return derived;
 	}
 
@@ -1581,7 +1132,6 @@ Closures
 	void __vwsnc2_Rpc_Inheritance_serviceMain_CreateOne__RpcInheritance_IOne::SetOneValue()
 	{
 		(value = ::vl::WString::Unmanaged(L"One"));
-		::vl::__vwsn::EventInvoke(this->ValueChanged)();
 	}
 
 	//-------------------------------------------------------------------
@@ -1600,7 +1150,6 @@ Closures
 	void __vwsnc3_Rpc_Inheritance_serviceMain_CreateTwo__RpcInheritance_ITwo::SetTwoValue()
 	{
 		(value = ::vl::WString::Unmanaged(L"Two"));
-		::vl::__vwsn::EventInvoke(this->ValueChanged)();
 	}
 
 	//-------------------------------------------------------------------
@@ -1629,25 +1178,6 @@ Closures
 	void __vwsnc4_Rpc_Inheritance_serviceMain_CreateDerived__RpcInheritance_IDerived::SetDerivedValue()
 	{
 		(value = ::vl::WString::Unmanaged(L"Derived"));
-		::vl::__vwsn::EventInvoke(this->ValueChanged)();
-	}
-
-	::vl::WString __vwsnc4_Rpc_Inheritance_serviceMain_CreateDerived__RpcInheritance_IDerived::GuardCrashAtClient()
-	{
-		try
-		{
-			{
-				::vl::__vwsn::EventInvoke(this->CrashAtClient)();
-			}
-		}
-		catch(const ::vl::Exception& __vwsne_0)
-		{
-			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
-			{
-				return ::vl::__vwsn::This(ex.Obj())->GetMessage();
-			}
-		}
-		return ::vl::WString::Unmanaged(L"");
 	}
 
 	//-------------------------------------------------------------------
@@ -1681,11 +1211,6 @@ Closures
 					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::ITwo>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 					::vl::__vwsn::This(target.Obj())->SetTwoValue();
 					return ::vl::reflection::description::Value();
-				}
-				else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcInheritance__IDerived_GuardCrashAtClient))
-				{
-					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IDerived>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-					return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->GuardCrashAtClient());
 				}
 				else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcInheritance__IDerived_SetDerivedValue))
 				{
@@ -1783,23 +1308,7 @@ Closures
 					{
 						{
 							auto __vwsn_switch_3 = eventId;
-							if ((__vwsn_switch_3 == GLOBAL_NAME rpcevent_RpcInheritance__IValue_ValueChanged))
-							{
-								auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IValue>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-								::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->ValueChanged)();
-							}
-							else if ((__vwsn_switch_3 == GLOBAL_NAME rpcevent_RpcInheritance__IOne_CrashAtServer))
-							{
-								auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::IOne>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-								::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->CrashAtServer)();
-							}
-							else if ((__vwsn_switch_3 == GLOBAL_NAME rpcevent_RpcInheritance__ITwo_CrashAtClient))
-							{
-								auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcInheritance::ITwo>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-								::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->CrashAtClient)();
-							}
-							else
-								throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
+							throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
 						}
 					}
 					catch(const ::vl::Exception& __vwsne_1)
@@ -1844,13 +1353,6 @@ Closures
 		return ::vl::__vwsn::Unbox<::vl::WString>(invokeResult);
 	}
 
-	void __vwsnc7_Rpc_Inheritance_rpcops_IOps_Create__rpcops_IOps_Rpc_Inheritance::InvokeEvent_RpcInheritance__IValue_ValueChanged(::vl::rpc_controller::RpcObjectReference ref)
-	{
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcInheritance__IValue_ValueChanged, arguments))));
-	}
-
 	void __vwsnc7_Rpc_Inheritance_rpcops_IOps_Create__rpcops_IOps_Rpc_Inheritance::InvokeMethod_RpcInheritance__IOne_SetOneValue(::vl::rpc_controller::RpcObjectReference ref)
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
@@ -1863,13 +1365,6 @@ Closures
 		}
 	}
 
-	void __vwsnc7_Rpc_Inheritance_rpcops_IOps_Create__rpcops_IOps_Rpc_Inheritance::InvokeEvent_RpcInheritance__IOne_CrashAtServer(::vl::rpc_controller::RpcObjectReference ref)
-	{
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcInheritance__IOne_CrashAtServer, arguments))));
-	}
-
 	void __vwsnc7_Rpc_Inheritance_rpcops_IOps_Create__rpcops_IOps_Rpc_Inheritance::InvokeMethod_RpcInheritance__ITwo_SetTwoValue(::vl::rpc_controller::RpcObjectReference ref)
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
@@ -1880,26 +1375,6 @@ Closures
 		{
 			throw ::vl::Exception(rpcException.Value().message);
 		}
-	}
-
-	void __vwsnc7_Rpc_Inheritance_rpcops_IOps_Create__rpcops_IOps_Rpc_Inheritance::InvokeEvent_RpcInheritance__ITwo_CrashAtClient(::vl::rpc_controller::RpcObjectReference ref)
-	{
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcInheritance__ITwo_CrashAtClient, arguments))));
-	}
-
-	::vl::WString __vwsnc7_Rpc_Inheritance_rpcops_IOps_Create__rpcops_IOps_Rpc_Inheritance::InvokeMethod_RpcInheritance__IDerived_GuardCrashAtClient(::vl::rpc_controller::RpcObjectReference ref)
-	{
-		auto arguments = ::vl::reflection::description::IValueArray::Create();
-		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
-		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcInheritance__IDerived_GuardCrashAtClient, arguments);
-		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
-		if (static_cast<bool>(rpcException))
-		{
-			throw ::vl::Exception(rpcException.Value().message);
-		}
-		return ::vl::__vwsn::Unbox<::vl::WString>(invokeResult);
 	}
 
 	void __vwsnc7_Rpc_Inheritance_rpcops_IOps_Create__rpcops_IOps_Rpc_Inheritance::InvokeMethod_RpcInheritance__IDerived_SetDerivedValue(::vl::rpc_controller::RpcObjectReference ref)
@@ -1960,13 +1435,6 @@ Closures
 		this->_lc = __vwsnctor_lc;
 		this->_ref = __vwsnctor_proxyRef;
 		this->_ops = __vwsnctor_ops;
-		this->__vwsn_Cached_ = ::vl::WString::Unmanaged(L"");
-		this->__vwsn_Available_ = false;
-	}
-
-	void __vwsnc8_Rpc_Inheritance_rpcwrapper_RpcInheritance__IValue__RpcInheritance_IRpcWrapper_IValue::_rpcInvalidate_Value()
-	{
-		(__vwsn_Available_ = false);
 	}
 
 	void __vwsnc8_Rpc_Inheritance_rpcwrapper_RpcInheritance__IValue__RpcInheritance_IRpcWrapper_IValue::DisconnectFromLifecycle()
@@ -1987,13 +1455,7 @@ Closures
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		if (__vwsn_Available_)
-		{
-			return __vwsn_Cached_;
-		}
-		(__vwsn_Cached_ = ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcInheritance__IValue_GetValue(_ref));
-		(__vwsn_Available_ = true);
-		return __vwsn_Cached_;
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcInheritance__IValue_GetValue(_ref);
 	}
 
 	//-------------------------------------------------------------------
@@ -2003,13 +1465,6 @@ Closures
 		this->_lc = __vwsnctor_lc;
 		this->_ref = __vwsnctor_proxyRef;
 		this->_ops = __vwsnctor_ops;
-		this->__vwsn_Cached_ = ::vl::WString::Unmanaged(L"");
-		this->__vwsn_Available_ = false;
-	}
-
-	void __vwsnc9_Rpc_Inheritance_rpcwrapper_RpcInheritance__IOne__RpcInheritance_IRpcWrapper_IOne::_rpcInvalidate_Value()
-	{
-		(__vwsn_Available_ = false);
 	}
 
 	void __vwsnc9_Rpc_Inheritance_rpcwrapper_RpcInheritance__IOne__RpcInheritance_IRpcWrapper_IOne::DisconnectFromLifecycle()
@@ -2030,13 +1485,7 @@ Closures
 	{
 		if ((_lc == nullptr))
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
-		if (__vwsn_Available_)
-		{
-			return __vwsn_Cached_;
-		}
-		(__vwsn_Cached_ = ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcInheritance__IValue_GetValue(_ref));
-		(__vwsn_Available_ = true);
-		return __vwsn_Cached_;
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcInheritance__IValue_GetValue(_ref);
 	}
 
 	void __vwsnc9_Rpc_Inheritance_rpcwrapper_RpcInheritance__IOne__RpcInheritance_IRpcWrapper_IOne::SetOneValue()
