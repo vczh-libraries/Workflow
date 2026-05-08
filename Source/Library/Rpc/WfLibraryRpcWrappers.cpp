@@ -1087,5 +1087,19 @@ namespace vl
 			return nullptr;
 		}
 
+		void ReadEventException(RpcEventExceptionMap exceptions)
+		{
+			if (!exceptions || exceptions->GetCount() == 0) return;
+
+			WString message;
+			auto keys = exceptions->GetKeys();
+			for (vint i = 0; i < keys->GetCount(); i++)
+			{
+				auto key = keys->Get(i);
+				auto exception = UnboxValue<RpcException>(exceptions->Get(key));
+				message += itow(UnboxValue<vint>(key)) + L":" + exception.message + L";";
+			}
+			throw Exception(message);
+		}
 	}
 }

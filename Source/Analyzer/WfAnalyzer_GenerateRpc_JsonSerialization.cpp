@@ -1363,9 +1363,18 @@ namespace vl
 						auto catchBlock = CreateBlock();
 						AddRpcEventExceptionMapSet(catchBlock, L"rpcEventExceptions", CreateMember(CreateReference(L"_lc"), L"ClientId"), CreateMember(CreateReference(L"ex"), L"Message"));
 						AddStatement(block, CreateTryFinally(CreateTryCatch(BuildDispatchChainJson(manager, interfaces, true), L"ex", catchBlock), finallyBlock));
-						AddStatement(block, CreateReturn(CreateCast(CreateRpcEventExceptionMapType(), CreateCall(
+						auto returnExceptionBranch = CreateBlock();
+						AddStatement(returnExceptionBranch, CreateReturn(CreateCast(CreateRpcEventExceptionMapType(), CreateCall(
 							CreateReference(L"rpcjson_Deserialize"),
 							CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"rpcEventExceptions"))))));
+						auto returnNullBranch = CreateBlock();
+						AddStatement(returnNullBranch, CreateReturn(CreateNull()));
+						AddStatement(
+							block,
+							CreateIf(
+								CreateBinary(WfBinaryOperator::GT, CreateMember(CreateReference(L"rpcEventExceptions"), L"Count"), CreateInt(0)),
+								returnExceptionBranch,
+								returnNullBranch));
 						newOps->declarations.Add(invokeEvent);
 					}
 

@@ -693,45 +693,11 @@ namespace vl
 
 				void AddRpcEventExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value)
 				{
-					AddStatement(block, CreateInferredVariableStatement(L"rpcEventExceptions", value));
-					auto raiseBranch = CreateBlock();
-					AddStatement(raiseBranch, CreateVariableStatement(L"rpcEventExceptionMessage", CreatePredefinedType(WfPredefinedTypeName::String), CreateString(L"")));
-					auto forBlock = CreateBlock();
-					auto createMessage = []()
-					{
-						return CreateMember(CreateReference(L"rpcEventException"), L"message");
-					};
-					AddStatement(forBlock, CreateInferredVariableStatement(
-						L"rpcEventException",
-						CreateCast(
-							CreateQualifiedType(L"system::RpcException"),
-							CreateCall(
-								CreateMember(CreateReference(L"rpcEventExceptions"), L"Get"),
-								CreateReference(L"rpcEventExceptionKey")))));
-					auto firstMessageBranch = CreateBlock();
-					AddStatement(firstMessageBranch, CreateExpressionStatement(CreateAssign(CreateReference(L"rpcEventExceptionMessage"), createMessage())));
-					auto nextMessageBranch = CreateBlock();
-					AddStatement(
-						nextMessageBranch,
-						CreateExpressionStatement(CreateAssign(
-							CreateReference(L"rpcEventExceptionMessage"),
-							CreateBinary(
-							WfBinaryOperator::FlagAnd,
-							CreateBinary(WfBinaryOperator::FlagAnd, CreateReference(L"rpcEventExceptionMessage"), CreateString(L"\n")),
-							createMessage()))));
-					AddStatement(
-						forBlock,
-						CreateIf(
-							CreateBinary(WfBinaryOperator::EQ, CreateReference(L"rpcEventExceptionMessage"), CreateString(L"")),
-							firstMessageBranch,
-							nextMessageBranch));
-					AddStatement(raiseBranch, CreateForEach(L"rpcEventExceptionKey", CreateMember(CreateReference(L"rpcEventExceptions"), L"Keys"), forBlock));
-					AddStatement(raiseBranch, CreateRaise(CreateReference(L"rpcEventExceptionMessage")));
 					AddStatement(
 						block,
-						CreateIf(
-							CreateBinary(WfBinaryOperator::GT, CreateMember(CreateReference(L"rpcEventExceptions"), L"Count"), CreateInt(0)),
-							raiseBranch));
+						CreateExpressionStatement(CreateCall(
+							CreateQualifiedExpression(L"system::IRpcLifecycle::ReadEventException"),
+							value)));
 				}
 
 				Ptr<WfFunctionArgument> CreateFunctionArgument(const WString& name, Ptr<WfType> type)
@@ -1508,7 +1474,16 @@ namespace vl
 						auto catchBlock = CreateBlock();
 						AddRpcEventExceptionMapSet(catchBlock, L"rpcEventExceptions", CreateMember(CreateReference(L"_lc"), L"ClientId"), CreateMember(CreateReference(L"ex"), L"Message"));
 						AddStatement(block, CreateTryFinally(CreateTryCatch(BuildDispatchChain(interfaces, true), L"ex", catchBlock), finallyBlock));
-						AddStatement(block, CreateReturn(CreateReference(L"rpcEventExceptions")));
+						auto returnExceptionBranch = CreateBlock();
+						AddStatement(returnExceptionBranch, CreateReturn(CreateReference(L"rpcEventExceptions")));
+						auto returnNullBranch = CreateBlock();
+						AddStatement(returnNullBranch, CreateReturn(CreateNull()));
+						AddStatement(
+							block,
+							CreateIf(
+								CreateBinary(WfBinaryOperator::GT, CreateMember(CreateReference(L"rpcEventExceptions"), L"Count"), CreateInt(0)),
+								returnExceptionBranch,
+								returnNullBranch));
 						newOps->declarations.Add(invokeEvent);
 					}
 

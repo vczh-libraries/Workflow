@@ -27,7 +27,7 @@ namespace vl
 					{
 						MergeRpcEventExceptionMap(exceptions, target->InvokeEvent(ref, eventId, arguments));
 					}
-					return exceptions;
+					return exceptions->GetCount() == 0 ? nullptr : exceptions;
 				}
 			};
 		}

@@ -284,6 +284,9 @@ interface system::IRpcLifecycle : system::Interface {
     function LocalObjectHold(ref : system::RpcObjectReference, remoteClientId : system::Int64) : system::Void;
     function LocalObjectUnhold(ref : system::RpcObjectReference, remoteClientId : system::Int64) : system::Void;
     function PtrToRef(obj : system::Interface^) : system::RpcObjectReference;
+    @InvokeTemplate:::vl::rpc_controller::ReadEventException($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::ReadEventException)
+    static function ReadEventException(exceptions : system::Dictionary^) : system::Void;
     function RefToPtr(ref : system::RpcObjectReference) : system::Interface^;
     function RegisterService(fullName : system::String, service : system::Interface^) : system::Void;
     function RequestService(fullName : system::String) : system::Interface^;

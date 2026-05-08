@@ -2,87 +2,74 @@
 
 # PROBLEM DESCRIPTION
 
-You are going to create Test/TypeScript/Rpc.d.ts. You must read TODO_RPC_(Json|Definition).md with source codes in Source/Library/Rpc for more understanding of the interface and schema
+- you have to follow `REPO-ROOT/.github/Guidelines/Coding.md` when coding.
+- you have to run unit test to make sure your change works.
+- you have to follow complete instructions in `.github\Rules\verify-and-commit.md` to properly finish any task, before doing the next task.
+  - It is important to do task one by one strictly, by me designing tasks in this way, we can achieve:
+  - Easy-to-understand commits for file changing that is easy to review.
+  - Limit side effects so that you don't have to deal with massive of issues at the same time.
 
-Rpc.d.ts basically contains a JSON schema that is supposed to represent IRpcDispatcher. For example, we can call IRpcDispatcher::BroadcastFromClient_ObjectEventOps::InvokeEvent`, and in the document we knows it either returns null or RpcException[int]. and such dictionary will be serialized to `null | [number, system_RpcException][]`. So the schema of the type looks like this
+## Task 1
 
-```TypeScript
-export interface IObjectEventOps_InvokeEvent_Request<T>
-{
-  rpcMethod: "IObjectEventOps_InvokeEvent";
-  sourceClientId : number;
-  // SendToClient::* would have an additional targetClientId because this is not broadcasting
-  ref : system_RpcObjectReference;
-  eventId : number;
-  arguments: T[];
-}
+When `IObjectEventOps::InvokeEvent` does not raise exception, it should return null.
+When it raises exception, the exception message should be formatted like `clientId:message;...`. The last semicolon should exist, it is not just a delimeter.
+But the wrapper should still verify if it is not null and not empty to raise the exception.
+It will affect the last two block of `Rpc/Inheritance` sample's expected test result in `IndexRpc.txt`.
 
-export interface IObjectEventOps_InvokeEvent_Response
-{
-  rpcMethod: "IObjectEventOps_InvokeEvent";
-  // a response is sent from the client being requested to the client requesting.
-  // so it is one to one regardless SendToClient::* or BroadcastFromClient::*
-  sourceClientId : number;
-  targetClientId : number;
-  response : null | [number, system_RpcException][]; // for functions returning void, there will be no response
-}
+## Task 2
 
-export type Request<T> =
-  | IObjectEventOps_InvokeEvent_Response<T>
-  | ...
-  ;
+I would like to split `Rpc/Inheritance` sample into 3, keep the `s` thing, All 4 interfaces and their inheritance relationship remain in all 3 samples:
+- `Rpc/Inheritance`: No event is declared. No member raise exception and no try-catch (except `IDerived::Set(One|Two)Value`, they still raise exceptions, to make sure they will not be called in the test case). No `GuardCrashAtClient` is declared.
+- `Rpc/Inheritance_MethodException`: No event is declared, `CreateOne`, `CreateTwo`, `GuardCrashAtClient` is not declared. `Value` property and `SetDerivedValue` is not declared. It only calls `Set(One|Two)Value` and test their exceptions.
+- `Rpc/Inheritance_EventException`: Deleting all members except events and `GuardCrashAndClient`. It only trigger two events and test their exceptions.
 
-export type Response =
-  | IObjectEventOps_InvokeEvent_Response
-  | ...
-  ;
-```
+All 3 samples should remain calling involved members just like the original sample, so the first one leaving 4 `[]`, and the other leaving 2 `[]`, in the test result.
 
-Both `Request` and `Response` should contains all methods in all 4 ops interfaces.
-`T` would be `KnownTypeSchema | UnknownTypeSchema`, but since the `Rpc.d.ts` is shared but schemas are generated, so there is no choice but to use generic.
-You will have to determine of `T` will be used in any interface or not, only add `<T>` if yes.
+## Task 3
 
-Update `TODO_RPC_Json.md` about `Type/TypeScript/Rpc.d.ts`, and rules of how `.d.ts` connects to C++ interfaces using your own words.
+Now `IRpcListEventOps::OnItemChanged` will accept exceptions just like `IObjectEventOps::InvokeEvent`.
+You need to create a `Rpc/Oblist_EventException`, the `IServer::GetOblist` creates an `observe int[]`, handle its `ItemChanged` event to raise an exception (need to format all arguments to the exception message), save it in a field and return it. Now `clientMain` inside a try-catch, it adds 0 to the list, triggering `ItemChanged` and catch the exception and return.
 
-After finishing everything, git commit and push directly.
+Unlike object and wrappers, container related stuff are all implemented in C++, mainly in `WfLibraryRpcWrappers.(h|cpp)`.
+You can register a static function `IRpcLifecycle::ReadEventException`, in both object wrappers and container wrappers, call it with the return value from `InvokeEvent` and `OnItemChanged`:
+- When the argument is null or is empty, nothing happens.
+- When the argument has anything, format the exception message and raise it, using `vl::Exception`.
+- In this way we DRY.
+
+Remember to update documents and `Rpc.d.ts`.
 
 # UPDATES
 
 # TEST [CONFIRMED]
 
-Confirm the new TypeScript schema against the C++ RPC ops surface in `Source/Library/Rpc/WfLibraryRpc.h`:
-- all methods from `IRpcListOps`, `IRpcObjectOps`, `IRpcListEventOps`, and `IRpcObjectEventOps` appear in `Request<T>` and `Response<T>`;
-- request envelopes for `SendToClient_*` ops include `targetClientId`;
-- request envelopes for `BroadcastFromClient_*` event ops omit `targetClientId`;
-- all response envelopes include both `sourceClientId` and `targetClientId`;
-- only interfaces with serialized generic JSON payloads use `<T>`.
+Task 1 uses the existing `Rpc/Inheritance` runtime sample. The expected result in `Test/Resources/IndexRpc.txt` should change the two event-exception blocks to include the reporting client id and a trailing semicolon:
+- `derived.CrashAtServer()` should report `1:CrashedAtServer;`.
+- `derived.GuardCrashAtClient()` should report `2:CrashedAtClient;`.
 
 Success criteria:
-- `Test/TypeScript/Rpc.d.ts` type-checks by itself.
-- `Test/TypeScript/prepare.ps1` succeeds.
-- `npm run build` succeeds in `Test/TypeScript`.
+- `IRpcObjectEventOps::InvokeEvent` returns null when no remote handler raises.
+- A non-null, non-empty event exception map raises a `vl::Exception` whose message is `clientId:message;...`.
+- The generated `Rpc/Inheritance` runtime test passes with the updated expected output.
+
+Confirmed by Win32 and x64 builds plus unit tests. Runtime and generated C++ RPC tests now produce `[1:CrashedAtServer;][2:CrashedAtClient;]` for `Rpc/Inheritance`.
 
 # PROPOSALS
 
-- No.1 Add shared TypeScript RPC dispatcher schema [CONFIRMED]
+- No.1 Add shared object event exception reader [CONFIRMED]
 
-## No.1 Add shared TypeScript RPC dispatcher schema
+## No.1 Add shared object event exception reader
 
 ### CODE CHANGE
 
-Created `Test/TypeScript/Rpc.d.ts` with shared TypeScript declarations for dispatcher request and response messages. The file declares stable internal transport structs directly and uses generic `T` only where the payload comes from generated JSON serialization schemas.
-
-The schema covers all methods from the four C++ ops interfaces:
-- `IRpcListOps`
-- `IRpcObjectOps`
-- `IRpcListEventOps`
-- `IRpcObjectEventOps`
-
-Updated `TODO_RPC_Json.md` with the rule that generated `Serialization_*.d.ts` files own concrete value schemas, while `Rpc.d.ts` owns the dispatcher envelope schema and connects to generated schemas by instantiating `T` as `KnownTypeSchema | UnknownTypeSchema`.
+- Added `vl::rpc_controller::ReadEventException` and registered it on `system::IRpcLifecycle`.
+- Updated generated object wrappers to call `IRpcLifecycle::ReadEventException` when reading event invocation results.
+- Updated object event ops generation, including JSON serialization generation, to return null for no event exceptions and a non-empty exception map otherwise.
+- Updated the RPC lifecycle mock and `Rpc/Inheritance` expected output.
 
 ### CONFIRMED
 
-The proposal is confirmed. Verification passed:
-- `npm exec tsc -- --ignoreConfig --noEmit --strict Rpc.d.ts --moduleResolution node16 --module node16 --target ES2020`
-- `Test/TypeScript/prepare.ps1`
-- `npm run build` in `Test/TypeScript`
+- `copilotBuild.ps1 -Configuration Debug -Platform x64`
+- `copilotBuild.ps1 -Configuration Debug -Platform Win32`
+- `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`
+- `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection` on Win32 and x64
+- `Test/TypeScript/prepare.ps1`, `npm run build`
