@@ -73,3 +73,22 @@ Confirmed by Win32 and x64 builds plus unit tests. Runtime and generated C++ RPC
 - `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`
 - `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection` on Win32 and x64
 - `Test/TypeScript/prepare.ps1`, `npm run build`
+
+- No.2 Split inheritance RPC sample [CONFIRMED]
+
+## No.2 Split inheritance RPC sample
+
+### CODE CHANGE
+
+- Split `Rpc/Inheritance` into no-event, method-exception, and event-exception samples while preserving the four-interface inheritance shape and global `s`.
+- Made the no-event `Value` property dynamic so member calls can update observable results without declaring events.
+- Added resource/project entries and regenerated RPC metadata, C++ RPC wrappers, and TypeScript artifacts.
+
+### CONFIRMED
+
+- `CompilerTest_LoadAndCompile` x64
+- `copilotBuild.ps1 -Configuration Debug -Platform x64`
+- `copilotBuild.ps1 -Configuration Debug -Platform Win32`
+- `RuntimeTest` Win32 and x64
+- `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection` Win32 and x64
+- `Test/TypeScript/prepare.ps1`, `npm run build`

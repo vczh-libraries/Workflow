@@ -1,40 +1,35 @@
 module Rpc;
 using system::*;
 
-namespace RpcInheritance
+namespace RpcInheritanceEventException
 {
   @rpc:Interface
   interface IValue
   {
-    func GetValue() : string;
-    @rpc:Dynamic
-    prop Value : string {GetValue}
   }
 
   @rpc:Interface
   interface IOne : IValue
   {
-    func SetOneValue() : void;
+    event CrashAtServer();
   }
 
   @rpc:Interface
   interface ITwo : IValue
   {
-    func SetTwoValue() : void;
+    event CrashAtClient();
   }
 
   @rpc:Interface
   interface IDerived : IOne, ITwo
   {
-    func SetDerivedValue() : void;
+    func GuardCrashAtClient() : string;
   }
 
   @rpc:Interface
   @rpc:Ctor
   interface IService
   {
-    func CreateOne() : IOne^;
-    func CreateTwo() : ITwo^;
     func CreateDerived() : IDerived^;
   }
 }

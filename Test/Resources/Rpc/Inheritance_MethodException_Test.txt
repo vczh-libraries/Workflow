@@ -1,0 +1,42 @@
+module Rpc;
+using system::*;
+using RpcInheritanceMethodException::*;
+
+var s = "";
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcInheritanceMethodException::IService^)
+  {
+    override func CreateDerived() : IDerived^
+    {
+      return new IDerived^
+      {
+        override func SetOneValue() : void
+        {
+          raise "DoNotSetOneValue";
+        }
+
+        override func SetTwoValue() : void
+        {
+          raise "DoNotSetTwoValue";
+        }
+      };
+    }
+  };
+  lc.RegisterService("RpcInheritanceMethodException::IService", serviceObj);
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (RpcInheritanceMethodException::IService^) lc.RequestService("RpcInheritanceMethodException::IService");
+  var derived = service.CreateDerived();
+
+  s = $"$(s)[]";
+  try { derived.SetOneValue(); } catch (ex) { s = $"$(s)[$(ex.Message)]"; }
+
+  s = $"$(s)[]";
+  try { derived.SetTwoValue(); } catch (ex) { s = $"$(s)[$(ex.Message)]"; }
+
+  return s;
+}

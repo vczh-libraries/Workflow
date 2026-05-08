@@ -1,0 +1,47 @@
+module Rpc;
+using system::*;
+using RpcInheritanceEventException::*;
+
+var s = "";
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcInheritanceEventException::IService^)
+  {
+    override func CreateDerived() : IDerived^
+    {
+      var derived = new IDerived^
+      {
+        override func GuardCrashAtClient() : string
+        {
+          try { CrashAtClient(); } catch (ex) { return ex.Message; }
+          return "";
+        }
+      };
+      attach(derived.CrashAtServer, func() : void
+      {
+        raise "CrashedAtServer";
+      });
+      return derived;
+    }
+  };
+  lc.RegisterService("RpcInheritanceEventException::IService", serviceObj);
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (RpcInheritanceEventException::IService^) lc.RequestService("RpcInheritanceEventException::IService");
+  var derived = service.CreateDerived();
+  attach(derived.CrashAtClient, func() : void
+  {
+    raise "CrashedAtClient";
+  });
+
+  s = $"$(s)[]";
+  try { derived.CrashAtServer(); } catch (ex) { s = $"$(s)[$(ex.Message)]"; }
+
+  s = $"$(s)[]";
+  s = $"$(s)[$(derived.GuardCrashAtClient())]";
+
+  return s;
+}

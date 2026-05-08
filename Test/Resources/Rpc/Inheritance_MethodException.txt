@@ -1,14 +1,11 @@
 module Rpc;
 using system::*;
 
-namespace RpcInheritance
+namespace RpcInheritanceMethodException
 {
   @rpc:Interface
   interface IValue
   {
-    func GetValue() : string;
-    @rpc:Dynamic
-    prop Value : string {GetValue}
   }
 
   @rpc:Interface
@@ -26,15 +23,12 @@ namespace RpcInheritance
   @rpc:Interface
   interface IDerived : IOne, ITwo
   {
-    func SetDerivedValue() : void;
   }
 
   @rpc:Interface
   @rpc:Ctor
   interface IService
   {
-    func CreateOne() : IOne^;
-    func CreateTwo() : ITwo^;
     func CreateDerived() : IDerived^;
   }
 }
