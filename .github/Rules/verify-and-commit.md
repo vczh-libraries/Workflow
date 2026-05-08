@@ -20,8 +20,8 @@ If `CompilerTest_LoadAndCompiler` succeeded but following test projects fail:
 
 ## RPC Specific
 
-- If `IRpc*Ops` interfaces in `WfLibraryRpc.h` are changed, `Test/TypeScript/Rpc.d.ts` should also be changed according to the document.
-- You are recommended to read them for context:
+- If `IRpc*Ops` interfaces in `WfLibraryRpc.h` are changed, the following files may have to be updated accordingly:
+  - `Test/TypeScript/Rpc.d.ts`
   - `TODO_RPC_Definition.md`
   - `TODO_RPC_Json.md`
   - `TODO_RPC_GeneratedWrappers.md`
