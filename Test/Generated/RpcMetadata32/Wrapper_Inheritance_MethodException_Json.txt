@@ -35,7 +35,7 @@ func rpcjson_Deserialize_Struct_system__RpcObjectReference(node : system::JsonNo
     }
     if (jsonFieldValue6 is null)
     raise "JSON object field not found: clientId";
-    var jsonValue8 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue6).content.value);
+    var jsonValue8 = (cast (::system::Int32) (cast (system::JsonNumber^) jsonFieldValue6).content.value);
     var jsonFieldValue9 : system::JsonNode^ = null;
     for (jsonField10 in object.fields)
     {
@@ -44,7 +44,7 @@ func rpcjson_Deserialize_Struct_system__RpcObjectReference(node : system::JsonNo
     }
     if (jsonFieldValue9 is null)
     raise "JSON object field not found: objectId";
-    var jsonValue11 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue9).content.value);
+    var jsonValue11 = (cast (::system::Int32) (cast (system::JsonNumber^) jsonFieldValue9).content.value);
     var jsonFieldValue12 : system::JsonNode^ = null;
     for (jsonField13 in object.fields)
     {
@@ -53,7 +53,7 @@ func rpcjson_Deserialize_Struct_system__RpcObjectReference(node : system::JsonNo
     }
     if (jsonFieldValue12 is null)
     raise "JSON object field not found: typeId";
-    var jsonValue14 = (cast (::system::Int64) (cast (system::JsonNumber^) jsonFieldValue12).content.value);
+    var jsonValue14 = (cast (::system::Int32) (cast (system::JsonNumber^) jsonFieldValue12).content.value);
     return {clientId : jsonValue8; objectId : jsonValue11; typeId : jsonValue14;};
 }
 
@@ -196,55 +196,26 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
             try
             switch (methodId)
             {
-                case rpcmethod_RpcInheritance__IValue_GetValue:
+                case rpcmethod_RpcInheritanceMethodException__IOne_SetOneValue:
                 {
-                    var target = (cast (RpcInheritance::IValue^) _lc.RefToPtr(ref));
-                    var jsonString0 = new (system::JsonString^)();
-                    (jsonString0.content = {value : (cast (string) target.GetValue());});
-                    return jsonString0;
-                }
-                case rpcmethod_RpcInheritance__IOne_SetOneValue:
-                {
-                    var target = (cast (RpcInheritance::IOne^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcInheritanceMethodException::IOne^) _lc.RefToPtr(ref));
                     target.SetOneValue();
                     var jsonLiteral0 = new (system::JsonLiteral^)();
                     (jsonLiteral0.value = system::JsonLiteralValue::Null);
                     return jsonLiteral0;
                 }
-                case rpcmethod_RpcInheritance__ITwo_SetTwoValue:
+                case rpcmethod_RpcInheritanceMethodException__ITwo_SetTwoValue:
                 {
-                    var target = (cast (RpcInheritance::ITwo^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcInheritanceMethodException::ITwo^) _lc.RefToPtr(ref));
                     target.SetTwoValue();
                     var jsonLiteral0 = new (system::JsonLiteral^)();
                     (jsonLiteral0.value = system::JsonLiteralValue::Null);
                     return jsonLiteral0;
                 }
-                case rpcmethod_RpcInheritance__IDerived_SetDerivedValue:
+                case rpcmethod_RpcInheritanceMethodException__IService_CreateDerived:
                 {
-                    var target = (cast (RpcInheritance::IDerived^) _lc.RefToPtr(ref));
-                    target.SetDerivedValue();
-                    var jsonLiteral0 = new (system::JsonLiteral^)();
-                    (jsonLiteral0.value = system::JsonLiteralValue::Null);
-                    return jsonLiteral0;
-                }
-                case rpcmethod_RpcInheritance__IService_CreateDerived:
-                {
-                    var target = (cast (RpcInheritance::IService^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcInheritanceMethodException::IService^) _lc.RefToPtr(ref));
                     var jsonValue0 = system::IRpcLifecycle::RpcBoxByval(target.CreateDerived(), _lc);
-                    var jsonNode1 = rpcjson_Serialize(jsonValue0);
-                    return jsonNode1;
-                }
-                case rpcmethod_RpcInheritance__IService_CreateOne:
-                {
-                    var target = (cast (RpcInheritance::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 = system::IRpcLifecycle::RpcBoxByval(target.CreateOne(), _lc);
-                    var jsonNode1 = rpcjson_Serialize(jsonValue0);
-                    return jsonNode1;
-                }
-                case rpcmethod_RpcInheritance__IService_CreateTwo:
-                {
-                    var target = (cast (RpcInheritance::IService^) _lc.RefToPtr(ref));
-                    var jsonValue0 = system::IRpcLifecycle::RpcBoxByval(target.CreateTwo(), _lc);
                     var jsonNode1 = rpcjson_Serialize(jsonValue0);
                     return jsonNode1;
                 }
@@ -334,58 +305,17 @@ func rpcops_IRpcObjectEventOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcO
     };
 }
 
-func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Inheritance^)
+func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Inheritance_MethodException^)
 {
-    return new (rpcops_IOps_Rpc_Inheritance^)
+    return new (rpcops_IOps_Rpc_Inheritance_MethodException^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
-        override func InvokeMethod_RpcInheritance__IValue_GetValue(ref : system::RpcObjectReference) : (::system::String)
+        override func InvokeMethod_RpcInheritanceMethodException__IOne_SetOneValue(ref : system::RpcObjectReference) : (::system::Void)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IValue_GetValue, arguments);
-            var rpcException = (invokeResult as (system::RpcException?));
-            if (rpcException is not null)
-            {
-                raise (cast (system::RpcException) rpcException).message;
-            }
-            var rpcExceptionJson = (invokeResult as (system::JsonNode^));
-            if (rpcExceptionJson is not null)
-            {
-                var rpcExceptionObject = (rpcExceptionJson as (system::JsonObject^));
-                if (rpcExceptionObject is not null)
-                {
-                    var rpcExceptionTypeNode : system::JsonNode^ = null;
-                    for (rpcExceptionField in rpcExceptionObject.fields)
-                    {
-                        if ((rpcExceptionField.name.value == "$"))
-                        (rpcExceptionTypeNode = rpcExceptionField.value);
-                    }
-                    if (rpcExceptionTypeNode is not null)
-                    {
-                        var rpcExceptionType = (cast (system::JsonString^) rpcExceptionTypeNode).content.value;
-                        if ((rpcExceptionType == "system::RpcException"))
-                        {
-                            var rpcJsonException = (rpcjson_Deserialize(rpcExceptionObject) as (system::RpcException?));
-                            if (rpcJsonException is not null)
-                            {
-                                raise (cast (system::RpcException) rpcJsonException).message;
-                            }
-                        }
-                    }
-                }
-            }
-            var jsonResult = (cast (system::JsonNode^) invokeResult);
-            var jsonValue0 = (cast (::system::String) (cast (system::JsonString^) jsonResult).content.value);
-            return jsonValue0;
-        }
-
-        override func InvokeMethod_RpcInheritance__IOne_SetOneValue(ref : system::RpcObjectReference) : (::system::Void)
-        {
-            var arguments : system::Array^ = {};
-            arguments.Resize(0);
-            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IOne_SetOneValue, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritanceMethodException__IOne_SetOneValue, arguments);
             var rpcException = (invokeResult as (system::RpcException?));
             if (rpcException is not null)
             {
@@ -419,11 +349,11 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Inhe
             }
         }
 
-        override func InvokeMethod_RpcInheritance__ITwo_SetTwoValue(ref : system::RpcObjectReference) : (::system::Void)
+        override func InvokeMethod_RpcInheritanceMethodException__ITwo_SetTwoValue(ref : system::RpcObjectReference) : (::system::Void)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__ITwo_SetTwoValue, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritanceMethodException__ITwo_SetTwoValue, arguments);
             var rpcException = (invokeResult as (system::RpcException?));
             if (rpcException is not null)
             {
@@ -457,49 +387,11 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Inhe
             }
         }
 
-        override func InvokeMethod_RpcInheritance__IDerived_SetDerivedValue(ref : system::RpcObjectReference) : (::system::Void)
+        override func InvokeMethod_RpcInheritanceMethodException__IService_CreateDerived(ref : system::RpcObjectReference) : (::RpcInheritanceMethodException::IDerived^)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IDerived_SetDerivedValue, arguments);
-            var rpcException = (invokeResult as (system::RpcException?));
-            if (rpcException is not null)
-            {
-                raise (cast (system::RpcException) rpcException).message;
-            }
-            var rpcExceptionJson = (invokeResult as (system::JsonNode^));
-            if (rpcExceptionJson is not null)
-            {
-                var rpcExceptionObject = (rpcExceptionJson as (system::JsonObject^));
-                if (rpcExceptionObject is not null)
-                {
-                    var rpcExceptionTypeNode : system::JsonNode^ = null;
-                    for (rpcExceptionField in rpcExceptionObject.fields)
-                    {
-                        if ((rpcExceptionField.name.value == "$"))
-                        (rpcExceptionTypeNode = rpcExceptionField.value);
-                    }
-                    if (rpcExceptionTypeNode is not null)
-                    {
-                        var rpcExceptionType = (cast (system::JsonString^) rpcExceptionTypeNode).content.value;
-                        if ((rpcExceptionType == "system::RpcException"))
-                        {
-                            var rpcJsonException = (rpcjson_Deserialize(rpcExceptionObject) as (system::RpcException?));
-                            if (rpcJsonException is not null)
-                            {
-                                raise (cast (system::RpcException) rpcJsonException).message;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        override func InvokeMethod_RpcInheritance__IService_CreateDerived(ref : system::RpcObjectReference) : (::RpcInheritance::IDerived^)
-        {
-            var arguments : system::Array^ = {};
-            arguments.Resize(0);
-            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IService_CreateDerived, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritanceMethodException__IService_CreateDerived, arguments);
             var rpcException = (invokeResult as (system::RpcException?));
             if (rpcException is not null)
             {
@@ -533,89 +425,7 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Inhe
             }
             var jsonResult = (cast (system::JsonNode^) invokeResult);
             var jsonValue0 = rpcjson_Deserialize(jsonResult);
-            return (system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::RpcInheritance::IDerived^));
-        }
-
-        override func InvokeMethod_RpcInheritance__IService_CreateOne(ref : system::RpcObjectReference) : (::RpcInheritance::IOne^)
-        {
-            var arguments : system::Array^ = {};
-            arguments.Resize(0);
-            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IService_CreateOne, arguments);
-            var rpcException = (invokeResult as (system::RpcException?));
-            if (rpcException is not null)
-            {
-                raise (cast (system::RpcException) rpcException).message;
-            }
-            var rpcExceptionJson = (invokeResult as (system::JsonNode^));
-            if (rpcExceptionJson is not null)
-            {
-                var rpcExceptionObject = (rpcExceptionJson as (system::JsonObject^));
-                if (rpcExceptionObject is not null)
-                {
-                    var rpcExceptionTypeNode : system::JsonNode^ = null;
-                    for (rpcExceptionField in rpcExceptionObject.fields)
-                    {
-                        if ((rpcExceptionField.name.value == "$"))
-                        (rpcExceptionTypeNode = rpcExceptionField.value);
-                    }
-                    if (rpcExceptionTypeNode is not null)
-                    {
-                        var rpcExceptionType = (cast (system::JsonString^) rpcExceptionTypeNode).content.value;
-                        if ((rpcExceptionType == "system::RpcException"))
-                        {
-                            var rpcJsonException = (rpcjson_Deserialize(rpcExceptionObject) as (system::RpcException?));
-                            if (rpcJsonException is not null)
-                            {
-                                raise (cast (system::RpcException) rpcJsonException).message;
-                            }
-                        }
-                    }
-                }
-            }
-            var jsonResult = (cast (system::JsonNode^) invokeResult);
-            var jsonValue0 = rpcjson_Deserialize(jsonResult);
-            return (system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::RpcInheritance::IOne^));
-        }
-
-        override func InvokeMethod_RpcInheritance__IService_CreateTwo(ref : system::RpcObjectReference) : (::RpcInheritance::ITwo^)
-        {
-            var arguments : system::Array^ = {};
-            arguments.Resize(0);
-            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritance__IService_CreateTwo, arguments);
-            var rpcException = (invokeResult as (system::RpcException?));
-            if (rpcException is not null)
-            {
-                raise (cast (system::RpcException) rpcException).message;
-            }
-            var rpcExceptionJson = (invokeResult as (system::JsonNode^));
-            if (rpcExceptionJson is not null)
-            {
-                var rpcExceptionObject = (rpcExceptionJson as (system::JsonObject^));
-                if (rpcExceptionObject is not null)
-                {
-                    var rpcExceptionTypeNode : system::JsonNode^ = null;
-                    for (rpcExceptionField in rpcExceptionObject.fields)
-                    {
-                        if ((rpcExceptionField.name.value == "$"))
-                        (rpcExceptionTypeNode = rpcExceptionField.value);
-                    }
-                    if (rpcExceptionTypeNode is not null)
-                    {
-                        var rpcExceptionType = (cast (system::JsonString^) rpcExceptionTypeNode).content.value;
-                        if ((rpcExceptionType == "system::RpcException"))
-                        {
-                            var rpcJsonException = (rpcjson_Deserialize(rpcExceptionObject) as (system::RpcException?));
-                            if (rpcJsonException is not null)
-                            {
-                                raise (cast (system::RpcException) rpcJsonException).message;
-                            }
-                        }
-                    }
-                }
-            }
-            var jsonResult = (cast (system::JsonNode^) invokeResult);
-            var jsonValue0 = rpcjson_Deserialize(jsonResult);
-            return (system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::RpcInheritance::ITwo^));
+            return (system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::RpcInheritanceMethodException::IDerived^));
         }
     };
 }

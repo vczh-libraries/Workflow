@@ -1,0 +1,52 @@
+﻿module RpcMetadata;
+
+namespace RpcInheritanceEventException
+{
+    @rpc:Interface
+    @rpc:IdString("RpcInheritanceEventException::IValue")
+    @rpc:IdNumber(8)
+    interface IValue
+    {
+    }
+
+    @rpc:Interface
+    @rpc:IdString("RpcInheritanceEventException::IOne")
+    @rpc:IdNumber(2)
+    interface IOne : ::RpcInheritanceEventException::IValue
+    {
+        @rpc:IdString("RpcInheritanceEventException::IOne.CrashAtServer")
+        @rpc:IdNumber(3)
+        event CrashAtServer();
+    }
+
+    @rpc:Interface
+    @rpc:IdString("RpcInheritanceEventException::ITwo")
+    @rpc:IdNumber(6)
+    interface ITwo : ::RpcInheritanceEventException::IValue
+    {
+        @rpc:IdString("RpcInheritanceEventException::ITwo.CrashAtClient")
+        @rpc:IdNumber(7)
+        event CrashAtClient();
+    }
+
+    @rpc:Interface
+    @rpc:IdString("RpcInheritanceEventException::IDerived")
+    @rpc:IdNumber(0)
+    interface IDerived : ::RpcInheritanceEventException::IOne, ::RpcInheritanceEventException::ITwo
+    {
+        @rpc:IdString("RpcInheritanceEventException::IDerived.GuardCrashAtClient")
+        @rpc:IdNumber(1)
+        func GuardCrashAtClient() : (::system::String);
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    @rpc:IdString("RpcInheritanceEventException::IService")
+    @rpc:IdNumber(4)
+    interface IService
+    {
+        @rpc:IdString("RpcInheritanceEventException::IService.CreateDerived")
+        @rpc:IdNumber(5)
+        func CreateDerived() : (::RpcInheritanceEventException::IDerived^);
+    }
+}

@@ -1,0 +1,49 @@
+﻿module RpcMetadata;
+
+namespace RpcInheritanceMethodException
+{
+    @rpc:Interface
+    @rpc:IdString("RpcInheritanceMethodException::IValue")
+    @rpc:IdNumber(7)
+    interface IValue
+    {
+    }
+
+    @rpc:Interface
+    @rpc:IdString("RpcInheritanceMethodException::IOne")
+    @rpc:IdNumber(1)
+    interface IOne : ::RpcInheritanceMethodException::IValue
+    {
+        @rpc:IdString("RpcInheritanceMethodException::IOne.SetOneValue")
+        @rpc:IdNumber(2)
+        func SetOneValue() : (::system::Void);
+    }
+
+    @rpc:Interface
+    @rpc:IdString("RpcInheritanceMethodException::ITwo")
+    @rpc:IdNumber(5)
+    interface ITwo : ::RpcInheritanceMethodException::IValue
+    {
+        @rpc:IdString("RpcInheritanceMethodException::ITwo.SetTwoValue")
+        @rpc:IdNumber(6)
+        func SetTwoValue() : (::system::Void);
+    }
+
+    @rpc:Interface
+    @rpc:IdString("RpcInheritanceMethodException::IDerived")
+    @rpc:IdNumber(0)
+    interface IDerived : ::RpcInheritanceMethodException::IOne, ::RpcInheritanceMethodException::ITwo
+    {
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    @rpc:IdString("RpcInheritanceMethodException::IService")
+    @rpc:IdNumber(3)
+    interface IService
+    {
+        @rpc:IdString("RpcInheritanceMethodException::IService.CreateDerived")
+        @rpc:IdNumber(4)
+        func CreateDerived() : (::RpcInheritanceMethodException::IDerived^);
+    }
+}
