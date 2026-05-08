@@ -344,7 +344,7 @@ interface system::IRpcListOps : system::Interface {
 
 @FullName:vl::rpc_controller::IRpcObjectEventOps
 interface system::IRpcObjectEventOps : system::Interface {
-    function InvokeEvent(ref : system::RpcObjectReference, eventId : system::Int64, arguments : system::Array^) : system::Void;
+    function InvokeEvent(ref : system::RpcObjectReference, eventId : system::Int64, arguments : system::Array^) : system::Dictionary<system::Int64, system::RpcException>^;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectEventOps>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectEventOps>::Create)

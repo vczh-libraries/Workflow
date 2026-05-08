@@ -301,19 +301,26 @@ func rpcops_IRpcObjectEventOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcO
     {
         var _lc : system::IRpcLifecycle* = lc;
 
-        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (system::RpcException[int])
         {
+            var rpcEventExceptions : system::RpcException[int] = {};
             _lc.Controller.SetEventSuppressedFlag(ref, eventId, true);
+            try
             try
             switch (eventId)
             {
                 default:
                 raise "Unknown RPC event id.";
             }
+            catch (ex)
+            {
+                rpcEventExceptions.Set(_lc.ClientId, {message : ex.Message;} of (system::RpcException));
+            }
             finally
             {
                 _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
             }
+            return (cast (system::RpcException[int]) rpcjson_Deserialize(rpcjson_Serialize(rpcEventExceptions)));
         }
     };
 }

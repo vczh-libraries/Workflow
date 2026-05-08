@@ -143,9 +143,11 @@ func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjec
     {
         var _lc : system::IRpcLifecycle* = lc;
 
-        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (system::RpcException[int])
         {
+            var rpcEventExceptions : system::RpcException[int] = {};
             _lc.Controller.SetEventSuppressedFlag(ref, eventId, true);
+            try
             try
             switch (eventId)
             {
@@ -157,10 +159,15 @@ func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjec
                 default:
                 raise "Unknown RPC event id.";
             }
+            catch (ex)
+            {
+                rpcEventExceptions.Set(_lc.ClientId, {message : ex.Message;} of (system::RpcException));
+            }
             finally
             {
                 _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
             }
+            return rpcEventExceptions;
         }
     };
 }
@@ -213,7 +220,24 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_PropDyna
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            _lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcPropDynamic__IService_ValueChanged, arguments);
+            var rpcEventExceptions = _lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcPropDynamic__IService_ValueChanged, arguments);
+            if ((rpcEventExceptions.Count > 0))
+            {
+                var rpcEventExceptionMessage : string = "";
+                for (rpcEventExceptionKey in rpcEventExceptions.Keys)
+                {
+                    var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
+                    if ((rpcEventExceptionMessage == ""))
+                    {
+                        (rpcEventExceptionMessage = rpcEventException.message);
+                    }
+                    else
+                    {
+                        (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
+                    }
+                }
+                raise rpcEventExceptionMessage;
+            }
         }
     };
 }
@@ -233,7 +257,24 @@ func rpclistener_RpcPropDynamic__IService(lc : system::IRpcLifecycle*, ref : sys
         return;
         var arguments : system::Array^ = {};
         arguments.Resize(0);
-        lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcPropDynamic__IService_ValueChanged, arguments);
+        var rpcEventExceptions = lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcPropDynamic__IService_ValueChanged, arguments);
+        if ((rpcEventExceptions.Count > 0))
+        {
+            var rpcEventExceptionMessage : string = "";
+            for (rpcEventExceptionKey in rpcEventExceptions.Keys)
+            {
+                var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
+                if ((rpcEventExceptionMessage == ""))
+                {
+                    (rpcEventExceptionMessage = rpcEventException.message);
+                }
+                else
+                {
+                    (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
+                }
+            }
+            raise rpcEventExceptionMessage;
+        }
     });
 }
 

@@ -267,9 +267,11 @@ func rpcops_IRpcObjectEventOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcO
     {
         var _lc : system::IRpcLifecycle* = lc;
 
-        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (void)
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (system::RpcException[int])
         {
+            var rpcEventExceptions : system::RpcException[int] = {};
             _lc.Controller.SetEventSuppressedFlag(ref, eventId, true);
+            try
             try
             switch (eventId)
             {
@@ -283,10 +285,15 @@ func rpcops_IRpcObjectEventOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcO
                 default:
                 raise "Unknown RPC event id.";
             }
+            catch (ex)
+            {
+                rpcEventExceptions.Set(_lc.ClientId, {message : ex.Message;} of (system::RpcException));
+            }
             finally
             {
                 _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
             }
+            return (cast (system::RpcException[int]) rpcjson_Deserialize(rpcjson_Serialize(rpcEventExceptions)));
         }
     };
 }
@@ -382,7 +389,24 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Even
             arguments.Set(0, jsonNode1);
             var jsonNode2 = rpcjson_Serialize_Struct_system__RpcObjectReference(system::IRpcLifecycle::RpcBoxByref(arg_arg1, _lc));
             arguments.Set(1, jsonNode2);
-            _lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcEventArgs__IService_SomethingHappened, arguments);
+            var rpcEventExceptions = (cast (system::RpcException[int]) rpcjson_Deserialize(rpcjson_Serialize(_lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcEventArgs__IService_SomethingHappened, arguments))));
+            if ((rpcEventExceptions.Count > 0))
+            {
+                var rpcEventExceptionMessage : string = "";
+                for (rpcEventExceptionKey in rpcEventExceptions.Keys)
+                {
+                    var rpcEventException = (cast (system::RpcException) rpcEventExceptions.Get(rpcEventExceptionKey));
+                    if ((rpcEventExceptionMessage == ""))
+                    {
+                        (rpcEventExceptionMessage = rpcEventException.message);
+                    }
+                    else
+                    {
+                        (rpcEventExceptionMessage = ((rpcEventExceptionMessage & "\n") & rpcEventException.message));
+                    }
+                }
+                raise rpcEventExceptionMessage;
+            }
         }
     };
 }
