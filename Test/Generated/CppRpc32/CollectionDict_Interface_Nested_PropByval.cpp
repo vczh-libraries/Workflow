@@ -515,7 +515,14 @@ Closures
 			{
 			}
 		}
-		return ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(GLOBAL_NAME rpcjson_Deserialize(GLOBAL_NAME rpcjson_Serialize(::vl::__vwsn::Box(rpcEventExceptions))));
+		if ((::vl::__vwsn::This(rpcEventExceptions.Obj())->GetCount() > static_cast<::vl::vint32_t>(0)))
+		{
+			return ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(GLOBAL_NAME rpcjson_Deserialize(GLOBAL_NAME rpcjson_Serialize(::vl::__vwsn::Box(rpcEventExceptions))));
+		}
+		else
+		{
+			return ::vl::Ptr<::vl::reflection::description::IValueDictionary>();
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -838,7 +845,14 @@ Closures
 			{
 			}
 		}
-		return rpcEventExceptions;
+		if ((::vl::__vwsn::This(rpcEventExceptions.Obj())->GetCount() > static_cast<::vl::vint32_t>(0)))
+		{
+			return rpcEventExceptions;
+		}
+		else
+		{
+			return ::vl::Ptr<::vl::reflection::description::IValueDictionary>();
+		}
 	}
 
 	//-------------------------------------------------------------------
