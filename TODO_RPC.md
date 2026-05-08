@@ -15,6 +15,7 @@
 
 ## ToDo
 
+- `Rpc/Oblist_EventException` should attach the handler in `serviceMain`.
 - Handle `IRpcListOps`  exceptions.
 - Review JSON related constructions.
   - Normalize error handling in both `RpcLifecycleBase` and `IRpcDispatcher`.
