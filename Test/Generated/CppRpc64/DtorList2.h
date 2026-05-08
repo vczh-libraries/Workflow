@@ -149,7 +149,7 @@ Closures
 		__vwsnc10_Rpc_DtorList2_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
 	class __vwsnc11_Rpc_DtorList2_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_DtorList2 : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_DtorList2
@@ -205,7 +205,7 @@ Closures
 		__vwsnc4_Rpc_DtorList2_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
 	class __vwsnc5_Rpc_DtorList2_rpcops_IOps_Create__rpcops_IOps_Rpc_DtorList2 : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_DtorList2

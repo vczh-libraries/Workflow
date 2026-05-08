@@ -422,7 +422,31 @@ Closures
 				(rpcArgumentIndex = (rpcArgumentIndex + static_cast<::vl::vint64_t>(1L)));
 			}
 		}
-		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcEvent__IService_SomethingHappened, arguments);
+		auto rpcEventExceptions = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcEvent__IService_SomethingHappened, arguments));
+		if ((::vl::__vwsn::This(rpcEventExceptions.Obj())->GetCount() > static_cast<::vl::vint64_t>(0L)))
+		{
+			auto rpcEventExceptionMessage = ::vl::WString::Unmanaged(L"");
+			{
+				auto __vwsn_for_enumerable_rpcEventExceptionKey = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(rpcEventExceptions.Obj())->GetKeys());
+				auto __vwsn_for_enumerator_rpcEventExceptionKey = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcEventExceptionKey.Obj())->CreateEnumerator();
+				while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcEventExceptionKey.Obj())->Next())
+				{
+					auto rpcEventExceptionKey = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcEventExceptionKey.Obj())->GetCurrent());
+					{
+						auto rpcEventException = ::vl::__vwsn::Unbox<::vl::rpc_controller::RpcException>(::vl::__vwsn::This(rpcEventExceptions.Obj())->Get(rpcEventExceptionKey));
+						if ((rpcEventExceptionMessage == ::vl::WString::Unmanaged(L"")))
+						{
+							(rpcEventExceptionMessage = rpcEventException.message);
+						}
+						else
+						{
+							(rpcEventExceptionMessage = ((rpcEventExceptionMessage + ::vl::WString::Unmanaged(L"\n")) + rpcEventException.message));
+						}
+					}
+				}
+			}
+			throw ::vl::Exception(rpcEventExceptionMessage);
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -526,8 +550,9 @@ Closures
 		this->_lc = __vwsnctor_lc;
 	}
 
-	void __vwsnc3_Rpc_Event_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnc3_Rpc_Event_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
+		auto rpcEventExceptions = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->SetEventSuppressedFlag(ref, eventId, true);
 		{
 			auto __vwsnb_0 = [&]()
@@ -538,21 +563,32 @@ Closures
 			::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
 			try
 			{
-				{
-					auto __vwsn_switch_3 = eventId;
-					if ((__vwsn_switch_3 == GLOBAL_NAME rpcevent_RpcEvent__IService_SomethingHappened))
+					try
 					{
-						auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcEvent::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-						::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->SomethingHappened)(::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))));
+						{
+							auto __vwsn_switch_3 = eventId;
+							if ((__vwsn_switch_3 == GLOBAL_NAME rpcevent_RpcEvent__IService_SomethingHappened))
+							{
+								auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcEvent::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+								::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->SomethingHappened)(::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))));
+							}
+							else
+								throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
+						}
 					}
-					else
-						throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
-				}
+					catch(const ::vl::Exception& __vwsne_1)
+					{
+						auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_1.Message());
+						{
+							::vl::__vwsn::This(rpcEventExceptions.Obj())->Set(::vl::__vwsn::Box(::vl::__vwsn::This(_lc)->GetClientId()), ::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }()));
+						}
+					}
 			}
 			catch(const ::vl::Exception&)
 			{
 			}
 		}
+		return rpcEventExceptions;
 	}
 
 	//-------------------------------------------------------------------
@@ -591,7 +627,31 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(arg_arg0));
-		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcEvent__IService_SomethingHappened, arguments);
+		auto rpcEventExceptions = ::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcEvent__IService_SomethingHappened, arguments));
+		if ((::vl::__vwsn::This(rpcEventExceptions.Obj())->GetCount() > static_cast<::vl::vint64_t>(0L)))
+		{
+			auto rpcEventExceptionMessage = ::vl::WString::Unmanaged(L"");
+			{
+				auto __vwsn_for_enumerable_rpcEventExceptionKey = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(rpcEventExceptions.Obj())->GetKeys());
+				auto __vwsn_for_enumerator_rpcEventExceptionKey = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcEventExceptionKey.Obj())->CreateEnumerator();
+				while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcEventExceptionKey.Obj())->Next())
+				{
+					auto rpcEventExceptionKey = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcEventExceptionKey.Obj())->GetCurrent());
+					{
+						auto rpcEventException = ::vl::__vwsn::Unbox<::vl::rpc_controller::RpcException>(::vl::__vwsn::This(rpcEventExceptions.Obj())->Get(rpcEventExceptionKey));
+						if ((rpcEventExceptionMessage == ::vl::WString::Unmanaged(L"")))
+						{
+							(rpcEventExceptionMessage = rpcEventException.message);
+						}
+						else
+						{
+							(rpcEventExceptionMessage = ((rpcEventExceptionMessage + ::vl::WString::Unmanaged(L"\n")) + rpcEventException.message));
+						}
+					}
+				}
+			}
+			throw ::vl::Exception(rpcEventExceptionMessage);
+		}
 	}
 
 	//-------------------------------------------------------------------
@@ -737,8 +797,9 @@ Closures
 		this->_lc = __vwsnctor_lc;
 	}
 
-	void __vwsnc8_Rpc_Event_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnc8_Rpc_Event_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
+		auto rpcEventExceptions = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->SetEventSuppressedFlag(ref, eventId, true);
 		{
 			auto __vwsnb_0 = [&]()
@@ -749,22 +810,33 @@ Closures
 			::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
 			try
 			{
-				{
-					auto __vwsn_switch_8 = eventId;
-					if ((__vwsn_switch_8 == GLOBAL_NAME rpcevent_RpcEvent__IService_SomethingHappened))
+					try
 					{
-						auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcEvent::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-						auto jsonValue0 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))).Obj())).Obj())->content.value;
-						::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->SomethingHappened)(jsonValue0);
+						{
+							auto __vwsn_switch_8 = eventId;
+							if ((__vwsn_switch_8 == GLOBAL_NAME rpcevent_RpcEvent__IService_SomethingHappened))
+							{
+								auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcEvent::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+								auto jsonValue0 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint64_t>(0L)))).Obj())).Obj())->content.value;
+								::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->SomethingHappened)(jsonValue0);
+							}
+							else
+								throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
+						}
 					}
-					else
-						throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
-				}
+					catch(const ::vl::Exception& __vwsne_1)
+					{
+						auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_1.Message());
+						{
+							::vl::__vwsn::This(rpcEventExceptions.Obj())->Set(::vl::__vwsn::Box(::vl::__vwsn::This(_lc)->GetClientId()), ::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }()));
+						}
+					}
 			}
 			catch(const ::vl::Exception&)
 			{
 			}
 		}
+		return ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(GLOBAL_NAME rpcjson_Deserialize(GLOBAL_NAME rpcjson_Serialize(::vl::__vwsn::Box(rpcEventExceptions))));
 	}
 
 	//-------------------------------------------------------------------
@@ -871,7 +943,31 @@ Closures
 		auto jsonString0 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
 		(::vl::__vwsn::This(jsonString0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = arg_arg0; return __vwsn_temp__; }());
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(jsonString0));
-		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcEvent__IService_SomethingHappened, arguments);
+		auto rpcEventExceptions = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(GLOBAL_NAME rpcjson_Deserialize(GLOBAL_NAME rpcjson_Serialize(::vl::__vwsn::Box(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_RpcEvent__IService_SomethingHappened, arguments))))));
+		if ((::vl::__vwsn::This(rpcEventExceptions.Obj())->GetCount() > static_cast<::vl::vint64_t>(0L)))
+		{
+			auto rpcEventExceptionMessage = ::vl::WString::Unmanaged(L"");
+			{
+				auto __vwsn_for_enumerable_rpcEventExceptionKey = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::This(rpcEventExceptions.Obj())->GetKeys());
+				auto __vwsn_for_enumerator_rpcEventExceptionKey = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcEventExceptionKey.Obj())->CreateEnumerator();
+				while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcEventExceptionKey.Obj())->Next())
+				{
+					auto rpcEventExceptionKey = ::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcEventExceptionKey.Obj())->GetCurrent());
+					{
+						auto rpcEventException = ::vl::__vwsn::Unbox<::vl::rpc_controller::RpcException>(::vl::__vwsn::This(rpcEventExceptions.Obj())->Get(rpcEventExceptionKey));
+						if ((rpcEventExceptionMessage == ::vl::WString::Unmanaged(L"")))
+						{
+							(rpcEventExceptionMessage = rpcEventException.message);
+						}
+						else
+						{
+							(rpcEventExceptionMessage = ((rpcEventExceptionMessage + ::vl::WString::Unmanaged(L"\n")) + rpcEventException.message));
+						}
+					}
+				}
+			}
+			throw ::vl::Exception(rpcEventExceptionMessage);
+		}
 	}
 
 }

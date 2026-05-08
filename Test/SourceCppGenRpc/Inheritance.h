@@ -25,14 +25,20 @@ https://github.com/vczh-libraries
 
 namespace vl_workflow_global
 {
-	struct __vwsnf1_Rpc_Inheritance_rpclistener_RpcInheritance__IValue_;
-	struct __vwsnf2_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_;
-	struct __vwsnf3_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_;
-	struct __vwsnf4_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_;
-	struct __vwsnf5_Rpc_Inheritance_rpcwrapper_RpcInheritance__IValue_;
-	struct __vwsnf6_Rpc_Inheritance_rpcwrapper_RpcInheritance__IOne_;
-	struct __vwsnf7_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo_;
-	struct __vwsnf8_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived_;
+	struct __vwsnf10_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_;
+	struct __vwsnf11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IValue_;
+	struct __vwsnf12_Rpc_Inheritance_rpcwrapper_RpcInheritance__IOne_;
+	struct __vwsnf13_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo_;
+	struct __vwsnf14_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived_;
+	struct __vwsnf1_Rpc_Inheritance_serviceMain_CreateDerived_;
+	struct __vwsnf2_Rpc_Inheritance_clientMain_;
+	struct __vwsnf3_Rpc_Inheritance_rpclistener_RpcInheritance__IValue_;
+	struct __vwsnf4_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_;
+	struct __vwsnf5_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_;
+	struct __vwsnf6_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_;
+	struct __vwsnf7_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_;
+	struct __vwsnf8_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_;
+	struct __vwsnf9_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_;
 	class __vwsnc10_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo__RpcInheritance_IRpcWrapper_ITwo;
 	class __vwsnc11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived__RpcInheritance_IRpcWrapper_IDerived;
 	class __vwsnc12_Rpc_Inheritance_rpcwrapper_RpcInheritance__IService__RpcInheritance_IRpcWrapper_IService;
@@ -102,6 +108,7 @@ namespace RpcInheritance
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IOne>;
 #endif
 	public:
+		::vl::Event<void()> CrashAtServer;
 		virtual void SetOneValue() = 0;
 	};
 
@@ -129,6 +136,7 @@ namespace RpcInheritance
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<ITwo>;
 #endif
 	public:
+		::vl::Event<void()> CrashAtClient;
 		virtual void SetTwoValue() = 0;
 	};
 
@@ -139,6 +147,7 @@ namespace RpcInheritance
 #endif
 	public:
 		virtual void SetDerivedValue() = 0;
+		virtual ::vl::WString GuardCrashAtClient() = 0;
 	};
 
 	class IRpcWrapper_IDerived : public virtual ::RpcInheritance::IDerived, public virtual ::vl::rpc_controller::IRpcWrapperBase, public ::vl::reflection::Description<IRpcWrapper_IDerived>
@@ -169,7 +178,10 @@ public:
 	virtual ::vl::WString InvokeMethod_RpcInheritance__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeEvent_RpcInheritance__IValue_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeMethod_RpcInheritance__IOne_SetOneValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual void InvokeEvent_RpcInheritance__IOne_CrashAtServer(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeMethod_RpcInheritance__ITwo_SetTwoValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual void InvokeEvent_RpcInheritance__ITwo_CrashAtClient(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual ::vl::WString InvokeMethod_RpcInheritance__IDerived_GuardCrashAtClient(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeMethod_RpcInheritance__IDerived_SetDerivedValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual ::vl::Ptr<::RpcInheritance::IDerived> InvokeMethod_RpcInheritance__IService_CreateDerived(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual ::vl::Ptr<::RpcInheritance::IOne> InvokeMethod_RpcInheritance__IService_CreateOne(::vl::rpc_controller::RpcObjectReference ref) = 0;
@@ -188,14 +200,17 @@ namespace vl_workflow_global
 
 		::vl::WString s;
 		::vl::vint rpctype_RpcInheritance__IDerived = 0;
+		::vl::vint rpcmethod_RpcInheritance__IDerived_GuardCrashAtClient = 0;
 		::vl::vint rpcmethod_RpcInheritance__IDerived_SetDerivedValue = 0;
 		::vl::vint rpctype_RpcInheritance__IOne = 0;
+		::vl::vint rpcevent_RpcInheritance__IOne_CrashAtServer = 0;
 		::vl::vint rpcmethod_RpcInheritance__IOne_SetOneValue = 0;
 		::vl::vint rpctype_RpcInheritance__IService = 0;
 		::vl::vint rpcmethod_RpcInheritance__IService_CreateDerived = 0;
 		::vl::vint rpcmethod_RpcInheritance__IService_CreateOne = 0;
 		::vl::vint rpcmethod_RpcInheritance__IService_CreateTwo = 0;
 		::vl::vint rpctype_RpcInheritance__ITwo = 0;
+		::vl::vint rpcevent_RpcInheritance__ITwo_CrashAtClient = 0;
 		::vl::vint rpcmethod_RpcInheritance__ITwo_SetTwoValue = 0;
 		::vl::vint rpctype_RpcInheritance__IValue = 0;
 		::vl::vint rpcmethod_RpcInheritance__IValue_GetValue = 0;
@@ -238,82 +253,138 @@ namespace vl_workflow_global
 Closures
 ***********************************************************************/
 
-	struct __vwsnf1_Rpc_Inheritance_rpclistener_RpcInheritance__IValue_
+	struct __vwsnf10_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_
 	{
 		::vl::rpc_controller::IRpcLifecycle* lc;
 		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf1_Rpc_Inheritance_rpclistener_RpcInheritance__IValue_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
+		__vwsnf10_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()() const;
 	};
 
-	struct __vwsnf2_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_
+	struct __vwsnf11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IValue_
+	{
+		::vl::rpc_controller::IRpcLifecycle* lc;
+		::vl::rpc_controller::RpcObjectReference proxyRef;
+
+		__vwsnf11_Rpc_Inheritance_rpcwrapper_RpcInheritance__IValue_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf12_Rpc_Inheritance_rpcwrapper_RpcInheritance__IOne_
+	{
+		::vl::rpc_controller::IRpcLifecycle* lc;
+		::vl::rpc_controller::RpcObjectReference proxyRef;
+
+		__vwsnf12_Rpc_Inheritance_rpcwrapper_RpcInheritance__IOne_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf13_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo_
+	{
+		::vl::rpc_controller::IRpcLifecycle* lc;
+		::vl::rpc_controller::RpcObjectReference proxyRef;
+
+		__vwsnf13_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf14_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived_
+	{
+		::vl::rpc_controller::IRpcLifecycle* lc;
+		::vl::rpc_controller::RpcObjectReference proxyRef;
+
+		__vwsnf14_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf1_Rpc_Inheritance_serviceMain_CreateDerived_
+	{
+		::RpcInheritance::IService* __vwsnthis_0;
+
+		__vwsnf1_Rpc_Inheritance_serviceMain_CreateDerived_(::RpcInheritance::IService* __vwsnctorthis_0);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf2_Rpc_Inheritance_clientMain_
+	{
+		__vwsnf2_Rpc_Inheritance_clientMain_();
+
+		void operator()() const;
+	};
+
+	struct __vwsnf3_Rpc_Inheritance_rpclistener_RpcInheritance__IValue_
 	{
 		::vl::rpc_controller::IRpcLifecycle* lc;
 		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf2_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
+		__vwsnf3_Rpc_Inheritance_rpclistener_RpcInheritance__IValue_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()() const;
 	};
 
-	struct __vwsnf3_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_
+	struct __vwsnf4_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_
 	{
 		::vl::rpc_controller::IRpcLifecycle* lc;
 		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf3_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
+		__vwsnf4_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()() const;
 	};
 
-	struct __vwsnf4_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_
+	struct __vwsnf5_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_
 	{
 		::vl::rpc_controller::IRpcLifecycle* lc;
 		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf4_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
+		__vwsnf5_Rpc_Inheritance_rpclistener_RpcInheritance__IOne_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()() const;
 	};
 
-	struct __vwsnf5_Rpc_Inheritance_rpcwrapper_RpcInheritance__IValue_
+	struct __vwsnf6_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_
 	{
 		::vl::rpc_controller::IRpcLifecycle* lc;
-		::vl::rpc_controller::RpcObjectReference proxyRef;
+		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf5_Rpc_Inheritance_rpcwrapper_RpcInheritance__IValue_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnf6_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()() const;
 	};
 
-	struct __vwsnf6_Rpc_Inheritance_rpcwrapper_RpcInheritance__IOne_
+	struct __vwsnf7_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_
 	{
 		::vl::rpc_controller::IRpcLifecycle* lc;
-		::vl::rpc_controller::RpcObjectReference proxyRef;
+		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf6_Rpc_Inheritance_rpcwrapper_RpcInheritance__IOne_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnf7_Rpc_Inheritance_rpclistener_RpcInheritance__ITwo_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()() const;
 	};
 
-	struct __vwsnf7_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo_
+	struct __vwsnf8_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_
 	{
 		::vl::rpc_controller::IRpcLifecycle* lc;
-		::vl::rpc_controller::RpcObjectReference proxyRef;
+		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf7_Rpc_Inheritance_rpcwrapper_RpcInheritance__ITwo_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnf8_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()() const;
 	};
 
-	struct __vwsnf8_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived_
+	struct __vwsnf9_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_
 	{
 		::vl::rpc_controller::IRpcLifecycle* lc;
-		::vl::rpc_controller::RpcObjectReference proxyRef;
+		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf8_Rpc_Inheritance_rpcwrapper_RpcInheritance__IDerived_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnf9_Rpc_Inheritance_rpclistener_RpcInheritance__IDerived_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()() const;
 	};
@@ -351,6 +422,7 @@ Closures
 		::vl::WString GetValue() override;
 		void SetOneValue() override;
 		void SetTwoValue() override;
+		::vl::WString GuardCrashAtClient() override;
 		void SetDerivedValue() override;
 	};
 
@@ -398,7 +470,7 @@ Closures
 		__vwsnc15_Rpc_Inheritance_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
 	class __vwsnc16_Rpc_Inheritance_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Inheritance : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Inheritance
@@ -410,7 +482,10 @@ Closures
 		::vl::WString InvokeMethod_RpcInheritance__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeEvent_RpcInheritance__IValue_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcInheritance__IOne_SetOneValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeEvent_RpcInheritance__IOne_CrashAtServer(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcInheritance__ITwo_SetTwoValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeEvent_RpcInheritance__ITwo_CrashAtClient(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::WString InvokeMethod_RpcInheritance__IDerived_GuardCrashAtClient(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcInheritance__IDerived_SetDerivedValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcInheritance::IDerived> InvokeMethod_RpcInheritance__IService_CreateDerived(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcInheritance::IOne> InvokeMethod_RpcInheritance__IService_CreateOne(::vl::rpc_controller::RpcObjectReference ref) override;
@@ -463,6 +538,7 @@ Closures
 		void SetOneValue() override;
 		void SetTwoValue() override;
 		void SetDerivedValue() override;
+		::vl::WString GuardCrashAtClient() override;
 	};
 
 	class __vwsnc5_Rpc_Inheritance_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
@@ -485,7 +561,7 @@ Closures
 		__vwsnc6_Rpc_Inheritance_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		void InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
 	class __vwsnc7_Rpc_Inheritance_rpcops_IOps_Create__rpcops_IOps_Rpc_Inheritance : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Inheritance
@@ -497,7 +573,10 @@ Closures
 		::vl::WString InvokeMethod_RpcInheritance__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeEvent_RpcInheritance__IValue_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcInheritance__IOne_SetOneValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeEvent_RpcInheritance__IOne_CrashAtServer(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcInheritance__ITwo_SetTwoValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeEvent_RpcInheritance__ITwo_CrashAtClient(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::WString InvokeMethod_RpcInheritance__IDerived_GuardCrashAtClient(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcInheritance__IDerived_SetDerivedValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcInheritance::IDerived> InvokeMethod_RpcInheritance__IService_CreateDerived(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcInheritance::IOne> InvokeMethod_RpcInheritance__IService_CreateOne(::vl::rpc_controller::RpcObjectReference ref) override;

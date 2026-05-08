@@ -476,8 +476,9 @@ Closures
 		this->_lc = __vwsnctor_lc;
 	}
 
-	void __vwsnc10_Rpc_CollectionOblist_Interface_PropDefault_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnc10_Rpc_CollectionOblist_Interface_PropDefault_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
+		auto rpcEventExceptions = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->SetEventSuppressedFlag(ref, eventId, true);
 		{
 			auto __vwsnb_0 = [&]()
@@ -488,15 +489,26 @@ Closures
 			::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
 			try
 			{
-				{
-					auto __vwsn_switch_7 = eventId;
-					throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
-				}
+					try
+					{
+						{
+							auto __vwsn_switch_7 = eventId;
+							throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
+						}
+					}
+					catch(const ::vl::Exception& __vwsne_1)
+					{
+						auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_1.Message());
+						{
+							::vl::__vwsn::This(rpcEventExceptions.Obj())->Set(::vl::__vwsn::Box(::vl::__vwsn::This(_lc)->GetClientId()), ::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }()));
+						}
+					}
 			}
 			catch(const ::vl::Exception&)
 			{
 			}
 		}
+		return ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(GLOBAL_NAME rpcjson_Deserialize(GLOBAL_NAME rpcjson_Serialize(::vl::__vwsn::Box(rpcEventExceptions))));
 	}
 
 	//-------------------------------------------------------------------
@@ -774,8 +786,9 @@ Closures
 		this->_lc = __vwsnctor_lc;
 	}
 
-	void __vwsnc4_Rpc_CollectionOblist_Interface_PropDefault_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnc4_Rpc_CollectionOblist_Interface_PropDefault_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
+		auto rpcEventExceptions = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->SetEventSuppressedFlag(ref, eventId, true);
 		{
 			auto __vwsnb_0 = [&]()
@@ -786,15 +799,26 @@ Closures
 			::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
 			try
 			{
-				{
-					auto __vwsn_switch_3 = eventId;
-					throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
-				}
+					try
+					{
+						{
+							auto __vwsn_switch_3 = eventId;
+							throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
+						}
+					}
+					catch(const ::vl::Exception& __vwsne_1)
+					{
+						auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_1.Message());
+						{
+							::vl::__vwsn::This(rpcEventExceptions.Obj())->Set(::vl::__vwsn::Box(::vl::__vwsn::This(_lc)->GetClientId()), ::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }()));
+						}
+					}
 			}
 			catch(const ::vl::Exception&)
 			{
 			}
 		}
+		return rpcEventExceptions;
 	}
 
 	//-------------------------------------------------------------------

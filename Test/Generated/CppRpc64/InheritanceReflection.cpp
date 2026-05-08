@@ -48,6 +48,7 @@ namespace vl
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Interface)
 				CLASS_MEMBER_BASE(::RpcInheritance::IOne)
 				CLASS_MEMBER_BASE(::RpcInheritance::ITwo)
+				CLASS_MEMBER_METHOD(GuardCrashAtClient, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetDerivedValue, NO_PARAMETER)
 			END_INTERFACE_MEMBER(::RpcInheritance::IDerived)
 
@@ -55,6 +56,7 @@ namespace vl
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Interface)
 				CLASS_MEMBER_BASE(::RpcInheritance::IValue)
 				CLASS_MEMBER_METHOD(SetOneValue, NO_PARAMETER)
+				CLASS_MEMBER_EVENT(CrashAtServer)
 			END_INTERFACE_MEMBER(::RpcInheritance::IOne)
 
 			BEGIN_INTERFACE_MEMBER(::RpcInheritance::IRpcWrapper_IDerived)
@@ -99,6 +101,7 @@ namespace vl
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Interface)
 				CLASS_MEMBER_BASE(::RpcInheritance::IValue)
 				CLASS_MEMBER_METHOD(SetTwoValue, NO_PARAMETER)
+				CLASS_MEMBER_EVENT(CrashAtClient)
 			END_INTERFACE_MEMBER(::RpcInheritance::ITwo)
 
 			BEGIN_INTERFACE_MEMBER(::RpcInheritance::IValue)
@@ -111,7 +114,10 @@ namespace vl
 
 			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Inheritance)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeEvent_RpcInheritance__IOne_CrashAtServer, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeEvent_RpcInheritance__ITwo_CrashAtClient, { L"ref" })
 				CLASS_MEMBER_METHOD(InvokeEvent_RpcInheritance__IValue_ValueChanged, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcInheritance__IDerived_GuardCrashAtClient, { L"ref" })
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcInheritance__IDerived_SetDerivedValue, { L"ref" })
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcInheritance__IOne_SetOneValue, { L"ref" })
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcInheritance__IService_CreateDerived, { L"ref" })
