@@ -49,7 +49,7 @@ See `UnknownType_PrimitiveSchema` in `## Expected format of generated .d.ts file
 3) struct types
 
 `{ "$": "struct::type::full::name", strong-type-version-of-this-struct...}`
-`system::RpcObjectReference` and `system::RpcException` use this standard unknown-struct schema whenever they cross a JSON RPC boundary as dynamically typed transport values.
+`system::RpcObjectReference` and `system::RpcException` use this standard unknown-struct schema whenever they cross a JSON RPC boundary as dynamically typed transport values. Unknown RPC method or event ids are local dispatch errors, so they do not use the `system::RpcException` JSON transport schema.
 
 4) collection types
 

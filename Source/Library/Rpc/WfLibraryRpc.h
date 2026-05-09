@@ -211,6 +211,7 @@ namespace vl
 		reflection::description::Value						RpcBoxByval		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
 		reflection::description::Value						RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
 		Ptr<reflection::IDescriptable>						RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
+		void												ReadMethodException(const reflection::description::Value& value);
 		void												ReadEventException(RpcEventExceptionMap exceptions);
 	}
 }

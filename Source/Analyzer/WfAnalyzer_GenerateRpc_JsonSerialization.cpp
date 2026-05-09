@@ -59,7 +59,7 @@ namespace vl
 				Ptr<WfStatement> CreateReturn(Ptr<WfExpression> expression);
 				Ptr<WfStatement> CreateRaise(const WString& message);
 				Ptr<WfStatement> CreateRaise(Ptr<WfExpression> expression);
-				Ptr<WfStatement> CreateTryFinally(Ptr<WfStatement> protectedStatement, Ptr<WfStatement> finallyStatement);
+				Ptr<WfStatement> CreateTry(Ptr<WfStatement> protectedStatement, const WString& name, Ptr<WfStatement> catchStatement, Ptr<WfStatement> finallyStatement);
 				Ptr<WfStatement> CreateTryCatch(Ptr<WfStatement> protectedStatement, const WString& name, Ptr<WfStatement> catchStatement);
 				Ptr<WfVariableDeclaration> CreateVariableDeclaration(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression);
 				Ptr<WfStatement> CreateVariableStatement(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression);
@@ -69,6 +69,7 @@ namespace vl
 				Ptr<WfBlockStatement> CreateBlock();
 				void AddStatement(Ptr<WfBlockStatement> block, Ptr<WfStatement> statement);
 				void AddRpcExceptionCheck(Ptr<WfBlockStatement> block, Ptr<WfExpression> value);
+				void AddRpcMethodExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value);
 				void AddRpcEventExceptionMapSet(Ptr<WfBlockStatement> block, const WString& mapName, Ptr<WfExpression> clientId, Ptr<WfExpression> message);
 				void AddRpcEventExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value);
 				Ptr<WfFunctionArgument> CreateFunctionArgument(const WString& name, Ptr<WfType> type);
@@ -84,6 +85,7 @@ namespace vl
 				Ptr<WfExpression> CreateRpcConstantReference(const wchar_t* prefix, const WString& fullName);
 				void CollectMangledNames(WfLexicalScopeManager* manager);
 				List<RpcInterfaceModel> BuildInterfaceModels(WfLexicalScopeManager* manager);
+				bool HasRpcEvents(const List<RpcInterfaceModel>& interfaces);
 				Ptr<WfStatement> BuildRegisterService();
 				WString GetRpcOpsInterfaceName(const WString& assemblyName);
 				WString GetRpcOpsInvokeMethodName(const RpcMethodModel& methodModel);
@@ -1258,11 +1260,14 @@ namespace vl
 					return block;
 				}
 
-				Ptr<WfStatement> BuildDispatchChainJson(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces, bool forEvent)
+				Ptr<WfStatement> BuildDispatchChainJson(WfLexicalScopeManager* manager, const List<RpcInterfaceModel>& interfaces, bool forEvent, const WString& unknownIdVariable = WString::Empty)
 				{
 					auto switchStat = Ptr(new WfSwitchStatement);
 					switchStat->expression = CreateReference(forEvent ? L"eventId" : L"methodId");
-					switchStat->defaultBranch = CreateRaise(forEvent ? L"Unknown RPC event id." : L"Unknown RPC method id.");
+					switchStat->defaultBranch =
+						unknownIdVariable == L""
+						? CreateRaise(forEvent ? L"Unknown RPC event id." : L"Unknown RPC method id.")
+						: CreateExpressionStatement(CreateAssign(CreateReference(unknownIdVariable), CreateBool(true)));
 
 					for (auto&& interfaceModel : interfaces)
 					{
@@ -1304,9 +1309,15 @@ namespace vl
 						invokeMethod->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
 						invokeMethod->arguments.Add(CreateFunctionArgument(L"methodId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 						invokeMethod->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
+						auto block = invokeMethod->statement.Cast<WfBlockStatement>();
+						AddStatement(block, CreateVariableStatement(L"unknownId", CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
 						auto catchBlock = CreateBlock();
 						AddStatement(catchBlock, CreateReturn(CreateCall(CreateReference(L"rpcjson_Serialize"), CreateRpcExceptionExpression(CreateMember(CreateReference(L"ex"), L"Message")))));
-						AddStatement(invokeMethod->statement.Cast<WfBlockStatement>(), CreateTryCatch(BuildDispatchChainJson(manager, interfaces, false), L"ex", catchBlock));
+						AddStatement(block, CreateTryCatch(BuildDispatchChainJson(manager, interfaces, false, L"unknownId"), L"ex", catchBlock));
+						auto unknownIdBranch = CreateBlock();
+						AddStatement(unknownIdBranch, CreateRaise(L"Unknown RPC method id."));
+						AddStatement(block, CreateIf(CreateReference(L"unknownId"), unknownIdBranch));
+						AddStatement(block, CreateReturn(CreateNull()));
 						newOps->declarations.Add(invokeMethod);
 					}
 
@@ -1356,26 +1367,38 @@ namespace vl
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"eventId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
 						auto block = invokeEvent->statement.Cast<WfBlockStatement>();
-						AddStatement(block, CreateVariableStatement(L"rpcEventExceptions", CreateRpcEventExceptionMapType(), CreateConstructor()));
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(true))));
-						auto finallyBlock = CreateBlock();
-						AddStatement(finallyBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(false))));
-						auto catchBlock = CreateBlock();
-						AddRpcEventExceptionMapSet(catchBlock, L"rpcEventExceptions", CreateMember(CreateReference(L"_lc"), L"ClientId"), CreateMember(CreateReference(L"ex"), L"Message"));
-						AddStatement(block, CreateTryFinally(CreateTryCatch(BuildDispatchChainJson(manager, interfaces, true), L"ex", catchBlock), finallyBlock));
-						auto returnExceptionBranch = CreateBlock();
-						AddStatement(returnExceptionBranch, CreateReturn(CreateCast(CreateRpcEventExceptionMapType(), CreateCall(
-							CreateReference(L"rpcjson_Deserialize"),
-							CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"rpcEventExceptions"))))));
-						auto returnNullBranch = CreateBlock();
-						AddStatement(returnNullBranch, CreateReturn(CreateNull()));
-						AddStatement(
-							block,
-							CreateIf(
-								CreateBinary(WfBinaryOperator::GT, CreateMember(CreateReference(L"rpcEventExceptions"), L"Count"), CreateInt(0)),
-								returnExceptionBranch,
-								returnNullBranch));
-						newOps->declarations.Add(invokeEvent);
+						if (!HasRpcEvents(interfaces))
+						{
+							AddStatement(block, CreateRaise(L"Unknown RPC event id."));
+							newOps->declarations.Add(invokeEvent);
+						}
+						else
+						{
+							AddStatement(block, CreateVariableStatement(L"unknownId", CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
+							AddStatement(block, CreateVariableStatement(L"rpcEventExceptions", CreateRpcEventExceptionMapType(), CreateConstructor()));
+							AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(true))));
+							auto finallyBlock = CreateBlock();
+							AddStatement(finallyBlock, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(CreateReference(L"_lc"), L"Controller"), L"SetEventSuppressedFlag"), CreateReference(L"ref"), CreateReference(L"eventId"), CreateBool(false))));
+							auto catchBlock = CreateBlock();
+							AddRpcEventExceptionMapSet(catchBlock, L"rpcEventExceptions", CreateMember(CreateReference(L"_lc"), L"ClientId"), CreateMember(CreateReference(L"ex"), L"Message"));
+							AddStatement(block, CreateTry(BuildDispatchChainJson(manager, interfaces, true, L"unknownId"), L"ex", catchBlock, finallyBlock));
+							auto unknownIdBranch = CreateBlock();
+							AddStatement(unknownIdBranch, CreateRaise(L"Unknown RPC event id."));
+							AddStatement(block, CreateIf(CreateReference(L"unknownId"), unknownIdBranch));
+							auto returnExceptionBranch = CreateBlock();
+							AddStatement(returnExceptionBranch, CreateReturn(CreateCast(CreateRpcEventExceptionMapType(), CreateCall(
+								CreateReference(L"rpcjson_Deserialize"),
+								CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"rpcEventExceptions"))))));
+							auto returnNullBranch = CreateBlock();
+							AddStatement(returnNullBranch, CreateReturn(CreateNull()));
+							AddStatement(
+								block,
+								CreateIf(
+									CreateBinary(WfBinaryOperator::GT, CreateMember(CreateReference(L"rpcEventExceptions"), L"Count"), CreateInt(0)),
+									returnExceptionBranch,
+									returnNullBranch));
+							newOps->declarations.Add(invokeEvent);
+						}
 					}
 
 					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));
@@ -1414,14 +1437,14 @@ namespace vl
 					{
 						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
 						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
-						AddRpcJsonExceptionCheck(block, CreateReference(L"invokeResult"));
+						AddRpcMethodExceptionRaise(block, CreateReference(L"invokeResult"));
 					}
 					else if (IsRpcByvalReturn(methodModel))
 					{
 						AddStatement(block, CreateInferredVariableStatement(L"objectOps", CreateRpcOpsObjectOps()));
 						auto invoke = CreateRpcOpsObjectInvoke(methodModel, CreateReference(L"objectOps"));
 						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
-						AddRpcJsonExceptionCheck(block, CreateReference(L"invokeResult"));
+						AddRpcMethodExceptionRaise(block, CreateReference(L"invokeResult"));
 						AddStatement(block, CreateInferredVariableStatement(
 							L"byvalReturnValue",
 							CreateCast(CreateSharedType(L"system::RpcByvalReturnValue"), CreateReference(L"invokeResult"))));
@@ -1444,7 +1467,7 @@ namespace vl
 					{
 						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
 						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
-						AddRpcJsonExceptionCheck(block, CreateReference(L"invokeResult"));
+						AddRpcMethodExceptionRaise(block, CreateReference(L"invokeResult"));
 						AddStatement(block, CreateInferredVariableStatement(L"jsonResult", CreateCast(CreateSharedType(L"system::JsonNode"), CreateReference(L"invokeResult"))));
 						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
 						auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, CreateReference(L"jsonResult"), transferType.Obj());

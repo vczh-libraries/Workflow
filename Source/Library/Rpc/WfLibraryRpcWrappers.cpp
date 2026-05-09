@@ -1,5 +1,6 @@
 #include "WfLibraryRpcWrappers.h"
 #include "WfLibraryRpcLifecycle.h"
+#include "WfLibraryRpcJson.h"
 #include "../WfLibraryReflection.h"
 
 namespace vl
@@ -99,6 +100,18 @@ namespace vl
 			Value RpcCopyValueByvalInternal(const Value& trivial, Dictionary<const DescriptableObject*, bool>& visited);
 			Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
 			Value RpcUnboxValueByvalInternal(const Value& serializable, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
+
+			Ptr<glr::json::JsonNode> FindJsonObjectField(Ptr<glr::json::JsonObject> object, const WString& name)
+			{
+				for (auto field : object->fields)
+				{
+					if (field->name.value == name)
+					{
+						return field->value;
+					}
+				}
+				return nullptr;
+			}
 		}
 		
 /***********************************************************************
@@ -1092,6 +1105,34 @@ namespace vl
 
 			CHECK_FAIL(L"Interface value or null is expected.");
 			return nullptr;
+		}
+
+		void ReadMethodException(const Value& value)
+		{
+			if (value.GetValueType() == Value::BoxedValue)
+			{
+				if (auto boxed = value.GetBoxedValue().Cast<IValueType::TypedBox<RpcException>>())
+				{
+					throw Exception(boxed->value.message);
+				}
+			}
+
+			if (value.GetValueType() == Value::SharedPtr)
+			{
+				if (auto node = value.GetSharedPtr().Cast<glr::json::JsonNode>())
+				{
+					if (auto object = node.Cast<glr::json::JsonObject>())
+					{
+						auto typeNode = FindJsonObjectField(object, WString::Unmanaged(L"$")).Cast<glr::json::JsonString>();
+						if (typeNode && typeNode->content.value == L"system::RpcException")
+						{
+							auto messageNode = FindJsonObjectField(object, WString::Unmanaged(L"message")).Cast<glr::json::JsonString>();
+							CHECK_ERROR(messageNode, L"RPC JSON exception message is expected.");
+							throw Exception(messageNode->content.value);
+						}
+					}
+				}
+			}
 		}
 
 		void ReadEventException(RpcEventExceptionMap exceptions)

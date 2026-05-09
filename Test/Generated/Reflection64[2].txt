@@ -287,6 +287,9 @@ interface system::IRpcLifecycle : system::Interface {
     @InvokeTemplate:::vl::rpc_controller::ReadEventException($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::ReadEventException)
     static function ReadEventException(exceptions : system::Dictionary^) : system::Void;
+    @InvokeTemplate:::vl::rpc_controller::ReadMethodException($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::ReadMethodException)
+    static function ReadMethodException(value : system::Object) : system::Void;
     function RefToPtr(ref : system::RpcObjectReference) : system::Interface^;
     function RegisterService(fullName : system::String, service : system::Interface^) : system::Void;
     function RequestService(fullName : system::String) : system::Interface^;
@@ -310,7 +313,7 @@ interface system::IRpcLifecycle : system::Interface {
 
 @FullName:vl::rpc_controller::IRpcListEventOps
 interface system::IRpcListEventOps : system::Interface {
-    function OnItemChanged(ref : system::RpcObjectReference, index : system::Int64, oldCount : system::Int64, newCount : system::Int64) : system::Void;
+    function OnItemChanged(ref : system::RpcObjectReference, index : system::Int64, oldCount : system::Int64, newCount : system::Int64) : system::Dictionary^;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListEventOps>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListEventOps>::Create)

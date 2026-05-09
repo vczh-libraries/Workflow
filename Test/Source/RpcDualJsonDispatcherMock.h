@@ -8,7 +8,7 @@ namespace vl
 {
 	namespace rpc_controller_test
 	{
-		class RpcDualJsonDispatcherMock : public RpcDualDispatcherMock
+		class RpcDualJsonDispatcherMock : public RpcDualDispatcherMockBase
 		{
 		private:
 			RpcDualLifecycleMock*									lifecycle1 = nullptr;

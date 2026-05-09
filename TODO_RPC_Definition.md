@@ -258,6 +258,7 @@ When `IRpcObjectEventOps::InvokeEvent(ref, eventId, arguments)` receives a remot
 - Unbox arguments and raise the local event.
 - Catch exceptions into a returned `system::RpcException[int]` map keyed by `lc.ClientId`.
 - Call `lc.Controller.SetEventSuppressedFlag(ref, eventId, false)` in a `finally` block.
+- Treat unknown event ids as local dispatch errors that are raised directly and are not inserted into the returned exception map.
 
 Generated `rpclistener_*` handlers should check `lc.Controller.GetEventSuppressedFlag(ref, eventId)` before boxing arguments. If the flag is set, the handler returns immediately. Otherwise it boxes arguments and broadcasts through `IRpcDispatcher`.
 

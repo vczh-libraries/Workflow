@@ -89,7 +89,9 @@ namespace vl
 
 				RpcEventExceptionMap OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override
 				{
-					return ops->OnItemChanged(ref, index, oldCount, newCount);
+					auto exceptions = ops->OnItemChanged(ref, index, oldCount, newCount);
+					ReadEventException(exceptions);
+					return exceptions;
 				}
 			};
 
@@ -112,7 +114,9 @@ namespace vl
 				RpcEventExceptionMap InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)override
 				{
 					dispatcher->RecordJsonArguments(arguments);
-					return ops->InvokeEvent(ref, eventId, arguments);
+					auto exceptions = ops->InvokeEvent(ref, eventId, arguments);
+					ReadEventException(exceptions);
+					return exceptions;
 				}
 			};
 
@@ -270,6 +274,7 @@ namespace vl
 					dispatcher->RecordJsonArguments(arguments);
 					auto value = ops->InvokeMethod(ref, methodId, arguments);
 					dispatcher->RecordJsonValue(value);
+					ReadMethodException(value);
 					return value;
 				}
 
@@ -295,7 +300,7 @@ namespace vl
 ***********************************************************************/
 
 		RpcDualJsonDispatcherMock::RpcDualJsonDispatcherMock(RpcDualLifecycleMock* lc1, RpcDualLifecycleMock* lc2)
-			: RpcDualDispatcherMock(lc1, lc2)
+			: RpcDualDispatcherMockBase(lc1, lc2)
 			, lifecycle1(lc1)
 			, lifecycle2(lc2)
 		{
@@ -368,7 +373,7 @@ namespace vl
 
 		IRpcListEventOps* RpcDualJsonDispatcherMock::BroadcastFromClient_ListEventOps(vint selfClientId)
 		{
-			auto ops = RpcDualDispatcherMock::BroadcastFromClient_ListEventOps(selfClientId);
+			auto ops = RpcDualDispatcherMockBase::BroadcastFromClient_ListEventOps(selfClientId);
 			return WrapOps<IRpcListEventOps, RpcJsonListEventOpsMock>(
 				this,
 				ops,
@@ -382,7 +387,7 @@ namespace vl
 		IRpcObjectEventOps* RpcDualJsonDispatcherMock::BroadcastFromClient_ObjectEventOps(vint selfClientId)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonDispatcherMock::BroadcastFromClient_ObjectEventOps(vint)#"
-			auto ops = RpcDualDispatcherMock::BroadcastFromClient_ObjectEventOps(selfClientId);
+			auto ops = RpcDualDispatcherMockBase::BroadcastFromClient_ObjectEventOps(selfClientId);
 			Ptr<IRpcObjectEventOps>* opsPtr = nullptr;
 			if (lifecycle1 && lifecycle1->GetClientId() == selfClientId) opsPtr = &objectEventOps1;
 			if (lifecycle2 && lifecycle2->GetClientId() == selfClientId) opsPtr = &objectEventOps2;
@@ -397,7 +402,7 @@ namespace vl
 
 		IRpcListOps* RpcDualJsonDispatcherMock::SendToClient_ListOps(vint targetClientId)
 		{
-			auto ops = RpcDualDispatcherMock::SendToClient_ListOps(targetClientId);
+			auto ops = RpcDualDispatcherMockBase::SendToClient_ListOps(targetClientId);
 			return WrapOps<IRpcListOps, RpcJsonListOpsMock>(
 				this,
 				ops,
@@ -410,7 +415,7 @@ namespace vl
 
 		IRpcObjectOps* RpcDualJsonDispatcherMock::SendToClient_ObjectOps(vint targetClientId)
 		{
-			auto ops = RpcDualDispatcherMock::SendToClient_ObjectOps(targetClientId);
+			auto ops = RpcDualDispatcherMockBase::SendToClient_ObjectOps(targetClientId);
 			return WrapOps<IRpcObjectOps, RpcJsonObjectOpsMock>(
 				this,
 				ops,
