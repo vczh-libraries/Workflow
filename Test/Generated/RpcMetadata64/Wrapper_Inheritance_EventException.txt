@@ -88,6 +88,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
+            var unknownId : bool = false;
             try
             switch (methodId)
             {
@@ -102,12 +103,17 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                     return system::IRpcLifecycle::RpcBoxByval(target.CreateDerived(), _lc);
                 }
                 default:
-                raise "Unknown RPC method id.";
+                (unknownId = true);
             }
             catch (ex)
             {
                 return {message : ex.Message;} of (system::RpcException);
             }
+            if (unknownId)
+            {
+                raise "Unknown RPC method id.";
+            }
+            return null;
         }
 
         override func EndInvokeMethod(slot : int) : (void)
@@ -158,9 +164,9 @@ func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjec
 
         override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (system::RpcException[int])
         {
+            var unknownId : bool = false;
             var rpcEventExceptions : system::RpcException[int] = {};
             _lc.Controller.SetEventSuppressedFlag(ref, eventId, true);
-            try
             try
             switch (eventId)
             {
@@ -175,7 +181,7 @@ func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjec
                     target.CrashAtClient();
                 }
                 default:
-                raise "Unknown RPC event id.";
+                (unknownId = true);
             }
             catch (ex)
             {
@@ -184,6 +190,10 @@ func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjec
             finally
             {
                 _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
+            }
+            if (unknownId)
+            {
+                raise "Unknown RPC event id.";
             }
             if ((rpcEventExceptions.Count > 0))
             {
@@ -222,11 +232,7 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Inherita
             var arguments : system::Array^ = {};
             arguments.Resize(0);
             var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritanceEventException__IDerived_GuardCrashAtClient, arguments);
-            var rpcException = (invokeResult as (system::RpcException?));
-            if (rpcException is not null)
-            {
-                raise (cast (system::RpcException) rpcException).message;
-            }
+            system::IRpcLifecycle::ReadMethodException(invokeResult);
             return (cast (::system::String) invokeResult);
         }
 
@@ -235,11 +241,7 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Inherita
             var arguments : system::Array^ = {};
             arguments.Resize(0);
             var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcInheritanceEventException__IService_CreateDerived, arguments);
-            var rpcException = (invokeResult as (system::RpcException?));
-            if (rpcException is not null)
-            {
-                raise (cast (system::RpcException) rpcException).message;
-            }
+            system::IRpcLifecycle::ReadMethodException(invokeResult);
             return (system::IRpcLifecycle::RpcUnboxByval(invokeResult, _lc) as (::RpcInheritanceEventException::IDerived^));
         }
     };

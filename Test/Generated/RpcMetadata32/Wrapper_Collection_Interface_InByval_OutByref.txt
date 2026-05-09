@@ -63,6 +63,7 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
 
         override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
         {
+            var unknownId : bool = false;
             try
             switch (methodId)
             {
@@ -77,12 +78,17 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                     return system::IRpcLifecycle::RpcBoxByref(target.DoList((cast (::RpcCollection::Interface::InByval::OutByref::IValue^[]) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc))), _lc);
                 }
                 default:
-                raise "Unknown RPC method id.";
+                (unknownId = true);
             }
             catch (ex)
             {
                 return {message : ex.Message;} of (system::RpcException);
             }
+            if (unknownId)
+            {
+                raise "Unknown RPC method id.";
+            }
+            return null;
         }
 
         override func EndInvokeMethod(slot : int) : (void)
@@ -133,31 +139,7 @@ func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjec
 
         override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (system::RpcException[int])
         {
-            var rpcEventExceptions : system::RpcException[int] = {};
-            _lc.Controller.SetEventSuppressedFlag(ref, eventId, true);
-            try
-            try
-            switch (eventId)
-            {
-                default:
-                raise "Unknown RPC event id.";
-            }
-            catch (ex)
-            {
-                rpcEventExceptions.Set(_lc.ClientId, {message : ex.Message;} of (system::RpcException));
-            }
-            finally
-            {
-                _lc.Controller.SetEventSuppressedFlag(ref, eventId, false);
-            }
-            if ((rpcEventExceptions.Count > 0))
-            {
-                return rpcEventExceptions;
-            }
-            else
-            {
-                return null;
-            }
+            raise "Unknown RPC event id.";
         }
     };
 }
@@ -173,11 +155,7 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Collecti
             var arguments : system::Array^ = {};
             arguments.Resize(0);
             var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcCollection__Interface__InByval__OutByref__IValue_GetValue, arguments);
-            var rpcException = (invokeResult as (system::RpcException?));
-            if (rpcException is not null)
-            {
-                raise (cast (system::RpcException) rpcException).message;
-            }
+            system::IRpcLifecycle::ReadMethodException(invokeResult);
             return (cast (::system::String) invokeResult);
         }
 
@@ -187,11 +165,7 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Collecti
             arguments.Resize(1);
             arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg_xs, _lc));
             var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcCollection__Interface__InByval__OutByref__IService_DoList, arguments);
-            var rpcException = (invokeResult as (system::RpcException?));
-            if (rpcException is not null)
-            {
-                raise (cast (system::RpcException) rpcException).message;
-            }
+            system::IRpcLifecycle::ReadMethodException(invokeResult);
             return (cast (::RpcCollection::Interface::InByval::OutByref::IValue^[]) system::IRpcLifecycle::RpcUnboxByref((cast (system::RpcObjectReference) invokeResult), _lc));
         }
     };
