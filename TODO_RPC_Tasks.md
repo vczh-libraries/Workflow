@@ -9,84 +9,31 @@ investigate repro
 
 ## Task 1
 
-General Workflow script AST building improvements:
-- `try-catch` and `try-finally` cound be merged into one single `WfTryStatement`. You are going to also find if such pattern appear anywhere else and fix them as well.
+`RpcJsonListEventOpsMock::OnItemChanged` and `RpcJsonObjectEventOpsMock::InvokeEvent` should call `dispatcher->RecordJsonValue` on the returned value.
+- In order to do this, `IRpcListEventOps::OnItemChanged` and `IRpcObjectEventOps::InvokeEvent` should return `Value` instead of `RpcEventExceptionMap`.
+- Such return values should be serialized and deserialized with JSON.
+- But since JSON mock version of them do not do JSON serialization and deserialization, it is JSON `IRpcSerializer` doing them.
+- So they can't call `ReadMethodException` and `ReadEventException`, generated ops implementations and those in `WfLibraryRpcWrappers.(h|cpp)` should call them after deserializing return values.
+  - Currenty they returns `RpcEventExceptionMap` so return values from `OnItemChanged` and `InvokeEvent` are not involved in `IRpcSerializer` serializing and deserializing, you should add it.
+  - `rpcops_IOps_CreateJson` currently call `ReadEventException` after `rpcjson_Deserialize`, which is good.
+  - `rpcops_IOps_CreateJson` currently call `ReadMethodException` before `rpcjson_Deserialize`, which is bad.
+    - `rpcjson_Deserialize` should be called before `ReadMethodException` so that `ReadMethodException` does not need to handle JSON values.
+    - Even when a method returns primitive types, `rpcjson_Deserialize` should be called and then do casting, instead of inlining for example reading `JsonString` for `string`, etc.
+  - `rpcops_IOps_Create` looks good, no need to change
+- Since `ReadMethodException` and `ReadEventException` is called after JSON representation of exceptions are deserialized to `RpcException` and `RpcEventExceptionMap`, so these two read functions don't handle JSON representations.
 
-Just like `ReadEventException`, you are going to add a `ReadMethodException`.
-In generated `rpcops_IOps_CreateJson`, between calling `objectOps.InvokeMethod` and processing actual return value, exception handling are identical among every methods.
-Rewrite this piece of code in C++ and the script could just call `IRpcLifecycle::ReadMethodException`.
-`ReadMethodException` will read return value directly from `InvokeMethod`, if there is an exception it raise an exception, otherwise nothing happens.
-So A call to `ReadMethodException` without worrying about the return value is enough.
+`JsonSerializePredefinedTypes` and `JsonDeserializePredefinedTypes` should handle serialization for `RpcException` and `RpcObjectReference`.
+- Remove serialization of these two types in generated code.
 
-In generated `rpcops_IRpcObjectEventOpsJson`:
-- `raise "Unknown RPC event id.";` is not an exception raised in any remote event handlers, it is a local error. So it cannot be turned into a record in the returned map.
-- The key of the returned map is actually the remote client id which raise the exception, not the local client.
-  - The same to `IRpcListEventOps` implementation in `WfLibraryRpcWrappers.(h|cpp)`.
-  - A few test results in `IndexRpc.txt` may be impacted.
-  - In `rpcops_IRpcObjectEventOpsJson` you are not able to obtainer such information, they should be done in C++ authored `IRpcDispatcher` implementation.
-- When the RPC definition has no event, the whole function could be collapsed to one single `raise "Unknown RPC event id.";` instead of a big piece of boilerplate code.
-  - This also matches the semantic after fixing, because only exceptions raised in remote event handlers are put into the map.
-
-In generated `rpcops_IRpcObjectOpsJson`:
-- `raise "Unknown RPC method id.";` is not an exception raised in any remote method call, it is a local error. So it cannot be turned into `RpcException`.
-
-To keep the generated code clean, when handling unknown id exceptions, you could first `var unknownId = false`, and set it to true in the `default` case.
-In this way you are able to check this variable in the no-exception branch and raise the exception accordingly.
-Only do this when raising the unknown id exception directly isn't work because it is guarded in a try-catch which turn the exception into something else, otherwise you should still raise the exception directly.
-
-Don't handle exceptions in any ops interface implementation, instead we should do it in `IRpcDispatcher` in this way:
-- This section only talks about wrappers which read the remote return value and turn it back into an exception, not including ops interfaces which catch the exception and turn into serializable exception value to pass it back.
-- Rename `RpcDualDispatcherMock` to `RpcDualDispatcherMockBase`.
-- Create a `RpcDualDispatcherMock` inheriting from `RpcDualDispatcherMockBase`, doing things like `RpcDualJsonDispatcherMock` that create one more indirection of 8 ops interface instances.
-- Now you got JSON version and non-JSON version of ops interface wrappers for dispatcher mocks, you are going to read the return value of `InvokeMethod`, `InvokeEvent` and `OnItemChanged`, to see if the return value is representing an exception, and throw it directly.
-  - `InvokeEvent` and `OnItemChanged` returns a map, but in the dual mock there is only one remote client, so when exception happens you will know the "remote client id", the code would be simpler.
-- In this way all code that calls the dispatcher don't need to worry about the exception anymore.
-  - Unless in `rpcops_IRpcObjectEventOpsJson` you still need to call `SetEventSuppressedFlag` when event happens.
-
-## Task 2
-
-`Rpc/Oblist_EventException` should attach the handler which raise an exception in `serviceMain`. The current test case `clientMain` attach an event handler to raise exception, and it raise the event, that would be a local exception not a remote exception. It doesn't do the expected test. Fix it like this:
-
-```Workflow
-module Rpc;
-using system::*;
-using RpcOblistEventException::*;
-
-func CrashItemChanged(index : int, oldCount : int, newCount : int) : void
-{
-  raise $"$(index),$(oldCount),$(newCount)";
-}
-
-func serviceMain(lc : IRpcLifecycle*) : void
-{
-  var serverObj = new (IServer^)
-  {
-    var _List : observe int[] = null;
-
-    override func GetOblist() : observe int[]
-    {
-      _List = {};
-      attach(_List.ItemChanged, CrashItemChanged);
-      return _List;
-    }
-  };
-  lc.RegisterService("RpcOblistEventException::IServer", serverObj);
-}
-
-func clientMain(lc : IRpcLifecycle*) : string
-{
-  var server = cast (IServer^) lc.RequestService("RpcOblistEventException::IServer");
-  var xs = server.GetOblist();
-
-  try
-  {
-    xs.Add(0);
-  }
-  catch (ex)
-  {
-    return ex.Message;
-  }
-
-  return "No Exception";
-}
-```
+Generated wrappers need to use generated strong typed version of ops interface for event handling.
+- Take `Rpc/Inheritance_EventException` as an example.
+- `rpcwrapper_RpcInheritanceEventException__IDerived` calls `rpclistener_RpcInheritanceEventException__IDerived` at the end.
+- `rpclistener_RpcInheritanceEventException__IDerived` calls `InvokeEvent` by itself, which is wrong, `ops` should be passed to it, and it calls the strong typed version.
+- This will affect test cases in `TestCasesRpc.cpp`.
+  - Remove `attachLocalEvents` argument from `RunRpcTestCase`.
+    - Since the only possible implementation is only calling `rpclistener_Attach`, `RunRpcTestCase` should just call it by themselves.
+    - But when there is no event involved, `rpclistener_Attach` is not generated, so `bool HasEvent` should be added to `RunRpcTestCase` as a new template argument.
+    - Therefore you can protect the code in `if constexpr (HasEvent)` so that when `rpclistener_Attach` is not generated there is no C++ compile error.
+  - When `VCZH_DEBUG_NO_REFLECTION` is defined, use the JSON version.
+  - You need to verify `RunRpcTestCase`, all JSON version functions should only be called when `VCZH_DEBUG_NO_REFLECTION` is defined, there are some other cases, e.g., `oo1`, `oeo1`, `oo2`, `oeo2`, `ops1`, `ops2`.
+  - `lc1->attachLocalEventsCallback` will need `ops1` and `lc2->attachLocalEventsCallback` will need `ops2`, so these 6 objects are recommended to be created right after `lc1` and `lc2` are created.
