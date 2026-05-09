@@ -162,7 +162,7 @@ func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjec
     {
         var _lc : system::IRpcLifecycle* = lc;
 
-        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (system::RpcException[int])
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (object)
         {
             var unknownId : bool = false;
             var rpcEventExceptions : system::RpcException[int] = {};
@@ -217,14 +217,14 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Inherita
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            system::IRpcLifecycle::ReadEventException(_lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritanceEventException__IOne_CrashAtServer, arguments));
+            system::IRpcLifecycle::ReadEventException((cast (system::RpcException[int]) _lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritanceEventException__IOne_CrashAtServer, arguments)));
         }
 
         override func InvokeEvent_RpcInheritanceEventException__ITwo_CrashAtClient(ref : system::RpcObjectReference) : (void)
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            system::IRpcLifecycle::ReadEventException(_lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritanceEventException__ITwo_CrashAtClient, arguments));
+            system::IRpcLifecycle::ReadEventException((cast (system::RpcException[int]) _lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritanceEventException__ITwo_CrashAtClient, arguments)));
         }
 
         override func InvokeMethod_RpcInheritanceEventException__IDerived_GuardCrashAtClient(ref : system::RpcObjectReference) : (::system::String)
@@ -270,51 +270,43 @@ namespace RpcInheritanceEventException
     }
 }
 
-func rpclistener_RpcInheritanceEventException__IOne(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcInheritanceEventException::IOne*) : (void)
+func rpclistener_RpcInheritanceEventException__IOne(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcInheritanceEventException::IOne*, ops : rpcops_IOps_Rpc_Inheritance_EventException^) : (void)
 {
     attach(target.CrashAtServer, func () : (void)
     {
         if (lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcInheritanceEventException__IOne_CrashAtServer))
         return;
-        var arguments : system::Array^ = {};
-        arguments.Resize(0);
-        system::IRpcLifecycle::ReadEventException(lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritanceEventException__IOne_CrashAtServer, arguments));
+        ops.InvokeEvent_RpcInheritanceEventException__IOne_CrashAtServer(ref);
     });
 }
 
-func rpclistener_RpcInheritanceEventException__ITwo(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcInheritanceEventException::ITwo*) : (void)
+func rpclistener_RpcInheritanceEventException__ITwo(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcInheritanceEventException::ITwo*, ops : rpcops_IOps_Rpc_Inheritance_EventException^) : (void)
 {
     attach(target.CrashAtClient, func () : (void)
     {
         if (lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcInheritanceEventException__ITwo_CrashAtClient))
         return;
-        var arguments : system::Array^ = {};
-        arguments.Resize(0);
-        system::IRpcLifecycle::ReadEventException(lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritanceEventException__ITwo_CrashAtClient, arguments));
+        ops.InvokeEvent_RpcInheritanceEventException__ITwo_CrashAtClient(ref);
     });
 }
 
-func rpclistener_RpcInheritanceEventException__IDerived(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcInheritanceEventException::IDerived*) : (void)
+func rpclistener_RpcInheritanceEventException__IDerived(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcInheritanceEventException::IDerived*, ops : rpcops_IOps_Rpc_Inheritance_EventException^) : (void)
 {
     attach(target.CrashAtServer, func () : (void)
     {
         if (lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcInheritanceEventException__IOne_CrashAtServer))
         return;
-        var arguments : system::Array^ = {};
-        arguments.Resize(0);
-        system::IRpcLifecycle::ReadEventException(lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritanceEventException__IOne_CrashAtServer, arguments));
+        ops.InvokeEvent_RpcInheritanceEventException__IOne_CrashAtServer(ref);
     });
     attach(target.CrashAtClient, func () : (void)
     {
         if (lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcInheritanceEventException__ITwo_CrashAtClient))
         return;
-        var arguments : system::Array^ = {};
-        arguments.Resize(0);
-        system::IRpcLifecycle::ReadEventException(lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcInheritanceEventException__ITwo_CrashAtClient, arguments));
+        ops.InvokeEvent_RpcInheritanceEventException__ITwo_CrashAtClient(ref);
     });
 }
 
-func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
+func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, obj : system::Interface*, ops : rpcops_IOps_Rpc_Inheritance_EventException^) : (void)
 {
     switch (typeId)
     {
@@ -324,17 +316,17 @@ func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system:
         }
         case rpctype_RpcInheritanceEventException__IOne:
         {
-            rpclistener_RpcInheritanceEventException__IOne(lc, ref, (cast (RpcInheritanceEventException::IOne*) obj));
+            rpclistener_RpcInheritanceEventException__IOne(lc, ref, (cast (RpcInheritanceEventException::IOne*) obj), ops);
             return;
         }
         case rpctype_RpcInheritanceEventException__ITwo:
         {
-            rpclistener_RpcInheritanceEventException__ITwo(lc, ref, (cast (RpcInheritanceEventException::ITwo*) obj));
+            rpclistener_RpcInheritanceEventException__ITwo(lc, ref, (cast (RpcInheritanceEventException::ITwo*) obj), ops);
             return;
         }
         case rpctype_RpcInheritanceEventException__IDerived:
         {
-            rpclistener_RpcInheritanceEventException__IDerived(lc, ref, (cast (RpcInheritanceEventException::IDerived*) obj));
+            rpclistener_RpcInheritanceEventException__IDerived(lc, ref, (cast (RpcInheritanceEventException::IDerived*) obj), ops);
             return;
         }
         case rpctype_RpcInheritanceEventException__IService:
@@ -399,7 +391,7 @@ func rpcwrapper_RpcInheritanceEventException__IOne(lc : system::IRpcLifecycle*, 
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
-    rpclistener_RpcInheritanceEventException__IOne(lc, proxyRef, (cast (RpcInheritanceEventException::IOne*) proxy));
+    rpclistener_RpcInheritanceEventException__IOne(lc, proxyRef, (cast (RpcInheritanceEventException::IOne*) proxy), ops);
     return proxy;
 }
 
@@ -428,7 +420,7 @@ func rpcwrapper_RpcInheritanceEventException__ITwo(lc : system::IRpcLifecycle*, 
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
-    rpclistener_RpcInheritanceEventException__ITwo(lc, proxyRef, (cast (RpcInheritanceEventException::ITwo*) proxy));
+    rpclistener_RpcInheritanceEventException__ITwo(lc, proxyRef, (cast (RpcInheritanceEventException::ITwo*) proxy), ops);
     return proxy;
 }
 
@@ -464,7 +456,7 @@ func rpcwrapper_RpcInheritanceEventException__IDerived(lc : system::IRpcLifecycl
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
-    rpclistener_RpcInheritanceEventException__IDerived(lc, proxyRef, (cast (RpcInheritanceEventException::IDerived*) proxy));
+    rpclistener_RpcInheritanceEventException__IDerived(lc, proxyRef, (cast (RpcInheritanceEventException::IDerived*) proxy), ops);
     return proxy;
 }
 

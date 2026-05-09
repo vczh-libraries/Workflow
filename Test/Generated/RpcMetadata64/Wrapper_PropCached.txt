@@ -149,7 +149,7 @@ func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjec
     {
         var _lc : system::IRpcLifecycle* = lc;
 
-        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (system::RpcException[int])
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (object)
         {
             var unknownId : bool = false;
             var rpcEventExceptions : system::RpcException[int] = {};
@@ -225,7 +225,7 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_PropCach
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            system::IRpcLifecycle::ReadEventException(_lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcPropCached__IService_ValueChanged, arguments));
+            system::IRpcLifecycle::ReadEventException((cast (system::RpcException[int]) _lc.Dispatcher.BroadcastFromClient_ObjectEventOps(_lc.ClientId).InvokeEvent(ref, rpcevent_RpcPropCached__IService_ValueChanged, arguments)));
         }
     };
 }
@@ -238,25 +238,23 @@ namespace RpcPropCached
     }
 }
 
-func rpclistener_RpcPropCached__IService(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcPropCached::IService*) : (void)
+func rpclistener_RpcPropCached__IService(lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, target : RpcPropCached::IService*, ops : rpcops_IOps_Rpc_PropCached^) : (void)
 {
     attach(target.ValueChanged, func () : (void)
     {
         if (lc.Controller.GetEventSuppressedFlag(ref, rpcevent_RpcPropCached__IService_ValueChanged))
         return;
-        var arguments : system::Array^ = {};
-        arguments.Resize(0);
-        system::IRpcLifecycle::ReadEventException(lc.Dispatcher.BroadcastFromClient_ObjectEventOps(lc.ClientId).InvokeEvent(ref, rpcevent_RpcPropCached__IService_ValueChanged, arguments));
+        ops.InvokeEvent_RpcPropCached__IService_ValueChanged(ref);
     });
 }
 
-func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, obj : system::Interface*) : (void)
+func rpclistener_Attach(typeId : int, lc : system::IRpcLifecycle*, ref : system::RpcObjectReference, obj : system::Interface*, ops : rpcops_IOps_Rpc_PropCached^) : (void)
 {
     switch (typeId)
     {
         case rpctype_RpcPropCached__IService:
         {
-            rpclistener_RpcPropCached__IService(lc, ref, (cast (RpcPropCached::IService*) obj));
+            rpclistener_RpcPropCached__IService(lc, ref, (cast (RpcPropCached::IService*) obj), ops);
             return;
         }
         default:
@@ -329,7 +327,7 @@ func rpcwrapper_RpcPropCached__IService(lc : system::IRpcLifecycle*, proxyRef : 
     {
         (cast (RpcPropCached::IRpcWrapper_IService^) lc.RefToPtr(proxyRef))._rpcInvalidate_Value();
     });
-    rpclistener_RpcPropCached__IService(lc, proxyRef, (cast (RpcPropCached::IService*) proxy));
+    rpclistener_RpcPropCached__IService(lc, proxyRef, (cast (RpcPropCached::IService*) proxy), ops);
     return proxy;
 }
 
