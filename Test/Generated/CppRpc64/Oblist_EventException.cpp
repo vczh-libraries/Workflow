@@ -64,7 +64,6 @@ Global Functions
 	{
 		auto server = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcOblistEventException::IServer>(::vl::__vwsn::This(lc)->RequestService(::vl::WString::Unmanaged(L"RpcOblistEventException::IServer")).Obj()));
 		auto xs = ::vl::__vwsn::This(server.Obj())->GetOblist();
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(xs.Obj())->ItemChanged, ::vl::Func<void(::vl::vint64_t, ::vl::vint64_t, ::vl::vint64_t)>(GLOBAL_OBJ, &GLOBAL_SYMBOL CrashItemChanged));
 		try
 		{
 			{
@@ -386,6 +385,7 @@ Closures
 	::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsnc1_Rpc_Oblist_EventException_serviceMain__RpcOblistEventException_IServer::GetOblist()
 	{
 		(_List = ::vl::reflection::description::IValueObservableList::Create());
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(_List.Obj())->ItemChanged, ::vl::Func<void(::vl::vint64_t, ::vl::vint64_t, ::vl::vint64_t)>(GLOBAL_OBJ, &GLOBAL_SYMBOL CrashItemChanged));
 		return _List;
 	}
 

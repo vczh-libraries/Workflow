@@ -16,6 +16,7 @@ func serviceMain(lc : IRpcLifecycle*) : void
     override func GetOblist() : observe int[]
     {
       _List = {};
+      attach(_List.ItemChanged, CrashItemChanged);
       return _List;
     }
   };
@@ -26,7 +27,6 @@ func clientMain(lc : IRpcLifecycle*) : string
 {
   var server = cast (IServer^) lc.RequestService("RpcOblistEventException::IServer");
   var xs = server.GetOblist();
-  attach(xs.ItemChanged, CrashItemChanged);
 
   try
   {

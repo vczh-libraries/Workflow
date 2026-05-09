@@ -115,6 +115,7 @@ Success criteria:
 # PROPOSALS
 
 - No.1 Centralize RPC return exception decoding and make unknown ids local errors [CONFIRMED]
+- No.2 Move oblist event exception handler to service side [CONFIRMED]
 
 ## No.1 Centralize RPC return exception decoding and make unknown ids local errors [CONFIRMED]
 
@@ -140,3 +141,20 @@ Success criteria:
 - `CppTest_Reflection` Debug x64/Win32: passed, 227/227 cases each.
 - `Test/TypeScript/prepare.ps1`: passed.
 - `npm run build` in `Test/TypeScript`: passed.
+
+## No.2 Move oblist event exception handler to service side [CONFIRMED]
+
+### CODE CHANGE
+
+- Moved `Rpc/Oblist_EventException`'s throwing `ItemChanged` handler attachment into `serviceMain` so the observable-list mutation tests a remote handler exception instead of a local client handler exception.
+- Updated the RPC index expected result from the serialized remote exception map form to the propagated exception message returned by `clientMain`.
+- Regenerated the affected Workflow and C++ RPC test artifacts.
+
+### VALIDATION
+
+- `CompilerTest_LoadAndCompile` Debug x64: passed, including regenerated Win32 and x64 sections.
+- `copilotBuild.ps1 -Configuration Debug -Platform x64`: passed, 0 warnings, 0 errors.
+- `copilotBuild.ps1 -Configuration Debug -Platform Win32`: passed, 0 warnings, 0 errors.
+- `CppTest` Debug x64/Win32: passed, 227/227 cases each.
+- `CppTest_Metaonly` Debug x64/Win32: passed, 227/227 cases each.
+- `CppTest_Reflection` Debug x64/Win32: passed, 227/227 cases each.

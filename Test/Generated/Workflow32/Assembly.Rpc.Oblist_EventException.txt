@@ -22,7 +22,7 @@ serviceMain (23 .. 37)
     Local Variables:
         serverObj
 
-clientMain (46 .. 75)
+clientMain (52 .. 75)
     Arguments:
         lc
     Captured Variables:
@@ -208,7 +208,7 @@ rpcops_IOps_CreateJson (1221 .. 1229)
     Captured Variables:
     Local Variables:
 
-<method:GetOblist<RpcOblistEventException::IServer>(22)> in serviceMain (38 .. 45)
+<method:GetOblist<RpcOblistEventException::IServer>(22)> in serviceMain (38 .. 51)
     Arguments:
     Captured Variables:
         <captured>_List
@@ -485,40 +485,40 @@ Instructions:
 41   :     Pop           
 //  _List
 42   :     LoadCapturedVar: var = 0(<captured>_List)
+//  CrashItemChanged
+43   :     CreateClosureContext: stackPatternCount = 0
+//  CrashItemChanged
+44   :     LoadFunction  : func = 0(CrashItemChanged)
+//  CrashItemChanged
+45   :     CreateClosure 
+//  attach(_List.ItemChanged, CrashItemChanged)
+46   :     AttachEvent   : eventInfo = ItemChanged<system::ObservableList>
+//  attach(_List.ItemChanged, CrashItemChanged);
+47   :     Pop           
+//  _List
+48   :     LoadCapturedVar: var = 0(<captured>_List)
 //  return _List;
-43   :     Return        
+49   :     Return        
 //  func GetOblist() : (observe int[])
-44   :     LoadValue     : value = <null>
+50   :     LoadValue     : value = <null>
 //  func GetOblist() : (observe int[])
-45   :     Return        
+51   :     Return        
 //  "RpcOblistEventException::IServer"
-46   :     LoadValue     : value = <String, RpcOblistEventException::IServer>
+52   :     LoadValue     : value = <String, RpcOblistEventException::IServer>
 //  lc
-47   :     LoadLocalVar  : var = 0(lc)
+53   :     LoadLocalVar  : var = 0(lc)
 //  lc.RequestService("RpcOblistEventException::IServer")
-48   :     InvokeMethod  : methodInfo = RequestService<system::IRpcLifecycle>, stackPatternCount = 1
+54   :     InvokeMethod  : methodInfo = RequestService<system::IRpcLifecycle>, stackPatternCount = 1
 //  lc.RequestService("RpcOblistEventException::IServer")
-49   :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcOblistEventException::IServer
+55   :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcOblistEventException::IServer
 //  var server = (cast (IServer^) lc.RequestService("RpcOblistEventException::IServer"));
-50   :     StoreLocalVar : var = 1(server)
+56   :     StoreLocalVar : var = 1(server)
 //  server
-51   :     LoadLocalVar  : var = 1(server)
+57   :     LoadLocalVar  : var = 1(server)
 //  server.GetOblist()
-52   :     InvokeMethod  : methodInfo = GetOblist<RpcOblistEventException::IServer>, stackPatternCount = 0
+58   :     InvokeMethod  : methodInfo = GetOblist<RpcOblistEventException::IServer>, stackPatternCount = 0
 //  var xs = server.GetOblist();
-53   :     StoreLocalVar : var = 2(xs)
-//  xs
-54   :     LoadLocalVar  : var = 2(xs)
-//  CrashItemChanged
-55   :     CreateClosureContext: stackPatternCount = 0
-//  CrashItemChanged
-56   :     LoadFunction  : func = 0(CrashItemChanged)
-//  CrashItemChanged
-57   :     CreateClosure 
-//  attach(xs.ItemChanged, CrashItemChanged)
-58   :     AttachEvent   : eventInfo = ItemChanged<system::ObservableList>
-//  attach(xs.ItemChanged, CrashItemChanged);
-59   :     Pop           
+59   :     StoreLocalVar : var = 2(xs)
 //  try
 60   :     InstallTry    : label = 67
 //  0

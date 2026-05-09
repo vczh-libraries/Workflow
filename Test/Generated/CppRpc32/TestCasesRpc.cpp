@@ -1622,7 +1622,7 @@ TEST_CASE(L"Rpc:EventOblist")
 
 TEST_CASE(L"Rpc:Oblist_EventException")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_Oblist_EventException>(L"Oblist_EventException", L"2:0,0,1;",
+	RunRpcTestCase<::vl_workflow_global::Rpc_Oblist_EventException>(L"Oblist_EventException", L"0,0,1",
 		[](IDescriptable* obj) -> vint
 		{
 			auto& instance = ::vl_workflow_global::Rpc_Oblist_EventException::Instance();
