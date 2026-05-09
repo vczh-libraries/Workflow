@@ -3,18 +3,23 @@
 # Orders
 
 - Compare `RuntimeTest` and `CppTest*` failures before choosing an RPC root cause [6]
-- Wire generated RPC C++ files into shared vcxitems after `CompilerTest_LoadAndCompile` [5]
+- Wire generated RPC C++ files into shared vcxitems after `CompilerTest_LoadAndCompile` [6]
 - Preserve RPC/Workflow sample intent; only adjust syntax or diagnostics [5]
 - RPC byref/byval container samples must verify wrapper/copy semantics at every level [5]
+- Run TypeScript RPC schema verification after JSON or dispatcher-schema changes [5]
 - Commit direct edits and large generated outputs separately when requested [4]
+- Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder [4]
+- Split RPC sample definitions and tests consistently [3]
+- Run `CompilerTest_LoadAndCompile` at least once before downstream RPC generated-C++ tests [3]
+- Pure refactors should not touch generated RPC outputs [2]
 - Workflow analyzer error tests may change values when preserving the error code [1]
 - Workflow samples use `raise`, not `throw` [1]
 - Workflow range syntax for inclusive generated loops is `range [1, xs.Count]` [1]
 - RPC destructor samples should track non-service objects when services never unregister [1]
 - Use generated `Parsing.*.txt` logs for `CompilerTest_LoadAndCompile` Workflow compile errors [1]
-- Pure refactors should not touch generated RPC outputs [1]
-- Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder [1]
-- Run `CompilerTest_LoadAndCompile` at least once before downstream RPC generated-C++ tests [1]
+- Type-check shared `Rpc.d.ts` standalone [1]
+- Add analyzer-error samples for reserved RPC transport types [1]
+- Split broad RPC samples by focused behavior [1]
 
 # Refinements
 
@@ -69,3 +74,23 @@ Adding a sample to `IndexRpc.txt` is not enough for solution hygiene. Ensure eve
 ## Run `CompilerTest_LoadAndCompile` at least once before downstream RPC generated-C++ tests
 
 Some compiler generated binaries are not covered by git. Before relying on `RuntimeTest` or `CppTest*` results for RPC work, run `CompilerTest_LoadAndCompile` at least once so metadata, wrapper scripts, and generated C++ inputs are current.
+
+## Run TypeScript RPC schema verification after JSON or dispatcher-schema changes
+
+After changing RPC JSON serialization, generated `.d.ts` output, JSON value dumps, or the shared dispatcher schema, run `Test/TypeScript/prepare.ps1` and then `npm run build` in `Test/TypeScript`. When package files or dependencies change, run the package install step first (`npm install` or `npm ci` as appropriate). TypeScript failures often point to real mismatches between generated values and the documented RPC JSON schema.
+
+## Split RPC sample definitions and tests consistently
+
+Split RPC samples into `Rpc/SAMPLE.txt` for RPC definitions only and `Rpc/SAMPLE_Test.txt` for executable test logic such as globals, helpers, `serviceMain`, and `clientMain`. Add only `SAMPLE=expected` to `IndexRpc.txt`, but include both files under `Resource Files/Rpc` in `CompilerTest_LoadAndCompile`.
+
+## Type-check shared `Rpc.d.ts` standalone
+
+When `Test/TypeScript/Rpc.d.ts` changes, type-check it directly with strict TypeScript settings before relying on the full package build. This catches envelope-schema mistakes even when no generated `Serialization_*.d.ts` file happens to instantiate the affected shape.
+
+## Add analyzer-error samples for reserved RPC transport types
+
+When RPC validation rejects internal transport types such as `system::RpcObjectReference` or `system::RpcException`, add AnalyzerError samples for each forbidden signature position: return/property value, method argument, and event argument. Verify the expected H-series error prefixes rather than only relying on runtime samples.
+
+## Split broad RPC samples by focused behavior
+
+When a single RPC sample grows to cover unrelated behavior, split it into focused samples that preserve the same core shape but isolate one expectation at a time, such as inherited member access, method exceptions, and event exceptions. Focused samples make expected strings shorter and failures easier to diagnose.

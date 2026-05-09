@@ -2,7 +2,7 @@
 
 # Orders
 
-- Avoid explicit Workflow types/casts when implicit typing works [3]
+- Avoid explicit Workflow types/casts when implicit typing works [5]
 - Generated RPC test id maps must come from `rpc_GetIds()` / `SetIdMap` [2]
 - Keep RPC-specific fixes out of generic C++ / Workflow codegen surfaces [2]
 - Interpret `IRpcWrapperBase` as remote-wrapper identity [2]
@@ -13,6 +13,10 @@
 - Keep RPC byref boxing/unboxing interface-only [2]
 - Split RPC JSON generation into dedicated analyzer/module files [2]
 - Move reusable RPC controller/lifecycle code into `Source/Library/Rpc` with strict dependencies [2]
+- Reuse production RPC helpers from `TestRpcCompile.cpp` [2]
+- Treat `@rpc:IdString` and `@rpc:IdNumber` as internal generated metadata [2]
+- Verify copied RPC metadata recompiles to the same metadata [2]
+- Read and aggregate RPC event exception maps through `IRpcLifecycle::ReadEventException` [2]
 - Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for registering free functions as reflection static methods [1]
 - Enable Workflow proxy support for all related implementable interfaces consistently [1]
 - Workflow `new interface` on reflected C++ interfaces requires proxy registration (`BEGIN_INTERFACE_MEMBER`) [1]
@@ -39,9 +43,13 @@
 - Use strong `cast`, not weak `as`, for protocol-owned values [1]
 - Use `RpcByvalReturnValue` slots for JSON byval return lifetimes [1]
 - Delegate predefined RPC JSON handling to C++ static helpers [1]
-- Reuse production RPC helpers from `TestRpcCompile.cpp` [1]
-- Treat `@rpc:IdString` and `@rpc:IdNumber` as internal generated metadata [1]
-- Verify copied RPC metadata recompiles to the same metadata [1]
+- Validate RPC JSON ops payloads as `JsonNode` values [1]
+- Use pair arrays for RPC JSON map schemas [1]
+- Keep RPC wrapper generation recursive across inherited interface members [1]
+- Propagate RPC method exceptions via `system::RpcException` [1]
+- Reject RPC internal transport structs from user RPC signatures [1]
+- Workflow catch variables are `system::Exception^`; use `.Message` [1]
+- Keep TypeScript RPC dispatcher envelopes separate from value schemas [1]
 
 # Refinements
 
@@ -208,3 +216,35 @@ Generated `rpcjson_Serialize` / `rpcjson_Deserialize` should handle module-speci
 ## Verify copied RPC metadata recompiles to the same metadata
 
 When testing RPC metadata stability, copy the metadata module, clear the manager, recompile the copied metadata, and compare `WfPrint` output from the old and new metadata modules. This guards against repeated compilation perturbing `orderedIds` or generated metadata attributes.
+
+## Read and aggregate RPC event exception maps through `IRpcLifecycle::ReadEventException`
+
+RPC object-event and observable-list event transports return an internal exception map keyed by lifecycle client id. Broadcast paths must attempt every target lifecycle and merge all returned maps without stopping at the first exception. Generated object wrappers and C++ container wrappers should call `IRpcLifecycle::ReadEventException` (backed by `vl::rpc_controller::ReadEventException`) so null or empty maps do nothing, while non-empty maps raise `vl::Exception` with messages formatted as `clientId:message;...` including the trailing semicolon.
+
+## Validate RPC JSON ops payloads as `JsonNode` values
+
+When testing JSON RPC dispatcher paths, every `Value` argument, return value, or array element crossing the ops interfaces should be backed by `Ptr<JsonNode>`. Use a JSON dispatcher mock to `CHECK_ERROR` on non-JSON values so generator bugs surface immediately; generated void-return branches should return a concrete JSON null node instead of an empty `Value`.
+
+## Use pair arrays for RPC JSON map schemas
+
+RPC JSON TypeScript schemas represent maps as `[K, V][]`, including unknown map schemas and serialized dictionaries such as `RpcException[int]`. Keep list/observable-list unknown schemas separate from map unknown schemas, and update generated `.d.ts` declarations and JSON values together when the schema shape changes.
+
+## Keep RPC wrapper generation recursive across inherited interface members
+
+Generated RPC wrappers for interface inheritance must recursively include base-interface members, not just members declared on the current interface. This includes inherited cached-property invalidators/getters, inherited methods, and inherited events on derived wrapper interfaces and wrapper factories.
+
+## Propagate RPC method exceptions via `system::RpcException`
+
+Generated service-side `IRpcObjectOps::InvokeMethod` implementations should catch Workflow exceptions from the actual method call and return `system::RpcException { message = ex.Message }`. Caller-side wrappers should detect that internal transport result and raise the message locally, skipping normal return conversion and `EndInvokeMethod` on the exception path.
+
+## Reject RPC internal transport structs from user RPC signatures
+
+`system::RpcObjectReference` and `system::RpcException` are internal RPC transport structs. RPC validation should reject them in method return values, property values, method arguments, and event arguments with the appropriate H-series analyzer errors; user-authored RPC APIs should not expose these structs directly.
+
+## Workflow catch variables are `system::Exception^`; use `.Message`
+
+Workflow `catch (ex)` variables are exception objects. When a script needs the text message for string formatting or transport conversion, read `ex.Message` instead of assuming `ex` itself is already a string.
+
+## Keep TypeScript RPC dispatcher envelopes separate from value schemas
+
+`Test/TypeScript/Rpc.d.ts` owns the shared dispatcher envelope schema for `IRpcListOps`, `IRpcObjectOps`, `IRpcListEventOps`, and `IRpcObjectEventOps`. Generated `Serialization_*.d.ts` files own concrete value schemas; connect the two with a generic payload type such as `KnownTypeSchema | UnknownTypeSchema`, and only add `<T>` to envelope interfaces that actually carry serialized payloads. `SendToClient_*` requests include `targetClientId`, broadcast requests omit it, and all responses include both `sourceClientId` and `targetClientId`.
