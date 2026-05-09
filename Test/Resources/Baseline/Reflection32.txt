@@ -313,7 +313,7 @@ interface system::IRpcLifecycle : system::Interface {
 
 @FullName:vl::rpc_controller::IRpcListEventOps
 interface system::IRpcListEventOps : system::Interface {
-    function OnItemChanged(ref : system::RpcObjectReference, index : system::Int32, oldCount : system::Int32, newCount : system::Int32) : system::Dictionary^;
+    function OnItemChanged(ref : system::RpcObjectReference, index : system::Int32, oldCount : system::Int32, newCount : system::Int32) : system::Object;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListEventOps>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListEventOps>::Create)
@@ -350,7 +350,7 @@ interface system::IRpcListOps : system::Interface {
 
 @FullName:vl::rpc_controller::IRpcObjectEventOps
 interface system::IRpcObjectEventOps : system::Interface {
-    function InvokeEvent(ref : system::RpcObjectReference, eventId : system::Int32, arguments : system::Array^) : system::Dictionary<system::Int32, system::RpcException>^;
+    function InvokeEvent(ref : system::RpcObjectReference, eventId : system::Int32, arguments : system::Array^) : system::Object;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectEventOps>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectEventOps>::Create)

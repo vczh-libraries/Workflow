@@ -8,153 +8,103 @@
   - It is important to do task one by one strictly, by me designing tasks in this way, we can achieve:
   - Easy-to-understand commits for file changing that is easy to review.
   - Limit side effects so that you don't have to deal with massive of issues at the same time.
+- When I say `RunRpcTestCase` needs to change, usually it means all version of `RunRpcTestCase`.
+  - No need to create helper functions just to share code between them unless explicitly instructed.
 
 ## Task 1
 
-General Workflow script AST building improvements:
-- `try-catch` and `try-finally` cound be merged into one single `WfTryStatement`. You are going to also find if such pattern appear anywhere else and fix them as well.
+`RpcJsonListEventOpsMock::OnItemChanged` and `RpcJsonObjectEventOpsMock::InvokeEvent` should call `dispatcher->RecordJsonValue` on the returned value.
+- In order to do this, `IRpcListEventOps::OnItemChanged` and `IRpcObjectEventOps::InvokeEvent` should return `Value` instead of `RpcEventExceptionMap`.
+- Such return values should be serialized and deserialized with JSON.
+- But since JSON mock version of them do not do JSON serialization and deserialization, it is JSON `IRpcSerializer` doing them.
+- So they can't call `ReadMethodException` and `ReadEventException`, generated ops implementations and those in `WfLibraryRpcWrappers.(h|cpp)` should call them after deserializing return values.
+  - Currenty they returns `RpcEventExceptionMap` so return values from `OnItemChanged` and `InvokeEvent` are not involved in `IRpcSerializer` serializing and deserializing, you should add it.
+  - `rpcops_IOps_CreateJson` currently call `ReadEventException` after `rpcjson_Deserialize`, which is good.
+  - `rpcops_IOps_CreateJson` currently call `ReadMethodException` before `rpcjson_Deserialize`, which is bad.
+    - `rpcjson_Deserialize` should be called before `ReadMethodException` so that `ReadMethodException` does not need to handle JSON values.
+    - Even when a method returns primitive types, `rpcjson_Deserialize` should be called and then do casting, instead of inlining for example reading `JsonString` for `string`, etc.
+  - `rpcops_IOps_Create` looks good, no need to change
+- Since `ReadMethodException` and `ReadEventException` is called after JSON representation of exceptions are deserialized to `RpcException` and `RpcEventExceptionMap`, so these two read functions don't handle JSON representations.
 
-Just like `ReadEventException`, you are going to add a `ReadMethodException`.
-In generated `rpcops_IOps_CreateJson`, between calling `objectOps.InvokeMethod` and processing actual return value, exception handling are identical among every methods.
-Rewrite this piece of code in C++ and the script could just call `IRpcLifecycle::ReadMethodException`.
-`ReadMethodException` will read return value directly from `InvokeMethod`, if there is an exception it raise an exception, otherwise nothing happens.
-So A call to `ReadMethodException` without worrying about the return value is enough.
+`JsonSerializePredefinedTypes` and `JsonDeserializePredefinedTypes` should handle serialization for `RpcException` and `RpcObjectReference`.
+- Remove serialization of these two types in generated code.
 
-In generated `rpcops_IRpcObjectEventOpsJson`:
-- `raise "Unknown RPC event id.";` is not an exception raised in any remote event handlers, it is a local error. So it cannot be turned into a record in the returned map.
-- The key of the returned map is actually the remote client id which raise the exception, not the local client.
-  - The same to `IRpcListEventOps` implementation in `WfLibraryRpcWrappers.(h|cpp)`.
-  - A few test results in `IndexRpc.txt` may be impacted.
-  - In `rpcops_IRpcObjectEventOpsJson` you are not able to obtainer such information, they should be done in C++ authored `IRpcDispatcher` implementation.
-- When the RPC definition has no event, the whole function could be collapsed to one single `raise "Unknown RPC event id.";` instead of a big piece of boilerplate code.
-  - This also matches the semantic after fixing, because only exceptions raised in remote event handlers are put into the map.
-
-In generated `rpcops_IRpcObjectOpsJson`:
-- `raise "Unknown RPC method id.";` is not an exception raised in any remote method call, it is a local error. So it cannot be turned into `RpcException`.
-
-To keep the generated code clean, when handling unknown id exceptions, you could first `var unknownId = false`, and set it to true in the `default` case.
-In this way you are able to check this variable in the no-exception branch and raise the exception accordingly.
-Only do this when raising the unknown id exception directly isn't work because it is guarded in a try-catch which turn the exception into something else, otherwise you should still raise the exception directly.
-
-Don't handle exceptions in any ops interface implementation, instead we should do it in `IRpcDispatcher` in this way:
-- This section only talks about wrappers which read the remote return value and turn it back into an exception, not including ops interfaces which catch the exception and turn into serializable exception value to pass it back.
-- Rename `RpcDualDispatcherMock` to `RpcDualDispatcherMockBase`.
-- Create a `RpcDualDispatcherMock` inheriting from `RpcDualDispatcherMockBase`, doing things like `RpcDualJsonDispatcherMock` that create one more indirection of 8 ops interface instances.
-- Now you got JSON version and non-JSON version of ops interface wrappers for dispatcher mocks, you are going to read the return value of `InvokeMethod`, `InvokeEvent` and `OnItemChanged`, to see if the return value is representing an exception, and throw it directly.
-  - `InvokeEvent` and `OnItemChanged` returns a map, but in the dual mock there is only one remote client, so when exception happens you will know the "remote client id", the code would be simpler.
-- In this way all code that calls the dispatcher don't need to worry about the exception anymore.
-  - Unless in `rpcops_IRpcObjectEventOpsJson` you still need to call `SetEventSuppressedFlag` when event happens.
+Generated wrappers need to use generated strong typed version of ops interface for event handling.
+- Take `Rpc/Inheritance_EventException` as an example.
+- `rpcwrapper_RpcInheritanceEventException__IDerived` calls `rpclistener_RpcInheritanceEventException__IDerived` at the end.
+- `rpclistener_RpcInheritanceEventException__IDerived` calls `InvokeEvent` by itself, which is wrong, `ops` should be passed to it, and it calls the strong typed version.
+- This will affect test cases in `TestCasesRpc.cpp`.
+  - Remove `attachLocalEvents` argument from `RunRpcTestCase`.
+    - Since the only possible implementation is only calling `rpclistener_Attach`, `RunRpcTestCase` should just call it by themselves.
+    - But when there is no event involved, `rpclistener_Attach` is not generated, so `bool HasEvent` should be added to `RunRpcTestCase` as a new template argument.
+    - Therefore you can protect the code in `if constexpr (HasEvent)` so that when `rpclistener_Attach` is not generated there is no C++ compile error.
+  - When `VCZH_DEBUG_NO_REFLECTION` is defined, use the JSON version.
+  - You need to verify `RunRpcTestCase`, all JSON version functions should only be called when `VCZH_DEBUG_NO_REFLECTION` is defined, there are some other cases.
+    - e.g., `oo1`, `oeo1`, `oo2`, `oeo2`, `ops1`, `ops2`.
+    - Only when `VCZH_DEBUG_NO_REFLECTION` is defined, `rpcops_IRpcSerializer` can be used, otherwise just don't call `SetSerializer`.
+      - If not setting a serializer crash anything this should be fixed.
+      - When a serializer is null, just don't call it.
+    - `lc1->attachLocalEventsCallback` will need `ops1` and `lc2->attachLocalEventsCallback` will need `ops2`, so these 6 objects are recommended to be created right after `lc1` and `lc2` are created.
 
 ## Task 2
 
-`Rpc/Oblist_EventException` should attach the handler which raise an exception in `serviceMain`. The current test case `clientMain` attach an event handler to raise exception, and it raise the event, that would be a local exception not a remote exception. It doesn't do the expected test. Fix it like this:
+`WfLibraryRpcLifecycle.cpp`:
+- All `throw Exception` could just be replaced by `CHECK_FAIL`.
 
-```Workflow
-module Rpc;
-using system::*;
-using RpcOblistEventException::*;
-
-func CrashItemChanged(index : int, oldCount : int, newCount : int) : void
-{
-  raise $"$(index),$(oldCount),$(newCount)";
-}
-
-func serviceMain(lc : IRpcLifecycle*) : void
-{
-  var serverObj = new (IServer^)
-  {
-    var _List : observe int[] = null;
-
-    override func GetOblist() : observe int[]
-    {
-      _List = {};
-      attach(_List.ItemChanged, CrashItemChanged);
-      return _List;
-    }
-  };
-  lc.RegisterService("RpcOblistEventException::IServer", serverObj);
-}
-
-func clientMain(lc : IRpcLifecycle*) : string
-{
-  var server = cast (IServer^) lc.RequestService("RpcOblistEventException::IServer");
-  var xs = server.GetOblist();
-
-  try
-  {
-    xs.Add(0);
-  }
-  catch (ex)
-  {
-    return ex.Message;
-  }
-
-  return "No Exception";
-}
-```
+`TestCasesRpc.h`:
+- Currently the code is different when `VCZH_DEBUG_NO_REFLECTION` is defined.
+- You want to split `RunRpcTestCase` into two functions:
+  - `RunRpcTestCase_JsonValue`, it performs what should be done when `VCZH_DEBUG_NO_REFLECTION` is defined.
+  - `RunRpcTestCase_Flat`, it performs what should be done when `VCZH_DEBUG_NO_REFLECTION` is not defined.
+- Therefore you can `#define RunRpcTestCase` to any of the above functions accordingly, so that only one `VCZH_DEBUG_NO_REFLECTION` test is performed.
+- Duplicating code in `RunRpcTestCase_JsonValue` and `RunRpcTestCase_Flat` is fine.
+- You can put the above functions in `rpc_controller_test`, therefore all `using namespaces` in `RunRpcTestCase` can be placed in `rpc_controller_test` namespace. This is a header file for test only, it is allowed.
 
 # UPDATES
 
 # TEST
 
-Use the existing RPC runtime samples and generated wrapper output to cover the behavior changes:
+Task 1 will be covered by the existing RPC samples and generated RPC wrapper output:
 
-- `Rpc/Inheritance_MethodException` verifies remote method exceptions still reach the caller after moving caller-side decoding to `IRpcLifecycle::ReadMethodException` and dispatcher ops wrappers.
-- `Rpc/Inheritance_EventException` verifies event exceptions are still aggregated with the remote receiver client id and that unknown event ids are not encoded into the returned exception map.
-- RPC samples with no events, including `Rpc/Inheritance` and method-only collection samples, verify generated `rpcops_IRpcObjectEventOpsJson` can be collapsed to a direct unknown-id raise when no event branches exist.
-- `Rpc/Oblist_EventException` verifies observable-list event exceptions are propagated through `IRpcListEventOps::OnItemChanged`; Task 2 must move the throwing handler to `serviceMain` so this is a remote exception test.
+- `Rpc/Inheritance_EventException` verifies generated wrapper listeners route object events through the generated strong typed ops interface, and that event exceptions still propagate after `IRpcObjectEventOps::InvokeEvent` returns `object`.
+- Observable-list RPC samples with event exceptions verify `IRpcListEventOps::OnItemChanged` returns a JSON-serializable value and the caller deserializes it before `ReadEventException`.
+- Method-return RPC samples with primitive, byref, byval, and exception returns verify JSON caller ops deserialize the returned JSON value before calling `ReadMethodException`.
+- Generated JSON values in `Test/TypeScript/JsonValues*` and the TypeScript build verify `RpcException` and `RpcObjectReference` are serialized by the predefined JSON serializer path, not by per-RPC generated struct serializers.
+- `TestCasesRpc.cpp` generation verifies `RunRpcTestCase` uses JSON ops only under `VCZH_DEBUG_NO_REFLECTION`, uses flat ops otherwise, and attaches local event listeners only when the generated RPC assembly has events.
 
 Success criteria:
 
-- Generated caller-side RPC method ops call `system::IRpcLifecycle::ReadMethodException(invokeResult)` instead of duplicating RpcException/JSON RpcException checks before every return path.
-- Generated object ops unknown method ids and generated object event ops unknown event ids raise local errors instead of becoming `system::RpcException` transport values.
-- Generated JSON object event ops for RPC definitions with no events return a single direct `raise "Unknown RPC event id.";` implementation.
-- Dispatcher mock ops wrappers throw returned method/list-event/object-event exceptions before control reaches generated wrappers, while receive-side ops still catch real remote handler exceptions into transport values.
-- Unit tests pass for the affected RPC samples and the full required unit-test sequence for changed C++/Workflow generation code.
+- The solution builds for Debug x64 and Debug Win32.
+- Required unit test projects pass in the order defined by `Project.md`.
+- `CompilerTest_LoadAndCompile` regenerates RPC test sources without baseline mismatch after expected generated-output updates are accepted.
+- TypeScript preparation and `npm run build` pass after JSON value regeneration.
+- Generated code contains no generated JSON serializer/deserializer functions for `system::RpcException` or `system::RpcObjectReference`, and JSON caller ops call `rpcjson_Deserialize` before `ReadMethodException` or `ReadEventException`.
 
 # PROPOSALS
 
-- No.1 Centralize RPC return exception decoding and make unknown ids local errors [CONFIRMED]
-- No.2 Move oblist event exception handler to service side [CONFIRMED]
+- No.1 Route event return values through `Value` and JSON serialization
 
-## No.1 Centralize RPC return exception decoding and make unknown ids local errors [CONFIRMED]
+## No.1 Route event return values through `Value` and JSON serialization
 
 ### CODE CHANGE
 
-- Added `IRpcLifecycle::ReadMethodException` and registered it for Workflow reflection so generated method wrappers can delegate returned exception decoding to C++.
-- Merged RPC generator try-catch and try-finally construction into a single `WfTryStatement` path where both catch and finally clauses are needed.
-- Changed generated object/object-event ops unknown-id handling so local unknown method/event ids are raised outside the remote-exception transport catch path.
-- Collapsed no-event generated object-event ops to a direct unknown-event-id raise.
-- Moved dispatcher-mock caller-side exception decoding into JSON and non-JSON ops wrapper indirections, including method, object-event and list-event return values.
-- Updated RPC docs to record the local-error semantics for unknown ids and the centralized method exception reader.
+- Changed `IRpcListEventOps::OnItemChanged` and `IRpcObjectEventOps::InvokeEvent` to return `Value`, with lifecycle callers deserializing the returned value before calling `ReadEventException`.
+- Added predefined JSON handling for `RpcObjectReference`, `RpcException`, and generic collection/map values, and removed generated JSON serializers for the RPC predefined types.
+- Updated JSON generated ops so all method/event returns go through `rpcjson_Deserialize` before exception checks and primitive casts.
+- Updated generated listener/wrapper creation so local event listeners receive the generated strong typed ops object and invoke the generated event method instead of directly calling dispatcher event APIs.
+- Updated RPC mocks and test harnesses so JSON-only helpers are only used under `VCZH_DEBUG_NO_REFLECTION`; flat mode does not require a serializer.
+- Regenerated RPC C++/Workflow/metadata outputs and TypeScript JSON values.
 
-### VALIDATION
+### VERIFICATION
 
-- `copilotBuild.ps1 -Configuration Debug -Platform x64`: passed, 0 warnings, 0 errors.
-- `copilotBuild.ps1 -Configuration Debug -Platform Win32`: passed, 0 warnings, 0 errors.
-- `LibraryTest` Debug x64/Win32: passed, 14/14 cases each.
-- `CompilerTest_GenerateMetadata` Debug x64/Win32: passed, 2/2 cases each.
-- `CompilerTest_LoadAndCompile` Debug x64: passed, 709/709 cases for generated Win32 and x64 sections.
-- `RuntimeTest` Debug x64/Win32: passed, 261/261 cases each.
-- `CppTest` Debug x64/Win32: passed, 227/227 cases each.
-- `CppTest_Metaonly` Debug x64/Win32: passed, 227/227 cases each.
-- `CppTest_Reflection` Debug x64/Win32: passed, 227/227 cases each.
+- `copilotBuild.ps1 -Configuration Debug -Platform x64`: passed.
+- `copilotBuild.ps1 -Configuration Debug -Platform Win32`: passed.
+- `LibraryTest` x64 and Win32: passed.
+- `CompilerTest_GenerateMetadata` x64 and Win32: passed.
+- `CompilerTest_LoadAndCompile` x64: passed and regenerated outputs.
+- Rebuilt Debug x64 and Win32 after regeneration: passed.
+- `RuntimeTest` x64 and Win32: passed.
+- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` x64 and Win32: passed.
 - `Test/TypeScript/prepare.ps1`: passed.
 - `npm run build` in `Test/TypeScript`: passed.
-
-## No.2 Move oblist event exception handler to service side [CONFIRMED]
-
-### CODE CHANGE
-
-- Moved `Rpc/Oblist_EventException`'s throwing `ItemChanged` handler attachment into `serviceMain` so the observable-list mutation tests a remote handler exception instead of a local client handler exception.
-- Updated the RPC index expected result from the serialized remote exception map form to the propagated exception message returned by `clientMain`.
-- Regenerated the affected Workflow and C++ RPC test artifacts.
-
-### VALIDATION
-
-- `CompilerTest_LoadAndCompile` Debug x64: passed, including regenerated Win32 and x64 sections.
-- `copilotBuild.ps1 -Configuration Debug -Platform x64`: passed, 0 warnings, 0 errors.
-- `copilotBuild.ps1 -Configuration Debug -Platform Win32`: passed, 0 warnings, 0 errors.
-- `CppTest` Debug x64/Win32: passed, 227/227 cases each.
-- `CppTest_Metaonly` Debug x64/Win32: passed, 227/227 cases each.
-- `CppTest_Reflection` Debug x64/Win32: passed, 227/227 cases each.
+- `git diff --check -- . ':(exclude)Test/Generated/Workflow32/Assembly.Rpc.*.txt' ':(exclude)Test/Generated/Workflow64/Assembly.Rpc.*.txt'`: passed. The unscoped check reports fixed-column trailing spaces in regenerated Workflow assembly disassembly files.

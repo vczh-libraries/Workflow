@@ -397,9 +397,13 @@ TEST_FILE
 				writer.WriteLine(L"\")");
 				writer.WriteLine(L"{");
 
-				// Generate RunRpcTestCase call with DecideTypeId lambda
 				writer.WriteString(L"\tRunRpcTestCase<::vl_workflow_global::");
 				writer.WriteString(assemblyNames[itemName]);
+				writer.WriteString(L", ");
+				writer.WriteString(
+					rpcEventBridgeInfosPerItem.Keys().Contains(itemName) && rpcEventBridgeInfosPerItem.Get(itemName)->Count() > 0
+					? L"true"
+					: L"false");
 				writer.WriteString(L">(L\"");
 				writer.WriteString(itemName);
 				writer.WriteString(L"\", L\"");
@@ -424,21 +428,8 @@ TEST_FILE
 					}
 				}
 				writer.WriteLine(L"\t\t\treturn RpcTypeId_NotFound;");
-				writer.WriteLine(L"\t\t},");
-
-				if (rpcEventBridgeInfosPerItem.Keys().Contains(itemName) && rpcEventBridgeInfosPerItem.Get(itemName)->Count() > 0)
-				{
-					writer.WriteLine(L"\t\t[](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj)");
-					writer.WriteLine(L"\t\t{");
-					writer.WriteString(L"\t\t\t::vl_workflow_global::");
-					writer.WriteString(assemblyNames[itemName]);
-					writer.WriteLine(L"::Instance().rpclistener_Attach(ref.typeId, mock, ref, obj);");
-					writer.WriteLine(L"\t\t});");
-				}
-				else
-				{
-					writer.WriteLine(L"\t\tnullptr);");
-				}
+				writer.WriteLine(L"\t\t}");
+				writer.WriteLine(L"\t\t);");
 
 				writer.WriteLine(L"});");
 			}

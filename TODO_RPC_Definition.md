@@ -226,12 +226,12 @@ The returned ops object is the target client's local operation object. The calle
 
 Events are broadcast from the client that observed or raised the event. The broadcast excludes that caller client and sends to all other clients.
 
-- Object events use `IRpcDispatcher::BroadcastFromClient_ObjectEventOps(selfClientId)->InvokeEvent(...)`.
+- Object events use generated strong typed caller-side ops, which call `IRpcDispatcher::BroadcastFromClient_ObjectEventOps(selfClientId)->InvokeEvent(...)`.
 - List events use `IRpcDispatcher::BroadcastFromClient_ListEventOps(selfClientId)->OnItemChanged(...)`.
 
 This rule applies whether the event is raised from a local object or from a wrapper. If a wrapper raises an event, the owner client is still just another client in the broadcast target set unless it is the caller client.
 
-Event broadcasts return `system::RpcException[int]`, keyed by the lifecycle client id that caught an event handler exception. A broadcast should attempt every target lifecycle even when earlier targets report exceptions, then aggregate all returned maps. The lifecycle that triggered the event receives the aggregate map internally; generated object-event send-side code and predefined container-event send-side code call `system::IRpcLifecycle::ReadEventException`, which raises a normal Workflow exception message when the aggregate is non-empty.
+Event broadcasts return `object` so the same ops interface can carry either direct reflected values or JSON serialized values. After deserialization, the value is `system::RpcException[int]` or `null`, keyed by the lifecycle client id that caught an event handler exception. A broadcast should attempt every target lifecycle even when earlier targets report exceptions, then aggregate all returned maps. The lifecycle that triggered the event receives the aggregate map internally; generated object-event send-side code and predefined container-event send-side code deserialize the returned value and call `system::IRpcLifecycle::ReadEventException`, which raises a normal Workflow exception message when the aggregate is non-empty.
 
 In the dual-client test implementation, broadcasting can be implemented by returning event ops from the lifecycle whose client id is not `selfClientId`.
 
@@ -260,9 +260,9 @@ When `IRpcObjectEventOps::InvokeEvent(ref, eventId, arguments)` receives a remot
 - Call `lc.Controller.SetEventSuppressedFlag(ref, eventId, false)` in a `finally` block.
 - Treat unknown event ids as local dispatch errors that are raised directly and are not inserted into the returned exception map.
 
-Generated `rpclistener_*` handlers should check `lc.Controller.GetEventSuppressedFlag(ref, eventId)` before boxing arguments. If the flag is set, the handler returns immediately. Otherwise it boxes arguments and broadcasts through `IRpcDispatcher`.
+Generated `rpclistener_*` handlers should check `lc.Controller.GetEventSuppressedFlag(ref, eventId)` before forwarding the event. If the flag is set, the handler returns immediately. Otherwise it calls the generated strong typed caller-side ops event method, letting those ops handle boxing, optional JSON serialization, broadcasting, deserialization, and exception raising.
 
-List events use the same shape without an event id. When receive-side `OnItemChanged(ref, index, oldCount, newCount)` replays a remote list notification locally, it should set `SetItemChangedSuppressedFlag(ref, true)`, raise the local list notification, catch exceptions into a returned `system::RpcException[int]` map keyed by `lc.ClientId`, and clear the flag in a `finally` block. The locally attached native list event handler should check `GetItemChangedSuppressedFlag(ref)` before broadcasting, and should call `system::IRpcLifecycle::ReadEventException` on the returned map.
+List events use the same shape without an event id. When receive-side `OnItemChanged(ref, index, oldCount, newCount)` replays a remote list notification locally, it should set `SetItemChangedSuppressedFlag(ref, true)`, raise the local list notification, catch exceptions into a `system::RpcException[int]` map keyed by `lc.ClientId`, return that map as `object`, and clear the flag in a `finally` block. The locally attached native list event handler should check `GetItemChangedSuppressedFlag(ref)` before broadcasting, deserialize the returned value when a serializer exists, and call `system::IRpcLifecycle::ReadEventException` on the resulting map.
 
 ## Byval Return Collection Lifecycle
 

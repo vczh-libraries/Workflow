@@ -39,6 +39,18 @@ namespace vl
 
 		using RpcEventExceptionMap = Ptr<reflection::description::IValueDictionary>;
 
+		inline reflection::description::Value BoxRpcObjectReference(RpcObjectReference ref)
+		{
+			using namespace reflection::description;
+			return Value::From(Ptr(new IValueType::TypedBox<RpcObjectReference>(ref)), nullptr);
+		}
+
+		inline reflection::description::Value BoxRpcException(RpcException exception)
+		{
+			using namespace reflection::description;
+			return Value::From(Ptr(new IValueType::TypedBox<RpcException>(exception)), nullptr);
+		}
+
 		inline RpcEventExceptionMap CreateRpcEventExceptionMap()
 		{
 			return reflection::description::IValueDictionary::Create();
@@ -53,6 +65,16 @@ namespace vl
 				auto key = keys->Get(i);
 				target->Set(key, source->Get(key));
 			}
+		}
+
+		inline reflection::description::Value BoxRpcEventExceptionMap(RpcEventExceptionMap exceptions)
+		{
+			return exceptions ? reflection::description::BoxValue(exceptions) : reflection::description::Value();
+		}
+
+		inline RpcEventExceptionMap UnboxRpcEventExceptionMap(const reflection::description::Value& value)
+		{
+			return value.IsNull() ? nullptr : reflection::description::UnboxValue<RpcEventExceptionMap>(value);
 		}
 
 		class RpcByvalReturnValue
@@ -121,7 +143,7 @@ namespace vl
 			, public reflection::Description<IRpcListEventOps>
 		{
 		public:
-			virtual RpcEventExceptionMap							OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount) = 0;
+			virtual reflection::description::Value					OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount) = 0;
 		};
 
 		class IRpcObjectEventOps
@@ -129,7 +151,7 @@ namespace vl
 			, public reflection::Description<IRpcObjectEventOps>
 		{
 		public:
-			virtual RpcEventExceptionMap							InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments) = 0;
+			virtual reflection::description::Value					InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments) = 0;
 		};
 
 /***********************************************************************

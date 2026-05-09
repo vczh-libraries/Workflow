@@ -20,14 +20,19 @@ namespace vl
 				{
 					targets.Add(target);
 				}
-				RpcEventExceptionMap InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments)override
+				Value InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments)override
 				{
+					if (targets.Count() == 1)
+					{
+						return targets[0]->InvokeEvent(ref, eventId, arguments);
+					}
+
 					auto exceptions = CreateRpcEventExceptionMap();
 					for (auto target : targets)
 					{
-						MergeRpcEventExceptionMap(exceptions, target->InvokeEvent(ref, eventId, arguments));
+						MergeRpcEventExceptionMap(exceptions, UnboxRpcEventExceptionMap(target->InvokeEvent(ref, eventId, arguments)));
 					}
-					return exceptions->GetCount() == 0 ? nullptr : exceptions;
+					return exceptions->GetCount() == 0 ? Value() : BoxRpcEventExceptionMap(exceptions);
 				}
 			};
 
@@ -64,11 +69,11 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 				}
 
-				RpcEventExceptionMap OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override
+				Value OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override
 				{
-					auto exceptions = ops->OnItemChanged(ref, index, oldCount, newCount);
-					ReadEventException(exceptions);
-					return exceptions;
+					auto value = ops->OnItemChanged(ref, index, oldCount, newCount);
+					ReadEventException(UnboxRpcEventExceptionMap(value));
+					return value;
 				}
 			};
 
@@ -86,11 +91,11 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 				}
 
-				RpcEventExceptionMap InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments)override
+				Value InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments)override
 				{
-					auto exceptions = ops->InvokeEvent(ref, eventId, arguments);
-					ReadEventException(exceptions);
-					return exceptions;
+					auto value = ops->InvokeEvent(ref, eventId, arguments);
+					ReadEventException(UnboxRpcEventExceptionMap(value));
+					return value;
 				}
 			};
 

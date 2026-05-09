@@ -15,7 +15,7 @@ namespace vl
 		{
 		public:
 			vint(*decideTypeIdCallback)(reflection::IDescriptable*) = nullptr;
-			void(*attachLocalEventsCallback)(RpcDualLifecycleMock*, rpc_controller::RpcObjectReference, reflection::IDescriptable*) = nullptr;
+			Func<void(RpcDualLifecycleMock*, rpc_controller::RpcObjectReference, reflection::IDescriptable*)> attachLocalEventsCallback;
 			using RpcDualLifecycleMock::RpcDualLifecycleMock;
 
 			vint DecideTypeId(reflection::IDescriptable* obj)const override
@@ -36,12 +36,11 @@ namespace vl
 	}
 }
 
-template<typename TInstance>
+template<typename TInstance, bool HasEvent>
 void RunRpcTestCase(
 	const vl::WString& itemName,
 	const vl::WString& expected,
-	vl::vint(*decideTypeId)(vl::reflection::IDescriptable*),
-	void(*attachLocalEvents)(vl::rpc_controller_test::RpcDualLifecycleMock*, vl::rpc_controller::RpcObjectReference, vl::reflection::IDescriptable*))
+	vl::vint(*decideTypeId)(vl::reflection::IDescriptable*))
 {
 	using namespace vl;
 	using namespace vl::collections;
@@ -60,22 +59,44 @@ void RunRpcTestCase(
 	lc2->SetIdMap(idMap.Ref());
 	lc1->decideTypeIdCallback = decideTypeId;
 	lc2->decideTypeIdCallback = decideTypeId;
-	lc1->attachLocalEventsCallback = attachLocalEvents;
-	lc2->attachLocalEventsCallback = attachLocalEvents;
+
+#ifdef VCZH_DEBUG_NO_REFLECTION
 	lc1->SetSerializer(instance.rpcops_IRpcSerializer());
 	lc2->SetSerializer(instance.rpcops_IRpcSerializer());
+#endif
 
-	auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj(), lc1->GetSerializer()));
-	auto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj(), lc1->GetSerializer()));
-	auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj(), lc2->GetSerializer()));
-	auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj(), lc2->GetSerializer()));
-
+#ifdef VCZH_DEBUG_NO_REFLECTION
 	auto oo1 = instance.rpcops_IRpcObjectOpsJson(lc1.Obj());
 	auto oeo1 = instance.rpcops_IRpcObjectEventOpsJson(lc1.Obj());
 	auto oo2 = instance.rpcops_IRpcObjectOpsJson(lc2.Obj());
 	auto oeo2 = instance.rpcops_IRpcObjectEventOpsJson(lc2.Obj());
 	auto ops1 = instance.rpcops_IOps_CreateJson(lc1.Obj());
 	auto ops2 = instance.rpcops_IOps_CreateJson(lc2.Obj());
+#else
+	auto oo1 = instance.rpcops_IRpcObjectOps(lc1.Obj());
+	auto oeo1 = instance.rpcops_IRpcObjectEventOps(lc1.Obj());
+	auto oo2 = instance.rpcops_IRpcObjectOps(lc2.Obj());
+	auto oeo2 = instance.rpcops_IRpcObjectEventOps(lc2.Obj());
+	auto ops1 = instance.rpcops_IOps_Create(lc1.Obj());
+	auto ops2 = instance.rpcops_IOps_Create(lc2.Obj());
+#endif
+
+	auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj(), lc1->GetSerializer()));
+	auto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj(), lc1->GetSerializer()));
+	auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj(), lc2->GetSerializer()));
+	auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj(), lc2->GetSerializer()));
+
+	if constexpr (HasEvent)
+	{
+		lc1->attachLocalEventsCallback = Func<void(RpcDualLifecycleMock*, RpcObjectReference, IDescriptable*)>([&](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj)
+		{
+			instance.rpclistener_Attach(ref.typeId, mock, ref, obj, ops1);
+		});
+		lc2->attachLocalEventsCallback = Func<void(RpcDualLifecycleMock*, RpcObjectReference, IDescriptable*)>([&](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj)
+		{
+			instance.rpclistener_Attach(ref.typeId, mock, ref, obj, ops2);
+		});
+	}
 
 	lc1->GetController()->Register(oo1, oeo1, lo1, leo1);
 	lc2->GetController()->Register(oo2, oeo2, lo2, leo2);

@@ -32,7 +32,7 @@ namespace
 		Ptr<IValueFunctionProxy>								wrapperCreateFunc;
 		Ptr<IValueFunctionProxy>								opsCreateFunc;
 		Value													rpcOps;
-		Func<void(vint, IRpcLifecycle*, RpcObjectReference, IDescriptable*)>		listenerAttachFunc;
+		Ptr<IValueFunctionProxy>								listenerAttachFunc;
 	public:
 		RpcWorkflowLifecycleMock(vint _clientId)
 			: RpcDualLifecycleMock(_clientId)
@@ -74,8 +74,8 @@ namespace
 				const auto& listenerAttachFunctions = globalContext->assembly->functionByName.GetByIndex(listenerAttachIndex);
 				CHECK_ERROR(listenerAttachFunctions.Count() <= 1, L"Multiple rpclistener_Attach functions are found.");
 				listenerAttachFunc = listenerAttachFunctions.Count() == 1
-					? LoadFunction<void(vint, IRpcLifecycle*, RpcObjectReference, IDescriptable*)>(globalContext, L"rpclistener_Attach")
-					: Func<void(vint, IRpcLifecycle*, RpcObjectReference, IDescriptable*)>();
+					? LoadFunction(globalContext, L"rpclistener_Attach")
+					: nullptr;
 			}
 
 			RegisterWrapperFactory([this](RpcObjectReference ref, IRpcLifecycle* lc) -> Ptr<IRpcWrapperBase>
@@ -121,7 +121,13 @@ namespace
 		{
 			if (!listenerAttachFunc) return;
 			if (ref.typeId < 0) return;
-			listenerAttachFunc(ref.typeId, this, ref, obj);
+			auto argList = IValueList::Create();
+			argList->Add(BoxValue(ref.typeId));
+			argList->Add(BoxValue<IRpcLifecycle*>(this));
+			argList->Add(BoxValue(ref));
+			argList->Add(BoxValue<IDescriptable*>(obj));
+			argList->Add(rpcOps);
+			listenerAttachFunc->Invoke(argList);
 		}
 	};
 }

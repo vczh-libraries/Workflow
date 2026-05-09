@@ -101,17 +101,6 @@ namespace vl
 			Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
 			Value RpcUnboxValueByvalInternal(const Value& serializable, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
 
-			Ptr<glr::json::JsonNode> FindJsonObjectField(Ptr<glr::json::JsonObject> object, const WString& name)
-			{
-				for (auto field : object->fields)
-				{
-					if (field->name.value == name)
-					{
-						return field->value;
-					}
-				}
-				return nullptr;
-			}
 		}
 		
 /***********************************************************************
@@ -730,7 +719,7 @@ namespace vl
 			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
 		}
 
-		RpcEventExceptionMap RpcCalleeListEventBridge::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
+		Value RpcCalleeListEventBridge::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
 		{
 			auto controller = lifecycle->GetController();
 			auto obj = lifecycle->RefToPtr(ref);
@@ -745,7 +734,7 @@ namespace vl
 			catch (const Exception& ex)
 			{
 				exceptions = CreateRpcEventExceptionMap();
-				exceptions->Set(BoxValue(lifecycle->GetClientId()), BoxValue(RpcException{ ex.Message() }));
+				exceptions->Set(BoxValue(lifecycle->GetClientId()), BoxRpcException(RpcException{ ex.Message() }));
 			}
 			catch (...)
 			{
@@ -753,7 +742,7 @@ namespace vl
 				throw;
 			}
 			controller->SetItemChangedSuppressedFlag(ref, false);
-			return exceptions;
+			return SerializeValue(serializer, BoxRpcEventExceptionMap(exceptions));
 		}
 		
 /***********************************************************************
@@ -1114,23 +1103,6 @@ namespace vl
 				if (auto boxed = value.GetBoxedValue().Cast<IValueType::TypedBox<RpcException>>())
 				{
 					throw Exception(boxed->value.message);
-				}
-			}
-
-			if (value.GetValueType() == Value::SharedPtr)
-			{
-				if (auto node = value.GetSharedPtr().Cast<glr::json::JsonNode>())
-				{
-					if (auto object = node.Cast<glr::json::JsonObject>())
-					{
-						auto typeNode = FindJsonObjectField(object, WString::Unmanaged(L"$")).Cast<glr::json::JsonString>();
-						if (typeNode && typeNode->content.value == L"system::RpcException")
-						{
-							auto messageNode = FindJsonObjectField(object, WString::Unmanaged(L"message")).Cast<glr::json::JsonString>();
-							CHECK_ERROR(messageNode, L"RPC JSON exception message is expected.");
-							throw Exception(messageNode->content.value);
-						}
-					}
 				}
 			}
 		}

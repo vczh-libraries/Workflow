@@ -645,14 +645,6 @@ namespace vl
 					return CreateTry(protectedStatement, name, catchStatement, nullptr);
 				}
 
-				Ptr<WfStatement> CreateRpcWhile(Ptr<WfExpression> condition, Ptr<WfStatement> body)
-				{
-					auto statement = Ptr(new WfWhileStatement);
-					statement->condition = condition;
-					statement->statement = body;
-					return statement;
-				}
-
 				Ptr<WfForEachStatement> CreateForEach(const WString& name, Ptr<WfExpression> collection, Ptr<WfStatement> body)
 				{
 					auto statement = Ptr(new WfForEachStatement);
@@ -671,14 +663,6 @@ namespace vl
 				void AddStatement(Ptr<WfBlockStatement> block, Ptr<WfStatement> statement)
 				{
 					block->statements.Add(statement);
-				}
-
-				void AddRpcExceptionCheck(Ptr<WfBlockStatement> block, Ptr<WfExpression> value)
-				{
-					AddStatement(block, CreateInferredVariableStatement(L"rpcException", CreateWeakCast(CreateNullableType(L"system::RpcException"), value)));
-					auto trueBranch = CreateBlock();
-					AddStatement(trueBranch, CreateRaise(CreateMember(CreateCast(CreateQualifiedType(L"system::RpcException"), CreateReference(L"rpcException")), L"message")));
-					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(L"rpcException")), trueBranch));
 				}
 
 				void AddRpcMethodExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value)
@@ -1490,7 +1474,7 @@ namespace vl
 					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
 
 					{
-						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreateRpcEventExceptionMapType(), WfFunctionKind::Override);
+						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"eventId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
@@ -1729,33 +1713,10 @@ namespace vl
 					return interfaceDecl;
 				}
 
-				void AddRpcSerializeEventArguments(Ptr<WfBlockStatement> block)
-				{
-					AddStatement(block, CreateInferredVariableStatement(L"rpcSerializer", CreateMember(CreateReference(L"lc"), L"Serializer")));
-					auto serializeBranch = CreateBlock();
-					AddStatement(serializeBranch, CreateInferredVariableStatement(L"rpcArgumentIndex", CreateInt(0)));
+				WString GetRpcOpsInvokeMethodName(const RpcMethodModel& methodModel);
+				WString GetRpcOpsInvokeEventName(const RpcEventModel& eventModel);
 
-					auto loopBody = CreateBlock();
-					AddStatement(loopBody, CreateExpressionStatement(CreateCall(
-						CreateMember(CreateReference(L"arguments"), L"Set"),
-						CreateReference(L"rpcArgumentIndex"),
-						CreateCall(
-							CreateMember(CreateReference(L"rpcSerializer"), L"Serialize"),
-							CreateIndex(CreateReference(L"arguments"), CreateReference(L"rpcArgumentIndex"))
-							)
-						)));
-					AddStatement(loopBody, CreateExpressionStatement(CreateAssign(
-						CreateReference(L"rpcArgumentIndex"),
-						CreateBinary(WfBinaryOperator::Add, CreateReference(L"rpcArgumentIndex"), CreateInt(1))
-						)));
-					AddStatement(serializeBranch, CreateRpcWhile(
-						CreateBinary(WfBinaryOperator::LT, CreateReference(L"rpcArgumentIndex"), CreateMember(CreateReference(L"arguments"), L"Count")),
-						loopBody
-						));
-					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(L"rpcSerializer")), serializeBranch));
-				}
-
-				Ptr<WfDeclaration> GenerateListenerFactory(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces)
+				Ptr<WfDeclaration> GenerateListenerFactory(const RpcInterfaceModel& interfaceModel, const List<RpcInterfaceModel>& interfaces, const WString& opsInterfaceName)
 				{
 					List<const RpcEventModel*> events;
 					CollectInterfaceEvents(interfaceModel, interfaces, events);
@@ -1769,6 +1730,7 @@ namespace vl
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"target", CreateRawType(interfaceModel.fullName)));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
 					for (auto eventModel : events)
@@ -1786,35 +1748,14 @@ namespace vl
 								CreateReturn(nullptr)
 								)
 							);
-						AddStatement(lambdaBody, CreateVariableStatement(L"arguments", CreateSharedType(L"system::Array"), CreateConstructor()));
-						AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Resize"), CreateInt(eventModel->params.Count()))));
-						for (vint i = 0; i < eventModel->params.Count(); i++)
+						auto invoke = CreateCall(
+							CreateMember(CreateReference(L"ops"), GetRpcOpsInvokeEventName(*eventModel)),
+							CreateReference(L"ref"));
+						for (auto&& paramModel : eventModel->params)
 						{
-							auto&& paramModel = eventModel->params[i];
-							AddStatement(lambdaBody, CreateExpressionStatement(CreateCall(
-								CreateMember(CreateReference(L"arguments"), L"Set"),
-								CreateInt(i),
-								CreateRpcBoxExpression(paramModel.typeInfo, paramModel.byref, CreateReference(paramModel.name), CreateReference(L"lc"))
-								)));
+							invoke->arguments.Add(CreateReference(paramModel.name));
 						}
-						if (eventModel->params.Count() > 0)
-						{
-							AddRpcSerializeEventArguments(lambdaBody);
-						}
-						AddRpcEventExceptionRaise(
-							lambdaBody,
-							CreateCall(
-								CreateMember(
-									CreateCall(
-										CreateMember(CreateMember(CreateReference(L"lc"), L"Dispatcher"), L"BroadcastFromClient_ObjectEventOps"),
-										CreateMember(CreateReference(L"lc"), L"ClientId")
-										),
-									L"InvokeEvent"
-									),
-								CreateReference(L"ref"),
-								CreateRpcConstantReference(L"rpcevent_", eventModel->fullName),
-								CreateReference(L"arguments")
-								));
+						AddStatement(lambdaBody, CreateExpressionStatement(invoke));
 
 						auto attach = Ptr(new WfAttachEventExpression);
 						attach->event = CreateMember(CreateReference(L"target"), eventModel->name);
@@ -1825,13 +1766,14 @@ namespace vl
 					return functionDecl;
 				}
 
-				Ptr<WfDeclaration> GenerateListenerDispatcher(const List<RpcInterfaceModel>& interfaces)
+				Ptr<WfDeclaration> GenerateListenerDispatcher(const List<RpcInterfaceModel>& interfaces, const WString& opsInterfaceName)
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpclistener_Attach", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"obj", CreateRawType(L"system::Interface")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
 					auto switchStat = Ptr(new WfSwitchStatement);
@@ -1846,7 +1788,7 @@ namespace vl
 						if (HasInterfaceEvents(interfaceModel, interfaces))
 						{
 							auto mangledName = MangleRpcFullName(interfaceModel.fullName);
-							AddStatement(caseBranch, CreateExpressionStatement(CreateCall(CreateReference(L"rpclistener_" + mangledName), CreateReference(L"lc"), CreateReference(L"ref"), CreateCast(CreateRawType(interfaceModel.fullName), CreateReference(L"obj")))));
+							AddStatement(caseBranch, CreateExpressionStatement(CreateCall(CreateReference(L"rpclistener_" + mangledName), CreateReference(L"lc"), CreateReference(L"ref"), CreateCast(CreateRawType(interfaceModel.fullName), CreateReference(L"obj")), CreateReference(L"ops"))));
 						}
 						AddStatement(caseBranch, CreateReturn(nullptr));
 						switchCase->statement = caseBranch;
@@ -2008,7 +1950,7 @@ namespace vl
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
 					AddRpcOpsArgumentsArray(block, eventModel.params);
-					AddRpcEventExceptionRaise(block, CreateRpcOpsObjectEventInvoke(eventModel));
+					AddRpcEventExceptionRaise(block, CreateCast(CreateRpcEventExceptionMapType(), CreateRpcOpsObjectEventInvoke(eventModel)));
 					return functionDecl;
 				}
 
@@ -2244,7 +2186,7 @@ namespace vl
 
 					if (events.Count() > 0)
 					{
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateReference(L"rpclistener_" + mangledName), CreateReference(L"lc"), CreateReference(L"proxyRef"), CreateCast(CreateRawType(interfaceModel.fullName), CreateReference(L"proxy")))));
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateReference(L"rpclistener_" + mangledName), CreateReference(L"lc"), CreateReference(L"proxyRef"), CreateCast(CreateRawType(interfaceModel.fullName), CreateReference(L"proxy")), CreateReference(L"ops"))));
 					}
 
 					AddStatement(block, CreateReturn(CreateReference(L"proxy")));
@@ -2351,7 +2293,7 @@ namespace vl
 				vint listenerCount = 0;
 				for (auto&& interfaceModel : interfaces)
 				{
-					if (auto listener = GenerateListenerFactory(interfaceModel, interfaces))
+					if (auto listener = GenerateListenerFactory(interfaceModel, interfaces, opsInterfaceName))
 					{
 						module->declarations.Add(listener);
 						listenerCount++;
@@ -2359,7 +2301,7 @@ namespace vl
 				}
 				if (listenerCount > 0)
 				{
-					module->declarations.Add(GenerateListenerDispatcher(interfaces));
+					module->declarations.Add(GenerateListenerDispatcher(interfaces, opsInterfaceName));
 				}
 
 				for (auto&& interfaceModel : interfaces)

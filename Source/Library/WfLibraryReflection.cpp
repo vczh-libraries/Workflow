@@ -195,20 +195,7 @@ WfLoadLibraryTypes
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectOps)
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectEventOps)
-				{
-					using MethodType = decltype(&ClassType::InvokeEvent);
-					const wchar_t* parameterNames[] = { L"ref" _ L"eventId" _ L"arguments" };
-					auto methodInfo = Ptr(new CustomMethodInfoImplWithReturn<ClassType, vl::function_lambda::LambdaRetriveType<MethodType>::FunctionType>(
-						parameterNames,
-						(MethodType)&ClassType::InvokeEvent,
-						nullptr,
-						nullptr,
-						TypeInfoRetriver<collections::Dictionary<vint, vl::rpc_controller::RpcException>>::CreateTypeInfo()
-						));
-					AddMethod(L"InvokeEvent", methodInfo);
-					MethodPointerBinaryDataRetriver<MethodType> binaryDataRetriver(&ClassType::InvokeEvent);
-					MethodPointerBinaryDataRecorder<ClassType, TDFlags>::RecordMethod(binaryDataRetriver.GetBinaryData(), this, methodInfo.Obj());
-				}
+				CLASS_MEMBER_METHOD(InvokeEvent, { L"ref" _ L"eventId" _ L"arguments" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectEventOps)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcOperations)

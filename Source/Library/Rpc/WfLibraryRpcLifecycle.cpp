@@ -161,7 +161,9 @@ namespace vl
 					{
 						return;
 					}
-					ReadEventException(this->GetDispatcher()->BroadcastFromClient_ListEventOps(this->GetClientId())->OnItemChanged(ref, index, oldCount, newCount));
+					auto eventResult = this->GetDispatcher()->BroadcastFromClient_ListEventOps(this->GetClientId())->OnItemChanged(ref, index, oldCount, newCount);
+					auto exceptions = serializer ? serializer->Deserialize(eventResult) : eventResult;
+					ReadEventException(UnboxRpcEventExceptionMap(exceptions));
 				});
 				props->eventHandler = handler;
 			}

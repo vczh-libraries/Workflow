@@ -68,7 +68,6 @@ namespace vl
 				Ptr<WfForEachStatement> CreateForEach(const WString& name, Ptr<WfExpression> collection, Ptr<WfStatement> body);
 				Ptr<WfBlockStatement> CreateBlock();
 				void AddStatement(Ptr<WfBlockStatement> block, Ptr<WfStatement> statement);
-				void AddRpcExceptionCheck(Ptr<WfBlockStatement> block, Ptr<WfExpression> value);
 				void AddRpcMethodExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value);
 				void AddRpcEventExceptionMapSet(Ptr<WfBlockStatement> block, const WString& mapName, Ptr<WfExpression> clientId, Ptr<WfExpression> message);
 				void AddRpcEventExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value);
@@ -209,8 +208,6 @@ namespace vl
 					{
 						AddRpcJsonTypesFromDeclarations(manager->rpcMetadata->metadataModule->declarations, L"", enums, structs);
 					}
-					AddRpcBuiltinJsonType(structs, WString::Unmanaged(L"system::RpcObjectReference"), GetTypeDescriptor<vl::rpc_controller::RpcObjectReference>());
-					AddRpcBuiltinJsonType(structs, WString::Unmanaged(L"system::RpcException"), GetTypeDescriptor<vl::rpc_controller::RpcException>());
 				}
 
 				void CollectRpcJsonPrimitives(List<RpcJsonPrimitiveModel>& primitives)
@@ -441,7 +438,7 @@ namespace vl
 					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateMember(object, L"fields"), L"Add"), CreateReference(fieldVar))));
 				}
 
-				WString AddRpcJsonObjectFieldLookup(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> object, const WString& fieldName)
+				WString AddRpcJsonObjectFieldLookup(Ptr<WfBlockStatement> block, RpcJsonGenerationContext& context, Ptr<WfExpression> object, const WString& fieldName, bool required = true)
 				{
 					auto resultVar = AllocateRpcJsonTemp(context, L"jsonFieldValue");
 					auto fieldVar = AllocateRpcJsonTemp(context, L"jsonField");
@@ -451,39 +448,11 @@ namespace vl
 						CreateBinary(WfBinaryOperator::EQ, CreateMember(CreateMember(CreateReference(fieldVar), L"name"), L"value"), CreateString(fieldName)),
 						CreateExpressionStatement(CreateAssign(CreateReference(resultVar), CreateMember(CreateReference(fieldVar), L"value")))));
 					AddStatement(block, CreateForEach(fieldVar, CreateMember(object, L"fields"), forBlock));
-					AddStatement(block, CreateIf(CreateIsNull(CreateReference(resultVar)), CreateRaise(L"JSON object field not found: " + fieldName)));
+					if (required)
+					{
+						AddStatement(block, CreateIf(CreateIsNull(CreateReference(resultVar)), CreateRaise(L"JSON object field not found: " + fieldName)));
+					}
 					return resultVar;
-				}
-
-				void AddRpcJsonExceptionCheck(Ptr<WfBlockStatement> block, Ptr<WfExpression> value)
-				{
-					AddRpcExceptionCheck(block, CopyExpression(value, true));
-
-					AddStatement(block, CreateInferredVariableStatement(L"rpcExceptionJson", CreateWeakCast(CreateSharedType(L"system::JsonNode"), value)));
-					auto jsonBranch = CreateBlock();
-					AddStatement(jsonBranch, CreateInferredVariableStatement(L"rpcExceptionObject", CreateWeakCast(CreateSharedType(L"system::JsonObject"), CreateReference(L"rpcExceptionJson"))));
-
-					auto objectBranch = CreateBlock();
-					AddStatement(objectBranch, CreateVariableStatement(L"rpcExceptionTypeNode", CreateSharedType(L"system::JsonNode"), CreateNull()));
-					auto forBlock = CreateBlock();
-					AddStatement(forBlock, CreateIf(
-						CreateBinary(WfBinaryOperator::EQ, CreateMember(CreateMember(CreateReference(L"rpcExceptionField"), L"name"), L"value"), CreateString(L"$")),
-						CreateExpressionStatement(CreateAssign(CreateReference(L"rpcExceptionTypeNode"), CreateMember(CreateReference(L"rpcExceptionField"), L"value")))));
-					AddStatement(objectBranch, CreateForEach(L"rpcExceptionField", CreateMember(CreateReference(L"rpcExceptionObject"), L"fields"), forBlock));
-
-					auto typeNodeBranch = CreateBlock();
-					AddStatement(typeNodeBranch, CreateInferredVariableStatement(L"rpcExceptionType", CreateMember(CreateMember(CreateCast(CreateSharedType(L"system::JsonString"), CreateReference(L"rpcExceptionTypeNode")), L"content"), L"value")));
-					auto typeBranch = CreateBlock();
-					AddStatement(typeBranch, CreateInferredVariableStatement(L"rpcJsonException", CreateWeakCast(CreateNullableType(L"system::RpcException"), CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"rpcExceptionObject")))));
-					auto raiseBranch = CreateBlock();
-					AddStatement(raiseBranch, CreateRaise(CreateMember(CreateCast(CreateQualifiedType(L"system::RpcException"), CreateReference(L"rpcJsonException")), L"message")));
-					AddStatement(typeBranch, CreateIf(CreateIsNotNull(CreateReference(L"rpcJsonException")), raiseBranch));
-					AddStatement(typeNodeBranch, CreateIf(
-						CreateBinary(WfBinaryOperator::EQ, CreateReference(L"rpcExceptionType"), CreateString(L"system::RpcException")),
-						typeBranch));
-					AddStatement(objectBranch, CreateIf(CreateIsNotNull(CreateReference(L"rpcExceptionTypeNode")), typeNodeBranch));
-					AddStatement(jsonBranch, CreateIf(CreateIsNotNull(CreateReference(L"rpcExceptionObject")), objectBranch));
-					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(L"rpcExceptionJson")), jsonBranch));
 				}
 
 				WString AddKnownRpcJsonSerializeValue(RpcJsonGenerationContext& context, Ptr<WfBlockStatement> block, Ptr<WfExpression> value, WfType* type);
@@ -661,21 +630,11 @@ namespace vl
 					if (auto primitive = FindRpcJsonPrimitive(*context.primitives, fullName))
 					{
 						auto resultName = AllocateRpcJsonTemp(context, L"jsonValue");
-						Ptr<WfExpression> value;
-						switch (primitive->kind)
-						{
-						case RpcJsonPrimitiveKind::Number:
-							value = CreateCast(CreateTopQualifiedType(fullName), CreateMember(CreateMember(CreateCast(CreateSharedType(L"system::JsonNumber"), node), L"content"), L"value"));
-							break;
-						case RpcJsonPrimitiveKind::Boolean:
-							value = CreateBinary(WfBinaryOperator::EQ, CreateMember(CreateCast(CreateSharedType(L"system::JsonLiteral"), node), L"value"), CreateQualifiedExpression(L"system::JsonLiteralValue::True"));
-							break;
-						case RpcJsonPrimitiveKind::String:
-							value = CreateCast(CreateTopQualifiedType(fullName), CreateMember(CreateMember(CreateCast(CreateSharedType(L"system::JsonString"), node), L"content"), L"value"));
-							break;
-						default:
-							CHECK_FAIL(L"Internal error: Unknown primitive kind.");
-						}
+						auto deserialized = CreateCall(CreateReference(L"rpcjson_Deserialize"), node);
+						auto value =
+							primitive->kind == RpcJsonPrimitiveKind::Boolean || fullName == L"system::String"
+							? CreateCast(CreateTopQualifiedType(fullName), deserialized)
+							: CreateCast(CreateTopQualifiedType(fullName), CreateCast(CreatePredefinedType(WfPredefinedTypeName::String), deserialized));
 						AddStatement(block, CreateInferredVariableStatement(resultName, value));
 						return resultName;
 					}
@@ -1028,15 +987,19 @@ namespace vl
 
 					AddStatement(block, CreateInferredVariableStatement(L"object", CreateWeakCast(CreateSharedType(L"system::JsonObject"), CreateReference(L"node"))));
 					auto objectBranch = CreateBlock();
-					auto keywordNode = AddRpcJsonObjectFieldLookup(objectBranch, context, CreateReference(L"object"), L"$");
-					AddStatement(objectBranch, CreateInferredVariableStatement(L"keyword", CreateMember(CreateMember(CreateCast(CreateSharedType(L"system::JsonString"), CreateReference(keywordNode)), L"content"), L"value")));
-					auto objectSwitch = Ptr(new WfSwitchStatement);
-					objectSwitch->expression = CreateReference(L"keyword");
-					for (auto&& structModel : *context.structs)
 					{
-						AddUnknownDeserializeStructCase(objectSwitch, structModel);
+						auto keywordNode = AddRpcJsonObjectFieldLookup(objectBranch, context, CreateReference(L"object"), L"$", false);
+						auto keywordBranch = CreateBlock();
+						AddStatement(keywordBranch, CreateInferredVariableStatement(L"keyword", CreateMember(CreateMember(CreateCast(CreateSharedType(L"system::JsonString"), CreateReference(keywordNode)), L"content"), L"value")));
+						auto objectSwitch = Ptr(new WfSwitchStatement);
+						objectSwitch->expression = CreateReference(L"keyword");
+						for (auto&& structModel : *context.structs)
+						{
+							AddUnknownDeserializeStructCase(objectSwitch, structModel);
+						}
+						AddStatement(keywordBranch, objectSwitch);
+						AddStatement(objectBranch, CreateIf(CreateIsNotNull(CreateReference(keywordNode)), keywordBranch));
 					}
-					AddStatement(objectBranch, objectSwitch);
 					AddStatement(block, CreateIf(CreateIsNotNull(CreateReference(L"object")), objectBranch));
 					AddStatement(block, CreateReturn(CreateCall(
 						CreateQualifiedExpression(L"system::IRpcLifecycle::JsonDeserializePredefinedTypes"),
@@ -1317,7 +1280,7 @@ namespace vl
 						auto unknownIdBranch = CreateBlock();
 						AddStatement(unknownIdBranch, CreateRaise(L"Unknown RPC method id."));
 						AddStatement(block, CreateIf(CreateReference(L"unknownId"), unknownIdBranch));
-						AddStatement(block, CreateReturn(CreateNull()));
+						AddStatement(block, CreateReturn(CreateCall(CreateReference(L"rpcjson_Serialize"), CreateNull())));
 						newOps->declarations.Add(invokeMethod);
 					}
 
@@ -1362,7 +1325,7 @@ namespace vl
 					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
 
 					{
-						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreateRpcEventExceptionMapType(), WfFunctionKind::Override);
+						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"eventId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
@@ -1386,11 +1349,9 @@ namespace vl
 							AddStatement(unknownIdBranch, CreateRaise(L"Unknown RPC event id."));
 							AddStatement(block, CreateIf(CreateReference(L"unknownId"), unknownIdBranch));
 							auto returnExceptionBranch = CreateBlock();
-							AddStatement(returnExceptionBranch, CreateReturn(CreateCast(CreateRpcEventExceptionMapType(), CreateCall(
-								CreateReference(L"rpcjson_Deserialize"),
-								CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"rpcEventExceptions"))))));
+							AddStatement(returnExceptionBranch, CreateReturn(CreateCall(CreateReference(L"rpcjson_Serialize"), CreateReference(L"rpcEventExceptions"))));
 							auto returnNullBranch = CreateBlock();
-							AddStatement(returnNullBranch, CreateReturn(CreateNull()));
+							AddStatement(returnNullBranch, CreateReturn(CreateCall(CreateReference(L"rpcjson_Serialize"), CreateNull())));
 							AddStatement(
 								block,
 								CreateIf(
@@ -1437,20 +1398,39 @@ namespace vl
 					{
 						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
 						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
-						AddRpcMethodExceptionRaise(block, CreateReference(L"invokeResult"));
+						AddStatement(block, CreateInferredVariableStatement(
+							L"jsonResult",
+							CreateCast(CreateSharedType(L"system::JsonNode"), CreateReference(L"invokeResult"))));
+						AddStatement(block, CreateInferredVariableStatement(
+							L"methodResult",
+							CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"jsonResult"))));
+						AddRpcMethodExceptionRaise(block, CreateReference(L"methodResult"));
 					}
 					else if (IsRpcByvalReturn(methodModel))
 					{
 						AddStatement(block, CreateInferredVariableStatement(L"objectOps", CreateRpcOpsObjectOps()));
 						auto invoke = CreateRpcOpsObjectInvoke(methodModel, CreateReference(L"objectOps"));
 						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
-						AddRpcMethodExceptionRaise(block, CreateReference(L"invokeResult"));
 						AddStatement(block, CreateInferredVariableStatement(
 							L"byvalReturnValue",
-							CreateCast(CreateSharedType(L"system::RpcByvalReturnValue"), CreateReference(L"invokeResult"))));
+							CreateWeakCast(CreateSharedType(L"system::RpcByvalReturnValue"), CreateReference(L"invokeResult"))));
+						AddStatement(block, CreateVariableStatement(L"jsonResult", CreateSharedType(L"system::JsonNode"), CreateNull()));
+						auto exceptionBranch = CreateBlock();
+						AddStatement(exceptionBranch, CreateExpressionStatement(CreateAssign(
+							CreateReference(L"jsonResult"),
+							CreateCast(CreateSharedType(L"system::JsonNode"), CreateReference(L"invokeResult")))));
+						auto returnBranch = CreateBlock();
+						AddStatement(returnBranch, CreateExpressionStatement(CreateAssign(
+							CreateReference(L"jsonResult"),
+							CreateCast(CreateSharedType(L"system::JsonNode"), CreateMember(CreateReference(L"byvalReturnValue"), L"value")))));
+						AddStatement(block, CreateIf(CreateIsNull(CreateReference(L"byvalReturnValue")), exceptionBranch, returnBranch));
 						AddStatement(block, CreateInferredVariableStatement(
-							L"jsonResult",
-							CreateCast(CreateSharedType(L"system::JsonNode"), CreateMember(CreateReference(L"byvalReturnValue"), L"value"))));
+							L"methodResult",
+							CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"jsonResult"))));
+						AddRpcMethodExceptionRaise(block, CreateReference(L"methodResult"));
+						AddStatement(block, CreateInferredVariableStatement(
+							L"strongByvalReturnValue",
+							CreateCast(CreateSharedType(L"system::RpcByvalReturnValue"), CreateReference(L"byvalReturnValue"))));
 						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
 						auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, CreateReference(L"jsonResult"), transferType.Obj());
 						AddStatement(block, CreateInferredVariableStatement(
@@ -1460,15 +1440,18 @@ namespace vl
 								: CreateReference(valueName)));
 						AddStatement(block, CreateExpressionStatement(CreateCall(
 							CreateMember(CreateReference(L"objectOps"), L"EndInvokeMethod"),
-							CreateMember(CreateReference(L"byvalReturnValue"), L"slot"))));
+							CreateMember(CreateReference(L"strongByvalReturnValue"), L"slot"))));
 						AddStatement(block, CreateReturn(CreateReference(L"result")));
 					}
 					else
 					{
 						auto invoke = CreateRpcOpsObjectInvoke(methodModel);
 						AddStatement(block, CreateInferredVariableStatement(L"invokeResult", invoke));
-						AddRpcMethodExceptionRaise(block, CreateReference(L"invokeResult"));
 						AddStatement(block, CreateInferredVariableStatement(L"jsonResult", CreateCast(CreateSharedType(L"system::JsonNode"), CreateReference(L"invokeResult"))));
+						AddStatement(block, CreateInferredVariableStatement(
+							L"methodResult",
+							CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"jsonResult"))));
+						AddRpcMethodExceptionRaise(block, CreateReference(L"methodResult"));
 						auto transferType = CreateRpcJsonTransferType(methodModel.returnTypeInfo, methodModel.returnByref, methodModel.returnType.Obj());
 						auto valueName = AddRpcJsonDeserializeValue(manager, tempIndex, block, CreateReference(L"jsonResult"), transferType.Obj());
 						if (IsSharedInterfaceType(methodModel.returnTypeInfo))
@@ -1492,9 +1475,14 @@ namespace vl
 
 					vint tempIndex = 0;
 					AddRpcOpsArgumentsArrayJson(manager, block, eventModel.params, tempIndex);
-					AddRpcEventExceptionRaise(block, CreateCast(CreateRpcEventExceptionMapType(), CreateCall(
-						CreateReference(L"rpcjson_Deserialize"),
-						CreateCall(CreateReference(L"rpcjson_Serialize"), CreateRpcOpsObjectEventInvoke(eventModel)))));
+					AddStatement(block, CreateInferredVariableStatement(L"invokeResult", CreateRpcOpsObjectEventInvoke(eventModel)));
+					AddStatement(block, CreateInferredVariableStatement(
+						L"jsonResult",
+						CreateCast(CreateSharedType(L"system::JsonNode"), CreateReference(L"invokeResult"))));
+					AddStatement(block, CreateInferredVariableStatement(
+						L"eventResult",
+						CreateCall(CreateReference(L"rpcjson_Deserialize"), CreateReference(L"jsonResult"))));
+					AddRpcEventExceptionRaise(block, CreateCast(CreateRpcEventExceptionMapType(), CreateReference(L"eventResult")));
 					return functionDecl;
 				}
 

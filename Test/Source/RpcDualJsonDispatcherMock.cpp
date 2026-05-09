@@ -87,11 +87,11 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 				}
 
-				RpcEventExceptionMap OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override
+				Value OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override
 				{
-					auto exceptions = ops->OnItemChanged(ref, index, oldCount, newCount);
-					ReadEventException(exceptions);
-					return exceptions;
+					auto value = ops->OnItemChanged(ref, index, oldCount, newCount);
+					dispatcher->RecordJsonValue(value);
+					return value;
 				}
 			};
 
@@ -111,12 +111,12 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 				}
 
-				RpcEventExceptionMap InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)override
+				Value InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)override
 				{
 					dispatcher->RecordJsonArguments(arguments);
-					auto exceptions = ops->InvokeEvent(ref, eventId, arguments);
-					ReadEventException(exceptions);
-					return exceptions;
+					auto value = ops->InvokeEvent(ref, eventId, arguments);
+					dispatcher->RecordJsonValue(value);
+					return value;
 				}
 			};
 
@@ -274,7 +274,6 @@ namespace vl
 					dispatcher->RecordJsonArguments(arguments);
 					auto value = ops->InvokeMethod(ref, methodId, arguments);
 					dispatcher->RecordJsonValue(value);
-					ReadMethodException(value);
 					return value;
 				}
 
