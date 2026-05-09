@@ -184,20 +184,16 @@ namespace vl_workflow_global
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpcops_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpcops_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
-		void rpclistener_RpcInheritanceEventException__IOne(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcInheritanceEventException::IOne* target);
-		void rpclistener_RpcInheritanceEventException__ITwo(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcInheritanceEventException::ITwo* target);
-		void rpclistener_RpcInheritanceEventException__IDerived(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcInheritanceEventException::IDerived* target);
-		void rpclistener_Attach(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::reflection::IDescriptable* obj);
+		void rpclistener_RpcInheritanceEventException__IOne(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcInheritanceEventException::IOne* target, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> ops);
+		void rpclistener_RpcInheritanceEventException__ITwo(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcInheritanceEventException::ITwo* target, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> ops);
+		void rpclistener_RpcInheritanceEventException__IDerived(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcInheritanceEventException::IDerived* target, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> ops);
+		void rpclistener_Attach(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::reflection::IDescriptable* obj, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> ops);
 		::vl::Ptr<::RpcInheritanceEventException::IRpcWrapper_IValue> rpcwrapper_RpcInheritanceEventException__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> ops);
 		::vl::Ptr<::RpcInheritanceEventException::IRpcWrapper_IOne> rpcwrapper_RpcInheritanceEventException__IOne(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> ops);
 		::vl::Ptr<::RpcInheritanceEventException::IRpcWrapper_ITwo> rpcwrapper_RpcInheritanceEventException__ITwo(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> ops);
 		::vl::Ptr<::RpcInheritanceEventException::IRpcWrapper_IDerived> rpcwrapper_RpcInheritanceEventException__IDerived(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> ops);
 		::vl::Ptr<::RpcInheritanceEventException::IRpcWrapper_IService> rpcwrapper_RpcInheritanceEventException__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> ops);
 		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> ops);
-		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_system__RpcObjectReference(::vl::rpc_controller::RpcObjectReference value);
-		::vl::rpc_controller::RpcObjectReference rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::Ptr<::vl::glr::json::JsonNode> node);
-		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_system__RpcException(::vl::rpc_controller::RpcException value);
-		::vl::rpc_controller::RpcException rpcjson_Deserialize_Struct_system__RpcException(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize(const ::vl::reflection::description::Value& value);
 		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::rpc_controller::IRpcSerializer> rpcops_IRpcSerializer();
@@ -231,9 +227,10 @@ Closures
 	struct __vwsnf3_Rpc_Inheritance_EventException_rpclistener_RpcInheritanceEventException__IOne_
 	{
 		::vl::rpc_controller::IRpcLifecycle* lc;
+		::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> ops;
 		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf3_Rpc_Inheritance_EventException_rpclistener_RpcInheritanceEventException__IOne_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
+		__vwsnf3_Rpc_Inheritance_EventException_rpclistener_RpcInheritanceEventException__IOne_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()() const;
 	};
@@ -241,9 +238,10 @@ Closures
 	struct __vwsnf4_Rpc_Inheritance_EventException_rpclistener_RpcInheritanceEventException__ITwo_
 	{
 		::vl::rpc_controller::IRpcLifecycle* lc;
+		::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> ops;
 		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf4_Rpc_Inheritance_EventException_rpclistener_RpcInheritanceEventException__ITwo_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
+		__vwsnf4_Rpc_Inheritance_EventException_rpclistener_RpcInheritanceEventException__ITwo_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()() const;
 	};
@@ -251,9 +249,10 @@ Closures
 	struct __vwsnf5_Rpc_Inheritance_EventException_rpclistener_RpcInheritanceEventException__IDerived_
 	{
 		::vl::rpc_controller::IRpcLifecycle* lc;
+		::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> ops;
 		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf5_Rpc_Inheritance_EventException_rpclistener_RpcInheritanceEventException__IDerived_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
+		__vwsnf5_Rpc_Inheritance_EventException_rpclistener_RpcInheritanceEventException__IDerived_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()() const;
 	};
@@ -261,9 +260,10 @@ Closures
 	struct __vwsnf6_Rpc_Inheritance_EventException_rpclistener_RpcInheritanceEventException__IDerived_
 	{
 		::vl::rpc_controller::IRpcLifecycle* lc;
+		::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> ops;
 		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf6_Rpc_Inheritance_EventException_rpclistener_RpcInheritanceEventException__IDerived_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
+		__vwsnf6_Rpc_Inheritance_EventException_rpclistener_RpcInheritanceEventException__IDerived_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_Inheritance_EventException> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()() const;
 	};
@@ -310,7 +310,7 @@ Closures
 		__vwsnc13_Rpc_Inheritance_EventException_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		::vl::reflection::description::Value InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
 	class __vwsnc14_Rpc_Inheritance_EventException_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Inheritance_EventException : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Inheritance_EventException
@@ -363,7 +363,7 @@ Closures
 		__vwsnc4_Rpc_Inheritance_EventException_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		::vl::reflection::description::Value InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
 	class __vwsnc5_Rpc_Inheritance_EventException_rpcops_IOps_Create__rpcops_IOps_Rpc_Inheritance_EventException : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_Inheritance_EventException

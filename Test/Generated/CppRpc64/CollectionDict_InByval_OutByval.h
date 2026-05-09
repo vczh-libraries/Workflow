@@ -108,10 +108,6 @@ namespace vl_workflow_global
 		::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_InByval_OutByval> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::RpcCollectionDict::InByval::OutByval::IRpcWrapper_IService> rpcwrapper_RpcCollectionDict__InByval__OutByval__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_InByval_OutByval> ops);
 		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_InByval_OutByval> ops);
-		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_system__RpcObjectReference(::vl::rpc_controller::RpcObjectReference value);
-		::vl::rpc_controller::RpcObjectReference rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::Ptr<::vl::glr::json::JsonNode> node);
-		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_system__RpcException(::vl::rpc_controller::RpcException value);
-		::vl::rpc_controller::RpcException rpcjson_Deserialize_Struct_system__RpcException(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize(const ::vl::reflection::description::Value& value);
 		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::rpc_controller::IRpcSerializer> rpcops_IRpcSerializer();
@@ -154,7 +150,7 @@ Closures
 		__vwsnc3_Rpc_CollectionDict_InByval_OutByval_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		::vl::reflection::description::Value InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
 	class __vwsnc4_Rpc_CollectionDict_InByval_OutByval_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionDict_InByval_OutByval : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_CollectionDict_InByval_OutByval
@@ -208,7 +204,7 @@ Closures
 		__vwsnc8_Rpc_CollectionDict_InByval_OutByval_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		::vl::reflection::description::Value InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
 	class __vwsnc9_Rpc_CollectionDict_InByval_OutByval_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionDict_InByval_OutByval : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_CollectionDict_InByval_OutByval

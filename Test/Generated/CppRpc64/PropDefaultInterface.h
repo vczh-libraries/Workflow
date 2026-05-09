@@ -132,15 +132,11 @@ namespace vl_workflow_global
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpcops_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpcops_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterface> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
-		void rpclistener_RpcPropDefaultInterface__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcPropDefaultInterface::IService* target);
-		void rpclistener_Attach(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::reflection::IDescriptable* obj);
+		void rpclistener_RpcPropDefaultInterface__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::RpcPropDefaultInterface::IService* target, ::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterface> ops);
+		void rpclistener_Attach(::vl::vint64_t typeId, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::reflection::IDescriptable* obj, ::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterface> ops);
 		::vl::Ptr<::RpcPropDefaultInterface::IRpcWrapper_IValue> rpcwrapper_RpcPropDefaultInterface__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterface> ops);
 		::vl::Ptr<::RpcPropDefaultInterface::IRpcWrapper_IService> rpcwrapper_RpcPropDefaultInterface__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterface> ops);
 		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterface> ops);
-		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_system__RpcObjectReference(::vl::rpc_controller::RpcObjectReference value);
-		::vl::rpc_controller::RpcObjectReference rpcjson_Deserialize_Struct_system__RpcObjectReference(::vl::Ptr<::vl::glr::json::JsonNode> node);
-		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_system__RpcException(::vl::rpc_controller::RpcException value);
-		::vl::rpc_controller::RpcException rpcjson_Deserialize_Struct_system__RpcException(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize(const ::vl::reflection::description::Value& value);
 		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::rpc_controller::IRpcSerializer> rpcops_IRpcSerializer();
@@ -158,9 +154,10 @@ Closures
 	struct __vwsnf1_Rpc_PropDefaultInterface_rpclistener_RpcPropDefaultInterface__IService_
 	{
 		::vl::rpc_controller::IRpcLifecycle* lc;
+		::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterface> ops;
 		::vl::rpc_controller::RpcObjectReference ref;
 
-		__vwsnf1_Rpc_PropDefaultInterface_rpclistener_RpcPropDefaultInterface__IService_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
+		__vwsnf1_Rpc_PropDefaultInterface_rpclistener_RpcPropDefaultInterface__IService_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_PropDefaultInterface> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
 
 		void operator()() const;
 	};
@@ -181,7 +178,7 @@ Closures
 		__vwsnc10_Rpc_PropDefaultInterface_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		::vl::reflection::description::Value InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
 	class __vwsnc11_Rpc_PropDefaultInterface_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PropDefaultInterface : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_PropDefaultInterface
@@ -238,7 +235,7 @@ Closures
 		__vwsnc4_Rpc_PropDefaultInterface_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		::vl::reflection::description::Value InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
 	class __vwsnc5_Rpc_PropDefaultInterface_rpcops_IOps_Create__rpcops_IOps_Rpc_PropDefaultInterface : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_PropDefaultInterface
