@@ -15,16 +15,15 @@
 
 ## ToDo
 
+- Review JSON related constructions until the work is done.
 - Handle `IRpcListOps` exceptions.
-- Review JSON related constructions.
-  - Normalize error handling in both `RpcLifecycleBase` and `IRpcDispatcher`.
-  - All 4 RPC compiler cpp files to ensure visitors are used proactively.
 - JSON schema for rpc interfaces.
   - JSON async dispatcher with JSON channel
   - logging from JSON channel
   - Triple threading demo only for metaonly. Meanwhile no reflection logs JSON values.
   - TeatCasesRpc.h test macros and include different header files.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
+- Consider how to run a CLI based dual processes demo to test RPC.
 
 ## Document
 

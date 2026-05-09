@@ -6,6 +6,8 @@ investigate repro
   - It is important to do task one by one strictly, by me designing tasks in this way, we can achieve:
   - Easy-to-understand commits for file changing that is easy to review.
   - Limit side effects so that you don't have to deal with massive of issues at the same time.
+- When I say `RunRpcTestCase` needs to change, usually it means all version of `RunRpcTestCase`.
+  - No need to create helper functions just to share code between them unless explicitly instructed.
 
 ## Task 1
 
@@ -35,5 +37,23 @@ Generated wrappers need to use generated strong typed version of ops interface f
     - But when there is no event involved, `rpclistener_Attach` is not generated, so `bool HasEvent` should be added to `RunRpcTestCase` as a new template argument.
     - Therefore you can protect the code in `if constexpr (HasEvent)` so that when `rpclistener_Attach` is not generated there is no C++ compile error.
   - When `VCZH_DEBUG_NO_REFLECTION` is defined, use the JSON version.
-  - You need to verify `RunRpcTestCase`, all JSON version functions should only be called when `VCZH_DEBUG_NO_REFLECTION` is defined, there are some other cases, e.g., `oo1`, `oeo1`, `oo2`, `oeo2`, `ops1`, `ops2`.
-  - `lc1->attachLocalEventsCallback` will need `ops1` and `lc2->attachLocalEventsCallback` will need `ops2`, so these 6 objects are recommended to be created right after `lc1` and `lc2` are created.
+  - You need to verify `RunRpcTestCase`, all JSON version functions should only be called when `VCZH_DEBUG_NO_REFLECTION` is defined, there are some other cases.
+    - e.g., `oo1`, `oeo1`, `oo2`, `oeo2`, `ops1`, `ops2`.
+    - Only when `VCZH_DEBUG_NO_REFLECTION` is defined, `rpcops_IRpcSerializer` can be used, otherwise just don't call `SetSerializer`.
+      - If not setting a serializer crash anything this should be fixed.
+      - When a serializer is null, just don't call it.
+    - `lc1->attachLocalEventsCallback` will need `ops1` and `lc2->attachLocalEventsCallback` will need `ops2`, so these 6 objects are recommended to be created right after `lc1` and `lc2` are created.
+
+## Task 2
+
+`WfLibraryRpcLifecycle.cpp`:
+- All `throw Exception` could just be replaced by `CHECK_FAIL`.
+
+`TestCasesRpc.h`:
+- Currently the code is different when `VCZH_DEBUG_NO_REFLECTION` is defined.
+- You want to split `RunRpcTestCase` into two functions:
+  - `RunRpcTestCase_JsonValue`, it performs what should be done when `VCZH_DEBUG_NO_REFLECTION` is defined.
+  - `RunRpcTestCase_Flat`, it performs what should be done when `VCZH_DEBUG_NO_REFLECTION` is not defined.
+- Therefore you can `#define RunRpcTestCase` to any of the above functions accordingly, so that only one `VCZH_DEBUG_NO_REFLECTION` test is performed.
+- Duplicating code in `RunRpcTestCase_JsonValue` and `RunRpcTestCase_Flat` is fine.
+- You can put the above functions in `rpc_controller_test`, therefore all `using namespaces` in `RunRpcTestCase` can be placed in `rpc_controller_test` namespace. This is a header file for test only, it is allowed.
