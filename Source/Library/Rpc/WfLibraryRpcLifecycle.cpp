@@ -419,7 +419,7 @@ namespace vl
 			auto index = idMap.Keys().IndexOf(fullName);
 			if (index == -1)
 			{
-				throw Exception(L"Unknown RPC type id.");
+				CHECK_FAIL(L"Unknown RPC type id.");
 			}
 			controller.GetObjectOps()->RegisterService(idMap.Values()[index], service);
 		}

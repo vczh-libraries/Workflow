@@ -62,6 +62,13 @@ Generated wrappers need to use generated strong typed version of ops interface f
 
 # UPDATES
 
+## Task 2
+
+- Split the RPC C++ test harness into `RunRpcTestCase_JsonValue` and `RunRpcTestCase_Flat`, selected by the `RunRpcTestCase` macro under `VCZH_DEBUG_NO_REFLECTION`.
+- Moved the harness namespace imports into `vl::rpc_controller_test` and kept JSON-only serializer/ops setup confined to the JSON-value harness.
+- Changed the local unknown RPC type id failure in `RegisterService` to `CHECK_FAIL`.
+- Kept the duplicate-registration lifecycle failures as `Exception` after verification showed `Rpc/FailDoubleRegistration` intentionally catches them as user-visible RPC/script exceptions; replacing those with `CHECK_FAIL` throws `vl::Error`, bypasses the existing catch path, and crashes the runtime test instead of producing the expected `[exception]` output.
+
 # TEST
 
 Task 1 will be covered by the existing RPC samples and generated RPC wrapper output:
@@ -82,7 +89,8 @@ Success criteria:
 
 # PROPOSALS
 
-- No.1 Route event return values through `Value` and JSON serialization
+- No.1 Route event return values through `Value` and JSON serialization [CONFIRMED]
+- No.2 Split RPC test harness and tighten lifecycle failure handling [CONFIRMED]
 
 ## No.1 Route event return values through `Value` and JSON serialization
 
@@ -108,3 +116,25 @@ Success criteria:
 - `Test/TypeScript/prepare.ps1`: passed.
 - `npm run build` in `Test/TypeScript`: passed.
 - `git diff --check -- . ':(exclude)Test/Generated/Workflow32/Assembly.Rpc.*.txt' ':(exclude)Test/Generated/Workflow64/Assembly.Rpc.*.txt'`: passed. The unscoped check reports fixed-column trailing spaces in regenerated Workflow assembly disassembly files.
+
+## No.2 Split RPC test harness and tighten lifecycle failure handling
+
+### CODE CHANGE
+
+- Split `RunRpcTestCase` into `RunRpcTestCase_JsonValue` and `RunRpcTestCase_Flat` in `rpc_controller_test`, and macro-selected the correct implementation based on `VCZH_DEBUG_NO_REFLECTION`.
+- Duplicated the setup intentionally so JSON mode creates serializers, JSON object/event ops, JSON strong typed ops, and JSON dispatcher only in that implementation; flat mode creates flat ops and never calls `SetSerializer`.
+- Kept local event attachment in each harness behind `if constexpr (HasEvent)` and passed the generated strong typed ops object to `rpclistener_Attach`.
+- Replaced the non-catchable unknown-service-type lifecycle failure with `CHECK_FAIL`, while preserving duplicate-registration conflicts as `Exception` because existing RPC behavior depends on catching them.
+
+### VERIFICATION
+
+- `copilotBuild.ps1 -Configuration Debug -Platform x64`: passed.
+- `copilotBuild.ps1 -Configuration Debug -Platform Win32`: passed.
+- `LibraryTest` x64 and Win32: passed.
+- `CompilerTest_GenerateMetadata` x64 and Win32: passed.
+- `CompilerTest_LoadAndCompile` x64: passed.
+- `RuntimeTest` x64 and Win32: passed.
+- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` x64 and Win32: passed.
+- `Test/TypeScript/prepare.ps1`: passed.
+- `npm run build` in `Test/TypeScript`: passed.
+- `git diff --check`: passed.
