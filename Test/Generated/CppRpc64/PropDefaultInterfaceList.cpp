@@ -548,6 +548,7 @@ Closures
 
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnc10_Rpc_PropDefaultInterfaceList_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
+		auto unknownId = false;
 		auto rpcEventExceptions = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->SetEventSuppressedFlag(ref, eventId, true);
 		{
@@ -559,30 +560,28 @@ Closures
 			::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
 			try
 			{
-					try
+				{
+					auto __vwsn_switch_8 = eventId;
+					if ((__vwsn_switch_8 == GLOBAL_NAME rpcevent_RpcPropDefaultInterfaceList__IService_ValueChanged))
 					{
-						{
-							auto __vwsn_switch_8 = eventId;
-							if ((__vwsn_switch_8 == GLOBAL_NAME rpcevent_RpcPropDefaultInterfaceList__IService_ValueChanged))
-							{
-								auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPropDefaultInterfaceList::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-								::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->ValueChanged)();
-							}
-							else
-								throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
-						}
+						auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPropDefaultInterfaceList::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+						::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->ValueChanged)();
 					}
-					catch(const ::vl::Exception& __vwsne_1)
-					{
-						auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_1.Message());
-						{
-							::vl::__vwsn::This(rpcEventExceptions.Obj())->Set(::vl::__vwsn::Box(::vl::__vwsn::This(_lc)->GetClientId()), ::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }()));
-						}
-					}
+					else
+						(unknownId = true);
+				}
 			}
-			catch(const ::vl::Exception&)
+			catch(const ::vl::Exception& __vwsne_0)
 			{
+				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
+				{
+					::vl::__vwsn::This(rpcEventExceptions.Obj())->Set(::vl::__vwsn::Box(::vl::__vwsn::This(_lc)->GetClientId()), ::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }()));
+				}
 			}
+		}
+		if (unknownId)
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
 		}
 		if ((::vl::__vwsn::This(rpcEventExceptions.Obj())->GetCount() > static_cast<::vl::vint64_t>(0L)))
 		{
@@ -606,44 +605,7 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
 		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IValue_GetValue, arguments);
-		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
-		if (static_cast<bool>(rpcException))
-		{
-			throw ::vl::Exception(rpcException.Value().message);
-		}
-		auto rpcExceptionJson = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
-		if (static_cast<bool>(rpcExceptionJson))
-		{
-			auto rpcExceptionObject = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(rpcExceptionJson.Obj());
-			if (static_cast<bool>(rpcExceptionObject))
-			{
-				auto rpcExceptionTypeNode = ::vl::Ptr<::vl::glr::json::JsonNode>();
-				{
-					auto __vwsn_for_enumerable_rpcExceptionField = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(rpcExceptionObject.Obj())->fields));
-					auto __vwsn_for_enumerator_rpcExceptionField = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcExceptionField.Obj())->CreateEnumerator();
-					while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->Next())
-					{
-						auto rpcExceptionField = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->GetCurrent());
-						{
-							if ((::vl::__vwsn::This(rpcExceptionField.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
-								(rpcExceptionTypeNode = ::vl::__vwsn::This(rpcExceptionField.Obj())->value);
-						}
-					}
-				}
-				if (static_cast<bool>(rpcExceptionTypeNode))
-				{
-					auto rpcExceptionType = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(rpcExceptionTypeNode.Obj())).Obj())->content.value;
-					if ((rpcExceptionType == ::vl::WString::Unmanaged(L"system::RpcException")))
-					{
-						auto rpcJsonException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(GLOBAL_NAME rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode>(rpcExceptionObject)));
-						if (static_cast<bool>(rpcJsonException))
-						{
-							throw ::vl::Exception(rpcJsonException.Value().message);
-						}
-					}
-				}
-			}
-		}
+		::vl::rpc_controller::ReadMethodException(invokeResult);
 		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
 		auto jsonValue0 = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(jsonResult.Obj())).Obj())->content.value;
 		return jsonValue0;
@@ -654,44 +616,7 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
 		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IService_GetValue, arguments);
-		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
-		if (static_cast<bool>(rpcException))
-		{
-			throw ::vl::Exception(rpcException.Value().message);
-		}
-		auto rpcExceptionJson = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
-		if (static_cast<bool>(rpcExceptionJson))
-		{
-			auto rpcExceptionObject = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(rpcExceptionJson.Obj());
-			if (static_cast<bool>(rpcExceptionObject))
-			{
-				auto rpcExceptionTypeNode = ::vl::Ptr<::vl::glr::json::JsonNode>();
-				{
-					auto __vwsn_for_enumerable_rpcExceptionField = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(rpcExceptionObject.Obj())->fields));
-					auto __vwsn_for_enumerator_rpcExceptionField = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcExceptionField.Obj())->CreateEnumerator();
-					while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->Next())
-					{
-						auto rpcExceptionField = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->GetCurrent());
-						{
-							if ((::vl::__vwsn::This(rpcExceptionField.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
-								(rpcExceptionTypeNode = ::vl::__vwsn::This(rpcExceptionField.Obj())->value);
-						}
-					}
-				}
-				if (static_cast<bool>(rpcExceptionTypeNode))
-				{
-					auto rpcExceptionType = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(rpcExceptionTypeNode.Obj())).Obj())->content.value;
-					if ((rpcExceptionType == ::vl::WString::Unmanaged(L"system::RpcException")))
-					{
-						auto rpcJsonException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(GLOBAL_NAME rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode>(rpcExceptionObject)));
-						if (static_cast<bool>(rpcJsonException))
-						{
-							throw ::vl::Exception(rpcJsonException.Value().message);
-						}
-					}
-				}
-			}
-		}
+		::vl::rpc_controller::ReadMethodException(invokeResult);
 		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
 		auto jsonValue0 = GLOBAL_NAME rpcjson_Deserialize_Struct_system__RpcObjectReference(jsonResult);
 		return ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueList>(::vl::rpc_controller::RpcUnboxByref(jsonValue0, _lc).Obj()));
@@ -704,44 +629,7 @@ Closures
 		auto jsonNode0 = GLOBAL_NAME rpcjson_Serialize_Struct_system__RpcObjectReference(::vl::rpc_controller::RpcBoxByref(::vl::Ptr<::vl::reflection::IDescriptable>(arg_value), _lc));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(jsonNode0));
 		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IService_SetValue, arguments);
-		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
-		if (static_cast<bool>(rpcException))
-		{
-			throw ::vl::Exception(rpcException.Value().message);
-		}
-		auto rpcExceptionJson = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
-		if (static_cast<bool>(rpcExceptionJson))
-		{
-			auto rpcExceptionObject = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(rpcExceptionJson.Obj());
-			if (static_cast<bool>(rpcExceptionObject))
-			{
-				auto rpcExceptionTypeNode = ::vl::Ptr<::vl::glr::json::JsonNode>();
-				{
-					auto __vwsn_for_enumerable_rpcExceptionField = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(rpcExceptionObject.Obj())->fields));
-					auto __vwsn_for_enumerator_rpcExceptionField = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcExceptionField.Obj())->CreateEnumerator();
-					while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->Next())
-					{
-						auto rpcExceptionField = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->GetCurrent());
-						{
-							if ((::vl::__vwsn::This(rpcExceptionField.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
-								(rpcExceptionTypeNode = ::vl::__vwsn::This(rpcExceptionField.Obj())->value);
-						}
-					}
-				}
-				if (static_cast<bool>(rpcExceptionTypeNode))
-				{
-					auto rpcExceptionType = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(rpcExceptionTypeNode.Obj())).Obj())->content.value;
-					if ((rpcExceptionType == ::vl::WString::Unmanaged(L"system::RpcException")))
-					{
-						auto rpcJsonException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(GLOBAL_NAME rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode>(rpcExceptionObject)));
-						if (static_cast<bool>(rpcJsonException))
-						{
-							throw ::vl::Exception(rpcJsonException.Value().message);
-						}
-					}
-				}
-			}
-		}
+		::vl::rpc_controller::ReadMethodException(invokeResult);
 	}
 
 	void __vwsnc11_Rpc_PropDefaultInterfaceList_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PropDefaultInterfaceList::InvokeMethod_RpcPropDefaultInterfaceList__IService_Signal(::vl::rpc_controller::RpcObjectReference ref)
@@ -749,44 +637,7 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
 		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IService_Signal, arguments);
-		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
-		if (static_cast<bool>(rpcException))
-		{
-			throw ::vl::Exception(rpcException.Value().message);
-		}
-		auto rpcExceptionJson = ::vl::__vwsn::UnboxWeak<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
-		if (static_cast<bool>(rpcExceptionJson))
-		{
-			auto rpcExceptionObject = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(rpcExceptionJson.Obj());
-			if (static_cast<bool>(rpcExceptionObject))
-			{
-				auto rpcExceptionTypeNode = ::vl::Ptr<::vl::glr::json::JsonNode>();
-				{
-					auto __vwsn_for_enumerable_rpcExceptionField = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(rpcExceptionObject.Obj())->fields));
-					auto __vwsn_for_enumerator_rpcExceptionField = ::vl::__vwsn::This(__vwsn_for_enumerable_rpcExceptionField.Obj())->CreateEnumerator();
-					while (::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->Next())
-					{
-						auto rpcExceptionField = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_rpcExceptionField.Obj())->GetCurrent());
-						{
-							if ((::vl::__vwsn::This(rpcExceptionField.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
-								(rpcExceptionTypeNode = ::vl::__vwsn::This(rpcExceptionField.Obj())->value);
-						}
-					}
-				}
-				if (static_cast<bool>(rpcExceptionTypeNode))
-				{
-					auto rpcExceptionType = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(rpcExceptionTypeNode.Obj())).Obj())->content.value;
-					if ((rpcExceptionType == ::vl::WString::Unmanaged(L"system::RpcException")))
-					{
-						auto rpcJsonException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(GLOBAL_NAME rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode>(rpcExceptionObject)));
-						if (static_cast<bool>(rpcJsonException))
-						{
-							throw ::vl::Exception(rpcJsonException.Value().message);
-						}
-					}
-				}
-			}
-		}
+		::vl::rpc_controller::ReadMethodException(invokeResult);
 	}
 
 	void __vwsnc11_Rpc_PropDefaultInterfaceList_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_PropDefaultInterfaceList::InvokeEvent_RpcPropDefaultInterfaceList__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref)
@@ -842,6 +693,7 @@ Closures
 
 	::vl::reflection::description::Value __vwsnc3_Rpc_PropDefaultInterfaceList_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
+		auto unknownId = false;
 		try
 		{
 			{
@@ -869,7 +721,7 @@ Closures
 					return ::vl::reflection::description::Value();
 				}
 				else
-					throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
+					(unknownId = true);
 			}
 		}
 		catch(const ::vl::Exception& __vwsne_0)
@@ -879,6 +731,11 @@ Closures
 				return ::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }());
 			}
 		}
+		if (unknownId)
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
+		}
+		return ::vl::reflection::description::Value();
 	}
 
 	void __vwsnc3_Rpc_PropDefaultInterfaceList_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::EndInvokeMethod(::vl::vint64_t slot)
@@ -928,6 +785,7 @@ Closures
 
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnc4_Rpc_PropDefaultInterfaceList_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
+		auto unknownId = false;
 		auto rpcEventExceptions = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->SetEventSuppressedFlag(ref, eventId, true);
 		{
@@ -939,30 +797,28 @@ Closures
 			::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
 			try
 			{
-					try
+				{
+					auto __vwsn_switch_3 = eventId;
+					if ((__vwsn_switch_3 == GLOBAL_NAME rpcevent_RpcPropDefaultInterfaceList__IService_ValueChanged))
 					{
-						{
-							auto __vwsn_switch_3 = eventId;
-							if ((__vwsn_switch_3 == GLOBAL_NAME rpcevent_RpcPropDefaultInterfaceList__IService_ValueChanged))
-							{
-								auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPropDefaultInterfaceList::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
-								::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->ValueChanged)();
-							}
-							else
-								throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
-						}
+						auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcPropDefaultInterfaceList::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+						::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->ValueChanged)();
 					}
-					catch(const ::vl::Exception& __vwsne_1)
-					{
-						auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_1.Message());
-						{
-							::vl::__vwsn::This(rpcEventExceptions.Obj())->Set(::vl::__vwsn::Box(::vl::__vwsn::This(_lc)->GetClientId()), ::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }()));
-						}
-					}
+					else
+						(unknownId = true);
+				}
 			}
-			catch(const ::vl::Exception&)
+			catch(const ::vl::Exception& __vwsne_0)
 			{
+				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
+				{
+					::vl::__vwsn::This(rpcEventExceptions.Obj())->Set(::vl::__vwsn::Box(::vl::__vwsn::This(_lc)->GetClientId()), ::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }()));
+				}
 			}
+		}
+		if (unknownId)
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
 		}
 		if ((::vl::__vwsn::This(rpcEventExceptions.Obj())->GetCount() > static_cast<::vl::vint64_t>(0L)))
 		{
@@ -986,11 +842,7 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
 		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IValue_GetValue, arguments);
-		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
-		if (static_cast<bool>(rpcException))
-		{
-			throw ::vl::Exception(rpcException.Value().message);
-		}
+		::vl::rpc_controller::ReadMethodException(invokeResult);
 		return ::vl::__vwsn::Unbox<::vl::WString>(invokeResult);
 	}
 
@@ -999,11 +851,7 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
 		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IService_GetValue, arguments);
-		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
-		if (static_cast<bool>(rpcException))
-		{
-			throw ::vl::Exception(rpcException.Value().message);
-		}
+		::vl::rpc_controller::ReadMethodException(invokeResult);
 		return ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::reflection::description::IValueList>(::vl::rpc_controller::RpcUnboxByref(::vl::__vwsn::Unbox<::vl::rpc_controller::RpcObjectReference>(invokeResult), _lc).Obj()));
 	}
 
@@ -1013,11 +861,7 @@ Closures
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(1L));
 		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint64_t>(0L), ::vl::__vwsn::Box(::vl::rpc_controller::RpcBoxByref(::vl::Ptr<::vl::reflection::IDescriptable>(arg_value), _lc)));
 		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IService_SetValue, arguments);
-		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
-		if (static_cast<bool>(rpcException))
-		{
-			throw ::vl::Exception(rpcException.Value().message);
-		}
+		::vl::rpc_controller::ReadMethodException(invokeResult);
 	}
 
 	void __vwsnc5_Rpc_PropDefaultInterfaceList_rpcops_IOps_Create__rpcops_IOps_Rpc_PropDefaultInterfaceList::InvokeMethod_RpcPropDefaultInterfaceList__IService_Signal(::vl::rpc_controller::RpcObjectReference ref)
@@ -1025,11 +869,7 @@ Closures
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
 		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
 		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcPropDefaultInterfaceList__IService_Signal, arguments);
-		auto rpcException = ::vl::__vwsn::UnboxWeak<::vl::Nullable<::vl::rpc_controller::RpcException>>(invokeResult);
-		if (static_cast<bool>(rpcException))
-		{
-			throw ::vl::Exception(rpcException.Value().message);
-		}
+		::vl::rpc_controller::ReadMethodException(invokeResult);
 	}
 
 	void __vwsnc5_Rpc_PropDefaultInterfaceList_rpcops_IOps_Create__rpcops_IOps_Rpc_PropDefaultInterfaceList::InvokeEvent_RpcPropDefaultInterfaceList__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref)
@@ -1154,6 +994,7 @@ Closures
 
 	::vl::reflection::description::Value __vwsnc9_Rpc_PropDefaultInterfaceList_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint64_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
 	{
+		auto unknownId = false;
 		try
 		{
 			{
@@ -1189,7 +1030,7 @@ Closures
 					return ::vl::__vwsn::Box(jsonLiteral0);
 				}
 				else
-					throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
+					(unknownId = true);
 			}
 		}
 		catch(const ::vl::Exception& __vwsne_0)
@@ -1199,6 +1040,11 @@ Closures
 				return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }())));
 			}
 		}
+		if (unknownId)
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
+		}
+		return ::vl::reflection::description::Value();
 	}
 
 	void __vwsnc9_Rpc_PropDefaultInterfaceList_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::EndInvokeMethod(::vl::vint64_t slot)
