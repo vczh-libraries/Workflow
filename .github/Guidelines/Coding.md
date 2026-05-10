@@ -16,6 +16,7 @@ In general, here is my preference for any languages:
 ## C++ Coding Convention
 
 - Although C++ does not require this but we want to have `extern` on all function forward declarations.
+  - In general we don't use `inline` in header files unless such function is performance critical, e.g. very simple comparison operators.
 - Rules for C++ header files:
   - Guard them with macros instead of `#pragma once`.
   - In a class/struct/union declaration, member names must be aligned in the same column at least in the same public, protected or private section.
