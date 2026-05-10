@@ -95,11 +95,11 @@ namespace vl
 				return serializer ? serializer->Deserialize(value) : value;
 			}
 
-			Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc);
-			Value RpcUnboxValueByref(const Value& serializable, IRpcLifecycle* lc);
-			Value RpcCopyValueByvalInternal(const Value& trivial, Dictionary<const DescriptableObject*, bool>& visited);
-			Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
-			Value RpcUnboxValueByvalInternal(const Value& serializable, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
+			extern Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc);
+			extern Value RpcUnboxValueByref(const Value& serializable, IRpcLifecycle* lc);
+			extern Value RpcCopyValueByvalInternal(const Value& trivial, Dictionary<const DescriptableObject*, bool>& visited);
+			extern Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
+			extern Value RpcUnboxValueByvalInternal(const Value& serializable, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
 
 		}
 		

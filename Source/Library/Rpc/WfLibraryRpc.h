@@ -39,43 +39,12 @@ namespace vl
 
 		using RpcEventExceptionMap = Ptr<reflection::description::IValueDictionary>;
 
-		inline reflection::description::Value BoxRpcObjectReference(RpcObjectReference ref)
-		{
-			using namespace reflection::description;
-			return Value::From(Ptr(new IValueType::TypedBox<RpcObjectReference>(ref)), nullptr);
-		}
-
-		inline reflection::description::Value BoxRpcException(RpcException exception)
-		{
-			using namespace reflection::description;
-			return Value::From(Ptr(new IValueType::TypedBox<RpcException>(exception)), nullptr);
-		}
-
-		inline RpcEventExceptionMap CreateRpcEventExceptionMap()
-		{
-			return reflection::description::IValueDictionary::Create();
-		}
-
-		inline void MergeRpcEventExceptionMap(RpcEventExceptionMap target, RpcEventExceptionMap source)
-		{
-			if (!source) return;
-			auto keys = source->GetKeys();
-			for (vint i = 0; i < keys->GetCount(); i++)
-			{
-				auto key = keys->Get(i);
-				target->Set(key, source->Get(key));
-			}
-		}
-
-		inline reflection::description::Value BoxRpcEventExceptionMap(RpcEventExceptionMap exceptions)
-		{
-			return exceptions ? reflection::description::BoxValue(exceptions) : reflection::description::Value();
-		}
-
-		inline RpcEventExceptionMap UnboxRpcEventExceptionMap(const reflection::description::Value& value)
-		{
-			return value.IsNull() ? nullptr : reflection::description::UnboxValue<RpcEventExceptionMap>(value);
-		}
+		extern reflection::description::Value					BoxRpcObjectReference(RpcObjectReference ref);
+		extern reflection::description::Value					BoxRpcException(RpcException exception);
+		extern RpcEventExceptionMap								CreateRpcEventExceptionMap();
+		extern void												MergeRpcEventExceptionMap(RpcEventExceptionMap target, RpcEventExceptionMap source);
+		extern reflection::description::Value					BoxRpcEventExceptionMap(RpcEventExceptionMap exceptions);
+		extern RpcEventExceptionMap								UnboxRpcEventExceptionMap(const reflection::description::Value& value);
 
 		class RpcByvalReturnValue
 			: public Object
@@ -227,14 +196,14 @@ namespace vl
 * Helpers
 ***********************************************************************/
 
-		RpcObjectReference									RpcBoxByref		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
-		Ptr<reflection::IDescriptable>						RpcUnboxByref	(RpcObjectReference serializable, IRpcLifecycle* lc);
-		reflection::description::Value						RpcCopyByval	(const reflection::description::Value& trivial, IRpcLifecycle* lc);
-		reflection::description::Value						RpcBoxByval		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
-		reflection::description::Value						RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
-		Ptr<reflection::IDescriptable>						RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
-		void												ReadMethodException(const reflection::description::Value& value);
-		void												ReadEventException(RpcEventExceptionMap exceptions);
+		extern RpcObjectReference							RpcBoxByref		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
+		extern Ptr<reflection::IDescriptable>					RpcUnboxByref	(RpcObjectReference serializable, IRpcLifecycle* lc);
+		extern reflection::description::Value					RpcCopyByval	(const reflection::description::Value& trivial, IRpcLifecycle* lc);
+		extern reflection::description::Value					RpcBoxByval		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
+		extern reflection::description::Value					RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
+		extern Ptr<reflection::IDescriptable>					RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
+		extern void											ReadMethodException(const reflection::description::Value& value);
+		extern void											ReadEventException(RpcEventExceptionMap exceptions);
 	}
 }
 

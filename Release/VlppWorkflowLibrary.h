@@ -955,6 +955,22 @@ namespace vl
 			auto operator<=>(const RpcObjectReference&) const = default;
 		};
 
+		struct RpcException
+		{
+			WString							message;
+
+			auto operator<=>(const RpcException&) const = default;
+		};
+
+		using RpcEventExceptionMap = Ptr<reflection::description::IValueDictionary>;
+
+		extern reflection::description::Value					BoxRpcObjectReference(RpcObjectReference ref);
+		extern reflection::description::Value					BoxRpcException(RpcException exception);
+		extern RpcEventExceptionMap								CreateRpcEventExceptionMap();
+		extern void												MergeRpcEventExceptionMap(RpcEventExceptionMap target, RpcEventExceptionMap source);
+		extern reflection::description::Value					BoxRpcEventExceptionMap(RpcEventExceptionMap exceptions);
+		extern RpcEventExceptionMap								UnboxRpcEventExceptionMap(const reflection::description::Value& value);
+
 		class RpcByvalReturnValue
 			: public Object
 			, public reflection::Description<RpcByvalReturnValue>
@@ -1021,7 +1037,7 @@ namespace vl
 			, public reflection::Description<IRpcListEventOps>
 		{
 		public:
-			virtual void											OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount) = 0;
+			virtual reflection::description::Value					OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount) = 0;
 		};
 
 		class IRpcObjectEventOps
@@ -1029,7 +1045,7 @@ namespace vl
 			, public reflection::Description<IRpcObjectEventOps>
 		{
 		public:
-			virtual void											InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments) = 0;
+			virtual reflection::description::Value					InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments) = 0;
 		};
 
 /***********************************************************************
@@ -1105,12 +1121,14 @@ namespace vl
 * Helpers
 ***********************************************************************/
 
-		RpcObjectReference									RpcBoxByref		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
-		Ptr<reflection::IDescriptable>						RpcUnboxByref	(RpcObjectReference serializable, IRpcLifecycle* lc);
-		reflection::description::Value						RpcCopyByval	(const reflection::description::Value& trivial, IRpcLifecycle* lc);
-		reflection::description::Value						RpcBoxByval		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
-		reflection::description::Value						RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
-		Ptr<reflection::IDescriptable>						RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
+		extern RpcObjectReference							RpcBoxByref		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
+		extern Ptr<reflection::IDescriptable>					RpcUnboxByref	(RpcObjectReference serializable, IRpcLifecycle* lc);
+		extern reflection::description::Value					RpcCopyByval	(const reflection::description::Value& trivial, IRpcLifecycle* lc);
+		extern reflection::description::Value					RpcBoxByval		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
+		extern reflection::description::Value					RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
+		extern Ptr<reflection::IDescriptable>					RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
+		extern void											ReadMethodException(const reflection::description::Value& value);
+		extern void											ReadEventException(RpcEventExceptionMap exceptions);
 	}
 }
 
@@ -1208,8 +1226,8 @@ namespace vl
 		using RpcJsonSerializeCallback = Func<Ptr<glr::json::JsonNode>(const reflection::description::Value&)>;
 		using RpcJsonDeserializeCallback = Func<reflection::description::Value(Ptr<glr::json::JsonNode>)>;
 
-		Ptr<glr::json::JsonNode>					JsonSerializePredefinedTypes(const reflection::description::Value& value, const RpcJsonSerializeCallback& rpcjson_Serialize);
-		reflection::description::Value				JsonDeserializePredefinedTypes(const reflection::description::Value& value, const RpcJsonDeserializeCallback& rpcjson_Deserialize);
+		extern Ptr<glr::json::JsonNode>				JsonSerializePredefinedTypes(const reflection::description::Value& value, const RpcJsonSerializeCallback& rpcjson_Serialize);
+		extern reflection::description::Value			JsonDeserializePredefinedTypes(const reflection::description::Value& value, const RpcJsonDeserializeCallback& rpcjson_Deserialize);
 	}
 }
 
@@ -1563,7 +1581,7 @@ namespace vl
 		public:
 			RpcCalleeListEventBridge(IRpcLifecycle* lc, IRpcSerializer* _serializer);
 
-			void											OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
+			reflection::description::Value					OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
 		};
 	}
 }
@@ -1634,6 +1652,7 @@ Predefined Types
 			F(StateMachine)					\
 			F(Versioning)					\
 			F(vl::rpc_controller::RpcObjectReference)\
+			F(vl::rpc_controller::RpcException)\
 			F(vl::rpc_controller::RpcByvalReturnValue)\
 			F(vl::rpc_controller::IRpcSerializer)\
 			F(vl::rpc_controller::IRpcListOps)\
@@ -1804,16 +1823,16 @@ Interface Implementation Proxy (Implement)
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcObjectOps)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcListEventOps)
-				void OnItemChanged(vl::rpc_controller::RpcObjectReference ref, vl::vint index, vl::vint oldCount, vl::vint newCount)override
+				vl::reflection::description::Value OnItemChanged(vl::rpc_controller::RpcObjectReference ref, vl::vint index, vl::vint oldCount, vl::vint newCount)override
 				{
-					INVOKE_INTERFACE_PROXY(OnItemChanged, ref, index, oldCount, newCount);
+					INVOKEGET_INTERFACE_PROXY(OnItemChanged, ref, index, oldCount, newCount);
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcListEventOps)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcObjectEventOps)
-				void InvokeEvent(vl::rpc_controller::RpcObjectReference ref, vl::vint eventId, vl::Ptr<vl::reflection::description::IValueArray> arguments)override
+				vl::reflection::description::Value InvokeEvent(vl::rpc_controller::RpcObjectReference ref, vl::vint eventId, vl::Ptr<vl::reflection::description::IValueArray> arguments)override
 				{
-					INVOKE_INTERFACE_PROXY(InvokeEvent, ref, eventId, arguments);
+					INVOKEGET_INTERFACE_PROXY(InvokeEvent, ref, eventId, arguments);
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcObjectEventOps)
 

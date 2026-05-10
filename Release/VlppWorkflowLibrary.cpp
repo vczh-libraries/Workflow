@@ -1034,6 +1034,7 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::StateMachine, system::StateMachine)
 			IMPL_TYPE_INFO_RENAME(vl::reflection::description::Versioning, system::Versioning)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcObjectReference, system::RpcObjectReference)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcException, system::RpcException)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcByvalReturnValue, system::RpcByvalReturnValue)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcSerializer, system::IRpcSerializer)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListOps, system::IRpcListOps)
@@ -1075,6 +1076,20 @@ WfLoadLibraryTypes
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 #define _ ,
+
+			template<typename TClass, typename T>
+			class CustomMethodInfoImplWithReturn {};
+
+			template<typename TClass, typename R, typename ...TArgs>
+			class CustomMethodInfoImplWithReturn<TClass, R(TArgs...)> : public CustomMethodInfoImpl<TClass, R(TArgs...)>
+			{
+			public:
+				CustomMethodInfoImplWithReturn(const wchar_t* parameterNames[], R(__thiscall TClass::* _method)(TArgs...), const wchar_t* _invokeTemplate, const wchar_t* _closureTemplate, Ptr<ITypeInfo> _returnInfo)
+					: CustomMethodInfoImpl<TClass, R(TArgs...)>(parameterNames, _method, _invokeTemplate, _closureTemplate)
+				{
+					this->returnInfo = _returnInfo;
+				}
+			};
 
 			BEGIN_STRUCT_MEMBER(vl::__vwsn::att_cpp_File)
 				STRUCT_MEMBER(argument)
@@ -1124,6 +1139,10 @@ WfLoadLibraryTypes
 				STRUCT_MEMBER(objectId)
 				STRUCT_MEMBER(typeId)
 			END_STRUCT_MEMBER(vl::rpc_controller::RpcObjectReference)
+
+			BEGIN_STRUCT_MEMBER(vl::rpc_controller::RpcException)
+				STRUCT_MEMBER(message)
+			END_STRUCT_MEMBER(vl::rpc_controller::RpcException)
 
 			BEGIN_CLASS_MEMBER(vl::rpc_controller::RpcByvalReturnValue)
 				CLASS_MEMBER_CONSTRUCTOR(Ptr<vl::rpc_controller::RpcByvalReturnValue>(), NO_PARAMETER)
@@ -1220,6 +1239,8 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcCopyByval, { L"trivial" _ L"lc" }, Value(*)(const Value&, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcCopyByval)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcBoxByval, { L"trivial" _ L"lc" }, Value(*)(const Value&, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcBoxByval)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcUnboxByval, { L"serializable" _ L"lc" }, vl::Ptr<vl::reflection::IDescriptable>(*)(const Value&, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcUnboxByval)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(ReadMethodException, { L"value" }, void(*)(const Value&), vl::rpc_controller::ReadMethodException)
+				CLASS_MEMBER_STATIC_EXTERNALMETHOD(ReadEventException, { L"exceptions" }, void(*)(vl::rpc_controller::RpcEventExceptionMap), vl::rpc_controller::ReadEventException)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(JsonSerializePredefinedTypes, { L"value" _ L"rpcjson_Serialize" }, vl::Ptr<vl::glr::json::JsonNode>(*)(const Value&, const vl::rpc_controller::RpcJsonSerializeCallback&), vl::rpc_controller::JsonSerializePredefinedTypes)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(JsonDeserializePredefinedTypes, { L"value" _ L"rpcjson_Deserialize" }, Value(*)(const Value&, const vl::rpc_controller::RpcJsonDeserializeCallback&), vl::rpc_controller::JsonDeserializePredefinedTypes)
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcLifecycle)
@@ -1500,6 +1521,50 @@ WfLoadLibraryTypes
 .\RPC\WFLIBRARYRPC.CPP
 ***********************************************************************/
 
+namespace vl
+{
+	namespace rpc_controller
+	{
+		using namespace reflection::description;
+
+		Value BoxRpcObjectReference(RpcObjectReference ref)
+		{
+			return Value::From(Ptr(new IValueType::TypedBox<RpcObjectReference>(ref)), nullptr);
+		}
+
+		Value BoxRpcException(RpcException exception)
+		{
+			return Value::From(Ptr(new IValueType::TypedBox<RpcException>(exception)), nullptr);
+		}
+
+		RpcEventExceptionMap CreateRpcEventExceptionMap()
+		{
+			return IValueDictionary::Create();
+		}
+
+		void MergeRpcEventExceptionMap(RpcEventExceptionMap target, RpcEventExceptionMap source)
+		{
+			if (!source) return;
+			auto keys = source->GetKeys();
+			for (vint i = 0; i < keys->GetCount(); i++)
+			{
+				auto key = keys->Get(i);
+				target->Set(key, source->Get(key));
+			}
+		}
+
+		Value BoxRpcEventExceptionMap(RpcEventExceptionMap exceptions)
+		{
+			return exceptions ? BoxValue(exceptions) : Value();
+		}
+
+		RpcEventExceptionMap UnboxRpcEventExceptionMap(const Value& value)
+		{
+			return value.IsNull() ? nullptr : UnboxValue<RpcEventExceptionMap>(value);
+		}
+	}
+}
+
 
 /***********************************************************************
 .\RPC\WFLIBRARYRPCCONTROLLER.CPP
@@ -1685,6 +1750,18 @@ namespace vl
 				CHECK_FAIL(message.Buffer());
 			}
 
+			Ptr<JsonNode> FindJsonObjectField(Ptr<JsonObject> object, const WString& name)
+			{
+				for (auto field : object->fields)
+				{
+					if (field->name.value == name)
+					{
+						return field->value;
+					}
+				}
+				return nullptr;
+			}
+
 			WString GetJsonString(Ptr<JsonNode> node)
 			{
 				auto stringNode = node.Cast<JsonString>();
@@ -1792,6 +1869,27 @@ namespace vl
 				return nullptr;
 			}
 
+			Ptr<JsonNode> TrySerializeRpcTypes(const Value& value)
+			{
+				if (auto ref = __vwsn::UnboxWeak<Nullable<RpcObjectReference>>(value))
+				{
+					auto object = CreateJsonObject();
+					AddJsonObjectField(object, WString::Unmanaged(L"$"), CreateJsonString(WString::Unmanaged(L"system::RpcObjectReference")));
+					AddJsonObjectField(object, WString::Unmanaged(L"clientId"), CreateJsonNumber(__vwsn::ToString(ref.Value().clientId)));
+					AddJsonObjectField(object, WString::Unmanaged(L"objectId"), CreateJsonNumber(__vwsn::ToString(ref.Value().objectId)));
+					AddJsonObjectField(object, WString::Unmanaged(L"typeId"), CreateJsonNumber(__vwsn::ToString(ref.Value().typeId)));
+					return Ptr<JsonNode>(object);
+				}
+				if (auto exception = __vwsn::UnboxWeak<Nullable<RpcException>>(value))
+				{
+					auto object = CreateJsonObject();
+					AddJsonObjectField(object, WString::Unmanaged(L"$"), CreateJsonString(WString::Unmanaged(L"system::RpcException")));
+					AddJsonObjectField(object, WString::Unmanaged(L"message"), CreateJsonString(exception.Value().message));
+					return Ptr<JsonNode>(object);
+				}
+				return nullptr;
+			}
+
 			Value DeserializeList(Ptr<JsonObject> object, bool observable, const RpcJsonDeserializeCallback& rpcjson_Deserialize)
 			{
 				auto values = GetJsonObjectField(object, WString::Unmanaged(L"values")).Cast<JsonArray>();
@@ -1829,6 +1927,25 @@ namespace vl
 				}
 				return BoxValue(result);
 			}
+
+			Value TryDeserializeRpcTypes(Ptr<JsonObject> object, const WString& keyword)
+			{
+				if (keyword == L"system::RpcObjectReference")
+				{
+					return BoxRpcObjectReference(RpcObjectReference{
+						__vwsn::Parse<vint>(GetJsonNumber(GetJsonObjectField(object, WString::Unmanaged(L"clientId")))),
+						__vwsn::Parse<vint>(GetJsonNumber(GetJsonObjectField(object, WString::Unmanaged(L"objectId")))),
+						__vwsn::Parse<vint>(GetJsonNumber(GetJsonObjectField(object, WString::Unmanaged(L"typeId")))),
+						});
+				}
+				if (keyword == L"system::RpcException")
+				{
+					return BoxRpcException(RpcException{
+						GetJsonString(GetJsonObjectField(object, WString::Unmanaged(L"message"))),
+						});
+				}
+				return {};
+			}
 		}
 
 		Ptr<JsonNode> JsonSerializePredefinedTypes(const Value& value, const RpcJsonSerializeCallback& rpcjson_Serialize)
@@ -1862,6 +1979,11 @@ namespace vl
 			if (TrySerializeStringPrimitive<wchar_t>(value, WString::Unmanaged(L"Char"), result)) return result;
 			if (TrySerializeStringPrimitive<DateTime>(value, WString::Unmanaged(L"DateTime"), result)) return result;
 			if (TrySerializeStringPrimitive<Locale>(value, WString::Unmanaged(L"Locale"), result)) return result;
+
+			if (auto rpcType = TrySerializeRpcTypes(value))
+			{
+				return rpcType;
+			}
 
 			if (auto collection = TrySerializeCollectionTypes(value, rpcjson_Serialize))
 			{
@@ -1904,33 +2026,61 @@ namespace vl
 				return BoxValue(stringNode->content.value);
 			}
 
+			if (auto numberNode = node.Cast<JsonNumber>())
+			{
+				return BoxValue(numberNode->content.value);
+			}
+
 			if (auto array = node.Cast<JsonArray>())
 			{
-				auto keyword = GetJsonString(array->items[0]);
-				auto item = array->items[1];
-				if (keyword == L"UInt8") return BoxValue(__vwsn::Parse<vuint8_t>(GetJsonNumber(item)));
-				if (keyword == L"UInt16") return BoxValue(__vwsn::Parse<vuint16_t>(GetJsonNumber(item)));
-				if (keyword == L"UInt32") return BoxValue(__vwsn::Parse<vuint32_t>(GetJsonNumber(item)));
-				if (keyword == L"UInt64") return BoxValue(__vwsn::Parse<vuint64_t>(GetJsonNumber(item)));
-				if (keyword == L"Int8") return BoxValue(__vwsn::Parse<vint8_t>(GetJsonNumber(item)));
-				if (keyword == L"Int16") return BoxValue(__vwsn::Parse<vint16_t>(GetJsonNumber(item)));
-				if (keyword == L"Int32") return BoxValue(__vwsn::Parse<vint32_t>(GetJsonNumber(item)));
-				if (keyword == L"Int64") return BoxValue(__vwsn::Parse<vint64_t>(GetJsonNumber(item)));
-				if (keyword == L"Single") return BoxValue(__vwsn::Parse<float>(GetJsonNumber(item)));
-				if (keyword == L"Double") return BoxValue(__vwsn::Parse<double>(GetJsonNumber(item)));
-				if (keyword == L"Char") return BoxValue(__vwsn::Parse<wchar_t>(GetJsonString(item)));
-				if (keyword == L"DateTime") return BoxValue(__vwsn::Parse<DateTime>(GetJsonString(item)));
-				if (keyword == L"Locale") return BoxValue(__vwsn::Parse<Locale>(GetJsonString(item)));
-				CHECK_FAIL(L"Unknown RPC JSON array schema.");
+				if (array->items.Count() == 2)
+				{
+					if (auto keywordNode = array->items[0].Cast<JsonString>())
+					{
+						auto keyword = keywordNode->content.value;
+						auto item = array->items[1];
+						if (keyword == L"UInt8") return BoxValue(__vwsn::Parse<vuint8_t>(GetJsonNumber(item)));
+						if (keyword == L"UInt16") return BoxValue(__vwsn::Parse<vuint16_t>(GetJsonNumber(item)));
+						if (keyword == L"UInt32") return BoxValue(__vwsn::Parse<vuint32_t>(GetJsonNumber(item)));
+						if (keyword == L"UInt64") return BoxValue(__vwsn::Parse<vuint64_t>(GetJsonNumber(item)));
+						if (keyword == L"Int8") return BoxValue(__vwsn::Parse<vint8_t>(GetJsonNumber(item)));
+						if (keyword == L"Int16") return BoxValue(__vwsn::Parse<vint16_t>(GetJsonNumber(item)));
+						if (keyword == L"Int32") return BoxValue(__vwsn::Parse<vint32_t>(GetJsonNumber(item)));
+						if (keyword == L"Int64") return BoxValue(__vwsn::Parse<vint64_t>(GetJsonNumber(item)));
+						if (keyword == L"Single") return BoxValue(__vwsn::Parse<float>(GetJsonNumber(item)));
+						if (keyword == L"Double") return BoxValue(__vwsn::Parse<double>(GetJsonNumber(item)));
+						if (keyword == L"Char") return BoxValue(__vwsn::Parse<wchar_t>(GetJsonString(item)));
+						if (keyword == L"DateTime") return BoxValue(__vwsn::Parse<DateTime>(GetJsonString(item)));
+						if (keyword == L"Locale") return BoxValue(__vwsn::Parse<Locale>(GetJsonString(item)));
+					}
+				}
+
+				auto result = IValueList::Create();
+				for (auto item : array->items)
+				{
+					result->Add(rpcjson_Deserialize(item));
+				}
+				return BoxValue(result);
 			}
 
 			if (auto object = node.Cast<JsonObject>())
 			{
-				auto keyword = GetJsonString(GetJsonObjectField(object, WString::Unmanaged(L"$")));
-				if (keyword == L"list") return DeserializeList(object, false, rpcjson_Deserialize);
-				if (keyword == L"oblist") return DeserializeList(object, true, rpcjson_Deserialize);
-				if (keyword == L"map") return DeserializeMap(object, rpcjson_Deserialize);
-				CHECK_FAIL(L"Unknown RPC JSON object schema.");
+				if (auto keywordNode = FindJsonObjectField(object, WString::Unmanaged(L"$")))
+				{
+					auto keyword = GetJsonString(keywordNode);
+					if (auto value = TryDeserializeRpcTypes(object, keyword); !value.IsNull()) return value;
+					if (keyword == L"list") return DeserializeList(object, false, rpcjson_Deserialize);
+					if (keyword == L"oblist") return DeserializeList(object, true, rpcjson_Deserialize);
+					if (keyword == L"map") return DeserializeMap(object, rpcjson_Deserialize);
+					CHECK_FAIL(L"Unknown RPC JSON object schema.");
+				}
+
+				auto result = IValueDictionary::Create();
+				for (auto field : object->fields)
+				{
+					result->Set(BoxValue(field->name.value), rpcjson_Deserialize(field->value));
+				}
+				return BoxValue(result);
 			}
 
 			CHECK_FAIL(L"Unsupported RPC JSON node.");
@@ -2103,7 +2253,9 @@ namespace vl
 					{
 						return;
 					}
-					this->GetDispatcher()->BroadcastFromClient_ListEventOps(this->GetClientId())->OnItemChanged(ref, index, oldCount, newCount);
+					auto eventResult = this->GetDispatcher()->BroadcastFromClient_ListEventOps(this->GetClientId())->OnItemChanged(ref, index, oldCount, newCount);
+					auto exceptions = serializer ? serializer->Deserialize(eventResult) : eventResult;
+					ReadEventException(UnboxRpcEventExceptionMap(exceptions));
 				});
 				props->eventHandler = handler;
 			}
@@ -2359,7 +2511,7 @@ namespace vl
 			auto index = idMap.Keys().IndexOf(fullName);
 			if (index == -1)
 			{
-				throw Exception(L"Unknown RPC type id.");
+				CHECK_FAIL(L"Unknown RPC type id.");
 			}
 			controller.GetObjectOps()->RegisterService(idMap.Values()[index], service);
 		}
@@ -2557,11 +2709,12 @@ namespace vl
 				return serializer ? serializer->Deserialize(value) : value;
 			}
 
-			Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc);
-			Value RpcUnboxValueByref(const Value& serializable, IRpcLifecycle* lc);
-			Value RpcCopyValueByvalInternal(const Value& trivial, Dictionary<const DescriptableObject*, bool>& visited);
-			Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
-			Value RpcUnboxValueByvalInternal(const Value& serializable, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
+			extern Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc);
+			extern Value RpcUnboxValueByref(const Value& serializable, IRpcLifecycle* lc);
+			extern Value RpcCopyValueByvalInternal(const Value& trivial, Dictionary<const DescriptableObject*, bool>& visited);
+			extern Value RpcBoxValueByvalInternal(const Value& trivial, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
+			extern Value RpcUnboxValueByvalInternal(const Value& serializable, IRpcLifecycle* lc, Dictionary<const DescriptableObject*, bool>& visited);
+
 		}
 		
 /***********************************************************************
@@ -3180,16 +3333,22 @@ namespace vl
 			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
 		}
 
-		void RpcCalleeListEventBridge::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
+		Value RpcCalleeListEventBridge::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
 		{
 			auto controller = lifecycle->GetController();
+			auto obj = lifecycle->RefToPtr(ref);
+			auto observable = Ptr(obj.Obj()->SafeAggregationCast<IValueObservableList>());
+			CHECK_ERROR(observable, L"RpcCalleeListEventBridge::OnItemChanged cannot find the target observable list.");
 			controller->SetItemChangedSuppressedFlag(ref, true);
+			RpcEventExceptionMap exceptions;
 			try
 			{
-				auto obj = lifecycle->RefToPtr(ref);
-				auto observable = Ptr(obj.Obj()->SafeAggregationCast<IValueObservableList>());
-				CHECK_ERROR(observable, L"RpcCalleeListEventBridge::OnItemChanged cannot find the target observable list.");
 				observable->ItemChanged(index, oldCount, newCount);
+			}
+			catch (const Exception& ex)
+			{
+				exceptions = CreateRpcEventExceptionMap();
+				exceptions->Set(BoxValue(lifecycle->GetClientId()), BoxRpcException(RpcException{ ex.Message() }));
 			}
 			catch (...)
 			{
@@ -3197,6 +3356,7 @@ namespace vl
 				throw;
 			}
 			controller->SetItemChangedSuppressedFlag(ref, false);
+			return SerializeValue(serializer, BoxRpcEventExceptionMap(exceptions));
 		}
 		
 /***********************************************************************
@@ -3550,6 +3710,31 @@ namespace vl
 			return nullptr;
 		}
 
+		void ReadMethodException(const Value& value)
+		{
+			if (value.GetValueType() == Value::BoxedValue)
+			{
+				if (auto boxed = value.GetBoxedValue().Cast<IValueType::TypedBox<RpcException>>())
+				{
+					throw Exception(boxed->value.message);
+				}
+			}
+		}
+
+		void ReadEventException(RpcEventExceptionMap exceptions)
+		{
+			if (!exceptions || exceptions->GetCount() == 0) return;
+
+			WString message;
+			auto keys = exceptions->GetKeys();
+			for (vint i = 0; i < keys->GetCount(); i++)
+			{
+				auto key = keys->Get(i);
+				auto exception = UnboxValue<RpcException>(exceptions->Get(key));
+				message += itow(UnboxValue<vint>(key)) + L":" + exception.message + L";";
+			}
+			throw Exception(message);
+		}
 	}
 }
 
