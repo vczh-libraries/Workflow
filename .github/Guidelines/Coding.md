@@ -13,6 +13,19 @@ In general, here is my preference for any languages:
   - DRY requires finding if a feature has already been implemented somewhere else before implementing it. avoiding massive duplication.
     - If the existing implementation is not sharable, refactoring is preferred.
 
+## C++ Coding Convention
+
+- Although C++ does not require this but we want to have `extern` on all function forward declarations.
+- Rules for C++ header files:
+  - Guard them with macros instead of `#pragma once`.
+  - In a class/struct/union declaration, member names must be aligned in the same column at least in the same public, protected or private section.
+  - Keep the coding style consistent with other header files in the same project.
+- Extra Rules for C++ header files in `Source` folder:
+  - Do not use `using namespace` statements; the full names of types are always required.
+- Rules for cpp files:
+  - Use `using namespace` statement if necessary to prevent from repeating namespace everywhere.
+  - `vl::stream::` is an exception, always use `stream::` with `using namespace vl;`, DO NOT use `using namespace vl::stream;`.
+
 ## Basic C++ Library Leveraging
 
 - This project uses C++ 20, you are recommended to use new C++ 20 features aggressively.
@@ -36,15 +49,6 @@ In general, here is my preference for any languages:
     - DO NOT use `Nullable<T*>`, `Nullable<Ptr<T>>` or `Nullable<Nullable<T>>`, this is too confusing.
   - Only when there is no other choice, use an extra `bool` variable.
     - This could happen when "null" semantic is valid.
-- Rules for C++ header files:
-  - Guard them with macros instead of `#pragma once`.
-  - In a class/struct/union declaration, member names must be aligned in the same column at least in the same public, protected or private section.
-  - Keep the coding style consistent with other header files in the same project.
-- Extra Rules for C++ header files in `Source` folder:
-  - Do not use `using namespace` statements; the full names of types are always required.
-- Rules for cpp files:
-  - Use `using namespace` statement if necessary to prevent from repeating namespace everywhere.
-  - `vl::stream::` is an exception, always use `stream::` with `using namespace vl;`, DO NOT use `using namespace vl::stream;`.
 
 ### Regular Expression
 
@@ -91,11 +95,7 @@ When `VlppParser2` is available to the current project, complex parsers always r
 - Prefer Inversion of Control (IoC) and other design patterns, over trivial virtual functions, over switch-case on types, over if-else on types.
 - Prefer static dispatching over dynamic dispatching when possible and reasonable.
 
-## Workflow Script Generation Rules
-
-- When generating Workflow script, avoid building text, you should always build the AST. The AST type for a complete Workflow script module is `WfModule`.
-
-## Workflow Script Authoring Rules
+## Workflow Script Coding Convention
 
 - Avoid explicit type specification whenever possible:
   - Prefer `var v = e;` whenever `T` can be omitted.
@@ -104,3 +104,7 @@ When `VlppParser2` is available to the current project, complex parsers always r
   - Prefer `cast *` over `cast T` when the context accepts `T`.
 - Nested `try-catch` and `try-finally` can be merged into one single `try-catch-finally` statement.
 - Prefer strong typed collections in Workflow, but when writing C++ reflectable interfaces, use `Ptr<IValue*>`.
+
+## Workflow Script Generation in C++
+
+- When generating Workflow script, avoid building text, you should always build the AST. The AST type for a complete Workflow script module is `WfModule`.
