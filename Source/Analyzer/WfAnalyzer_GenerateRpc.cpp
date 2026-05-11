@@ -1,4 +1,5 @@
 #include "WfAnalyzer.h"
+#include "WfAnalyzer_GenerateRpc.h"
 #include "../Parser/Generated/WorkflowAst_Copy.h"
 
 namespace vl
@@ -521,18 +522,6 @@ namespace vl
 					return infer;
 				}
 
-				template<typename ...TArgs>
-				Ptr<WfCallExpression> CreateCall(Ptr<WfExpression> function, TArgs... arguments)
-				{
-					auto expression = Ptr(new WfCallExpression);
-					expression->function = function;
-					if constexpr (sizeof...(arguments) > 0)
-					{
-						(expression->arguments.Add(arguments), ...);
-					}
-					return expression;
-				}
-
 				Ptr<WfConstructorArgument> CreateConstructorArgument(Ptr<WfExpression> key, Ptr<WfExpression> value)
 				{
 					auto argument = Ptr(new WfConstructorArgument);
@@ -621,7 +610,7 @@ namespace vl
 					return CreateVariableStatement(name, nullptr, expression);
 				}
 
-				Ptr<WfStatement> CreateIf(Ptr<WfExpression> condition, Ptr<WfStatement> trueBranch, Ptr<WfStatement> falseBranch = nullptr)
+				Ptr<WfStatement> CreateIf(Ptr<WfExpression> condition, Ptr<WfStatement> trueBranch, Ptr<WfStatement> falseBranch)
 				{
 					auto statement = Ptr(new WfIfStatement);
 					statement->expression = condition;
@@ -699,7 +688,7 @@ namespace vl
 					return argument;
 				}
 
-				Ptr<WfFunctionDeclaration> CreateFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind, WfFunctionAnonymity anonymity = WfFunctionAnonymity::Named)
+				Ptr<WfFunctionDeclaration> CreateFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind, WfFunctionAnonymity anonymity)
 				{
 					auto declaration = Ptr(new WfFunctionDeclaration);
 					declaration->name.value = name;
@@ -2263,9 +2252,9 @@ namespace vl
 					id = 0;
 					for (auto fullName : manager->rpcMetadata->orderedIds)
 					{
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(rpc_generating::CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
 					}
-					AddStatement(block, CreateReturn(CreateReference(L"result")));
+					AddStatement(block, CreateReturn(rpc_generating::CreateReference(L"result")));
 					module->declarations.Add(getIds);
 				}
 

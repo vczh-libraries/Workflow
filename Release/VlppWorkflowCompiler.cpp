@@ -10165,18 +10165,6 @@ namespace vl
 					return infer;
 				}
 
-				template<typename ...TArgs>
-				Ptr<WfCallExpression> CreateCall(Ptr<WfExpression> function, TArgs... arguments)
-				{
-					auto expression = Ptr(new WfCallExpression);
-					expression->function = function;
-					if constexpr (sizeof...(arguments) > 0)
-					{
-						(expression->arguments.Add(arguments), ...);
-					}
-					return expression;
-				}
-
 				Ptr<WfConstructorArgument> CreateConstructorArgument(Ptr<WfExpression> key, Ptr<WfExpression> value)
 				{
 					auto argument = Ptr(new WfConstructorArgument);
@@ -10265,7 +10253,7 @@ namespace vl
 					return CreateVariableStatement(name, nullptr, expression);
 				}
 
-				Ptr<WfStatement> CreateIf(Ptr<WfExpression> condition, Ptr<WfStatement> trueBranch, Ptr<WfStatement> falseBranch = nullptr)
+				Ptr<WfStatement> CreateIf(Ptr<WfExpression> condition, Ptr<WfStatement> trueBranch, Ptr<WfStatement> falseBranch)
 				{
 					auto statement = Ptr(new WfIfStatement);
 					statement->expression = condition;
@@ -10343,7 +10331,7 @@ namespace vl
 					return argument;
 				}
 
-				Ptr<WfFunctionDeclaration> CreateFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind, WfFunctionAnonymity anonymity = WfFunctionAnonymity::Named)
+				Ptr<WfFunctionDeclaration> CreateFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind, WfFunctionAnonymity anonymity)
 				{
 					auto declaration = Ptr(new WfFunctionDeclaration);
 					declaration->name.value = name;
@@ -11907,9 +11895,9 @@ namespace vl
 					id = 0;
 					for (auto fullName : manager->rpcMetadata->orderedIds)
 					{
-						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
+						AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(rpc_generating::CreateReference(L"result"), L"Set"), CreateString(fullName), CreateInt(id++))));
 					}
-					AddStatement(block, CreateReturn(CreateReference(L"result")));
+					AddStatement(block, CreateReturn(rpc_generating::CreateReference(L"result")));
 					module->declarations.Add(getIds);
 				}
 
@@ -12632,18 +12620,6 @@ namespace vl
 				Ptr<WfExpression> CreateWeakCast(Ptr<WfType> type, Ptr<WfExpression> expression);
 				Ptr<WfExpression> CreateInfer(Ptr<WfExpression> expression, Ptr<WfType> type);
 
-				template<typename ...TArgs>
-				Ptr<WfCallExpression> CreateCall(Ptr<WfExpression> function, TArgs... arguments)
-				{
-					auto expression = Ptr(new WfCallExpression);
-					expression->function = function;
-					if constexpr (sizeof...(arguments) > 0)
-					{
-						(expression->arguments.Add(arguments), ...);
-					}
-					return expression;
-				}
-
 				Ptr<WfConstructorArgument> CreateConstructorArgument(Ptr<WfExpression> key, Ptr<WfExpression> value);
 				Ptr<WfConstructorExpression> CreateConstructor();
 				Ptr<WfExpression> CreateRpcExceptionExpression(Ptr<WfExpression> message);
@@ -12659,7 +12635,6 @@ namespace vl
 				Ptr<WfVariableDeclaration> CreateVariableDeclaration(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression);
 				Ptr<WfStatement> CreateVariableStatement(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression);
 				Ptr<WfStatement> CreateInferredVariableStatement(const WString& name, Ptr<WfExpression> expression);
-				Ptr<WfStatement> CreateIf(Ptr<WfExpression> condition, Ptr<WfStatement> trueBranch, Ptr<WfStatement> falseBranch = nullptr);
 				Ptr<WfForEachStatement> CreateForEach(const WString& name, Ptr<WfExpression> collection, Ptr<WfStatement> body);
 				Ptr<WfBlockStatement> CreateBlock();
 				void AddStatement(Ptr<WfBlockStatement> block, Ptr<WfStatement> statement);
@@ -12667,7 +12642,6 @@ namespace vl
 				void AddRpcEventExceptionMapSet(Ptr<WfBlockStatement> block, const WString& mapName, Ptr<WfExpression> clientId, Ptr<WfExpression> message);
 				void AddRpcEventExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value);
 				Ptr<WfFunctionArgument> CreateFunctionArgument(const WString& name, Ptr<WfType> type);
-				Ptr<WfFunctionDeclaration> CreateFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind, WfFunctionAnonymity anonymity = WfFunctionAnonymity::Named);
 				void AddSwitchCase(Ptr<WfSwitchStatement> switchStat, Ptr<WfExpression> expression, Ptr<WfStatement> statement);
 				bool IsSharedInterfaceType(ITypeInfo* type);
 				bool IsVoidType(WfType* type);
