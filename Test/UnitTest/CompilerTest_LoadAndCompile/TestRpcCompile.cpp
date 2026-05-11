@@ -307,9 +307,9 @@ TEST_FILE
 					input->multiFile = WfCppFileSwitch::OnDemand;
 					input->reflection = WfCppFileSwitch::OnDemand;
 					input->comment = L"Source: ../Resources/Rpc/" + itemName + L".txt; ../Resources/Rpc/" + itemName + L"_Test.txt";
-					input->includeFileName = itemName + L"Includes";
-					input->reflectionFileName = itemName + L"Reflection";
-					input->defaultFileName = itemName;
+					input->includeFileName = L"Rpc" + itemName + L"Includes";
+					input->reflectionFileName = L"Rpc" + itemName + L"Reflection";
+					input->defaultFileName = L"Rpc" + itemName;
 					input->normalIncludes.Add(L"../Source/CppTypes.h");
 					input->normalIncludes.Add(L"../../Import/VlppGlrParser.h");
 

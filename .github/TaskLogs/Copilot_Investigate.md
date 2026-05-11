@@ -2,56 +2,47 @@
 
 # PROBLEM DESCRIPTION
 
-- you have to follow `REPO-ROOT/.github/Guidelines/Coding.md` when coding.
-- you have to run unit test to make sure your change works.
-- you have to follow complete instructions in `.github\Rules\verify-and-commit.md` to properly finish any task, before doing the next task.
-  - It is important to do task one by one strictly, by me designing tasks in this way, we can achieve:
-  - Easy-to-understand commits for file changing that is easy to review.
-  - Limit side effects so that you don't have to deal with massive of issues at the same time.
-- When I say `RunRpcTestCase` needs to change, usually it means all version of `RunRpcTestCase`.
-  - No need to create helper functions just to share code between them unless explicitly instructed.
+In TestRpcCompiler.cpp, you are going to change 3 lines of `input->*FileName = ...` to have a Rpc prefix, that is, input->*FileName = L"Rpc" + itemName ...;
 
-## Task 1
+Now many generated files will be renamed, you will have to fix Generated_(Cpp|Reflection)Rpc.vcxproj. Previously there are two Event.cpp and Overloading.cpp appear at the same time causing obj files have to be renamed, this time it should be not necessary now.
 
-Remote `inline` of functions in `WfLibraryRpc.h`, extern them and put implementation in `WfLibraryRpc.cpp`.
-Verify all `WfLibrary*.(h|cpp)`, even C++ not requires but we want to have `extern` on all function forward declarations.
+Read generated files carefully, and make sure outdated files are deleted (some may be automatically deleted, so you can count how many files are added and removed and you will know the diff). TestCasesRpc.cpp needs to be changed to use the new file name too.
+
+So you are going to test CompilerTest_LoadAndCompiler and 3 CppTest* projects to make sure the change actually works.
+
+Before doing the task, run `git clean -xdf` on the repo root to delete unnecessary temporary files
+You need to follow [verify-and-commit.md](.github/Rules/verify-and-commit.md) to commit and push
 
 # UPDATES
 
 # TEST [CONFIRMED]
 
-Static source verification and existing unit tests will cover this task:
+Existing generation and C++ compilation tests confirm this task:
 
-- `WfLibraryRpc.h` should no longer contain non-constant inline function definitions for RPC boxing and event-exception helpers.
-- `WfLibraryRpc.cpp` should contain the moved helper implementations.
-- All free-function declarations in `Source/Library/WfLibrary*.h` and `Source/Library/Rpc/WfLibrary*.h` should explicitly begin with `extern`.
-- The solution should build for Debug x64 and Debug Win32.
-- The required unit test projects in `Project.md` should pass.
+- `CompilerTest_LoadAndCompile` should regenerate RPC C++ files using the new `Rpc`-prefixed file names.
+- `Generated_CppRpc.vcxitems`, `Generated_ReflectionRpc.vcxitems`, and their filters should reference the new generated file names and should not keep obsolete duplicate object-file rename workarounds for RPC `Event.cpp` or `Overloading.cpp`.
+- `TestCasesRpc.cpp` should include the new generated file names.
+- Outdated generated RPC files should be deleted, and generated-file additions and removals should balance as expected for a rename.
+- `CompilerTest_LoadAndCompile`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` should pass after regeneration.
 
 # PROPOSALS
 
-- No.1 Move RPC helper definitions out of the header and normalize `extern` declarations [CONFIRMED]
+- No.1 Prefix generated RPC C++ file names with `Rpc` [CONFIRMED]
 
-## No.1 Move RPC helper definitions out of the header and normalize `extern` declarations
+## No.1 Prefix generated RPC C++ file names with `Rpc`
 
 ### CODE CHANGE
-- Moved `BoxRpcObjectReference`, `BoxRpcException`, `CreateRpcEventExceptionMap`, `MergeRpcEventExceptionMap`, `BoxRpcEventExceptionMap`, and `UnboxRpcEventExceptionMap` from inline definitions in `WfLibraryRpc.h` to implementations in `WfLibraryRpc.cpp`.
-- Added explicit `extern` to the moved RPC helper declarations and the existing free-function forward declarations in `WfLibraryRpc.h`.
-- Added explicit `extern` to the RPC JSON helper declarations in `WfLibraryRpcJson.h`.
-- Added explicit `extern` to the local helper forward declarations in `WfLibraryRpcWrappers.cpp`.
+- Changed the RPC compiler test input names in `TestRpcCompile.cpp` so generated include, reflection, and default C++ file names are prefixed with `Rpc`.
+- Regenerated the RPC C++ outputs and `TestCasesRpc.cpp`, producing `Rpc*` generated files and removing the stale non-prefixed generated files.
+- Updated `Generated_CppRpc.vcxitems` and `Generated_ReflectionRpc.vcxitems` to reference the prefixed RPC files, removed the obsolete `Event.cpp` and `Overloading.cpp` object-file rename workarounds, and added the import include path needed for clean RPC builds.
+- Removed the obsolete RPC `Event.cpp` and `Overloading.cpp` exclusions from the Linux `CppTest*` vmake files.
 
 ### CONFIRMED
-
-- Static scan found no non-`constexpr` inline function definitions in `Source/Library/WfLibrary*.h` or `Source/Library/Rpc/WfLibrary*.h`.
-- Static scan found no namespace-level function forward declarations without `extern` in `Source/Library/WfLibrary*.(h|cpp)` or `Source/Library/Rpc/WfLibrary*.(h|cpp)`.
-- `copilotBuild.ps1 -Configuration Debug -Platform x64`: passed with 0 warnings and 0 errors.
-- `copilotBuild.ps1 -Configuration Debug -Platform Win32`: passed with 0 warnings and 0 errors.
-- `LibraryTest` x64 and Win32: passed, 2/2 files and 14/14 cases.
-- `CompilerTest_GenerateMetadata` x64 and Win32: passed, 1/1 files and 2/2 cases.
-- `CompilerTest_LoadAndCompile` x64: passed, 6/6 files and 709/709 cases.
-- `RuntimeTest` x64 and Win32: passed, 4/4 files and 261/261 cases.
-- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` x64 and Win32: each passed, 2/2 files and 227/227 cases.
-- `Test/TypeScript/prepare.ps1`: passed.
-- `npm run build` in `Test/TypeScript`: passed.
-- `Build.ps1 Workflow`: passed and regenerated release amalgamation files.
-- `git diff --check`: passed.
+- Ran `CompilerTest_LoadAndCompile`; it regenerated the RPC outputs successfully.
+- Built `UnitTest.sln` for Debug x64 and Debug Win32; both builds succeeded with 0 warnings and 0 errors.
+- Ran Debug x64 `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`; all passed 2/2 test files and 227/227 test cases.
+- Ran Debug Win32 `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`; all passed 2/2 test files and 227/227 test cases.
+- Verified `Test\SourceCppGenRpc` has no stale non-prefixed generated files except `TestCasesRpc.cpp`, and its generated-file status is 496 deletes, 496 adds, and 1 modified `TestCasesRpc.cpp`.
+- Verified there are no remaining `ObjectFileName`, `Rpc_Overloading`, `Rpc_Event`, or stale `SourceCppGenRpc\Event.cpp` / `SourceCppGenRpc\Overloading.cpp` references in the updated RPC project and Linux vmake files.
+- Verified every `SourceCppGenRpc` path referenced by `Generated_CppRpc.vcxitems` and `Generated_ReflectionRpc.vcxitems` exists.
+- Ran `git diff --check`; no whitespace errors were reported.
