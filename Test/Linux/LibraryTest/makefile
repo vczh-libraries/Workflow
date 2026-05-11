@@ -16,7 +16,7 @@ clean:
 
 all:pre-build ./Bin/UnitTest
 
-./Bin/UnitTest:./Obj/Vlpp.o ./Obj/Vlpp.Linux.o ./Obj/VlppGlrParser.o ./Obj/VlppOS.o ./Obj/VlppOS.Linux.o ./Obj/VlppReflection.o ./Obj/VlppRegex.o ./Obj/WfLibraryCppHelper.o ./Obj/WfLibraryPredefined.o ./Obj/WfLibraryReflection.o ./Obj/TestLibrary.o ./Obj/Main.o
+./Bin/UnitTest:./Obj/Vlpp.o ./Obj/Vlpp.Linux.o ./Obj/VlppGlrParser.o ./Obj/VlppOS.o ./Obj/VlppOS.Linux.o ./Obj/VlppReflection.o ./Obj/VlppRegex.o ./Obj/WfLibraryCppHelper.o ./Obj/WfLibraryPredefined.o ./Obj/WfLibraryReflection.o ./Obj/WfLibraryRpc.o ./Obj/WfLibraryRpcController.o ./Obj/WfLibraryRpcJson.o ./Obj/WfLibraryRpcLifecycle.o ./Obj/WfLibraryRpcWrappers.o ./Obj/RpcDualLifecycleMock.o ./Obj/Main.o ./Obj/TestLibrary.o ./Obj/TestLibraryRpcByval.o
 	$(CPP_LINK)
 
 ./Obj/Vlpp.o: ../../../Import/Vlpp.cpp ../../../Import/Vlpp.h
@@ -46,11 +46,32 @@ all:pre-build ./Bin/UnitTest
 ./Obj/WfLibraryPredefined.o: ../../../Source/Library/WfLibraryPredefined.cpp ../../../Source/Library/WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h
 	$(CPP_COMPILE)
 
-./Obj/WfLibraryReflection.o: ../../../Source/Library/WfLibraryReflection.cpp ../../../Source/Library/WfLibraryReflection.h ../../../Source/Library/WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h
+./Obj/WfLibraryReflection.o: ../../../Source/Library/WfLibraryReflection.cpp ../../../Source/Library/WfLibraryReflection.h ../../../Source/Library/WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h ../../../Source/Library/Rpc/WfLibraryRpc.h ../../../Source/Library/Rpc/../WfLibraryPredefined.h ../../../Source/Library/Rpc/WfLibraryRpcJson.h ../../../Import/VlppGlrParser.h ../../../Source/Library/Rpc/WfLibraryRpcWrappers.h
 	$(CPP_COMPILE)
 
-./Obj/TestLibrary.o: ../../Source/TestLibrary.cpp ../../Source/../../Source/Library/WfLibraryCppHelper.h ../../Source/../../Source/Library/WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h
+./Obj/WfLibraryRpc.o: ../../../Source/Library/Rpc/WfLibraryRpc.cpp ../../../Source/Library/Rpc/WfLibraryRpc.h ../../../Source/Library/Rpc/../WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h
 	$(CPP_COMPILE)
 
-./Obj/Main.o: ../../UnitTest/LibraryTest/Main.cpp ../../UnitTest/LibraryTest/../../Source/CppTypes.h ../../../Import/Vlpp.h ../../UnitTest/LibraryTest/../../Source/../../Source/Library/WfLibraryCppHelper.h ../../UnitTest/LibraryTest/../../Source/../../Source/Library/WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/VlppRegex.h ../../UnitTest/LibraryTest/../../Source/../../Source/Library/WfLibraryReflection.h
+./Obj/WfLibraryRpcController.o: ../../../Source/Library/Rpc/WfLibraryRpcController.cpp ../../../Source/Library/Rpc/WfLibraryRpcController.h ../../../Source/Library/Rpc/WfLibraryRpc.h ../../../Source/Library/Rpc/../WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h
+	$(CPP_COMPILE)
+
+./Obj/WfLibraryRpcJson.o: ../../../Source/Library/Rpc/WfLibraryRpcJson.cpp ../../../Source/Library/Rpc/WfLibraryRpcJson.h ../../../Source/Library/Rpc/WfLibraryRpc.h ../../../Source/Library/Rpc/../WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h ../../../Import/VlppGlrParser.h ../../../Source/Library/Rpc/../WfLibraryCppHelper.h
+	$(CPP_COMPILE)
+
+./Obj/WfLibraryRpcLifecycle.o: ../../../Source/Library/Rpc/WfLibraryRpcLifecycle.cpp ../../../Source/Library/Rpc/WfLibraryRpcLifecycle.h ../../../Source/Library/Rpc/WfLibraryRpcController.h ../../../Source/Library/Rpc/WfLibraryRpc.h ../../../Source/Library/Rpc/../WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h ../../../Source/Library/Rpc/WfLibraryRpcWrappers.h
+	$(CPP_COMPILE)
+
+./Obj/WfLibraryRpcWrappers.o: ../../../Source/Library/Rpc/WfLibraryRpcWrappers.cpp ../../../Source/Library/Rpc/WfLibraryRpcWrappers.h ../../../Source/Library/Rpc/WfLibraryRpc.h ../../../Source/Library/Rpc/../WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h ../../../Source/Library/Rpc/WfLibraryRpcLifecycle.h ../../../Source/Library/Rpc/WfLibraryRpcController.h ../../../Source/Library/Rpc/WfLibraryRpcJson.h ../../../Import/VlppGlrParser.h ../../../Source/Library/Rpc/../WfLibraryReflection.h ../../../Source/Library/Rpc/../Rpc/WfLibraryRpc.h ../../../Source/Library/Rpc/../Rpc/WfLibraryRpcJson.h ../../../Source/Library/Rpc/../Rpc/WfLibraryRpcWrappers.h
+	$(CPP_COMPILE)
+
+./Obj/RpcDualLifecycleMock.o: ../../Source/RpcDualLifecycleMock.cpp ../../Source/RpcDualLifecycleMock.h ../../Source/../../Source/Library/Rpc/WfLibraryRpcLifecycle.h ../../Source/../../Source/Library/Rpc/WfLibraryRpcController.h ../../Source/../../Source/Library/Rpc/WfLibraryRpc.h ../../Source/../../Source/Library/Rpc/../WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h
+	$(CPP_COMPILE)
+
+./Obj/Main.o: ../../UnitTest/LibraryTest/Main.cpp ../../UnitTest/LibraryTest/../../Source/CppTypes.h ../../../Import/Vlpp.h ../../UnitTest/LibraryTest/../../Source/../../Source/Library/WfLibraryCppHelper.h ../../UnitTest/LibraryTest/../../Source/../../Source/Library/WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/VlppRegex.h ../../UnitTest/LibraryTest/../../Source/../../Source/Library/WfLibraryReflection.h ../../UnitTest/LibraryTest/../../Source/../../Source/Library/Rpc/WfLibraryRpc.h ../../UnitTest/LibraryTest/../../Source/../../Source/Library/Rpc/../WfLibraryPredefined.h ../../UnitTest/LibraryTest/../../Source/../../Source/Library/Rpc/WfLibraryRpcJson.h ../../../Import/VlppGlrParser.h ../../UnitTest/LibraryTest/../../Source/../../Source/Library/Rpc/WfLibraryRpcWrappers.h
+	$(CPP_COMPILE)
+
+./Obj/TestLibrary.o: ../../UnitTest/LibraryTest/TestLibrary.cpp ../../UnitTest/LibraryTest/../../../Source/Library/WfLibraryCppHelper.h ../../UnitTest/LibraryTest/../../../Source/Library/WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h
+	$(CPP_COMPILE)
+
+./Obj/TestLibraryRpcByval.o: ../../UnitTest/LibraryTest/TestLibraryRpcByval.cpp ../../UnitTest/LibraryTest/../../Source/RpcDualLifecycleMock.h ../../UnitTest/LibraryTest/../../Source/../../Source/Library/Rpc/WfLibraryRpcLifecycle.h ../../UnitTest/LibraryTest/../../Source/../../Source/Library/Rpc/WfLibraryRpcController.h ../../UnitTest/LibraryTest/../../Source/../../Source/Library/Rpc/WfLibraryRpc.h ../../UnitTest/LibraryTest/../../Source/../../Source/Library/Rpc/../WfLibraryPredefined.h ../../../Import/VlppReflection.h ../../../Import/VlppOS.h ../../../Import/Vlpp.h ../../../Import/VlppRegex.h ../../UnitTest/LibraryTest/../../../Source/Library/WfLibraryReflection.h ../../UnitTest/LibraryTest/../../../Source/Library/WfLibraryPredefined.h ../../UnitTest/LibraryTest/../../../Source/Library/Rpc/WfLibraryRpc.h ../../UnitTest/LibraryTest/../../../Source/Library/Rpc/WfLibraryRpcJson.h ../../../Import/VlppGlrParser.h ../../UnitTest/LibraryTest/../../../Source/Library/Rpc/WfLibraryRpcWrappers.h
 	$(CPP_COMPILE)
