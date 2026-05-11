@@ -3,6 +3,7 @@
 # Orders
 
 - Avoid explicit Workflow types/casts when implicit typing works [5]
+- Read and aggregate RPC event exception maps through `IRpcLifecycle::ReadEventException` [3]
 - Generated RPC test id maps must come from `rpc_GetIds()` / `SetIdMap` [2]
 - Keep RPC-specific fixes out of generic C++ / Workflow codegen surfaces [2]
 - Interpret `IRpcWrapperBase` as remote-wrapper identity [2]
@@ -16,7 +17,12 @@
 - Reuse production RPC helpers from `TestRpcCompile.cpp` [2]
 - Treat `@rpc:IdString` and `@rpc:IdNumber` as internal generated metadata [2]
 - Verify copied RPC metadata recompiles to the same metadata [2]
-- Read and aggregate RPC event exception maps through `IRpcLifecycle::ReadEventException` [2]
+- Delegate predefined RPC JSON handling to C++ static helpers [2]
+- Propagate RPC method exceptions via `system::RpcException` [2]
+- Apply `RunRpcTestCase` changes to every harness variant [1]
+- Keep RPC JSON test harness setup under `VCZH_DEBUG_NO_REFLECTION` [1]
+- Use generated strong typed RPC ops for event listeners [1]
+- Keep Workflow library helpers out-of-line with explicit `extern` [1]
 - Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for registering free functions as reflection static methods [1]
 - Enable Workflow proxy support for all related implementable interfaces consistently [1]
 - Workflow `new interface` on reflected C++ interfaces requires proxy registration (`BEGIN_INTERFACE_MEMBER`) [1]
@@ -42,11 +48,9 @@
 - Replace `RpcByvalLifecycleMock` with a real dual-lifecycle setup for wrapper tests [1]
 - Use strong `cast`, not weak `as`, for protocol-owned values [1]
 - Use `RpcByvalReturnValue` slots for JSON byval return lifetimes [1]
-- Delegate predefined RPC JSON handling to C++ static helpers [1]
 - Validate RPC JSON ops payloads as `JsonNode` values [1]
 - Use pair arrays for RPC JSON map schemas [1]
 - Keep RPC wrapper generation recursive across inherited interface members [1]
-- Propagate RPC method exceptions via `system::RpcException` [1]
 - Reject RPC internal transport structs from user RPC signatures [1]
 - Workflow catch variables are `system::Exception^`; use `.Message` [1]
 - Keep TypeScript RPC dispatcher envelopes separate from value schemas [1]
@@ -104,6 +108,22 @@ When exposing existing namespace-scope free functions (e.g. `vl::rpc_controller:
 CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcBoxByref, { L"trivial" _ L"lc" }, Value(*)(const Value&, IRpcLifeCycle*), vl::rpc_controller::RpcBoxByref)
 ```
 This keeps the class declaration clean and avoids code duplication.
+
+## Apply `RunRpcTestCase` changes to every harness variant
+
+When the user says `RunRpcTestCase` needs to change, apply the change to every variant of that test harness. Do not add helper functions only to share code between variants unless the user explicitly asks for that; duplication is acceptable when it keeps JSON-value and flat harness behavior clear.
+
+## Keep RPC JSON test harness setup under `VCZH_DEBUG_NO_REFLECTION`
+
+Split RPC C++ test harness paths by representation: `RunRpcTestCase_JsonValue` owns JSON serializers, JSON object/event ops, JSON strong typed ops, JSON dispatchers, and `SetSerializer` calls under `VCZH_DEBUG_NO_REFLECTION`; `RunRpcTestCase_Flat` should use flat ops and should not require a serializer.
+
+## Use generated strong typed RPC ops for event listeners
+
+Generated RPC wrapper listeners should receive and call the generated strong typed ops object for local event dispatch instead of invoking generic dispatcher event APIs directly. Attach local event listeners only when the generated assembly has events, so no-event samples do not reference missing `rpclistener_Attach` symbols.
+
+## Keep Workflow library helpers out-of-line with explicit `extern`
+
+For namespace-level helper functions in `Source/Library/WfLibrary*.(h|cpp)` and `Source/Library/Rpc/WfLibrary*.(h|cpp)`, keep non-constant implementations in `.cpp` files instead of `inline` header definitions. Put explicit `extern` on forward declarations, even when C++ would not require it, to match the Workflow library declaration style.
 
 ## Enable Workflow proxy support for all related implementable interfaces consistently
 
@@ -203,7 +223,7 @@ For `@rpc:Byval` method returns, the callee side may need to keep recursive copi
 
 ## Delegate predefined RPC JSON handling to C++ static helpers
 
-Generated `rpcjson_Serialize` / `rpcjson_Deserialize` should handle module-specific custom types, then delegate predefined primitive and byref collection handling to C++ static helpers registered on `IRpcLifeCycle`. This avoids repeating large predefined-type JSON code in every generated wrapper module.
+Generated `rpcjson_Serialize` / `rpcjson_Deserialize` should handle module-specific custom types, then delegate predefined primitive, byref collection, and internal transport struct handling to C++ static helpers registered on `IRpcLifeCycle`. In particular, `system::RpcException` and `system::RpcObjectReference` belong in predefined JSON handling, not in per-RPC generated serializers. This avoids repeating large predefined-type JSON code in every generated wrapper module.
 
 ## Reuse production RPC helpers from `TestRpcCompile.cpp`
 
@@ -219,7 +239,7 @@ When testing RPC metadata stability, copy the metadata module, clear the manager
 
 ## Read and aggregate RPC event exception maps through `IRpcLifecycle::ReadEventException`
 
-RPC object-event and observable-list event transports return an internal exception map keyed by lifecycle client id. Broadcast paths must attempt every target lifecycle and merge all returned maps without stopping at the first exception. Generated object wrappers and C++ container wrappers should call `IRpcLifecycle::ReadEventException` (backed by `vl::rpc_controller::ReadEventException`) so null or empty maps do nothing, while non-empty maps raise `vl::Exception` with messages formatted as `clientId:message;...` including the trailing semicolon.
+RPC object-event and observable-list event transports return an internal exception map keyed by lifecycle client id. Broadcast paths must attempt every target lifecycle and merge all returned maps without stopping at the first exception. Generated object wrappers and C++ container wrappers should call `IRpcLifecycle::ReadEventException` (backed by `vl::rpc_controller::ReadEventException`) so null or empty maps do nothing, while non-empty maps raise `vl::Exception` with messages formatted as `clientId:message;...` including the trailing semicolon. For JSON event ops, `IRpcObjectEventOps::InvokeEvent` and `IRpcListEventOps::OnItemChanged` return `Value`; deserialize that value first, then call `ReadEventException`.
 
 ## Validate RPC JSON ops payloads as `JsonNode` values
 
@@ -235,7 +255,7 @@ Generated RPC wrappers for interface inheritance must recursively include base-i
 
 ## Propagate RPC method exceptions via `system::RpcException`
 
-Generated service-side `IRpcObjectOps::InvokeMethod` implementations should catch Workflow exceptions from the actual method call and return `system::RpcException { message = ex.Message }`. Caller-side wrappers should detect that internal transport result and raise the message locally, skipping normal return conversion and `EndInvokeMethod` on the exception path.
+Generated service-side `IRpcObjectOps::InvokeMethod` implementations should catch Workflow exceptions from the actual method call and return `system::RpcException { message = ex.Message }`. Caller-side wrappers should detect that internal transport result and raise the message locally, skipping normal return conversion and `EndInvokeMethod` on the exception path. JSON caller ops should run `rpcjson_Deserialize` on every method return value before calling `ReadMethodException`, even for primitive returns.
 
 ## Reject RPC internal transport structs from user RPC signatures
 

@@ -4,14 +4,14 @@
 
 - Compare `RuntimeTest` and `CppTest*` failures before choosing an RPC root cause [6]
 - Wire generated RPC C++ files into shared vcxitems after `CompilerTest_LoadAndCompile` [6]
+- Run TypeScript RPC schema verification after JSON or dispatcher-schema changes [6]
 - Preserve RPC/Workflow sample intent; only adjust syntax or diagnostics [5]
 - RPC byref/byval container samples must verify wrapper/copy semantics at every level [5]
-- Run TypeScript RPC schema verification after JSON or dispatcher-schema changes [5]
 - Commit direct edits and large generated outputs separately when requested [4]
 - Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder [4]
 - Split RPC sample definitions and tests consistently [3]
 - Run `CompilerTest_LoadAndCompile` at least once before downstream RPC generated-C++ tests [3]
-- Pure refactors should not touch generated RPC outputs [2]
+- Pure refactors should not touch generated RPC outputs [3]
 - Workflow analyzer error tests may change values when preserving the error code [1]
 - Workflow samples use `raise`, not `throw` [1]
 - Workflow range syntax for inclusive generated loops is `range [1, xs.Count]` [1]
@@ -20,6 +20,7 @@
 - Type-check shared `Rpc.d.ts` standalone [1]
 - Add analyzer-error samples for reserved RPC transport types [1]
 - Split broad RPC samples by focused behavior [1]
+- Use static scans for Workflow library declaration and inline-refactor checks [1]
 
 # Refinements
 
@@ -65,7 +66,7 @@ When `CompilerTest_LoadAndCompile` runs stably and reports Workflow compile erro
 
 ## Pure refactors should not touch generated RPC outputs
 
-For refactors that only reorganize code or move helper functions, generated RPC files should remain unchanged. If `CompilerTest_LoadAndCompile` updates generated files after such a refactor, investigate the behavior change instead of accepting the diff blindly.
+For refactors that only reorganize code or move helper functions, generated RPC files should remain unchanged. If `CompilerTest_LoadAndCompile` updates generated files after such a refactor, investigate the behavior change instead of accepting the diff blindly. Release amalgamation files may still change after the required `Build.ps1 Workflow` step when source files changed.
 
 ## Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder
 
@@ -94,3 +95,7 @@ When RPC validation rejects internal transport types such as `system::RpcObjectR
 ## Split broad RPC samples by focused behavior
 
 When a single RPC sample grows to cover unrelated behavior, split it into focused samples that preserve the same core shape but isolate one expectation at a time, such as inherited member access, method exceptions, and event exceptions. Focused samples make expected strings shorter and failures easier to diagnose.
+
+## Use static scans for Workflow library declaration and inline-refactor checks
+
+For Workflow library header/source cleanup, use static scans alongside builds to verify mechanical invariants such as no non-`constexpr` inline function definitions remaining in `Source/Library/WfLibrary*.h` or `Source/Library/Rpc/WfLibrary*.h`, and no namespace-level free-function forward declarations missing explicit `extern` in the matching library files.
