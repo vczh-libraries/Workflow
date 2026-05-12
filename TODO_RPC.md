@@ -15,6 +15,9 @@
 
 ## ToDo
 
+- Use `JsonParse` to parse JSON.
+  - Fix `Coding.md`.
+  - Check GacUI.
 - Review JSON related constructions until the work is done.
 - Handle `IRpcListOps` exceptions.
 - JSON schema for rpc interfaces.
