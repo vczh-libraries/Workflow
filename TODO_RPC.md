@@ -12,7 +12,7 @@
 - `WfCpp_WriteReflection.cpp` is changed because `INVOKE(GET?)_INTERFACE_PROXY` does not handle overloading property. This should be a VlppParser bug. Fix the bug and revert this file.
   - https://github.com/vczh-libraries/Workflow/commit/7b0e54a1964774cbb011ea1e675aa8c72a3fbec4
 - Can `WfInterfaceInstance` not inherit from `IDescriptable`?
-- Check error handling.
+- Check error handling. Ensure crashing instead of covering.
 
 ## ToDo
 
