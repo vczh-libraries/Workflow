@@ -290,9 +290,7 @@ int main(int argc, char* argv[])
 
 	ReleaseWorkflowTable();
 	ThreadLocalStorage::DisposeStorages();
-#if defined VCZH_MSVC && defined VCZH_CHECK_MEMORY_LEAKS
-	_CrtDumpMemoryLeaks();
-#endif
+	unittest::UnitTest::DumpMemoryLeak(argc, argv);
 	if (result32 != 0)
 	{
 		unittest::UnitTest::PrintMessage(L"Win32 test run failed, please go back and check the result", unittest::UnitTest::MessageKind::Error);

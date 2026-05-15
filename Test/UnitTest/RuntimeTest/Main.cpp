@@ -34,8 +34,6 @@ int main(int argc, char* argv[])
 	UnloadTypes();
 	ReleaseWorkflowTable();
 	ThreadLocalStorage::DisposeStorages();
-#if defined VCZH_MSVC && defined VCZH_CHECK_MEMORY_LEAKS
-	_CrtDumpMemoryLeaks();
-#endif
+	unittest::UnitTest::DumpMemoryLeak(argc, argv);
 	return result;
 }
