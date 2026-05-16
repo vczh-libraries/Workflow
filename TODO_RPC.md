@@ -25,6 +25,7 @@
   - TeatCasesRpc.h test macros and include different header files.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
 - Consider how to run a CLI based dual processes demo to test RPC.
+- Expose http server from `RemotingTest_Win32_Core` for simulating UI operations.
 
 ## Document
 
