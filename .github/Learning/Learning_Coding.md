@@ -54,6 +54,7 @@
 - Reject RPC internal transport structs from user RPC signatures [1]
 - Workflow catch variables are `system::Exception^`; use `.Message` [1]
 - Keep TypeScript RPC dispatcher envelopes separate from value schemas [1]
+- Prefix generated RPC C++ file names to avoid basename collisions [1]
 
 # Refinements
 
@@ -268,3 +269,7 @@ Workflow `catch (ex)` variables are exception objects. When a script needs the t
 ## Keep TypeScript RPC dispatcher envelopes separate from value schemas
 
 `Test/TypeScript/Rpc.d.ts` owns the shared dispatcher envelope schema for `IRpcListOps`, `IRpcObjectOps`, `IRpcListEventOps`, and `IRpcObjectEventOps`. Generated `Serialization_*.d.ts` files own concrete value schemas; connect the two with a generic payload type such as `KnownTypeSchema | UnknownTypeSchema`, and only add `<T>` to envelope interfaces that actually carry serialized payloads. `SendToClient_*` requests include `targetClientId`, broadcast requests omit it, and all responses include both `sourceClientId` and `targetClientId`.
+
+## Prefix generated RPC C++ file names to avoid basename collisions
+
+Generated RPC C++ include, reflection, and default implementation file names should include the `Rpc` prefix from `TestRpcCompile.cpp` inputs. Once generated file basenames are unique, remove obsolete project `ObjectFileName` rename workarounds and stale Linux vmake exclusions for old collisions such as `Event.cpp` and `Overloading.cpp`.

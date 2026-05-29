@@ -17,6 +17,7 @@
 - Validate expectations against implementation and existing tests [2]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [2]
 - Treat Debug memory leak dumps as required failures [2]
+- Verify generated artifacts with downstream consumer checks [2]
 - Prefer well-defined tests over ambiguous edge cases [1]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
@@ -31,7 +32,6 @@
 - Dereference `Ptr<T>` via `.Obj()` (not `*ptr`) [1]
 - `vl::regex` separator regex: `L"[\\/\\\\]+"` [1]
 - Use 2-space indentation in embedded XML/JSON literals [1]
-- Verify generated artifacts with downstream consumer checks [1]
 - `collections::List` has deleted copy constructor; use `std::move()` for structs with `List` members [1]
 
 # Refinements

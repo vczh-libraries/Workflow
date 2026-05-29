@@ -2,15 +2,15 @@
 
 # Orders
 
+- Wire generated RPC C++ files into shared vcxitems after `CompilerTest_LoadAndCompile` [7]
 - Compare `RuntimeTest` and `CppTest*` failures before choosing an RPC root cause [6]
-- Wire generated RPC C++ files into shared vcxitems after `CompilerTest_LoadAndCompile` [6]
 - Run TypeScript RPC schema verification after JSON or dispatcher-schema changes [6]
 - Preserve RPC/Workflow sample intent; only adjust syntax or diagnostics [5]
 - RPC byref/byval container samples must verify wrapper/copy semantics at every level [5]
 - Commit direct edits and large generated outputs separately when requested [4]
 - Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder [4]
+- Run `CompilerTest_LoadAndCompile` at least once before downstream RPC generated-C++ tests [4]
 - Split RPC sample definitions and tests consistently [3]
-- Run `CompilerTest_LoadAndCompile` at least once before downstream RPC generated-C++ tests [3]
 - Pure refactors should not touch generated RPC outputs [3]
 - Workflow analyzer error tests may change values when preserving the error code [1]
 - Workflow samples use `raise`, not `throw` [1]
@@ -21,6 +21,7 @@
 - Add analyzer-error samples for reserved RPC transport types [1]
 - Split broad RPC samples by focused behavior [1]
 - Use static scans for Workflow library declaration and inline-refactor checks [1]
+- Verify generated RPC file renames with stale-reference scans [1]
 
 # Refinements
 
@@ -30,7 +31,7 @@ For RPC behavior failures, keep running enough of `RuntimeTest`, `CppTest`, `Cpp
 
 ## Wire generated RPC C++ files into shared vcxitems after `CompilerTest_LoadAndCompile`
 
-When new RPC samples generate C++ files under `Test/SourceCppGenRpc`, add the corresponding `.cpp` / `.h` entries to `Test/UnitTest/Generated_CppRpc/Generated_CppRpc.vcxitems` and reflection files to `Test/UnitTest/Generated_ReflectionRpc/Generated_ReflectionRpc.vcxitems`. Link failures in `CppTest*` after successful `CompilerTest_LoadAndCompile` are often just missing shared-item entries.
+When new or renamed RPC samples generate C++ files under `Test/SourceCppGenRpc`, add the corresponding `.cpp` / `.h` entries to `Test/UnitTest/Generated_CppRpc/Generated_CppRpc.vcxitems` and reflection files to `Test/UnitTest/Generated_ReflectionRpc/Generated_ReflectionRpc.vcxitems`. Link failures in `CppTest*` after successful `CompilerTest_LoadAndCompile` are often just missing shared-item entries or stale references to generated files that were renamed.
 
 ## Preserve RPC/Workflow sample intent; only adjust syntax or diagnostics
 
@@ -99,3 +100,7 @@ When a single RPC sample grows to cover unrelated behavior, split it into focuse
 ## Use static scans for Workflow library declaration and inline-refactor checks
 
 For Workflow library header/source cleanup, use static scans alongside builds to verify mechanical invariants such as no non-`constexpr` inline function definitions remaining in `Source/Library/WfLibrary*.h` or `Source/Library/Rpc/WfLibrary*.h`, and no namespace-level free-function forward declarations missing explicit `extern` in the matching library files.
+
+## Verify generated RPC file renames with stale-reference scans
+
+After generated RPC C++ file renames, verify that generated-file adds and deletes balance as expected for the rename, `TestCasesRpc.cpp` includes the new names, every path referenced by `Generated_CppRpc.vcxitems` and `Generated_ReflectionRpc.vcxitems` exists, and stale names or old `ObjectFileName` workarounds no longer appear in project, filter, or Linux vmake files.
