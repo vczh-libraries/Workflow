@@ -20,7 +20,7 @@ namespace vl
 		using RpcJsonDeserializeCallback = Func<reflection::description::Value(Ptr<glr::json::JsonNode>)>;
 
 		extern Ptr<glr::json::JsonNode>				JsonSerializePredefinedTypes(const reflection::description::Value& value, const RpcJsonSerializeCallback& rpcjson_Serialize);
-		extern reflection::description::Value			JsonDeserializePredefinedTypes(const reflection::description::Value& value, const RpcJsonDeserializeCallback& rpcjson_Deserialize);
+		extern reflection::description::Value		JsonDeserializePredefinedTypes(const reflection::description::Value& value, const RpcJsonDeserializeCallback& rpcjson_Deserialize);
 	}
 }
 
