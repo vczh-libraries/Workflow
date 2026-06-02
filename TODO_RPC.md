@@ -18,8 +18,6 @@
 
 - Redirect list ops to object ops.
   - Review
-  - Remove list ops from dispatcher, list ops should only talk to object ops.
-    - Update documents.
   - Test case to handle `IRpcListOps` exceptions.
 - JSON schema for rpc interfaces.
   - JSON async dispatcher with JSON channel
