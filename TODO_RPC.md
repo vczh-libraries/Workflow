@@ -17,10 +17,9 @@
 ## ToDo
 
 - Redirect list ops to object ops.
-  - Hardcode list ops method/event ids like type ids.
-  - Update JSON schema and documents.
+  - Review
+  - Test case to handle `IRpcListOps` exceptions.
 - Review JSON related constructions until the work is done.
-- Handle `IRpcListOps` exceptions.
 - JSON schema for rpc interfaces.
   - JSON async dispatcher with JSON channel
   - logging from JSON channel
