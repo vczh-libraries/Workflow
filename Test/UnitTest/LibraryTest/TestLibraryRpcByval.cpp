@@ -56,8 +56,8 @@ namespace
 		Ptr<RpcDualDispatcherMock>			dispatcher;
 		Ptr<RpcCalleeListOps>				listOps1;
 		Ptr<RpcCalleeListOps>				listOps2;
-		Ptr<RpcCalleeListEventBridge>		listEventBridge1;
-		Ptr<RpcCalleeListEventBridge>		listEventBridge2;
+		Ptr<RpcCalleeListEventOps>			listEventOps1;
+		Ptr<RpcCalleeListEventOps>			listEventOps2;
 
 		RpcTestContext() = default;
 		RpcTestContext(const RpcTestContext&) = delete;
@@ -70,8 +70,8 @@ namespace
 			dispatcher = context.dispatcher;
 			listOps1 = context.listOps1;
 			listOps2 = context.listOps2;
-			listEventBridge1 = context.listEventBridge1;
-			listEventBridge2 = context.listEventBridge2;
+			listEventOps1 = context.listEventOps1;
+			listEventOps2 = context.listEventOps2;
 			context.dispatcher = nullptr;
 		}
 
@@ -91,10 +91,14 @@ namespace
 		context.lifecycle2 = Ptr(new RpcDualLifecycleMock(2));
 		context.listOps1 = Ptr(new RpcCalleeListOps(context.lifecycle1.Obj(), nullptr));
 		context.listOps2 = Ptr(new RpcCalleeListOps(context.lifecycle2.Obj(), nullptr));
-		context.listEventBridge1 = Ptr(new RpcCalleeListEventBridge(context.lifecycle1.Obj(), nullptr));
-		context.listEventBridge2 = Ptr(new RpcCalleeListEventBridge(context.lifecycle2.Obj(), nullptr));
-		context.lifecycle1->GetController()->Register(Ptr(new StubObjectOps(context.lifecycle1.Obj())), Ptr(new StubObjectEventOps), context.listOps1, context.listEventBridge1);
-		context.lifecycle2->GetController()->Register(Ptr(new StubObjectOps(context.lifecycle2.Obj())), Ptr(new StubObjectEventOps), context.listOps2, context.listEventBridge2);
+		context.listEventOps1 = Ptr(new RpcCalleeListEventOps(context.lifecycle1.Obj(), nullptr));
+		context.listEventOps2 = Ptr(new RpcCalleeListEventOps(context.lifecycle2.Obj(), nullptr));
+		auto objectOps1 = Ptr(new StubObjectOps(context.lifecycle1.Obj()));
+		auto objectOps2 = Ptr(new StubObjectOps(context.lifecycle2.Obj()));
+		auto objectEventOps1 = Ptr(new StubObjectEventOps);
+		auto objectEventOps2 = Ptr(new StubObjectEventOps);
+		context.lifecycle1->GetController()->Register(Ptr(new RpcCalleeObjectOpsForList(context.listOps1, objectOps1, nullptr)), Ptr(new RpcCalleeObjectEventOpsForList(context.listEventOps1, objectEventOps1, nullptr)), context.listOps1, context.listEventOps1);
+		context.lifecycle2->GetController()->Register(Ptr(new RpcCalleeObjectOpsForList(context.listOps2, objectOps2, nullptr)), Ptr(new RpcCalleeObjectEventOpsForList(context.listEventOps2, objectEventOps2, nullptr)), context.listOps2, context.listEventOps2);
 		context.dispatcher = Ptr(new RpcDualDispatcherMock(context.lifecycle1.Obj(), context.lifecycle2.Obj()));
 		return context;
 	}

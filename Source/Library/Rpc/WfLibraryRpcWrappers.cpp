@@ -95,6 +95,70 @@ namespace vl
 				return serializer ? serializer->Deserialize(value) : value;
 			}
 
+			template<typename ...TArgs>
+			Ptr<IValueArray> CreateRpcArguments(TArgs&& ...args)
+			{
+				auto arguments = IValueArray::Create();
+				arguments->Resize(sizeof...(TArgs));
+				vint index = 0;
+				((arguments->Set(index++, std::forward<TArgs>(args))), ...);
+				return arguments;
+			}
+
+			Value BoxPrimitiveArgument(IRpcSerializer* serializer, vint value)
+			{
+				return SerializeValue(serializer, BoxValue(value));
+			}
+
+			vint UnboxPrimitiveArgument(IRpcSerializer* serializer, const Value& value)
+			{
+				return UnboxValue<vint>(DeserializeValue(serializer, value));
+			}
+
+			Value ReadMethodResult(IRpcSerializer* serializer, const Value& value)
+			{
+				auto deserialized = DeserializeValue(serializer, value);
+				ReadMethodException(deserialized);
+				return deserialized;
+			}
+
+			Value InvokeListMethod(IRpcObjectOps* objectOps, IRpcSerializer* serializer, RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
+			{
+				auto result = objectOps->InvokeMethod(ref, methodId, arguments);
+				ReadMethodResult(serializer, result);
+				return result;
+			}
+
+			bool IsRpcListMethodId(vint methodId)
+			{
+				switch (methodId)
+				{
+				case RpcMethodId_IValueEnumerable_CreateEnumerator:
+				case RpcMethodId_IValueEnumerator_Next:
+				case RpcMethodId_IValueEnumerator_GetCurrent:
+				case RpcMethodId_IValueReadonlyList_GetCount:
+				case RpcMethodId_IValueReadonlyList_Get:
+				case RpcMethodId_IValueList_Set:
+				case RpcMethodId_IValueList_Add:
+				case RpcMethodId_IValueList_Insert:
+				case RpcMethodId_IValueList_RemoveAt:
+				case RpcMethodId_IValueList_Clear:
+				case RpcMethodId_IValueReadonlyList_Contains:
+				case RpcMethodId_IValueReadonlyList_IndexOf:
+				case RpcMethodId_IValueReadonlyDictionary_GetCount:
+				case RpcMethodId_IValueReadonlyDictionary_Get:
+				case RpcMethodId_IValueDictionary_Set:
+				case RpcMethodId_IValueDictionary_Remove:
+				case RpcMethodId_IValueDictionary_Clear:
+				case RpcMethodId_IValueReadonlyDictionary_ContainsKey:
+				case RpcMethodId_IValueReadonlyDictionary_GetKeys:
+				case RpcMethodId_IValueReadonlyDictionary_GetValues:
+					return true;
+				default:
+					return false;
+				}
+			}
+
 			extern Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc);
 			extern Value RpcUnboxValueByref(const Value& serializable, IRpcLifecycle* lc);
 			extern Value RpcCopyValueByvalInternal(const Value& trivial, Dictionary<const DescriptableObject*, bool>& visited);
@@ -709,22 +773,22 @@ namespace vl
 		}
 		
 /***********************************************************************
-* RpcCalleeListEventBridge
+* RpcCalleeListEventOps
 ***********************************************************************/
 
-		RpcCalleeListEventBridge::RpcCalleeListEventBridge(IRpcLifecycle* lc, IRpcSerializer* _serializer)
+		RpcCalleeListEventOps::RpcCalleeListEventOps(IRpcLifecycle* lc, IRpcSerializer* _serializer)
 			: lifecycle(lc)
 			, serializer(_serializer)
 		{
 			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
 		}
 
-		Value RpcCalleeListEventBridge::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
+		Value RpcCalleeListEventOps::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
 		{
 			auto controller = lifecycle->GetController();
 			auto obj = lifecycle->RefToPtr(ref);
 			auto observable = Ptr(obj.Obj()->SafeAggregationCast<IValueObservableList>());
-			CHECK_ERROR(observable, L"RpcCalleeListEventBridge::OnItemChanged cannot find the target observable list.");
+			CHECK_ERROR(observable, L"RpcCalleeListEventOps::OnItemChanged cannot find the target observable list.");
 			controller->SetItemChangedSuppressedFlag(ref, true);
 			RpcEventExceptionMap exceptions;
 			try
@@ -743,6 +807,279 @@ namespace vl
 			}
 			controller->SetItemChangedSuppressedFlag(ref, false);
 			return SerializeValue(serializer, BoxRpcEventExceptionMap(exceptions));
+		}
+
+/***********************************************************************
+* RpcCalleeObjectOpsForList
+***********************************************************************/
+
+		RpcCalleeObjectOpsForList::RpcCalleeObjectOpsForList(Ptr<RpcCalleeListOps> _listOps, Ptr<IRpcObjectOps> _objectOps, IRpcSerializer* _serializer)
+			: listOps(_listOps)
+			, objectOps(_objectOps)
+			, serializer(_serializer)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcCalleeObjectOpsForList::RpcCalleeObjectOpsForList(...)#"
+			CHECK_ERROR(listOps && objectOps, ERROR_MESSAGE_PREFIX L"List ops and object ops are required.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		Value RpcCalleeObjectOpsForList::InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
+		{
+			if (!IsRpcListMethodId(methodId))
+			{
+				return objectOps->InvokeMethod(ref, methodId, arguments);
+			}
+
+			try
+			{
+				switch (methodId)
+				{
+				case RpcMethodId_IValueEnumerable_CreateEnumerator:
+					return SerializeValue(serializer, BoxValue(listOps->EnumCreate(ref)));
+				case RpcMethodId_IValueEnumerator_Next:
+					return SerializeValue(serializer, BoxValue(listOps->EnumNext(ref)));
+				case RpcMethodId_IValueEnumerator_GetCurrent:
+					return listOps->EnumGetCurrent(ref);
+				case RpcMethodId_IValueReadonlyList_GetCount:
+					return SerializeValue(serializer, BoxValue(listOps->ListGetCount(ref)));
+				case RpcMethodId_IValueReadonlyList_Get:
+					return listOps->ListGet(ref, UnboxPrimitiveArgument(serializer, arguments->Get(0)));
+				case RpcMethodId_IValueList_Set:
+					listOps->ListSet(ref, UnboxPrimitiveArgument(serializer, arguments->Get(0)), arguments->Get(1));
+					return SerializeValue(serializer, Value());
+				case RpcMethodId_IValueList_Add:
+					return SerializeValue(serializer, BoxValue(listOps->ListAdd(ref, arguments->Get(0))));
+				case RpcMethodId_IValueList_Insert:
+					return SerializeValue(serializer, BoxValue(listOps->ListInsert(ref, UnboxPrimitiveArgument(serializer, arguments->Get(0)), arguments->Get(1))));
+				case RpcMethodId_IValueList_RemoveAt:
+					return SerializeValue(serializer, BoxValue(listOps->ListRemoveAt(ref, UnboxPrimitiveArgument(serializer, arguments->Get(0)))));
+				case RpcMethodId_IValueList_Clear:
+					listOps->ListClear(ref);
+					return SerializeValue(serializer, Value());
+				case RpcMethodId_IValueReadonlyList_Contains:
+					return SerializeValue(serializer, BoxValue(listOps->ListContains(ref, arguments->Get(0))));
+				case RpcMethodId_IValueReadonlyList_IndexOf:
+					return SerializeValue(serializer, BoxValue(listOps->ListIndexOf(ref, arguments->Get(0))));
+				case RpcMethodId_IValueReadonlyDictionary_GetCount:
+					return SerializeValue(serializer, BoxValue(listOps->DictGetCount(ref)));
+				case RpcMethodId_IValueReadonlyDictionary_Get:
+					return listOps->DictGet(ref, arguments->Get(0));
+				case RpcMethodId_IValueDictionary_Set:
+					listOps->DictSet(ref, arguments->Get(0), arguments->Get(1));
+					return SerializeValue(serializer, Value());
+				case RpcMethodId_IValueDictionary_Remove:
+					return SerializeValue(serializer, BoxValue(listOps->DictRemove(ref, arguments->Get(0))));
+				case RpcMethodId_IValueDictionary_Clear:
+					listOps->DictClear(ref);
+					return SerializeValue(serializer, Value());
+				case RpcMethodId_IValueReadonlyDictionary_ContainsKey:
+					return SerializeValue(serializer, BoxValue(listOps->DictContainsKey(ref, arguments->Get(0))));
+				case RpcMethodId_IValueReadonlyDictionary_GetKeys:
+					return SerializeValue(serializer, BoxValue(listOps->DictGetKeys(ref)));
+				case RpcMethodId_IValueReadonlyDictionary_GetValues:
+					return SerializeValue(serializer, BoxValue(listOps->DictGetValues(ref)));
+				}
+			}
+			catch (const Exception& ex)
+			{
+				return SerializeValue(serializer, BoxRpcException(RpcException{ ex.Message() }));
+			}
+			CHECK_FAIL(L"Unknown RPC list method id.");
+			return {};
+		}
+
+		void RpcCalleeObjectOpsForList::EndInvokeMethod(vint slot)
+		{
+			objectOps->EndInvokeMethod(slot);
+		}
+
+		void RpcCalleeObjectOpsForList::ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)
+		{
+			objectOps->ObjectHold(ref, remoteClientId, hold);
+		}
+
+		void RpcCalleeObjectOpsForList::RegisterService(vint typeId, Ptr<IDescriptable> service)
+		{
+			objectOps->RegisterService(typeId, service);
+		}
+
+/***********************************************************************
+* RpcCalleeObjectEventOpsForList
+***********************************************************************/
+
+		RpcCalleeObjectEventOpsForList::RpcCalleeObjectEventOpsForList(Ptr<RpcCalleeListEventOps> _listEventOps, Ptr<IRpcObjectEventOps> _objectEventOps, IRpcSerializer* _serializer)
+			: listEventOps(_listEventOps)
+			, objectEventOps(_objectEventOps)
+			, serializer(_serializer)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcCalleeObjectEventOpsForList::RpcCalleeObjectEventOpsForList(...)#"
+			CHECK_ERROR(listEventOps && objectEventOps, ERROR_MESSAGE_PREFIX L"List event ops and object event ops are required.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		Value RpcCalleeObjectEventOpsForList::InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)
+		{
+			if (eventId == RpcEventId_IValueObservableList_ItemChanged)
+			{
+				return listEventOps->OnItemChanged(
+					ref,
+					UnboxPrimitiveArgument(serializer, arguments->Get(0)),
+					UnboxPrimitiveArgument(serializer, arguments->Get(1)),
+					UnboxPrimitiveArgument(serializer, arguments->Get(2))
+					);
+			}
+			return objectEventOps->InvokeEvent(ref, eventId, arguments);
+		}
+
+/***********************************************************************
+* RpcCallerListOps
+***********************************************************************/
+
+		RpcCallerListOps::RpcCallerListOps(IRpcObjectOps* _objectOps, IRpcSerializer* _serializer)
+			: objectOps(_objectOps)
+			, serializer(_serializer)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcCallerListOps::RpcCallerListOps(...)#"
+			CHECK_ERROR(objectOps, ERROR_MESSAGE_PREFIX L"Object ops are required.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		RpcObjectReference RpcCallerListOps::EnumCreate(RpcObjectReference ref)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueEnumerable_CreateEnumerator, CreateRpcArguments());
+			return UnboxValue<RpcObjectReference>(ReadMethodResult(serializer, result));
+		}
+
+		bool RpcCallerListOps::EnumNext(RpcObjectReference enumerator)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, enumerator, RpcMethodId_IValueEnumerator_Next, CreateRpcArguments());
+			return UnboxValue<bool>(ReadMethodResult(serializer, result));
+		}
+
+		Value RpcCallerListOps::EnumGetCurrent(RpcObjectReference enumerator)
+		{
+			return InvokeListMethod(objectOps, serializer, enumerator, RpcMethodId_IValueEnumerator_GetCurrent, CreateRpcArguments());
+		}
+
+		vint RpcCallerListOps::ListGetCount(RpcObjectReference ref)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyList_GetCount, CreateRpcArguments());
+			return UnboxValue<vint>(ReadMethodResult(serializer, result));
+		}
+
+		Value RpcCallerListOps::ListGet(RpcObjectReference ref, vint index)
+		{
+			return InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyList_Get, CreateRpcArguments(BoxPrimitiveArgument(serializer, index)));
+		}
+
+		void RpcCallerListOps::ListSet(RpcObjectReference ref, vint index, const Value& value)
+		{
+			InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueList_Set, CreateRpcArguments(BoxPrimitiveArgument(serializer, index), value));
+		}
+
+		vint RpcCallerListOps::ListAdd(RpcObjectReference ref, const Value& value)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueList_Add, CreateRpcArguments(value));
+			return UnboxValue<vint>(ReadMethodResult(serializer, result));
+		}
+
+		vint RpcCallerListOps::ListInsert(RpcObjectReference ref, vint index, const Value& value)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueList_Insert, CreateRpcArguments(BoxPrimitiveArgument(serializer, index), value));
+			return UnboxValue<vint>(ReadMethodResult(serializer, result));
+		}
+
+		bool RpcCallerListOps::ListRemoveAt(RpcObjectReference ref, vint index)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueList_RemoveAt, CreateRpcArguments(BoxPrimitiveArgument(serializer, index)));
+			return UnboxValue<bool>(ReadMethodResult(serializer, result));
+		}
+
+		void RpcCallerListOps::ListClear(RpcObjectReference ref)
+		{
+			InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueList_Clear, CreateRpcArguments());
+		}
+
+		bool RpcCallerListOps::ListContains(RpcObjectReference ref, const Value& value)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyList_Contains, CreateRpcArguments(value));
+			return UnboxValue<bool>(ReadMethodResult(serializer, result));
+		}
+
+		vint RpcCallerListOps::ListIndexOf(RpcObjectReference ref, const Value& value)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyList_IndexOf, CreateRpcArguments(value));
+			return UnboxValue<vint>(ReadMethodResult(serializer, result));
+		}
+
+		vint RpcCallerListOps::DictGetCount(RpcObjectReference ref)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyDictionary_GetCount, CreateRpcArguments());
+			return UnboxValue<vint>(ReadMethodResult(serializer, result));
+		}
+
+		Value RpcCallerListOps::DictGet(RpcObjectReference ref, const Value& key)
+		{
+			return InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyDictionary_Get, CreateRpcArguments(key));
+		}
+
+		void RpcCallerListOps::DictSet(RpcObjectReference ref, const Value& key, const Value& value)
+		{
+			InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueDictionary_Set, CreateRpcArguments(key, value));
+		}
+
+		bool RpcCallerListOps::DictRemove(RpcObjectReference ref, const Value& key)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueDictionary_Remove, CreateRpcArguments(key));
+			return UnboxValue<bool>(ReadMethodResult(serializer, result));
+		}
+
+		void RpcCallerListOps::DictClear(RpcObjectReference ref)
+		{
+			InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueDictionary_Clear, CreateRpcArguments());
+		}
+
+		bool RpcCallerListOps::DictContainsKey(RpcObjectReference ref, const Value& key)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyDictionary_ContainsKey, CreateRpcArguments(key));
+			return UnboxValue<bool>(ReadMethodResult(serializer, result));
+		}
+
+		RpcObjectReference RpcCallerListOps::DictGetKeys(RpcObjectReference ref)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyDictionary_GetKeys, CreateRpcArguments());
+			return UnboxValue<RpcObjectReference>(ReadMethodResult(serializer, result));
+		}
+
+		RpcObjectReference RpcCallerListOps::DictGetValues(RpcObjectReference ref)
+		{
+			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyDictionary_GetValues, CreateRpcArguments());
+			return UnboxValue<RpcObjectReference>(ReadMethodResult(serializer, result));
+		}
+
+/***********************************************************************
+* RpcCallerListEventOps
+***********************************************************************/
+
+		RpcCallerListEventOps::RpcCallerListEventOps(IRpcObjectEventOps* _objectEventOps, IRpcSerializer* _serializer)
+			: objectEventOps(_objectEventOps)
+			, serializer(_serializer)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcCallerListEventOps::RpcCallerListEventOps(...)#"
+			CHECK_ERROR(objectEventOps, ERROR_MESSAGE_PREFIX L"Object event ops are required.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		Value RpcCallerListEventOps::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
+		{
+			auto arguments = CreateRpcArguments(
+				BoxPrimitiveArgument(serializer, index),
+				BoxPrimitiveArgument(serializer, oldCount),
+				BoxPrimitiveArgument(serializer, newCount)
+				);
+			auto result = objectEventOps->InvokeEvent(ref, RpcEventId_IValueObservableList_ItemChanged, arguments);
+			ReadEventException(UnboxRpcEventExceptionMap(DeserializeValue(serializer, result)));
+			return result;
 		}
 		
 /***********************************************************************

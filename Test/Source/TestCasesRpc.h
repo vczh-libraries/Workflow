@@ -65,9 +65,13 @@ namespace vl
 			auto ops2 = instance.rpcops_IOps_CreateJson(lc2.Obj());
 
 			auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj(), lc1->GetSerializer()));
-			auto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj(), lc1->GetSerializer()));
+			auto leo1 = Ptr(new RpcCalleeListEventOps(lc1.Obj(), lc1->GetSerializer()));
 			auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj(), lc2->GetSerializer()));
-			auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj(), lc2->GetSerializer()));
+			auto leo2 = Ptr(new RpcCalleeListEventOps(lc2.Obj(), lc2->GetSerializer()));
+			auto ooForList1 = Ptr(new RpcCalleeObjectOpsForList(lo1, oo1, lc1->GetSerializer()));
+			auto oeoForList1 = Ptr(new RpcCalleeObjectEventOpsForList(leo1, oeo1, lc1->GetSerializer()));
+			auto ooForList2 = Ptr(new RpcCalleeObjectOpsForList(lo2, oo2, lc2->GetSerializer()));
+			auto oeoForList2 = Ptr(new RpcCalleeObjectEventOpsForList(leo2, oeo2, lc2->GetSerializer()));
 
 			if constexpr (HasEvent)
 			{
@@ -81,8 +85,8 @@ namespace vl
 				});
 			}
 
-			lc1->GetController()->Register(oo1, oeo1, lo1, leo1);
-			lc2->GetController()->Register(oo2, oeo2, lo2, leo2);
+			lc1->GetController()->Register(ooForList1, oeoForList1, lo1, leo1);
+			lc2->GetController()->Register(ooForList2, oeoForList2, lo2, leo2);
 
 			RpcDualJsonDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
 			lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops1); });
@@ -124,9 +128,13 @@ namespace vl
 			auto ops2 = instance.rpcops_IOps_Create(lc2.Obj());
 
 			auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj(), lc1->GetSerializer()));
-			auto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj(), lc1->GetSerializer()));
+			auto leo1 = Ptr(new RpcCalleeListEventOps(lc1.Obj(), lc1->GetSerializer()));
 			auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj(), lc2->GetSerializer()));
-			auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj(), lc2->GetSerializer()));
+			auto leo2 = Ptr(new RpcCalleeListEventOps(lc2.Obj(), lc2->GetSerializer()));
+			auto ooForList1 = Ptr(new RpcCalleeObjectOpsForList(lo1, oo1, lc1->GetSerializer()));
+			auto oeoForList1 = Ptr(new RpcCalleeObjectEventOpsForList(leo1, oeo1, lc1->GetSerializer()));
+			auto ooForList2 = Ptr(new RpcCalleeObjectOpsForList(lo2, oo2, lc2->GetSerializer()));
+			auto oeoForList2 = Ptr(new RpcCalleeObjectEventOpsForList(leo2, oeo2, lc2->GetSerializer()));
 
 			if constexpr (HasEvent)
 			{
@@ -140,8 +148,8 @@ namespace vl
 				});
 			}
 
-			lc1->GetController()->Register(oo1, oeo1, lo1, leo1);
-			lc2->GetController()->Register(oo2, oeo2, lo2, leo2);
+			lc1->GetController()->Register(ooForList1, oeoForList1, lo1, leo1);
+			lc2->GetController()->Register(ooForList2, oeoForList2, lo2, leo2);
 
 			RpcDualDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
 			lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops1); });

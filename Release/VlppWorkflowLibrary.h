@@ -988,6 +988,29 @@ namespace vl
 		inline constexpr vint				RpcTypeId_IValueDictionary = -6;
 		inline constexpr vint				RpcTypeId_IValueReadonlyList = -7;
 
+		inline constexpr vint				RpcMethodId_IValueEnumerable_CreateEnumerator = -1;
+		inline constexpr vint				RpcMethodId_IValueEnumerator_Next = -2;
+		inline constexpr vint				RpcMethodId_IValueEnumerator_GetCurrent = -3;
+		inline constexpr vint				RpcMethodId_IValueReadonlyList_GetCount = -4;
+		inline constexpr vint				RpcMethodId_IValueReadonlyList_Get = -5;
+		inline constexpr vint				RpcMethodId_IValueList_Set = -6;
+		inline constexpr vint				RpcMethodId_IValueList_Add = -7;
+		inline constexpr vint				RpcMethodId_IValueList_Insert = -8;
+		inline constexpr vint				RpcMethodId_IValueList_RemoveAt = -9;
+		inline constexpr vint				RpcMethodId_IValueList_Clear = -10;
+		inline constexpr vint				RpcMethodId_IValueReadonlyList_Contains = -11;
+		inline constexpr vint				RpcMethodId_IValueReadonlyList_IndexOf = -12;
+		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_GetCount = -13;
+		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_Get = -14;
+		inline constexpr vint				RpcMethodId_IValueDictionary_Set = -15;
+		inline constexpr vint				RpcMethodId_IValueDictionary_Remove = -16;
+		inline constexpr vint				RpcMethodId_IValueDictionary_Clear = -17;
+		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_ContainsKey = -18;
+		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_GetKeys = -19;
+		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_GetValues = -20;
+
+		inline constexpr vint				RpcEventId_IValueObservableList_ItemChanged = -1;
+
 /***********************************************************************
 * Interfaces (Operations)
 ***********************************************************************/
@@ -1122,11 +1145,11 @@ namespace vl
 ***********************************************************************/
 
 		extern RpcObjectReference							RpcBoxByref		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
-		extern Ptr<reflection::IDescriptable>					RpcUnboxByref	(RpcObjectReference serializable, IRpcLifecycle* lc);
-		extern reflection::description::Value					RpcCopyByval	(const reflection::description::Value& trivial, IRpcLifecycle* lc);
-		extern reflection::description::Value					RpcBoxByval		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
-		extern reflection::description::Value					RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
-		extern Ptr<reflection::IDescriptable>					RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
+		extern Ptr<reflection::IDescriptable>				RpcUnboxByref	(RpcObjectReference serializable, IRpcLifecycle* lc);
+		extern reflection::description::Value				RpcCopyByval	(const reflection::description::Value& trivial, IRpcLifecycle* lc);
+		extern reflection::description::Value				RpcBoxByval		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
+		extern reflection::description::Value				RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
+		extern Ptr<reflection::IDescriptable>				RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
 		extern void											ReadMethodException(const reflection::description::Value& value);
 		extern void											ReadEventException(RpcEventExceptionMap exceptions);
 	}
@@ -1227,7 +1250,7 @@ namespace vl
 		using RpcJsonDeserializeCallback = Func<reflection::description::Value(Ptr<glr::json::JsonNode>)>;
 
 		extern Ptr<glr::json::JsonNode>				JsonSerializePredefinedTypes(const reflection::description::Value& value, const RpcJsonSerializeCallback& rpcjson_Serialize);
-		extern reflection::description::Value			JsonDeserializePredefinedTypes(const reflection::description::Value& value, const RpcJsonDeserializeCallback& rpcjson_Deserialize);
+		extern reflection::description::Value		JsonDeserializePredefinedTypes(const reflection::description::Value& value, const RpcJsonDeserializeCallback& rpcjson_Deserialize);
 	}
 }
 
@@ -1572,14 +1595,88 @@ namespace vl
 			RpcObjectReference								DictGetValues(RpcObjectReference ref)override;
 		};
 
-		class RpcCalleeListEventBridge : public Object, public IRpcListEventOps
+		class RpcCalleeListEventOps : public Object, public IRpcListEventOps
 		{
 		private:
 			IRpcLifecycle*									lifecycle = nullptr;
 			IRpcSerializer*									serializer = nullptr;
 
 		public:
-			RpcCalleeListEventBridge(IRpcLifecycle* lc, IRpcSerializer* _serializer);
+			RpcCalleeListEventOps(IRpcLifecycle* lc, IRpcSerializer* _serializer);
+
+			reflection::description::Value					OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
+		};
+
+		class RpcCalleeObjectOpsForList : public Object, public IRpcObjectOps
+		{
+		private:
+			Ptr<RpcCalleeListOps>							listOps;
+			Ptr<IRpcObjectOps>								objectOps;
+			IRpcSerializer*									serializer = nullptr;
+
+		public:
+			RpcCalleeObjectOpsForList(Ptr<RpcCalleeListOps> _listOps, Ptr<IRpcObjectOps> _objectOps, IRpcSerializer* _serializer);
+
+			reflection::description::Value					InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
+			void											EndInvokeMethod(vint slot)override;
+			void											ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)override;
+			void											RegisterService(vint typeId, Ptr<reflection::IDescriptable> service)override;
+		};
+
+		class RpcCalleeObjectEventOpsForList : public Object, public IRpcObjectEventOps
+		{
+		private:
+			Ptr<RpcCalleeListEventOps>						listEventOps;
+			Ptr<IRpcObjectEventOps>							objectEventOps;
+			IRpcSerializer*									serializer = nullptr;
+
+		public:
+			RpcCalleeObjectEventOpsForList(Ptr<RpcCalleeListEventOps> _listEventOps, Ptr<IRpcObjectEventOps> _objectEventOps, IRpcSerializer* _serializer);
+
+			reflection::description::Value					InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments)override;
+		};
+
+		class RpcCallerListOps : public Object, public IRpcListOps
+		{
+		private:
+			IRpcObjectOps*									objectOps = nullptr;
+			IRpcSerializer*									serializer = nullptr;
+
+		public:
+			RpcCallerListOps(IRpcObjectOps* _objectOps, IRpcSerializer* _serializer);
+
+			RpcObjectReference								EnumCreate(RpcObjectReference ref)override;
+			bool											EnumNext(RpcObjectReference enumerator)override;
+			reflection::description::Value					EnumGetCurrent(RpcObjectReference enumerator)override;
+
+			vint											ListGetCount(RpcObjectReference ref)override;
+			reflection::description::Value					ListGet(RpcObjectReference ref, vint index)override;
+			void											ListSet(RpcObjectReference ref, vint index, const reflection::description::Value& value)override;
+			vint											ListAdd(RpcObjectReference ref, const reflection::description::Value& value)override;
+			vint											ListInsert(RpcObjectReference ref, vint index, const reflection::description::Value& value)override;
+			bool											ListRemoveAt(RpcObjectReference ref, vint index)override;
+			void											ListClear(RpcObjectReference ref)override;
+			bool											ListContains(RpcObjectReference ref, const reflection::description::Value& value)override;
+			vint											ListIndexOf(RpcObjectReference ref, const reflection::description::Value& value)override;
+
+			vint											DictGetCount(RpcObjectReference ref)override;
+			reflection::description::Value					DictGet(RpcObjectReference ref, const reflection::description::Value& key)override;
+			void											DictSet(RpcObjectReference ref, const reflection::description::Value& key, const reflection::description::Value& value)override;
+			bool											DictRemove(RpcObjectReference ref, const reflection::description::Value& key)override;
+			void											DictClear(RpcObjectReference ref)override;
+			bool											DictContainsKey(RpcObjectReference ref, const reflection::description::Value& key)override;
+			RpcObjectReference								DictGetKeys(RpcObjectReference ref)override;
+			RpcObjectReference								DictGetValues(RpcObjectReference ref)override;
+		};
+
+		class RpcCallerListEventOps : public Object, public IRpcListEventOps
+		{
+		private:
+			IRpcObjectEventOps*								objectEventOps = nullptr;
+			IRpcSerializer*									serializer = nullptr;
+
+		public:
+			RpcCallerListEventOps(IRpcObjectEventOps* _objectEventOps, IRpcSerializer* _serializer);
 
 			reflection::description::Value					OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override;
 		};

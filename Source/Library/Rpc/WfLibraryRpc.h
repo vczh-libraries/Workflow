@@ -63,6 +63,29 @@ namespace vl
 		inline constexpr vint				RpcTypeId_IValueDictionary = -6;
 		inline constexpr vint				RpcTypeId_IValueReadonlyList = -7;
 
+		inline constexpr vint				RpcMethodId_IValueEnumerable_CreateEnumerator = -1;
+		inline constexpr vint				RpcMethodId_IValueEnumerator_Next = -2;
+		inline constexpr vint				RpcMethodId_IValueEnumerator_GetCurrent = -3;
+		inline constexpr vint				RpcMethodId_IValueReadonlyList_GetCount = -4;
+		inline constexpr vint				RpcMethodId_IValueReadonlyList_Get = -5;
+		inline constexpr vint				RpcMethodId_IValueList_Set = -6;
+		inline constexpr vint				RpcMethodId_IValueList_Add = -7;
+		inline constexpr vint				RpcMethodId_IValueList_Insert = -8;
+		inline constexpr vint				RpcMethodId_IValueList_RemoveAt = -9;
+		inline constexpr vint				RpcMethodId_IValueList_Clear = -10;
+		inline constexpr vint				RpcMethodId_IValueReadonlyList_Contains = -11;
+		inline constexpr vint				RpcMethodId_IValueReadonlyList_IndexOf = -12;
+		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_GetCount = -13;
+		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_Get = -14;
+		inline constexpr vint				RpcMethodId_IValueDictionary_Set = -15;
+		inline constexpr vint				RpcMethodId_IValueDictionary_Remove = -16;
+		inline constexpr vint				RpcMethodId_IValueDictionary_Clear = -17;
+		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_ContainsKey = -18;
+		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_GetKeys = -19;
+		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_GetValues = -20;
+
+		inline constexpr vint				RpcEventId_IValueObservableList_ItemChanged = -1;
+
 /***********************************************************************
 * Interfaces (Operations)
 ***********************************************************************/

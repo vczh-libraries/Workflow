@@ -3,6 +3,7 @@
 #endif
 
 #include "RpcDualJsonDispatcherMock.h"
+#include "../../Source/Library/Rpc/WfLibraryRpcWrappers.h"
 
 namespace vl
 {
@@ -51,50 +52,6 @@ namespace vl
 #endif
 			}
 
-			template<typename TInterface, typename TMock>
-			TInterface* WrapOps(
-				RpcDualJsonDispatcherMock* dispatcher,
-				TInterface* ops,
-				TInterface* ops1,
-				TInterface* ops2,
-				Ptr<TInterface>& opsPtr1,
-				Ptr<TInterface>& opsPtr2)
-			{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::WrapOps(...)#"
-				CHECK_ERROR(ops == ops1 || ops == ops2, ERROR_MESSAGE_PREFIX L"Unexpected RPC ops.");
-				auto& opsPtr = ops == ops1 ? opsPtr1 : opsPtr2;
-				if (!opsPtr)
-				{
-					opsPtr = Ptr(new TMock(dispatcher, ops));
-				}
-				return opsPtr.Obj();
-#undef ERROR_MESSAGE_PREFIX
-			}
-
-			class RpcJsonListEventOpsMock : public Object, public IRpcListEventOps
-			{
-			private:
-				RpcDualJsonDispatcherMock*					dispatcher = nullptr;
-				IRpcListEventOps*							ops = nullptr;
-
-			public:
-				RpcJsonListEventOpsMock(RpcDualJsonDispatcherMock* _dispatcher, IRpcListEventOps* _ops)
-					: dispatcher(_dispatcher)
-					, ops(_ops)
-				{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcJsonListEventOpsMock::RpcJsonListEventOpsMock(...)#"
-					CHECK_ERROR(dispatcher && ops, ERROR_MESSAGE_PREFIX L"Dispatcher and ops are required.");
-#undef ERROR_MESSAGE_PREFIX
-				}
-
-				Value OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override
-				{
-					auto value = ops->OnItemChanged(ref, index, oldCount, newCount);
-					dispatcher->RecordJsonValue(value);
-					return value;
-				}
-			};
-
 			class RpcJsonObjectEventOpsMock : public Object, public IRpcObjectEventOps
 			{
 			private:
@@ -117,139 +74,6 @@ namespace vl
 					auto value = ops->InvokeEvent(ref, eventId, arguments);
 					dispatcher->RecordJsonValue(value);
 					return value;
-				}
-			};
-
-			class RpcJsonListOpsMock : public Object, public IRpcListOps
-			{
-			private:
-				RpcDualJsonDispatcherMock*					dispatcher = nullptr;
-				IRpcListOps*								ops = nullptr;
-
-			public:
-				RpcJsonListOpsMock(RpcDualJsonDispatcherMock* _dispatcher, IRpcListOps* _ops)
-					: dispatcher(_dispatcher)
-					, ops(_ops)
-				{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcJsonListOpsMock::RpcJsonListOpsMock(...)#"
-					CHECK_ERROR(dispatcher && ops, ERROR_MESSAGE_PREFIX L"Dispatcher and ops are required.");
-#undef ERROR_MESSAGE_PREFIX
-				}
-
-				RpcObjectReference EnumCreate(RpcObjectReference ref)override
-				{
-					return ops->EnumCreate(ref);
-				}
-
-				bool EnumNext(RpcObjectReference enumerator)override
-				{
-					return ops->EnumNext(enumerator);
-				}
-
-				Value EnumGetCurrent(RpcObjectReference enumerator)override
-				{
-					auto value = ops->EnumGetCurrent(enumerator);
-					dispatcher->RecordJsonValue(value);
-					return value;
-				}
-
-				vint ListGetCount(RpcObjectReference ref)override
-				{
-					return ops->ListGetCount(ref);
-				}
-
-				Value ListGet(RpcObjectReference ref, vint index)override
-				{
-					auto value = ops->ListGet(ref, index);
-					dispatcher->RecordJsonValue(value);
-					return value;
-				}
-
-				void ListSet(RpcObjectReference ref, vint index, const Value& value)override
-				{
-					dispatcher->RecordJsonValue(value);
-					ops->ListSet(ref, index, value);
-				}
-
-				vint ListAdd(RpcObjectReference ref, const Value& value)override
-				{
-					dispatcher->RecordJsonValue(value);
-					return ops->ListAdd(ref, value);
-				}
-
-				vint ListInsert(RpcObjectReference ref, vint index, const Value& value)override
-				{
-					dispatcher->RecordJsonValue(value);
-					return ops->ListInsert(ref, index, value);
-				}
-
-				bool ListRemoveAt(RpcObjectReference ref, vint index)override
-				{
-					return ops->ListRemoveAt(ref, index);
-				}
-
-				void ListClear(RpcObjectReference ref)override
-				{
-					ops->ListClear(ref);
-				}
-
-				bool ListContains(RpcObjectReference ref, const Value& value)override
-				{
-					dispatcher->RecordJsonValue(value);
-					return ops->ListContains(ref, value);
-				}
-
-				vint ListIndexOf(RpcObjectReference ref, const Value& value)override
-				{
-					dispatcher->RecordJsonValue(value);
-					return ops->ListIndexOf(ref, value);
-				}
-
-				vint DictGetCount(RpcObjectReference ref)override
-				{
-					return ops->DictGetCount(ref);
-				}
-
-				Value DictGet(RpcObjectReference ref, const Value& key)override
-				{
-					dispatcher->RecordJsonValue(key);
-					auto value = ops->DictGet(ref, key);
-					dispatcher->RecordJsonValue(value);
-					return value;
-				}
-
-				void DictSet(RpcObjectReference ref, const Value& key, const Value& value)override
-				{
-					dispatcher->RecordJsonValue(key);
-					dispatcher->RecordJsonValue(value);
-					ops->DictSet(ref, key, value);
-				}
-
-				bool DictRemove(RpcObjectReference ref, const Value& key)override
-				{
-					dispatcher->RecordJsonValue(key);
-					return ops->DictRemove(ref, key);
-				}
-
-				void DictClear(RpcObjectReference ref)override
-				{
-					ops->DictClear(ref);
-				}
-
-				bool DictContainsKey(RpcObjectReference ref, const Value& key)override
-				{
-					dispatcher->RecordJsonValue(key);
-					return ops->DictContainsKey(ref, key);
-				}
-
-				RpcObjectReference DictGetKeys(RpcObjectReference ref)override
-				{
-					return ops->DictGetKeys(ref);
-				}
-
-				RpcObjectReference DictGetValues(RpcObjectReference ref)override
-				{
-					return ops->DictGetValues(ref);
 				}
 			};
 
@@ -372,15 +196,26 @@ namespace vl
 
 		IRpcListEventOps* RpcDualJsonDispatcherMock::BroadcastFromClient_ListEventOps(vint selfClientId)
 		{
-			auto ops = RpcDualDispatcherMockBase::BroadcastFromClient_ListEventOps(selfClientId);
-			return WrapOps<IRpcListEventOps, RpcJsonListEventOpsMock>(
-				this,
-				ops,
-				lifecycle1->GetController()->GetListEventOps(),
-				lifecycle2->GetController()->GetListEventOps(),
-				listEventOps1,
-				listEventOps2
-				);
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonDispatcherMock::BroadcastFromClient_ListEventOps(vint)#"
+			Ptr<IRpcListEventOps>* opsPtr = nullptr;
+			IRpcSerializer* serializer = nullptr;
+			if (lifecycle1 && lifecycle1->GetClientId() == selfClientId)
+			{
+				opsPtr = &listEventOps1;
+				serializer = lifecycle1->GetSerializer();
+			}
+			if (lifecycle2 && lifecycle2->GetClientId() == selfClientId)
+			{
+				opsPtr = &listEventOps2;
+				serializer = lifecycle2->GetSerializer();
+			}
+			CHECK_ERROR(opsPtr, ERROR_MESSAGE_PREFIX L"Unknown client id.");
+			if (!*opsPtr)
+			{
+				*opsPtr = Ptr(new RpcCallerListEventOps(BroadcastFromClient_ObjectEventOps(selfClientId), serializer));
+			}
+			return opsPtr->Obj();
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 		IRpcObjectEventOps* RpcDualJsonDispatcherMock::BroadcastFromClient_ObjectEventOps(vint selfClientId)
@@ -401,28 +236,42 @@ namespace vl
 
 		IRpcListOps* RpcDualJsonDispatcherMock::SendToClient_ListOps(vint targetClientId)
 		{
-			auto ops = RpcDualDispatcherMockBase::SendToClient_ListOps(targetClientId);
-			return WrapOps<IRpcListOps, RpcJsonListOpsMock>(
-				this,
-				ops,
-				lifecycle1->GetController()->GetListOps(),
-				lifecycle2->GetController()->GetListOps(),
-				listOps1,
-				listOps2
-				);
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonDispatcherMock::SendToClient_ListOps(vint)#"
+			Ptr<IRpcListOps>* opsPtr = nullptr;
+			IRpcSerializer* serializer = nullptr;
+			if (lifecycle1 && lifecycle1->GetClientId() == targetClientId)
+			{
+				opsPtr = &listOps1;
+				serializer = lifecycle1->GetSerializer();
+			}
+			if (lifecycle2 && lifecycle2->GetClientId() == targetClientId)
+			{
+				opsPtr = &listOps2;
+				serializer = lifecycle2->GetSerializer();
+			}
+			CHECK_ERROR(opsPtr, ERROR_MESSAGE_PREFIX L"Unknown client id.");
+			if (!*opsPtr)
+			{
+				*opsPtr = Ptr(new RpcCallerListOps(SendToClient_ObjectOps(targetClientId), serializer));
+			}
+			return opsPtr->Obj();
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 		IRpcObjectOps* RpcDualJsonDispatcherMock::SendToClient_ObjectOps(vint targetClientId)
 		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonDispatcherMock::SendToClient_ObjectOps(vint)#"
 			auto ops = RpcDualDispatcherMockBase::SendToClient_ObjectOps(targetClientId);
-			return WrapOps<IRpcObjectOps, RpcJsonObjectOpsMock>(
-				this,
-				ops,
-				lifecycle1->GetController()->GetObjectOps(),
-				lifecycle2->GetController()->GetObjectOps(),
-				objectOps1,
-				objectOps2
-				);
+			Ptr<IRpcObjectOps>* opsPtr = nullptr;
+			if (lifecycle1 && lifecycle1->GetClientId() == targetClientId) opsPtr = &objectOps1;
+			if (lifecycle2 && lifecycle2->GetClientId() == targetClientId) opsPtr = &objectOps2;
+			CHECK_ERROR(opsPtr, ERROR_MESSAGE_PREFIX L"Unknown client id.");
+			if (!*opsPtr)
+			{
+				*opsPtr = Ptr(new RpcJsonObjectOpsMock(this, ops));
+			}
+			return opsPtr->Obj();
+#undef ERROR_MESSAGE_PREFIX
 		}
 	}
 }
