@@ -71,30 +71,6 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 			}
 
-			class RpcJsonListEventOpsMock : public Object, public IRpcListEventOps
-			{
-			private:
-				RpcDualJsonDispatcherMock*					dispatcher = nullptr;
-				IRpcListEventOps*							ops = nullptr;
-
-			public:
-				RpcJsonListEventOpsMock(RpcDualJsonDispatcherMock* _dispatcher, IRpcListEventOps* _ops)
-					: dispatcher(_dispatcher)
-					, ops(_ops)
-				{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcJsonListEventOpsMock::RpcJsonListEventOpsMock(...)#"
-					CHECK_ERROR(dispatcher && ops, ERROR_MESSAGE_PREFIX L"Dispatcher and ops are required.");
-#undef ERROR_MESSAGE_PREFIX
-				}
-
-				Value OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)override
-				{
-					auto value = ops->OnItemChanged(ref, index, oldCount, newCount);
-					dispatcher->RecordJsonValue(value);
-					return value;
-				}
-			};
-
 			class RpcJsonObjectEventOpsMock : public Object, public IRpcObjectEventOps
 			{
 			private:
@@ -117,139 +93,6 @@ namespace vl
 					auto value = ops->InvokeEvent(ref, eventId, arguments);
 					dispatcher->RecordJsonValue(value);
 					return value;
-				}
-			};
-
-			class RpcJsonListOpsMock : public Object, public IRpcListOps
-			{
-			private:
-				RpcDualJsonDispatcherMock*					dispatcher = nullptr;
-				IRpcListOps*								ops = nullptr;
-
-			public:
-				RpcJsonListOpsMock(RpcDualJsonDispatcherMock* _dispatcher, IRpcListOps* _ops)
-					: dispatcher(_dispatcher)
-					, ops(_ops)
-				{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcJsonListOpsMock::RpcJsonListOpsMock(...)#"
-					CHECK_ERROR(dispatcher && ops, ERROR_MESSAGE_PREFIX L"Dispatcher and ops are required.");
-#undef ERROR_MESSAGE_PREFIX
-				}
-
-				RpcObjectReference EnumCreate(RpcObjectReference ref)override
-				{
-					return ops->EnumCreate(ref);
-				}
-
-				bool EnumNext(RpcObjectReference enumerator)override
-				{
-					return ops->EnumNext(enumerator);
-				}
-
-				Value EnumGetCurrent(RpcObjectReference enumerator)override
-				{
-					auto value = ops->EnumGetCurrent(enumerator);
-					dispatcher->RecordJsonValue(value);
-					return value;
-				}
-
-				vint ListGetCount(RpcObjectReference ref)override
-				{
-					return ops->ListGetCount(ref);
-				}
-
-				Value ListGet(RpcObjectReference ref, vint index)override
-				{
-					auto value = ops->ListGet(ref, index);
-					dispatcher->RecordJsonValue(value);
-					return value;
-				}
-
-				void ListSet(RpcObjectReference ref, vint index, const Value& value)override
-				{
-					dispatcher->RecordJsonValue(value);
-					ops->ListSet(ref, index, value);
-				}
-
-				vint ListAdd(RpcObjectReference ref, const Value& value)override
-				{
-					dispatcher->RecordJsonValue(value);
-					return ops->ListAdd(ref, value);
-				}
-
-				vint ListInsert(RpcObjectReference ref, vint index, const Value& value)override
-				{
-					dispatcher->RecordJsonValue(value);
-					return ops->ListInsert(ref, index, value);
-				}
-
-				bool ListRemoveAt(RpcObjectReference ref, vint index)override
-				{
-					return ops->ListRemoveAt(ref, index);
-				}
-
-				void ListClear(RpcObjectReference ref)override
-				{
-					ops->ListClear(ref);
-				}
-
-				bool ListContains(RpcObjectReference ref, const Value& value)override
-				{
-					dispatcher->RecordJsonValue(value);
-					return ops->ListContains(ref, value);
-				}
-
-				vint ListIndexOf(RpcObjectReference ref, const Value& value)override
-				{
-					dispatcher->RecordJsonValue(value);
-					return ops->ListIndexOf(ref, value);
-				}
-
-				vint DictGetCount(RpcObjectReference ref)override
-				{
-					return ops->DictGetCount(ref);
-				}
-
-				Value DictGet(RpcObjectReference ref, const Value& key)override
-				{
-					dispatcher->RecordJsonValue(key);
-					auto value = ops->DictGet(ref, key);
-					dispatcher->RecordJsonValue(value);
-					return value;
-				}
-
-				void DictSet(RpcObjectReference ref, const Value& key, const Value& value)override
-				{
-					dispatcher->RecordJsonValue(key);
-					dispatcher->RecordJsonValue(value);
-					ops->DictSet(ref, key, value);
-				}
-
-				bool DictRemove(RpcObjectReference ref, const Value& key)override
-				{
-					dispatcher->RecordJsonValue(key);
-					return ops->DictRemove(ref, key);
-				}
-
-				void DictClear(RpcObjectReference ref)override
-				{
-					ops->DictClear(ref);
-				}
-
-				bool DictContainsKey(RpcObjectReference ref, const Value& key)override
-				{
-					dispatcher->RecordJsonValue(key);
-					return ops->DictContainsKey(ref, key);
-				}
-
-				RpcObjectReference DictGetKeys(RpcObjectReference ref)override
-				{
-					return ops->DictGetKeys(ref);
-				}
-
-				RpcObjectReference DictGetValues(RpcObjectReference ref)override
-				{
-					return ops->DictGetValues(ref);
 				}
 			};
 
@@ -372,15 +215,13 @@ namespace vl
 
 		IRpcListEventOps* RpcDualJsonDispatcherMock::BroadcastFromClient_ListEventOps(vint selfClientId)
 		{
-			auto ops = RpcDualDispatcherMockBase::BroadcastFromClient_ListEventOps(selfClientId);
-			return WrapOps<IRpcListEventOps, RpcJsonListEventOpsMock>(
-				this,
-				ops,
-				lifecycle1->GetController()->GetListEventOps(),
-				lifecycle2->GetController()->GetListEventOps(),
-				listEventOps1,
-				listEventOps2
-				);
+			auto target = GetLifecycle(selfClientId);
+			auto& opsPtr = target == lifecycle1 ? listEventOps1 : listEventOps2;
+			if (!opsPtr)
+			{
+				opsPtr = Ptr(new RpcCallerListEventOps(BroadcastFromClient_ObjectEventOps(selfClientId), target->GetSerializer()));
+			}
+			return opsPtr.Obj();
 		}
 
 		IRpcObjectEventOps* RpcDualJsonDispatcherMock::BroadcastFromClient_ObjectEventOps(vint selfClientId)
@@ -401,15 +242,13 @@ namespace vl
 
 		IRpcListOps* RpcDualJsonDispatcherMock::SendToClient_ListOps(vint targetClientId)
 		{
-			auto ops = RpcDualDispatcherMockBase::SendToClient_ListOps(targetClientId);
-			return WrapOps<IRpcListOps, RpcJsonListOpsMock>(
-				this,
-				ops,
-				lifecycle1->GetController()->GetListOps(),
-				lifecycle2->GetController()->GetListOps(),
-				listOps1,
-				listOps2
-				);
+			auto target = GetLifecycle(targetClientId);
+			auto& opsPtr = target == lifecycle1 ? listOps1 : listOps2;
+			if (!opsPtr)
+			{
+				opsPtr = Ptr(new RpcCallerListOps(target, SendToClient_ObjectOps(targetClientId), target->GetSerializer()));
+			}
+			return opsPtr.Obj();
 		}
 
 		IRpcObjectOps* RpcDualJsonDispatcherMock::SendToClient_ObjectOps(vint targetClientId)

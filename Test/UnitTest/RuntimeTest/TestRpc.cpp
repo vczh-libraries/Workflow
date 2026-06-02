@@ -177,12 +177,6 @@ TEST_FILE
 					lc1->SetIdMapWithReflection(idMap);
 					lc2->SetIdMapWithReflection(idMap);
 
-					// Create list ops default implementations
-					auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj(), nullptr));
-					auto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj(), nullptr));
-					auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj(), nullptr));
-					auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj(), nullptr));
-
 					// Create object ops implementations from the assembly
 					auto createObjectOps = LoadFunction<Ptr<IRpcObjectOps>(IRpcLifecycle*)>(globalContext, L"rpcops_IRpcObjectOps");
 					auto createEventOps = LoadFunction<Ptr<IRpcObjectEventOps>(IRpcLifecycle*)>(globalContext, L"rpcops_IRpcObjectEventOps");
@@ -191,8 +185,22 @@ TEST_FILE
 					auto oo2 = createObjectOps(lc2.Obj());
 					auto oeo2 = createEventOps(lc2.Obj());
 
-					lc1->GetController()->Register(oo1, oeo1, lo1, leo1);
-					lc2->GetController()->Register(oo2, oeo2, lo2, leo2);
+					// Keep list-specific operations forwarded through the object path.
+					auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj(), nullptr));
+					auto leo1 = Ptr(new RpcCalleeListEventOps(lc1.Obj(), nullptr));
+					auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj(), nullptr));
+					auto leo2 = Ptr(new RpcCalleeListEventOps(lc2.Obj(), nullptr));
+
+					lc1->GetController()->Register(
+						Ptr(new RpcCalleeObjectOpsForList(oo1, lo1)),
+						Ptr(new RpcCalleeObjectEventOpsForList(oeo1, leo1)),
+						lo1,
+						leo1);
+					lc2->GetController()->Register(
+						Ptr(new RpcCalleeObjectOpsForList(oo2, lo2)),
+						Ptr(new RpcCalleeObjectEventOpsForList(oeo2, leo2)),
+						lo2,
+						leo2);
 					RpcDualDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
 
 					// Run serviceMain with lc1

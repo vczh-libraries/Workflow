@@ -65,9 +65,9 @@ namespace vl
 			auto ops2 = instance.rpcops_IOps_CreateJson(lc2.Obj());
 
 			auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj(), lc1->GetSerializer()));
-			auto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj(), lc1->GetSerializer()));
+			auto leo1 = Ptr(new RpcCalleeListEventOps(lc1.Obj(), lc1->GetSerializer()));
 			auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj(), lc2->GetSerializer()));
-			auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj(), lc2->GetSerializer()));
+			auto leo2 = Ptr(new RpcCalleeListEventOps(lc2.Obj(), lc2->GetSerializer()));
 
 			if constexpr (HasEvent)
 			{
@@ -81,8 +81,8 @@ namespace vl
 				});
 			}
 
-			lc1->GetController()->Register(oo1, oeo1, lo1, leo1);
-			lc2->GetController()->Register(oo2, oeo2, lo2, leo2);
+			lc1->GetController()->Register(Ptr(new RpcCalleeObjectOpsForList(oo1, lo1)), Ptr(new RpcCalleeObjectEventOpsForList(oeo1, leo1)), lo1, leo1);
+			lc2->GetController()->Register(Ptr(new RpcCalleeObjectOpsForList(oo2, lo2)), Ptr(new RpcCalleeObjectEventOpsForList(oeo2, leo2)), lo2, leo2);
 
 			RpcDualJsonDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
 			lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops1); });
@@ -124,9 +124,9 @@ namespace vl
 			auto ops2 = instance.rpcops_IOps_Create(lc2.Obj());
 
 			auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj(), lc1->GetSerializer()));
-			auto leo1 = Ptr(new RpcCalleeListEventBridge(lc1.Obj(), lc1->GetSerializer()));
+			auto leo1 = Ptr(new RpcCalleeListEventOps(lc1.Obj(), lc1->GetSerializer()));
 			auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj(), lc2->GetSerializer()));
-			auto leo2 = Ptr(new RpcCalleeListEventBridge(lc2.Obj(), lc2->GetSerializer()));
+			auto leo2 = Ptr(new RpcCalleeListEventOps(lc2.Obj(), lc2->GetSerializer()));
 
 			if constexpr (HasEvent)
 			{
@@ -140,8 +140,8 @@ namespace vl
 				});
 			}
 
-			lc1->GetController()->Register(oo1, oeo1, lo1, leo1);
-			lc2->GetController()->Register(oo2, oeo2, lo2, leo2);
+			lc1->GetController()->Register(Ptr(new RpcCalleeObjectOpsForList(oo1, lo1)), Ptr(new RpcCalleeObjectEventOpsForList(oeo1, leo1)), lo1, leo1);
+			lc2->GetController()->Register(Ptr(new RpcCalleeObjectOpsForList(oo2, lo2)), Ptr(new RpcCalleeObjectEventOpsForList(oeo2, leo2)), lo2, leo2);
 
 			RpcDualDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
 			lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops1); });

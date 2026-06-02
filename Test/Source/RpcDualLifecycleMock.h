@@ -2,6 +2,7 @@
 #define VCZH_WORKFLOW_TEST_RPC_DUAL_LIFECYCLE_MOCK
 
 #include "../../Source/Library/Rpc/WfLibraryRpcLifecycle.h"
+#include "../../Source/Library/Rpc/WfLibraryRpcWrappers.h"
 
 namespace vl
 {
@@ -20,8 +21,10 @@ namespace vl
 			Ptr<rpc_controller::IRpcObjectEventOps>									objectEventBroadcastOps2;
 			collections::Dictionary<vint, rpc_controller::RpcObjectReference>		services;
 
-			RpcDualLifecycleMock*													GetLifecycle(vint clientId)const;
-			RpcDualLifecycleMock*													GetOtherLifecycle(vint clientId)const;
+		protected:
+			RpcDualLifecycleMock*                                                    GetLifecycle(vint clientId)const;
+			RpcDualLifecycleMock*                                                    GetOtherLifecycle(vint clientId)const;
+
 		public:
 			RpcDualDispatcherMockBase(RpcDualLifecycleMock* lc1, RpcDualLifecycleMock* lc2);
 			~RpcDualDispatcherMockBase();

@@ -90,9 +90,52 @@ namespace vl
 				return serializer ? serializer->Serialize(value) : value;
 			}
 
+			template<typename... TArgs>
+			List<Value> MakeValueList(const TArgs&... args)
+			{
+				List<Value> arguments;
+				(arguments.Add(args), ...);
+				return arguments;
+			}
+
 			Value DeserializeValue(IRpcSerializer* serializer, const Value& value)
 			{
 				return serializer ? serializer->Deserialize(value) : value;
+			}
+
+			Value InvokeObjectMethod(IRpcObjectOps* objectOps, RpcObjectReference ref, vint methodId, const List<Value>& arguments)
+			{
+				CHECK_ERROR(objectOps, L"IRpcObjectOps cannot be null.");
+				auto valueArray = IValueArray::Create();
+				valueArray->Resize(arguments.Count());
+				for (vint i = 0; i < arguments.Count(); i++)
+				{
+					valueArray->Set(i, arguments[i]);
+				}
+
+				auto value = objectOps->InvokeMethod(ref, methodId, valueArray);
+				ReadMethodException(value);
+				if (auto byvalReturnValue = value.GetSharedPtr().Cast<RpcByvalReturnValue>())
+				{
+					objectOps->EndInvokeMethod(byvalReturnValue->slot);
+					return byvalReturnValue->value;
+				}
+				return value;
+			}
+
+			Value InvokeObjectEvent(IRpcObjectEventOps* objectEventOps, RpcObjectReference ref, vint eventId, const List<Value>& arguments)
+			{
+				CHECK_ERROR(objectEventOps, L"IRpcObjectEventOps cannot be null.");
+				auto valueArray = IValueArray::Create();
+				valueArray->Resize(arguments.Count());
+				for (vint i = 0; i < arguments.Count(); i++)
+				{
+					valueArray->Set(i, arguments[i]);
+				}
+
+				auto value = objectEventOps->InvokeEvent(ref, eventId, valueArray);
+				ReadEventException(UnboxRpcEventExceptionMap(value));
+				return value;
 			}
 
 			extern Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc);
@@ -707,24 +750,141 @@ namespace vl
 			CHECK_ERROR(dict, L"RpcCalleeListOps::DictGetValues cannot find the target dictionary.");
 			return lifecycle->PtrToRef(dict->GetValues());
 		}
-		
-/***********************************************************************
-* RpcCalleeListEventBridge
-***********************************************************************/
 
-		RpcCalleeListEventBridge::RpcCalleeListEventBridge(IRpcLifecycle* lc, IRpcSerializer* _serializer)
+		RpcCallerListOps::RpcCallerListOps(IRpcLifecycle* lc, IRpcObjectOps* ops, IRpcSerializer* _serializer)
+			: lifecycle(lc)
+			, serializer(_serializer)
+			, objectOps(ops)
+		{
+			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
+			CHECK_ERROR(objectOps, L"IRpcObjectOps cannot be null.");
+		}
+
+		RpcObjectReference RpcCallerListOps::EnumCreate(RpcObjectReference ref)
+		{
+			return GetRpcObjectReference(InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueEnumerable_EnumCreate, MakeValueList()));
+		}
+
+		bool RpcCallerListOps::EnumNext(RpcObjectReference enumerator)
+		{
+			return UnboxValue<bool>(InvokeObjectMethod(objectOps, enumerator, RpcMethodId_IValueEnumerable_EnumNext, MakeValueList()));
+		}
+
+		Value RpcCallerListOps::EnumGetCurrent(RpcObjectReference enumerator)
+		{
+			return InvokeObjectMethod(objectOps, enumerator, RpcMethodId_IValueEnumerable_EnumGetCurrent, MakeValueList());
+		}
+
+		vint RpcCallerListOps::ListGetCount(RpcObjectReference ref)
+		{
+			return UnboxValue<vint>(InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueReadonlyList_ListGetCount, MakeValueList()));
+		}
+
+		Value RpcCallerListOps::ListGet(RpcObjectReference ref, vint index)
+		{
+			return InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueReadonlyList_ListGet, MakeValueList(BoxValue(index)));
+		}
+
+		void RpcCallerListOps::ListSet(RpcObjectReference ref, vint index, const Value& value)
+		{
+			InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueList_ListSet, MakeValueList(BoxValue(index), SerializeValue(serializer, RpcBoxValueByref(value, lifecycle))));
+		}
+
+		vint RpcCallerListOps::ListAdd(RpcObjectReference ref, const Value& value)
+		{
+			return UnboxValue<vint>(InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueList_ListAdd, MakeValueList(SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)))));
+		}
+
+		vint RpcCallerListOps::ListInsert(RpcObjectReference ref, vint index, const Value& value)
+		{
+			return UnboxValue<vint>(InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueList_ListInsert, MakeValueList(BoxValue(index), SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)))));
+		}
+
+		bool RpcCallerListOps::ListRemoveAt(RpcObjectReference ref, vint index)
+		{
+			return UnboxValue<bool>(InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueList_ListRemoveAt, MakeValueList(BoxValue(index))));
+		}
+
+		void RpcCallerListOps::ListClear(RpcObjectReference ref)
+		{
+			InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueList_ListClear, MakeValueList());
+		}
+
+		bool RpcCallerListOps::ListContains(RpcObjectReference ref, const Value& value)
+		{
+			return UnboxValue<bool>(InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueReadonlyList_ListContains, MakeValueList(SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)))));
+		}
+
+		vint RpcCallerListOps::ListIndexOf(RpcObjectReference ref, const Value& value)
+		{
+			return UnboxValue<vint>(InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueReadonlyList_ListIndexOf, MakeValueList(SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)))));
+		}
+
+		vint RpcCallerListOps::DictGetCount(RpcObjectReference ref)
+		{
+			return UnboxValue<vint>(InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueReadonlyDictionary_DictGetCount, MakeValueList()));
+		}
+
+		Value RpcCallerListOps::DictGet(RpcObjectReference ref, const Value& key)
+		{
+			return InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueReadonlyDictionary_DictGet, MakeValueList(SerializeValue(serializer, RpcBoxValueByref(key, lifecycle))));
+		}
+
+		void RpcCallerListOps::DictSet(RpcObjectReference ref, const Value& key, const Value& value)
+		{
+			InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueDictionary_DictSet, MakeValueList(SerializeValue(serializer, RpcBoxValueByref(key, lifecycle)), SerializeValue(serializer, RpcBoxValueByref(value, lifecycle))));
+		}
+
+		bool RpcCallerListOps::DictRemove(RpcObjectReference ref, const Value& key)
+		{
+			return UnboxValue<bool>(InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueDictionary_DictRemove, MakeValueList(SerializeValue(serializer, RpcBoxValueByref(key, lifecycle)))));
+		}
+
+		void RpcCallerListOps::DictClear(RpcObjectReference ref)
+		{
+			InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueDictionary_DictClear, MakeValueList());
+		}
+
+		bool RpcCallerListOps::DictContainsKey(RpcObjectReference ref, const Value& key)
+		{
+			return UnboxValue<bool>(InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueReadonlyDictionary_DictContainsKey, MakeValueList(SerializeValue(serializer, RpcBoxValueByref(key, lifecycle)))));
+		}
+
+		RpcObjectReference RpcCallerListOps::DictGetKeys(RpcObjectReference ref)
+		{
+			return GetRpcObjectReference(InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueReadonlyDictionary_DictGetKeys, MakeValueList()));
+		}
+
+		RpcObjectReference RpcCallerListOps::DictGetValues(RpcObjectReference ref)
+		{
+			return GetRpcObjectReference(InvokeObjectMethod(objectOps, ref, RpcMethodId_IValueReadonlyDictionary_DictGetValues, MakeValueList()));
+		}
+
+		RpcCallerListEventOps::RpcCallerListEventOps(IRpcObjectEventOps* ops, IRpcSerializer* _serializer)
+			: objectEventOps(ops)
+			, serializer(_serializer)
+		{
+			CHECK_ERROR(objectEventOps, L"IRpcObjectEventOps cannot be null.");
+		}
+
+		Value RpcCallerListEventOps::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
+		{
+			return InvokeObjectEvent(objectEventOps, ref, RpcEventId_IValueObservableList_ItemChanged, MakeValueList(BoxValue(index), BoxValue(oldCount), BoxValue(newCount)));
+		}
+
+		RpcCalleeListEventOps::RpcCalleeListEventOps(IRpcLifecycle* lc, IRpcSerializer* _serializer)
 			: lifecycle(lc)
 			, serializer(_serializer)
 		{
 			if (!lifecycle) CHECK_FAIL(L"Invalid IRpcLifecycle.");
 		}
 
-		Value RpcCalleeListEventBridge::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
+		Value RpcCalleeListEventOps::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
 		{
 			auto controller = lifecycle->GetController();
 			auto obj = lifecycle->RefToPtr(ref);
 			auto observable = Ptr(obj.Obj()->SafeAggregationCast<IValueObservableList>());
-			CHECK_ERROR(observable, L"RpcCalleeListEventBridge::OnItemChanged cannot find the target observable list.");
+			CHECK_ERROR(observable, L"RpcCalleeListEventOps::OnItemChanged cannot find the target observable list.");
 			controller->SetItemChangedSuppressedFlag(ref, true);
 			RpcEventExceptionMap exceptions;
 			try
@@ -743,6 +903,99 @@ namespace vl
 			}
 			controller->SetItemChangedSuppressedFlag(ref, false);
 			return SerializeValue(serializer, BoxRpcEventExceptionMap(exceptions));
+		}
+
+		RpcCalleeObjectOpsForList::RpcCalleeObjectOpsForList(Ptr<IRpcObjectOps> _objectOps, Ptr<RpcCalleeListOps> _listOps)
+			: objectOps(_objectOps)
+			, listOps(_listOps)
+		{
+			CHECK_ERROR(objectOps, L"IRpcObjectOps cannot be null.");
+			CHECK_ERROR(listOps, L"RpcCalleeListOps cannot be null.");
+		}
+
+		Value RpcCalleeObjectOpsForList::InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
+		{
+			switch (methodId)
+			{
+			case RpcMethodId_IValueEnumerable_EnumCreate:
+				return BoxValue(listOps->EnumCreate(ref));
+			case RpcMethodId_IValueEnumerable_EnumNext:
+				return BoxValue(listOps->EnumNext(ref));
+			case RpcMethodId_IValueEnumerable_EnumGetCurrent:
+				return listOps->EnumGetCurrent(ref);
+			case RpcMethodId_IValueReadonlyList_ListGetCount:
+				return BoxValue(listOps->ListGetCount(ref));
+			case RpcMethodId_IValueReadonlyList_ListGet:
+				return listOps->ListGet(ref, UnboxValue<vint>(arguments->Get(0)));
+			case RpcMethodId_IValueList_ListSet:
+				listOps->ListSet(ref, UnboxValue<vint>(arguments->Get(0)), arguments->Get(1));
+				return Value{};
+			case RpcMethodId_IValueList_ListAdd:
+				return BoxValue(listOps->ListAdd(ref, arguments->Get(0)));
+			case RpcMethodId_IValueList_ListInsert:
+				return BoxValue(listOps->ListInsert(ref, UnboxValue<vint>(arguments->Get(0)), arguments->Get(1)));
+			case RpcMethodId_IValueList_ListRemoveAt:
+				return BoxValue(listOps->ListRemoveAt(ref, UnboxValue<vint>(arguments->Get(0))));
+			case RpcMethodId_IValueList_ListClear:
+				listOps->ListClear(ref);
+				return Value{};
+			case RpcMethodId_IValueReadonlyList_ListContains:
+				return BoxValue(listOps->ListContains(ref, arguments->Get(0)));
+			case RpcMethodId_IValueReadonlyList_ListIndexOf:
+				return BoxValue(listOps->ListIndexOf(ref, arguments->Get(0)));
+			case RpcMethodId_IValueReadonlyDictionary_DictGetCount:
+				return BoxValue(listOps->DictGetCount(ref));
+			case RpcMethodId_IValueReadonlyDictionary_DictGet:
+				return listOps->DictGet(ref, arguments->Get(0));
+			case RpcMethodId_IValueDictionary_DictSet:
+				listOps->DictSet(ref, arguments->Get(0), arguments->Get(1));
+				return Value{};
+			case RpcMethodId_IValueDictionary_DictRemove:
+				return BoxValue(listOps->DictRemove(ref, arguments->Get(0)));
+			case RpcMethodId_IValueDictionary_DictClear:
+				listOps->DictClear(ref);
+				return Value{};
+			case RpcMethodId_IValueReadonlyDictionary_DictContainsKey:
+				return BoxValue(listOps->DictContainsKey(ref, arguments->Get(0)));
+			case RpcMethodId_IValueReadonlyDictionary_DictGetKeys:
+				return BoxValue(listOps->DictGetKeys(ref));
+			case RpcMethodId_IValueReadonlyDictionary_DictGetValues:
+				return BoxValue(listOps->DictGetValues(ref));
+			default:
+				return objectOps->InvokeMethod(ref, methodId, arguments);
+			}
+		}
+
+		void RpcCalleeObjectOpsForList::EndInvokeMethod(vint slot)
+		{
+			objectOps->EndInvokeMethod(slot);
+		}
+
+		void RpcCalleeObjectOpsForList::ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)
+		{
+			objectOps->ObjectHold(ref, remoteClientId, hold);
+		}
+
+		void RpcCalleeObjectOpsForList::RegisterService(vint typeId, Ptr<reflection::IDescriptable> service)
+		{
+			objectOps->RegisterService(typeId, service);
+		}
+
+		RpcCalleeObjectEventOpsForList::RpcCalleeObjectEventOpsForList(Ptr<IRpcObjectEventOps> _objectEventOps, Ptr<RpcCalleeListEventOps> _listEventOps)
+			: objectEventOps(_objectEventOps)
+			, listEventOps(_listEventOps)
+		{
+			CHECK_ERROR(objectEventOps, L"IRpcObjectEventOps cannot be null.");
+			CHECK_ERROR(listEventOps, L"RpcCalleeListEventOps cannot be null.");
+		}
+
+		Value RpcCalleeObjectEventOpsForList::InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)
+		{
+			if (eventId == RpcEventId_IValueObservableList_ItemChanged)
+			{
+				return listEventOps->OnItemChanged(ref, UnboxValue<vint>(arguments->Get(0)), UnboxValue<vint>(arguments->Get(1)), UnboxValue<vint>(arguments->Get(2)));
+			}
+			return objectEventOps->InvokeEvent(ref, eventId, arguments);
 		}
 		
 /***********************************************************************
