@@ -19,16 +19,16 @@
 - Redirect list ops to object ops.
   - Review
   - Test case to handle `IRpcListOps` exceptions.
-- Review JSON related constructions until the work is done.
 - JSON schema for rpc interfaces.
   - JSON async dispatcher with JSON channel
   - logging from JSON channel
   - Triple threading demo only for metaonly. Meanwhile no reflection logs JSON values.
   - TeatCasesRpc.h test macros and include different header files.
+- Review JSON related constructions.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
 - Consider how to run a CLI based dual processes demo to test RPC.
 
-## Document
+## Knowledge Base
 
 - RPC
   - use `TODO_RPC_(Definition|Json|GeneratedWrappers).md`
@@ -36,4 +36,3 @@
 - Compiler processing and passes.
 - AST building helper functions.
   - Refactor is needed to scan if some functions in RPC code generation is duplicating those in `WfAnalyzer.h`.
-- Workflow best practices, language features and syntax sugars are invented to keep the code clean, prefer them.
