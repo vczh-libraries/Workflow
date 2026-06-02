@@ -19,7 +19,7 @@
 
 ### Generic
 
-- Compile-time generic type annotation.
+- Compile-time generic type annotation, no runtime type information.
   - C++ Reflection macros for generic type annotation.
     - Apply to collections, tasks, etc.
     - Remove the current generic interface syntax invented for `IAsync`, and change how `await` determines return type.
@@ -27,6 +27,7 @@
     - Add base class `IInvokableMemberInfo` for `IEventInfo`, `IPropertyInfo` and `IMethodInfo`.
     - Move `GetCpp` to `IInvokableMemberInfo`.
     - Add `GetGenericHint` to `IInvokableMemberInfo`.
+    - Fix `IValue*` collection reflections, how to apply `KeyType<T>`?
   - When calling a function:
     - Perform overloading checking with non-generic version.
     - Check argument types with generic version if exists.
@@ -53,6 +54,9 @@
 
 ## Optional
 
+- Object constructor with property assignments:
+  - `new Object { IntProp: 3; ReadonlyList: {1 2 3}; }`
+  - Optimize Workflow RPC JSON Serialization code.
 - Support `<category>name` identifier, make generated code re-parsable.
 - Recognize collection interfaces instead of collection entities.
   - Reconsider how to implement collection creating code in Workflow.
