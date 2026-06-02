@@ -1,5 +1,7 @@
 investigate repro
 
+DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
+
 Since all `IRpcList(Event)?Ops` implementations are redirection of `IRpcObject(Event)?Ops`,
 so there should not be any necessity of invoking `IRpcDispatcher`'s `BroadcastFromClient_ListEventOps` and `SendToClient_ListOps`.
 Delete these two methods from this interface and do all clean ups.
@@ -18,6 +20,6 @@ Delete `CreateRpcEventExceptionMap` as it is just a renaming.
 
 `InvokeListMethod` already calls `ReadMethodResult`, so all RpcCallerListOps methods calling `ReadMethodResult` again is unnecessary, remove them.
 
-Follow `REPO-ROOT/.github/Rules/verify-and-commit.md` to finish the work.
+Follow `REPO-ROOT/.github/Rules/document-and-commit.md` to finish the work.
 The last work of refactoring for letting `IRpcList(Event)?Ops` being redirection of `IRpcObject(Event)?Ops` didn't update the document.
 You are going to read documents and figure out if anything mis-aligned.

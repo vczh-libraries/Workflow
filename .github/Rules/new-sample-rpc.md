@@ -1,4 +1,4 @@
-# Guideline of Adding New Workflow Sample in RPC Category
+# Extra Guidelines of Adding New Workflow Sample in RPC Category
 
 Checkout `new-samples.md` and follow the instructions.
 If the current implemention is correct, the added samples should just pass the test.

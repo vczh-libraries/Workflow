@@ -1,4 +1,4 @@
-# Guideline of Adding New Workflow Sample
+# Guidelines of Adding New Workflow Sample
 
 This instruction focuses on adding `Test\Resources\Codegen\*.txt` and `Test\Resources\Rpc\*.txt`.
 Each sample should have an index in `Test\Resources\Index(Codegen|Rpc).txt`, keeping this file sorted.

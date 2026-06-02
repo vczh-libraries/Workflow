@@ -1,8 +1,5 @@
-# Verifying and Commiting
+# Guidelines of Documentation and Git Commit Maintenance
 
-If `CompilerTest_LoadAndCompiler` succeeded but following test projects fail:
-- You could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
-- Pass all unit test, fix any test failure including pre-existings.
 - After finishing everything, git commit and git push to the current branch. NO NEED TO make a new branch.
 - If in any task you are adding new test sample, or modifying any C++ or Workflow generation code, causing a huge amount of files generated from test samples to change:
   - Three commits are required:
@@ -16,7 +13,6 @@ If `CompilerTest_LoadAndCompiler` succeeded but following test projects fail:
       - `Test\SourceCppGenRpc`
       - `Test\UnitTest\Generated_*`
   - Otherwise, One commit is good.
-- DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
 
 ## RPC Specific
 

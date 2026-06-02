@@ -17,6 +17,13 @@ always fix the root cause.
 Files in `REPO-ROOT/Import` and `REPO-ROOT/Release` (recursively) are also not allowed to modify.
 These files are prepared for foreign dependencies.
 
+## Repo Specific Guidelines of Coding
+
+In `REPO-ROOT/.github/Rules`:
+- `new-sample.md`: Guidelines of Adding New Workflow Sample
+- `new-sample-rpc.md`: Extra Guidelines of Adding New Workflow Sample in RPC Category
+- `document-and-commit.md`: Guidelines of Documentation and Git Commit Maintenance
+
 ## Projects for Verification
 
 Here is a list of unit test projects in `REPO-ROOT/Test/UnitTest/{NAME}/{NAME}.vcxproj` folder, you are required to run all of them:
@@ -116,6 +123,9 @@ The `Printed` section logs desugar-ed workflow script input.
 
 When a test project fails, you are strongly recommended to restart it with a debugger.
 Except that when you are able to see Workflow compile errors in `Test/Generated/Workflow(32|64)/Parsing.CATEGORY.SAMPLE.txt`, you can skip the debugging if you don't need it.
+If `CompilerTest_LoadAndCompiler` succeeded but subsequent test projects fail:
+- You could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
+- Pass all unit test, fix any test failure including pre-existings.
 
 ### Code Generation Tools
 
