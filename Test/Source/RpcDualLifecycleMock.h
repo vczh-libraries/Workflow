@@ -16,8 +16,6 @@ namespace vl
 		private:
 			RpcDualLifecycleMock*													lifecycle1 = nullptr;
 			RpcDualLifecycleMock*													lifecycle2 = nullptr;
-			Ptr<rpc_controller::IRpcObjectEventOps>									objectEventBroadcastOps1;
-			Ptr<rpc_controller::IRpcObjectEventOps>									objectEventBroadcastOps2;
 			collections::Dictionary<vint, rpc_controller::RpcObjectReference>		services;
 
 			RpcDualLifecycleMock*													GetLifecycle(vint clientId)const;
@@ -36,19 +34,8 @@ namespace vl
 
 		class RpcDualDispatcherMock : public RpcDualDispatcherMockBase
 		{
-		private:
-			RpcDualLifecycleMock*													lifecycle1 = nullptr;
-			RpcDualLifecycleMock*													lifecycle2 = nullptr;
-			Ptr<rpc_controller::IRpcObjectEventOps>									objectEventOps1;
-			Ptr<rpc_controller::IRpcObjectEventOps>									objectEventOps2;
-			Ptr<rpc_controller::IRpcObjectOps>										objectOps1;
-			Ptr<rpc_controller::IRpcObjectOps>										objectOps2;
-
 		public:
 			RpcDualDispatcherMock(RpcDualLifecycleMock* lc1, RpcDualLifecycleMock* lc2);
-
-			rpc_controller::IRpcObjectEventOps*										BroadcastFromClient_ObjectEventOps(vint selfClientId)override;
-			rpc_controller::IRpcObjectOps*											SendToClient_ObjectOps(vint targetClientId)override;
 		};
 
 		class RpcDualLifecycleMock : public rpc_controller::RpcLifecycleBase

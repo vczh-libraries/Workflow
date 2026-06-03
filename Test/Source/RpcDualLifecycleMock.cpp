@@ -1,5 +1,4 @@
 #include "RpcDualLifecycleMock.h"
-#include "../../Source/Library/Rpc/WfLibraryRpcWrappers.h"
 
 namespace vl
 {
@@ -8,94 +7,6 @@ namespace vl
 		using namespace rpc_controller;
 		using namespace collections;
 		using namespace reflection::description;
-
-		namespace
-		{
-			class RpcBroadcastObjectEventOpsMock : public Object, public IRpcObjectEventOps
-			{
-			private:
-				List<IRpcObjectEventOps*> targets;
-
-			public:
-				void AddTarget(IRpcObjectEventOps* target)
-				{
-					targets.Add(target);
-				}
-				Value InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments)override
-				{
-					if (targets.Count() == 1)
-					{
-						return targets[0]->InvokeEvent(ref, eventId, arguments);
-					}
-
-					auto exceptions = IValueDictionary::Create();
-					for (auto target : targets)
-					{
-						MergeRpcEventExceptionMap(exceptions, UnboxValue<RpcEventExceptionMap>(target->InvokeEvent(ref, eventId, arguments)));
-					}
-					return exceptions->GetCount() == 0 ? Value() : BoxValue(exceptions);
-				}
-			};
-
-			class RpcObjectEventOpsMock : public Object, public IRpcObjectEventOps
-			{
-			private:
-				IRpcObjectEventOps*							ops = nullptr;
-
-			public:
-				RpcObjectEventOpsMock(IRpcObjectEventOps* _ops)
-					: ops(_ops)
-				{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcObjectEventOpsMock::RpcObjectEventOpsMock(...)#"
-					CHECK_ERROR(ops, ERROR_MESSAGE_PREFIX L"Ops are required.");
-#undef ERROR_MESSAGE_PREFIX
-				}
-
-				Value InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments)override
-				{
-					auto value = ops->InvokeEvent(ref, eventId, arguments);
-					ReadEventException(UnboxValue<RpcEventExceptionMap>(value));
-					return value;
-				}
-			};
-
-			class RpcObjectOpsMock : public Object, public IRpcObjectOps
-			{
-			private:
-				IRpcObjectOps*								ops = nullptr;
-
-			public:
-				RpcObjectOpsMock(IRpcObjectOps* _ops)
-					: ops(_ops)
-				{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcObjectOpsMock::RpcObjectOpsMock(...)#"
-					CHECK_ERROR(ops, ERROR_MESSAGE_PREFIX L"Ops are required.");
-#undef ERROR_MESSAGE_PREFIX
-				}
-
-				Value InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override
-				{
-					auto value = ops->InvokeMethod(ref, methodId, arguments);
-					ReadMethodException(value);
-					return value;
-				}
-
-				void EndInvokeMethod(vint slot)override
-				{
-					ops->EndInvokeMethod(slot);
-				}
-
-				void ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)override
-				{
-					ops->ObjectHold(ref, remoteClientId, hold);
-				}
-
-				void RegisterService(vint typeId, Ptr<reflection::IDescriptable> service)override
-				{
-					ops->RegisterService(typeId, service);
-				}
-			};
-		}
 
 /***********************************************************************
 * RpcDualLifecycleMock
@@ -155,8 +66,6 @@ namespace vl
 		{
 			lifecycle2->Finalize();
 			lifecycle1->Finalize();
-			objectEventBroadcastOps2 = nullptr;
-			objectEventBroadcastOps1 = nullptr;
 			services.Clear();
 		}
 
@@ -185,19 +94,7 @@ namespace vl
 
 		IRpcObjectEventOps* RpcDualDispatcherMockBase::BroadcastFromClient_ObjectEventOps(vint selfClientId)
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualDispatcherMockBase::BroadcastFromClient_ObjectEventOps(vint)#"
-			Ptr<IRpcObjectEventOps>* broadcastOps = nullptr;
-			if (lifecycle1 && lifecycle1->GetClientId() == selfClientId) broadcastOps = &objectEventBroadcastOps1;
-			if (lifecycle2 && lifecycle2->GetClientId() == selfClientId) broadcastOps = &objectEventBroadcastOps2;
-			CHECK_ERROR(broadcastOps, ERROR_MESSAGE_PREFIX L"Unknown client id.");
-			if (!*broadcastOps)
-			{
-				auto ops = Ptr(new RpcBroadcastObjectEventOpsMock);
-				ops->AddTarget(GetOtherLifecycle(selfClientId)->GetController()->GetObjectEventOps());
-				*broadcastOps = ops;
-			}
-			return broadcastOps->Obj();
-#undef ERROR_MESSAGE_PREFIX
+			return GetOtherLifecycle(selfClientId)->GetController()->GetObjectEventOps();
 		}
 
 		IRpcObjectOps* RpcDualDispatcherMockBase::SendToClient_ObjectOps(vint targetClientId)
@@ -211,41 +108,7 @@ namespace vl
 
 		RpcDualDispatcherMock::RpcDualDispatcherMock(RpcDualLifecycleMock* lc1, RpcDualLifecycleMock* lc2)
 			: RpcDualDispatcherMockBase(lc1, lc2)
-			, lifecycle1(lc1)
-			, lifecycle2(lc2)
 		{
-		}
-
-		IRpcObjectEventOps* RpcDualDispatcherMock::BroadcastFromClient_ObjectEventOps(vint selfClientId)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualDispatcherMock::BroadcastFromClient_ObjectEventOps(vint)#"
-			auto ops = RpcDualDispatcherMockBase::BroadcastFromClient_ObjectEventOps(selfClientId);
-			Ptr<IRpcObjectEventOps>* opsPtr = nullptr;
-			if (lifecycle1 && lifecycle1->GetClientId() == selfClientId) opsPtr = &objectEventOps1;
-			if (lifecycle2 && lifecycle2->GetClientId() == selfClientId) opsPtr = &objectEventOps2;
-			CHECK_ERROR(opsPtr, ERROR_MESSAGE_PREFIX L"Unknown client id.");
-			if (!*opsPtr)
-			{
-				*opsPtr = Ptr(new RpcObjectEventOpsMock(ops));
-			}
-			return opsPtr->Obj();
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		IRpcObjectOps* RpcDualDispatcherMock::SendToClient_ObjectOps(vint targetClientId)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualDispatcherMock::SendToClient_ObjectOps(vint)#"
-			auto ops = RpcDualDispatcherMockBase::SendToClient_ObjectOps(targetClientId);
-			Ptr<IRpcObjectOps>* opsPtr = nullptr;
-			if (lifecycle1 && lifecycle1->GetClientId() == targetClientId) opsPtr = &objectOps1;
-			if (lifecycle2 && lifecycle2->GetClientId() == targetClientId) opsPtr = &objectOps2;
-			CHECK_ERROR(opsPtr, ERROR_MESSAGE_PREFIX L"Unknown client id.");
-			if (!*opsPtr)
-			{
-				*opsPtr = Ptr(new RpcObjectOpsMock(ops));
-			}
-			return opsPtr->Obj();
-#undef ERROR_MESSAGE_PREFIX
 		}
 	}
 }
