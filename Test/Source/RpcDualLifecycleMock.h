@@ -30,9 +30,7 @@ namespace vl
 			bool																	IsRegisteredService(rpc_controller::RpcObjectReference ref)override;
 			void																	RegisterService(vint typeId, rpc_controller::RpcObjectReference ref)override;
 			rpc_controller::RpcObjectReference										RequestService(vint typeId)override;
-			rpc_controller::IRpcListEventOps*										BroadcastFromClient_ListEventOps(vint selfClientId)override;
 			rpc_controller::IRpcObjectEventOps*										BroadcastFromClient_ObjectEventOps(vint selfClientId)override;
-			rpc_controller::IRpcListOps*											SendToClient_ListOps(vint targetClientId)override;
 			rpc_controller::IRpcObjectOps*											SendToClient_ObjectOps(vint targetClientId)override;
 		};
 
@@ -41,21 +39,15 @@ namespace vl
 		private:
 			RpcDualLifecycleMock*													lifecycle1 = nullptr;
 			RpcDualLifecycleMock*													lifecycle2 = nullptr;
-			Ptr<rpc_controller::IRpcListEventOps>									listEventOps1;
-			Ptr<rpc_controller::IRpcListEventOps>									listEventOps2;
 			Ptr<rpc_controller::IRpcObjectEventOps>									objectEventOps1;
 			Ptr<rpc_controller::IRpcObjectEventOps>									objectEventOps2;
-			Ptr<rpc_controller::IRpcListOps>										listOps1;
-			Ptr<rpc_controller::IRpcListOps>										listOps2;
 			Ptr<rpc_controller::IRpcObjectOps>										objectOps1;
 			Ptr<rpc_controller::IRpcObjectOps>										objectOps2;
 
 		public:
 			RpcDualDispatcherMock(RpcDualLifecycleMock* lc1, RpcDualLifecycleMock* lc2);
 
-			rpc_controller::IRpcListEventOps*										BroadcastFromClient_ListEventOps(vint selfClientId)override;
 			rpc_controller::IRpcObjectEventOps*										BroadcastFromClient_ObjectEventOps(vint selfClientId)override;
-			rpc_controller::IRpcListOps*											SendToClient_ListOps(vint targetClientId)override;
 			rpc_controller::IRpcObjectOps*											SendToClient_ObjectOps(vint targetClientId)override;
 		};
 

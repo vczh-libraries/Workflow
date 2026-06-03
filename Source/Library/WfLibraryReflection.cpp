@@ -196,9 +196,7 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_METHOD(IsRegisteredService, { L"ref" })
 				CLASS_MEMBER_METHOD(RegisterService, { L"typeId" _ L"ref" })
 				CLASS_MEMBER_METHOD(RequestService, { L"typeId" })
-				CLASS_MEMBER_METHOD(BroadcastFromClient_ListEventOps, { L"selfClientId" })
 				CLASS_MEMBER_METHOD(BroadcastFromClient_ObjectEventOps, { L"selfClientId" })
-				CLASS_MEMBER_METHOD(SendToClient_ListOps, { L"targetClientId" })
 				CLASS_MEMBER_METHOD(SendToClient_ObjectOps, { L"targetClientId" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcDispatcher)
 

@@ -83,14 +83,12 @@ When an RPC method returns an `@rpc:Byval` collection, JSON serialization still 
 
 The declarations map directly to the C++ ops interfaces in `Source/Library/Rpc/WfLibraryRpc.h`:
 
-- `IListOps_*` maps to `IRpcListOps`.
 - `IObjectOps_*` maps to `IRpcObjectOps`.
-- `IListEventOps_*` maps to `IRpcListEventOps`.
 - `IObjectEventOps_*` maps to `IRpcObjectEventOps`.
 
-Request envelopes model how `IRpcDispatcher` chooses an ops object. Calls made through `SendToClient_ListOps` or `SendToClient_ObjectOps` include both `sourceClientId` and `targetClientId`. Calls made through `BroadcastFromClient_ListEventOps` or `BroadcastFromClient_ObjectEventOps` include only `sourceClientId` because the dispatcher expands the broadcast target list. Response envelopes are always one-to-one from the receiving client back to the requesting client, so they always contain both client ids.
+Request envelopes model how `IRpcDispatcher` chooses an ops object. Calls made through `SendToClient_ObjectOps` include both `sourceClientId` and `targetClientId`. Calls made through `BroadcastFromClient_ObjectEventOps` include only `sourceClientId` because the dispatcher expands the broadcast target list. Response envelopes are always one-to-one from the receiving client back to the requesting client, so they always contain both client ids. `IRpcListOps` and `IRpcListEventOps` are local adapters only: list methods are transported as `IObjectOps_InvokeMethod` with predefined negative method ids, and observable-list `ItemChanged` is transported as `IObjectEventOps_InvokeEvent` with the predefined negative event id.
 
-The stable internal transport structs are declared in `Rpc.d.ts` itself: `system_RpcObjectReference`, `system_RpcException`, and `system_RpcByvalReturnValue<T>`. The predefined JSON serializer owns `system::RpcObjectReference` and `system::RpcException` serialization; per-RPC generated serializers should not emit dedicated struct functions for them. Void-returning ops still have response envelopes, but no `response` field. Value-returning ops put the serialized value in `response`. `IRpcObjectEventOps::InvokeEvent` and `IRpcListEventOps::OnItemChanged` return the JSON form of `null | [number, system_RpcException][]`, matching `system::RpcException[int]` after deserialization.
+The stable internal transport structs are declared in `Rpc.d.ts` itself: `system_RpcObjectReference`, `system_RpcException`, and `system_RpcByvalReturnValue<T>`. The predefined JSON serializer owns `system::RpcObjectReference` and `system::RpcException` serialization; per-RPC generated serializers should not emit dedicated struct functions for them. Void-returning ops still have response envelopes, but no `response` field. Value-returning ops put the serialized value in `response`. `IRpcObjectEventOps::InvokeEvent`, including predefined observable-list `ItemChanged` events, returns the JSON form of `null | [number, system_RpcException][]`, matching `system::RpcException[int]` after deserialization.
 
 ## Other Strict Rules
 

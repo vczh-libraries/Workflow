@@ -12,7 +12,7 @@ Create the generated ops objects once for each lifecycle:
 - `rpcops_IRpcObjectEventOps(lc)` creates the receive-side object event operations.
 - `rpcops_IOps_Create(lc)` creates strongly typed caller-side method operations used by generated wrappers.
 
-Register these objects with the lifecycle's controller, together with the runtime-provided list operations and list event operations. The generated object ops receive remote method calls, object holds, object unholds, and service registrations. The generated object event ops receive remote object events. The generated caller-side ops are passed to wrappers so wrapper methods can send method calls through the dispatcher.
+Register these objects with the lifecycle's controller, together with the runtime-provided list operations and list event operations. The generated object ops receive remote method calls, object holds, object unholds, and service registrations. Runtime object-op adapters intercept predefined list method ids and redirect them to the local list operations before delegating all other method ids to the generated object ops. The generated object event ops receive remote object events, while runtime object-event adapters intercept the predefined observable-list event id and redirect it to the local list event operations. The generated caller-side ops are passed to wrappers so wrapper methods can send method calls through the dispatcher.
 
 Register a wrapper factory that calls `rpcwrapper_Create(ref, lc, ops)`. The lifecycle calls this factory when `RefToPtr(ref)` sees that `ref.clientId` belongs to another client. `rpcwrapper_Create` switches on `ref.typeId` and returns the generated wrapper interface for that remote object.
 
@@ -26,7 +26,7 @@ The helper predicates `rpcwrapper_IsInterfaceTypeId(typeId)` and `rpcwrapper_IsC
 
 Use the JSON variants when the RPC payload boundary should carry `JsonNode` values instead of direct reflected `Value` objects.
 
-Create `rpcops_IRpcSerializer()` and set it on the lifecycle before registering JSON object or list operations. The serializer delegates to generated `rpcjson_Serialize(value)` and `rpcjson_Deserialize(node)` for unknown values.
+Create `rpcops_IRpcSerializer()` and set it on the lifecycle before registering JSON object operations and runtime list adapters. The serializer delegates to generated `rpcjson_Serialize(value)` and `rpcjson_Deserialize(node)` for unknown values.
 
 Use these JSON ops instead of the non-JSON ops on a JSON lifecycle:
 
@@ -54,7 +54,7 @@ A generated local event listener first checks the lifecycle controller's event s
 
 On the receive side, generated `IRpcObjectEventOps::InvokeEvent` returns `object`. Flat ops return `system::RpcException[int]` or `null`; JSON ops return the serialized JSON value for that same map-or-null result. It sets the suppression flag, raises the local event, catches any exception into a one-entry map keyed by the receiver lifecycle's client id, and clears the flag in a `finally` block. Unknown event ids are local dispatch errors and escape directly instead of being encoded into the returned map. If an RPC definition has no events, generated JSON event ops collapse `InvokeEvent` to a direct unknown-event-id raise.
 
-Predefined observable-list wrappers use the same exception map for `IRpcListEventOps::OnItemChanged`, also returned as `object`. The receive-side bridge replays the remote list notification under the item-changed suppression flag, catches local handler exceptions into a one-entry map keyed by the receiver lifecycle's client id, serializes the map when a serializer is configured, and the send-side native list handler deserializes before calling `IRpcLifecycle::ReadEventException`.
+Predefined observable-list wrappers use the same exception map for `IRpcListEventOps::OnItemChanged`, also returned as `object`. The send-side list adapter broadcasts `ItemChanged` through `IRpcDispatcher::BroadcastFromClient_ObjectEventOps(clientId)->InvokeEvent(...)` with the predefined observable-list event id. The receive-side object-event adapter redirects that predefined id to the list event operations, which replay the remote list notification under the item-changed suppression flag, catch local handler exceptions into a one-entry map keyed by the receiver lifecycle's client id, and serialize the map when a serializer is configured. The send-side adapter deserializes before calling `IRpcLifecycle::ReadEventException`.
 
 Service registration finishes by validating that the type id exists and represents an `@rpc:Ctor` interface. The generated ops convert the service pointer to a reference with `PtrToRef`, then register that reference in the dispatcher. Service lookup finishes through the lifecycle: it asks the dispatcher for the service reference and converts that reference to a local pointer or wrapper.
 

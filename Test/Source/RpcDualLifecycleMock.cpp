@@ -28,12 +28,12 @@ namespace vl
 						return targets[0]->InvokeEvent(ref, eventId, arguments);
 					}
 
-					auto exceptions = CreateRpcEventExceptionMap();
+					auto exceptions = IValueDictionary::Create();
 					for (auto target : targets)
 					{
-						MergeRpcEventExceptionMap(exceptions, UnboxRpcEventExceptionMap(target->InvokeEvent(ref, eventId, arguments)));
+						MergeRpcEventExceptionMap(exceptions, UnboxValue<RpcEventExceptionMap>(target->InvokeEvent(ref, eventId, arguments)));
 					}
-					return exceptions->GetCount() == 0 ? Value() : BoxRpcEventExceptionMap(exceptions);
+					return exceptions->GetCount() == 0 ? Value() : BoxValue(exceptions);
 				}
 			};
 
@@ -54,7 +54,7 @@ namespace vl
 				Value InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments)override
 				{
 					auto value = ops->InvokeEvent(ref, eventId, arguments);
-					ReadEventException(UnboxRpcEventExceptionMap(value));
+					ReadEventException(UnboxValue<RpcEventExceptionMap>(value));
 					return value;
 				}
 			};
@@ -183,11 +183,6 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		IRpcListEventOps* RpcDualDispatcherMockBase::BroadcastFromClient_ListEventOps(vint selfClientId)
-		{
-			return GetOtherLifecycle(selfClientId)->GetController()->GetListEventOps();
-		}
-
 		IRpcObjectEventOps* RpcDualDispatcherMockBase::BroadcastFromClient_ObjectEventOps(vint selfClientId)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualDispatcherMockBase::BroadcastFromClient_ObjectEventOps(vint)#"
@@ -203,11 +198,6 @@ namespace vl
 			}
 			return broadcastOps->Obj();
 #undef ERROR_MESSAGE_PREFIX
-		}
-
-		IRpcListOps* RpcDualDispatcherMockBase::SendToClient_ListOps(vint targetClientId)
-		{
-			return GetLifecycle(targetClientId)->GetController()->GetListOps();
 		}
 
 		IRpcObjectOps* RpcDualDispatcherMockBase::SendToClient_ObjectOps(vint targetClientId)
@@ -226,30 +216,6 @@ namespace vl
 		{
 		}
 
-		IRpcListEventOps* RpcDualDispatcherMock::BroadcastFromClient_ListEventOps(vint selfClientId)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualDispatcherMock::BroadcastFromClient_ListEventOps(vint)#"
-			Ptr<IRpcListEventOps>* opsPtr = nullptr;
-			IRpcSerializer* serializer = nullptr;
-			if (lifecycle1 && lifecycle1->GetClientId() == selfClientId)
-			{
-				opsPtr = &listEventOps1;
-				serializer = lifecycle1->GetSerializer();
-			}
-			if (lifecycle2 && lifecycle2->GetClientId() == selfClientId)
-			{
-				opsPtr = &listEventOps2;
-				serializer = lifecycle2->GetSerializer();
-			}
-			CHECK_ERROR(opsPtr, ERROR_MESSAGE_PREFIX L"Unknown client id.");
-			if (!*opsPtr)
-			{
-				*opsPtr = Ptr(new RpcCallerListEventOps(BroadcastFromClient_ObjectEventOps(selfClientId), serializer));
-			}
-			return opsPtr->Obj();
-#undef ERROR_MESSAGE_PREFIX
-		}
-
 		IRpcObjectEventOps* RpcDualDispatcherMock::BroadcastFromClient_ObjectEventOps(vint selfClientId)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualDispatcherMock::BroadcastFromClient_ObjectEventOps(vint)#"
@@ -261,30 +227,6 @@ namespace vl
 			if (!*opsPtr)
 			{
 				*opsPtr = Ptr(new RpcObjectEventOpsMock(ops));
-			}
-			return opsPtr->Obj();
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		IRpcListOps* RpcDualDispatcherMock::SendToClient_ListOps(vint targetClientId)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualDispatcherMock::SendToClient_ListOps(vint)#"
-			Ptr<IRpcListOps>* opsPtr = nullptr;
-			IRpcSerializer* serializer = nullptr;
-			if (lifecycle1 && lifecycle1->GetClientId() == targetClientId)
-			{
-				opsPtr = &listOps1;
-				serializer = lifecycle1->GetSerializer();
-			}
-			if (lifecycle2 && lifecycle2->GetClientId() == targetClientId)
-			{
-				opsPtr = &listOps2;
-				serializer = lifecycle2->GetSerializer();
-			}
-			CHECK_ERROR(opsPtr, ERROR_MESSAGE_PREFIX L"Unknown client id.");
-			if (!*opsPtr)
-			{
-				*opsPtr = Ptr(new RpcCallerListOps(SendToClient_ObjectOps(targetClientId), serializer));
 			}
 			return opsPtr->Obj();
 #undef ERROR_MESSAGE_PREFIX

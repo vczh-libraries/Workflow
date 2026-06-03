@@ -161,9 +161,11 @@ namespace vl
 					{
 						return;
 					}
-					auto eventResult = this->GetDispatcher()->BroadcastFromClient_ListEventOps(this->GetClientId())->OnItemChanged(ref, index, oldCount, newCount);
-					auto exceptions = serializer ? serializer->Deserialize(eventResult) : eventResult;
-					ReadEventException(UnboxRpcEventExceptionMap(exceptions));
+					auto listEventOps = Ptr(new RpcCallerListEventOps(
+						this->GetDispatcher()->BroadcastFromClient_ObjectEventOps(this->GetClientId()),
+						serializer.Obj()
+						));
+					listEventOps->OnItemChanged(ref, index, oldCount, newCount);
 				});
 				props->eventHandler = handler;
 			}

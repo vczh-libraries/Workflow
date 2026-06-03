@@ -1,5 +1,6 @@
 #include "WfLibraryRpcJson.h"
 #include "../WfLibraryCppHelper.h"
+#include "../WfLibraryReflection.h"
 
 namespace vl
 {
@@ -246,7 +247,7 @@ namespace vl
 			{
 				if (keyword == L"system::RpcObjectReference")
 				{
-					return BoxRpcObjectReference(RpcObjectReference{
+					return BoxValue(RpcObjectReference{
 						__vwsn::Parse<vint>(GetJsonNumber(GetJsonObjectField(object, WString::Unmanaged(L"clientId")))),
 						__vwsn::Parse<vint>(GetJsonNumber(GetJsonObjectField(object, WString::Unmanaged(L"objectId")))),
 						__vwsn::Parse<vint>(GetJsonNumber(GetJsonObjectField(object, WString::Unmanaged(L"typeId")))),
@@ -254,7 +255,7 @@ namespace vl
 				}
 				if (keyword == L"system::RpcException")
 				{
-					return BoxRpcException(RpcException{
+					return BoxValue(RpcException{
 						GetJsonString(GetJsonObjectField(object, WString::Unmanaged(L"message"))),
 						});
 				}

@@ -39,12 +39,7 @@ namespace vl
 
 		using RpcEventExceptionMap = Ptr<reflection::description::IValueDictionary>;
 
-		extern reflection::description::Value					BoxRpcObjectReference(RpcObjectReference ref);
-		extern reflection::description::Value					BoxRpcException(RpcException exception);
-		extern RpcEventExceptionMap								CreateRpcEventExceptionMap();
 		extern void												MergeRpcEventExceptionMap(RpcEventExceptionMap target, RpcEventExceptionMap source);
-		extern reflection::description::Value					BoxRpcEventExceptionMap(RpcEventExceptionMap exceptions);
-		extern RpcEventExceptionMap								UnboxRpcEventExceptionMap(const reflection::description::Value& value);
 
 		class RpcByvalReturnValue
 			: public Object
@@ -171,9 +166,7 @@ namespace vl
 			virtual void							RegisterService(vint typeId, RpcObjectReference ref) = 0;
 			virtual RpcObjectReference				RequestService(vint typeId) = 0;
 
-			virtual IRpcListEventOps*				BroadcastFromClient_ListEventOps(vint selfClientId) = 0;
 			virtual IRpcObjectEventOps*				BroadcastFromClient_ObjectEventOps(vint selfClientId) = 0;
-			virtual IRpcListOps*					SendToClient_ListOps(vint targetClientId) = 0;
 			virtual IRpcObjectOps*					SendToClient_ObjectOps(vint targetClientId) = 0;
 		};
 

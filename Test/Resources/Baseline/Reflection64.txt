@@ -252,13 +252,11 @@ interface system::IRpcController : system::IRpcOperations {
 
 @FullName:vl::rpc_controller::IRpcDispatcher
 interface system::IRpcDispatcher : system::Interface {
-    function BroadcastFromClient_ListEventOps(selfClientId : system::Int64) : system::IRpcListEventOps*;
     function BroadcastFromClient_ObjectEventOps(selfClientId : system::Int64) : system::IRpcObjectEventOps*;
     function Finalize() : system::Void;
     function IsRegisteredService(ref : system::RpcObjectReference) : system::Boolean;
     function RegisterService(typeId : system::Int64, ref : system::RpcObjectReference) : system::Void;
     function RequestService(typeId : system::Int64) : system::RpcObjectReference;
-    function SendToClient_ListOps(targetClientId : system::Int64) : system::IRpcListOps*;
     function SendToClient_ObjectOps(targetClientId : system::Int64) : system::IRpcObjectOps*;
 
 }

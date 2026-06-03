@@ -165,7 +165,7 @@ The RPC runtime has three local concepts and one cross-client concept:
 
 - `IRpcLifecycle` owns object/reference conversion for one client.
 - `IRpcController` owns local objects, local wrappers, local ops, and local suppression state for one client.
-- `IRpcOperations` exposes the local client's list, object, list-event, and object-event operation objects.
+- `IRpcOperations` exposes the local client's list, object, list-event, and object-event operation objects. List operations and list-event operations are local runtime adapters; cross-client list traffic is transported through object operations and object-event operations with predefined negative ids.
 - `IRpcDispatcher` is the only object that knows how to send a message from one client to another client.
 
 Lifecycle and controller implementations should not use another lifecycle's objects directly. When a message needs to leave the current client, it goes through `IRpcDispatcher`.
@@ -218,7 +218,7 @@ Services use the same local-object tracking, but `RegisterService` adds an owner
 When a wrapper performs a method call or list operation, the message is sent to the lifecycle that owns `ref.clientId`.
 
 - Object method calls use `IRpcDispatcher::SendToClient_ObjectOps(ref.clientId)`.
-- List operations use `IRpcDispatcher::SendToClient_ListOps(ref.clientId)`.
+- List operations use `IRpcDispatcher::SendToClient_ObjectOps(ref.clientId)->InvokeMethod(...)` with predefined list method ids through `RpcCallerListOps`.
 
 The returned ops object is the target client's local operation object. The caller should not know or store the target lifecycle directly.
 
@@ -227,7 +227,7 @@ The returned ops object is the target client's local operation object. The calle
 Events are broadcast from the client that observed or raised the event. The broadcast excludes that caller client and sends to all other clients.
 
 - Object events use generated strong typed caller-side ops, which call `IRpcDispatcher::BroadcastFromClient_ObjectEventOps(selfClientId)->InvokeEvent(...)`.
-- List events use `IRpcDispatcher::BroadcastFromClient_ListEventOps(selfClientId)->OnItemChanged(...)`.
+- List events use `IRpcDispatcher::BroadcastFromClient_ObjectEventOps(selfClientId)->InvokeEvent(...)` with the predefined observable-list event id through `RpcCallerListEventOps`.
 
 This rule applies whether the event is raised from a local object or from a wrapper. If a wrapper raises an event, the owner client is still just another client in the broadcast target set unless it is the caller client.
 
@@ -262,7 +262,7 @@ When `IRpcObjectEventOps::InvokeEvent(ref, eventId, arguments)` receives a remot
 
 Generated `rpclistener_*` handlers should check `lc.Controller.GetEventSuppressedFlag(ref, eventId)` before forwarding the event. If the flag is set, the handler returns immediately. Otherwise it calls the generated strong typed caller-side ops event method, letting those ops handle boxing, optional JSON serialization, broadcasting, deserialization, and exception raising.
 
-List events use the same shape without an event id. When receive-side `OnItemChanged(ref, index, oldCount, newCount)` replays a remote list notification locally, it should set `SetItemChangedSuppressedFlag(ref, true)`, raise the local list notification, catch exceptions into a `system::RpcException[int]` map keyed by `lc.ClientId`, return that map as `object`, and clear the flag in a `finally` block. The locally attached native list event handler should check `GetItemChangedSuppressedFlag(ref)` before broadcasting, deserialize the returned value when a serializer exists, and call `system::IRpcLifecycle::ReadEventException` on the resulting map.
+List events use the same shape with the predefined observable-list event id. When receive-side `OnItemChanged(ref, index, oldCount, newCount)` replays a remote list notification locally, it should set `SetItemChangedSuppressedFlag(ref, true)`, raise the local list notification, catch exceptions into a `system::RpcException[int]` map keyed by `lc.ClientId`, return that map as `object`, and clear the flag in a `finally` block. The locally attached native list event handler should check `GetItemChangedSuppressedFlag(ref)` before broadcasting through the object-event dispatcher path, deserialize the returned value when a serializer exists, and call `system::IRpcLifecycle::ReadEventException` on the resulting map.
 
 ## Byval Return Collection Lifecycle
 

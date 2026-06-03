@@ -194,30 +194,6 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		IRpcListEventOps* RpcDualJsonDispatcherMock::BroadcastFromClient_ListEventOps(vint selfClientId)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonDispatcherMock::BroadcastFromClient_ListEventOps(vint)#"
-			Ptr<IRpcListEventOps>* opsPtr = nullptr;
-			IRpcSerializer* serializer = nullptr;
-			if (lifecycle1 && lifecycle1->GetClientId() == selfClientId)
-			{
-				opsPtr = &listEventOps1;
-				serializer = lifecycle1->GetSerializer();
-			}
-			if (lifecycle2 && lifecycle2->GetClientId() == selfClientId)
-			{
-				opsPtr = &listEventOps2;
-				serializer = lifecycle2->GetSerializer();
-			}
-			CHECK_ERROR(opsPtr, ERROR_MESSAGE_PREFIX L"Unknown client id.");
-			if (!*opsPtr)
-			{
-				*opsPtr = Ptr(new RpcCallerListEventOps(BroadcastFromClient_ObjectEventOps(selfClientId), serializer));
-			}
-			return opsPtr->Obj();
-#undef ERROR_MESSAGE_PREFIX
-		}
-
 		IRpcObjectEventOps* RpcDualJsonDispatcherMock::BroadcastFromClient_ObjectEventOps(vint selfClientId)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonDispatcherMock::BroadcastFromClient_ObjectEventOps(vint)#"
@@ -229,30 +205,6 @@ namespace vl
 			if (!*opsPtr)
 			{
 				*opsPtr = Ptr(new RpcJsonObjectEventOpsMock(this, ops));
-			}
-			return opsPtr->Obj();
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		IRpcListOps* RpcDualJsonDispatcherMock::SendToClient_ListOps(vint targetClientId)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonDispatcherMock::SendToClient_ListOps(vint)#"
-			Ptr<IRpcListOps>* opsPtr = nullptr;
-			IRpcSerializer* serializer = nullptr;
-			if (lifecycle1 && lifecycle1->GetClientId() == targetClientId)
-			{
-				opsPtr = &listOps1;
-				serializer = lifecycle1->GetSerializer();
-			}
-			if (lifecycle2 && lifecycle2->GetClientId() == targetClientId)
-			{
-				opsPtr = &listOps2;
-				serializer = lifecycle2->GetSerializer();
-			}
-			CHECK_ERROR(opsPtr, ERROR_MESSAGE_PREFIX L"Unknown client id.");
-			if (!*opsPtr)
-			{
-				*opsPtr = Ptr(new RpcCallerListOps(SendToClient_ObjectOps(targetClientId), serializer));
 			}
 			return opsPtr->Obj();
 #undef ERROR_MESSAGE_PREFIX
