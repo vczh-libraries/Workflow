@@ -40,6 +40,7 @@ TypeName
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcException, system::RpcException)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::RpcByvalReturnValue, system::RpcByvalReturnValue)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcSerializer, system::IRpcSerializer)
+			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcJsonMessageDispatcher, system::IRpcJsonMessageDispatcher)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListOps, system::IRpcListOps)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcListEventOps, system::IRpcListEventOps)
 			IMPL_TYPE_INFO_RENAME(vl::rpc_controller::IRpcObjectOps, system::IRpcObjectOps)
@@ -143,6 +144,11 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_METHOD(Serialize, { L"value" })
 				CLASS_MEMBER_METHOD(Deserialize, { L"value" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcSerializer)
+
+			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcJsonMessageDispatcher)
+				CLASS_MEMBER_METHOD(AllocateRequestId, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(OnJsonRequest, { L"message" })
+			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcJsonMessageDispatcher)
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcListOps)
 				CLASS_MEMBER_METHOD(EnumCreate, { L"ref" })

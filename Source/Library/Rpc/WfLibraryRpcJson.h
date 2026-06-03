@@ -33,18 +33,39 @@ namespace vl
 
 		class RpcJsonObjectOps : public Object, public IRpcObjectOps
 		{
+		private:
+			vint									sourceClientId = RpcClientId_Invalid;
+			vint									targetClientId = RpcClientId_Invalid;
+			IRpcJsonMessageDispatcher*				dispatcher = nullptr;
+			IRpcSerializer*							serializer = nullptr;
+			IRpcLifecycle*							lifecycle = nullptr;
+
 		public:
 			RpcJsonObjectOps(IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer);
+			RpcJsonObjectOps(vint _sourceClientId, vint _targetClientId, IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer, IRpcLifecycle* _lifecycle = nullptr);
 			~RpcJsonObjectOps();
 
-			static Ptr<glr::json::JsonNode>			Translate(Ptr<glr::json::JsonNode> message, IRpcObjectOps* ops);
+			reflection::description::Value			InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
+			void									EndInvokeMethod(vint slot)override;
+			void									ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)override;
+			void									RegisterService(vint typeId, Ptr<reflection::IDescriptable> service)override;
+
+			static Ptr<glr::json::JsonNode>			Translate(Ptr<glr::json::JsonNode> message, IRpcObjectOps* ops, IRpcLifecycle* lifecycle = nullptr);
 		};
 
 		class RpcJsonObjectEventOps : public Object, public IRpcObjectEventOps
 		{
+		private:
+			vint									sourceClientId = RpcClientId_Invalid;
+			IRpcJsonMessageDispatcher*				dispatcher = nullptr;
+			IRpcSerializer*							serializer = nullptr;
+
 		public:
 			RpcJsonObjectEventOps(IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer);
+			RpcJsonObjectEventOps(vint _sourceClientId, IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer);
 			~RpcJsonObjectEventOps();
+
+			reflection::description::Value			InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments)override;
 
 			static Ptr<glr::json::JsonNode>			Translate(Ptr<glr::json::JsonNode> message, IRpcObjectEventOps* ops);
 		};

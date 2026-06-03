@@ -16,5 +16,7 @@ function CopySerializationFiles($metadataFolder, $jsonValuesFolder) {
 
 CopySerializationFiles "Test\Generated\RpcMetadata32" "JsonValues32"
 CopySerializationFiles "Test\Generated\RpcMetadata64" "JsonValues64"
+CopySerializationFiles "Test\Generated\RpcMetadata32" "JsonRequest32"
+CopySerializationFiles "Test\Generated\RpcMetadata64" "JsonRequest64"
 
 Write-Host "Prepared TypeScript test files successfully."

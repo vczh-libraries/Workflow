@@ -2,7 +2,7 @@
 #include <windows.h>
 #endif
 
-#ifdef VCZH_DEBUG_NO_REFLECTION
+#if defined VCZH_DEBUG_NO_REFLECTION || defined VCZH_TEST_HELPER_PATH_ONLY
 #include "../../Import/Vlpp.h"
 
 using namespace vl;
@@ -43,7 +43,20 @@ WString GetJsonValueOutputPath()
 #endif
 }
 
-#ifndef VCZH_DEBUG_NO_REFLECTION
+WString GetJsonRequestOutputPath()
+{
+#if defined VCZH_MSVC
+#ifdef VCZH_64
+	return GetExePath() + L"..\\..\\..\\TypeScript\\JsonRequest64\\";
+#else
+	return GetExePath() + L"..\\..\\TypeScript\\JsonRequest32\\";
+#endif
+#elif defined VCZH_GCC
+	return L"../../TypeScript/JsonRequest64/";
+#endif
+}
+
+#if !defined VCZH_DEBUG_NO_REFLECTION && !defined VCZH_TEST_HELPER_PATH_ONLY
 
 WfCpuArchitecture testCpuArchitecture = WfCpuArchitecture::AsExecutable;
 Ptr<workflow::Parser> workflowParser;

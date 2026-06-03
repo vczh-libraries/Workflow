@@ -44,12 +44,39 @@ namespace vl
 				return Ptr(new JsonObject);
 			}
 
+			Ptr<JsonObject> GetJsonObject(Ptr<JsonNode> node)
+			{
+				auto object = node.Cast<JsonObject>();
+				CHECK_ERROR(object, L"JSON object is expected.");
+				return object;
+			}
+
+			Ptr<JsonArray> GetJsonArray(Ptr<JsonNode> node)
+			{
+				auto array = node.Cast<JsonArray>();
+				CHECK_ERROR(array, L"JSON array is expected.");
+				return array;
+			}
+
 			void AddJsonObjectField(Ptr<JsonObject> object, const WString& name, Ptr<JsonNode> value)
 			{
 				auto field = Ptr(new JsonObjectField);
 				field->name.value = name;
 				field->value = value;
 				object->fields.Add(field);
+			}
+
+			void SetJsonObjectField(Ptr<JsonObject> object, const WString& name, Ptr<JsonNode> value)
+			{
+				for (auto field : object->fields)
+				{
+					if (field->name.value == name)
+					{
+						field->value = value;
+						return;
+					}
+				}
+				AddJsonObjectField(object, name, value);
 			}
 
 			Ptr<JsonNode> GetJsonObjectField(Ptr<JsonObject> object, const WString& name)
@@ -89,6 +116,31 @@ namespace vl
 				auto numberNode = node.Cast<JsonNumber>();
 				CHECK_ERROR(numberNode, L"JSON number is expected.");
 				return numberNode->content.value;
+			}
+
+			vint GetJsonInt(Ptr<JsonNode> node)
+			{
+				return __vwsn::Parse<vint>(GetJsonNumber(node));
+			}
+
+			bool GetJsonBool(Ptr<JsonNode> node)
+			{
+				auto literal = node.Cast<JsonLiteral>();
+				CHECK_ERROR(literal, L"JSON boolean is expected.");
+				if (literal->value == JsonLiteralValue::True) return true;
+				if (literal->value == JsonLiteralValue::False) return false;
+				CHECK_FAIL(L"JSON boolean is expected.");
+				return false;
+			}
+
+			Ptr<JsonNumber> CreateJsonNumber(vint value)
+			{
+				return CreateJsonNumber(__vwsn::ToString(value));
+			}
+
+			Ptr<JsonLiteral> CreateJsonBool(bool value)
+			{
+				return CreateJsonLiteral(value ? JsonLiteralValue::True : JsonLiteralValue::False);
 			}
 
 			Ptr<JsonNode> CreateUnknownTuple(const WString& keyword, Ptr<JsonNode> value)
@@ -261,6 +313,193 @@ namespace vl
 				}
 				return {};
 			}
+
+			RpcObjectReference GetRpcObjectReferenceFromJson(Ptr<JsonNode> node)
+			{
+				auto object = GetJsonObject(node);
+				return {
+					GetJsonInt(GetJsonObjectField(object, WString::Unmanaged(L"clientId"))),
+					GetJsonInt(GetJsonObjectField(object, WString::Unmanaged(L"objectId"))),
+					GetJsonInt(GetJsonObjectField(object, WString::Unmanaged(L"typeId"))),
+					};
+			}
+
+			Ptr<JsonObject> CreateRpcObjectReferenceJson(RpcObjectReference ref)
+			{
+				auto object = CreateJsonObject();
+				AddJsonObjectField(object, WString::Unmanaged(L"clientId"), CreateJsonNumber(ref.clientId));
+				AddJsonObjectField(object, WString::Unmanaged(L"objectId"), CreateJsonNumber(ref.objectId));
+				AddJsonObjectField(object, WString::Unmanaged(L"typeId"), CreateJsonNumber(ref.typeId));
+				return object;
+			}
+
+			Ptr<JsonNode> ValueToJsonNode(const Value& value, IRpcSerializer* serializer)
+			{
+				if (value.GetValueType() == Value::SharedPtr)
+				{
+					if (auto node = value.GetSharedPtr().Cast<JsonNode>())
+					{
+						return node;
+					}
+				}
+				if (serializer)
+				{
+					return UnboxValue<Ptr<JsonNode>>(serializer->Serialize(value));
+				}
+				CHECK_FAIL(L"RPC JSON value should be a Ptr<JsonNode>.");
+				return nullptr;
+			}
+
+			Ptr<JsonArray> ValueArrayToJsonArray(Ptr<IValueArray> arguments, IRpcSerializer* serializer)
+			{
+				auto array = CreateJsonArray();
+				for (vint i = 0; i < arguments->GetCount(); i++)
+				{
+					array->items.Add(ValueToJsonNode(arguments->Get(i), serializer));
+				}
+				return array;
+			}
+
+			Ptr<IValueArray> JsonArrayToValueArray(Ptr<JsonNode> node)
+			{
+				auto array = GetJsonArray(node);
+				auto arguments = IValueArray::Create();
+				arguments->Resize(array->items.Count());
+				for (vint i = 0; i < array->items.Count(); i++)
+				{
+					arguments->Set(i, BoxValue(array->items[i]));
+				}
+				return arguments;
+			}
+
+			Ptr<JsonObject> CreateRpcMessage(const WString& method, vint requestId, vint sourceClientId)
+			{
+				auto object = CreateJsonObject();
+				AddJsonObjectField(object, WString::Unmanaged(L"rpcMethod"), CreateJsonString(method));
+				AddJsonObjectField(object, WString::Unmanaged(L"rpcRequestId"), CreateJsonNumber(requestId));
+				AddJsonObjectField(object, WString::Unmanaged(L"sourceClientId"), CreateJsonNumber(sourceClientId));
+				return object;
+			}
+
+			vint ReadSourceClientId(Ptr<JsonObject> object)
+			{
+				return GetJsonInt(GetJsonObjectField(object, WString::Unmanaged(L"sourceClientId")));
+			}
+
+			vint ReadTargetClientId(Ptr<JsonObject> object)
+			{
+				return GetJsonInt(GetJsonObjectField(object, WString::Unmanaged(L"targetClientId")));
+			}
+
+			Ptr<JsonNode> MethodResultToJsonResponse(const Value& result)
+			{
+				if (result.GetValueType() == Value::SharedPtr)
+				{
+					if (auto byvalReturnValue = result.GetSharedPtr().Cast<RpcByvalReturnValue>())
+					{
+						auto object = CreateJsonObject();
+						AddJsonObjectField(object, WString::Unmanaged(L"value"), ValueToJsonNode(byvalReturnValue->value, nullptr));
+						AddJsonObjectField(object, WString::Unmanaged(L"slot"), CreateJsonNumber(byvalReturnValue->slot));
+						return object;
+					}
+				}
+				return ValueToJsonNode(result, nullptr);
+			}
+
+			Value JsonResponseToMethodResult(Ptr<JsonNode> node)
+			{
+				if (auto object = node.Cast<JsonObject>())
+				{
+					auto valueNode = FindJsonObjectField(object, WString::Unmanaged(L"value"));
+					auto slotNode = FindJsonObjectField(object, WString::Unmanaged(L"slot"));
+					if (valueNode && slotNode)
+					{
+						auto byvalReturnValue = Ptr(new RpcByvalReturnValue);
+						byvalReturnValue->value = BoxValue(valueNode);
+						byvalReturnValue->slot = GetJsonInt(slotNode);
+						return BoxValue(byvalReturnValue);
+					}
+				}
+				return BoxValue(node);
+			}
+
+			Ptr<JsonObject> CreatePlainRpcException(Ptr<JsonNode> node)
+			{
+				auto object = GetJsonObject(node);
+				auto result = CreateJsonObject();
+				AddJsonObjectField(result, WString::Unmanaged(L"message"), GetJsonObjectField(object, WString::Unmanaged(L"message")));
+				return result;
+			}
+
+			Ptr<JsonObject> CreateSerializedRpcException(Ptr<JsonNode> node)
+			{
+				auto object = GetJsonObject(node);
+				auto result = CreateJsonObject();
+				AddJsonObjectField(result, WString::Unmanaged(L"$"), CreateJsonString(WString::Unmanaged(L"system::RpcException")));
+				AddJsonObjectField(result, WString::Unmanaged(L"message"), GetJsonObjectField(object, WString::Unmanaged(L"message")));
+				return result;
+			}
+
+			vint ReadSerializedEventExceptionKey(Ptr<JsonNode> node)
+			{
+				if (auto number = node.Cast<JsonNumber>())
+				{
+					return __vwsn::Parse<vint>(number->content.value);
+				}
+				auto tuple = GetJsonArray(node);
+				CHECK_ERROR(tuple->items.Count() == 2, L"RPC event exception key tuple is expected.");
+				return __vwsn::Parse<vint>(GetJsonNumber(tuple->items[1]));
+			}
+
+			Ptr<JsonNode> CreateEventExceptionResponse(Ptr<JsonNode> serialized)
+			{
+				if (auto literal = serialized.Cast<JsonLiteral>())
+				{
+					CHECK_ERROR(literal->value == JsonLiteralValue::Null, L"RPC event exception map should be null or a map.");
+					return serialized;
+				}
+
+				auto object = GetJsonObject(serialized);
+				CHECK_ERROR(GetJsonString(GetJsonObjectField(object, WString::Unmanaged(L"$"))) == WString::Unmanaged(L"map"), L"RPC event exception map is expected.");
+				auto values = GetJsonArray(GetJsonObjectField(object, WString::Unmanaged(L"values")));
+				auto result = CreateJsonArray();
+				for (auto item : values->items)
+				{
+					auto pair = GetJsonArray(item);
+					CHECK_ERROR(pair->items.Count() == 2, L"RPC event exception map pair is expected.");
+					auto resultPair = CreateJsonArray();
+					resultPair->items.Add(CreateJsonNumber(ReadSerializedEventExceptionKey(pair->items[0])));
+					resultPair->items.Add(CreatePlainRpcException(pair->items[1]));
+					result->items.Add(resultPair);
+				}
+				return result;
+			}
+
+			Ptr<JsonNode> CreateSerializedEventExceptionMap(Ptr<JsonNode> response)
+			{
+				if (auto literal = response.Cast<JsonLiteral>())
+				{
+					CHECK_ERROR(literal->value == JsonLiteralValue::Null, L"RPC event exception response should be null or an array.");
+					return response;
+				}
+
+				auto array = GetJsonArray(response);
+				auto object = CreateJsonObject();
+				AddJsonObjectField(object, WString::Unmanaged(L"$"), CreateJsonString(WString::Unmanaged(L"map")));
+				auto values = CreateJsonArray();
+				const auto keyType = sizeof(vint) == sizeof(vint64_t) ? WString::Unmanaged(L"Int64") : WString::Unmanaged(L"Int32");
+				for (auto item : array->items)
+				{
+					auto pair = GetJsonArray(item);
+					CHECK_ERROR(pair->items.Count() == 2, L"RPC event exception response pair is expected.");
+					auto valuePair = CreateJsonArray();
+					valuePair->items.Add(CreateUnknownTuple(keyType, CreateJsonNumber(GetJsonNumber(pair->items[0]))));
+					valuePair->items.Add(CreateSerializedRpcException(pair->items[1]));
+					values->items.Add(valuePair);
+				}
+				AddJsonObjectField(object, WString::Unmanaged(L"values"), values);
+				return object;
+			}
 		}
 
 		Ptr<JsonNode> JsonSerializePredefinedTypes(const Value& value, const RpcJsonSerializeCallback& rpcjson_Serialize)
@@ -399,6 +638,227 @@ namespace vl
 			}
 
 			CHECK_FAIL(L"Unsupported RPC JSON node.");
+		}
+
+/***********************************************************************
+* RpcJsonObjectOps
+***********************************************************************/
+
+		RpcJsonObjectOps::RpcJsonObjectOps(IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer)
+			: dispatcher(_dispatcher)
+			, serializer(_serializer)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectOps::RpcJsonObjectOps(...)#"
+			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		RpcJsonObjectOps::RpcJsonObjectOps(vint _sourceClientId, vint _targetClientId, IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer, IRpcLifecycle* _lifecycle)
+			: sourceClientId(_sourceClientId)
+			, targetClientId(_targetClientId)
+			, dispatcher(_dispatcher)
+			, serializer(_serializer)
+			, lifecycle(_lifecycle)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectOps::RpcJsonObjectOps(...)#"
+			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		RpcJsonObjectOps::~RpcJsonObjectOps()
+		{
+		}
+
+		Value RpcJsonObjectOps::InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<IValueArray> arguments)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectOps::InvokeMethod(RpcObjectReference, vint, Ptr<IValueArray>)#"
+			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
+			auto request = CreateRpcMessage(WString::Unmanaged(L"IObjectOps_InvokeMethod"), dispatcher->AllocateRequestId(), sourceClientId);
+			AddJsonObjectField(request, WString::Unmanaged(L"targetClientId"), CreateJsonNumber(targetClientId == RpcClientId_Invalid ? ref.clientId : targetClientId));
+			AddJsonObjectField(request, WString::Unmanaged(L"ref"), CreateRpcObjectReferenceJson(ref));
+			AddJsonObjectField(request, WString::Unmanaged(L"methodId"), CreateJsonNumber(methodId));
+			AddJsonObjectField(request, WString::Unmanaged(L"arguments"), ValueArrayToJsonArray(arguments, serializer));
+
+			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
+			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectOps_InvokeMethod"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
+			CHECK_ERROR(ReadRequestId(response) == ReadRequestId(request), ERROR_MESSAGE_PREFIX L"Unexpected response request id.");
+			return JsonResponseToMethodResult(GetJsonObjectField(response, WString::Unmanaged(L"response")));
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RpcJsonObjectOps::EndInvokeMethod(vint slot)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectOps::EndInvokeMethod(vint)#"
+			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
+			auto request = CreateRpcMessage(WString::Unmanaged(L"IObjectOps_EndInvokeMethod"), dispatcher->AllocateRequestId(), sourceClientId);
+			AddJsonObjectField(request, WString::Unmanaged(L"targetClientId"), CreateJsonNumber(targetClientId));
+			AddJsonObjectField(request, WString::Unmanaged(L"slot"), CreateJsonNumber(slot));
+
+			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
+			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectOps_EndInvokeMethod"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
+			CHECK_ERROR(ReadRequestId(response) == ReadRequestId(request), ERROR_MESSAGE_PREFIX L"Unexpected response request id.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RpcJsonObjectOps::ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectOps::ObjectHold(RpcObjectReference, vint, bool)#"
+			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
+			auto request = CreateRpcMessage(WString::Unmanaged(L"IObjectOps_ObjectHold"), dispatcher->AllocateRequestId(), sourceClientId == RpcClientId_Invalid ? remoteClientId : sourceClientId);
+			AddJsonObjectField(request, WString::Unmanaged(L"targetClientId"), CreateJsonNumber(targetClientId == RpcClientId_Invalid ? ref.clientId : targetClientId));
+			AddJsonObjectField(request, WString::Unmanaged(L"ref"), CreateRpcObjectReferenceJson(ref));
+			AddJsonObjectField(request, WString::Unmanaged(L"remoteClientId"), CreateJsonNumber(remoteClientId));
+			AddJsonObjectField(request, WString::Unmanaged(L"hold"), CreateJsonBool(hold));
+
+			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
+			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectOps_ObjectHold"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
+			CHECK_ERROR(ReadRequestId(response) == ReadRequestId(request), ERROR_MESSAGE_PREFIX L"Unexpected response request id.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		void RpcJsonObjectOps::RegisterService(vint typeId, Ptr<IDescriptable> service)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectOps::RegisterService(vint, Ptr<IDescriptable>)#"
+			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
+			CHECK_ERROR(lifecycle, ERROR_MESSAGE_PREFIX L"Lifecycle is required.");
+			auto serviceRef = lifecycle->PtrToRef(service);
+			auto request = CreateRpcMessage(WString::Unmanaged(L"IObjectOps_RegisterService"), dispatcher->AllocateRequestId(), sourceClientId == RpcClientId_Invalid ? serviceRef.clientId : sourceClientId);
+			AddJsonObjectField(request, WString::Unmanaged(L"targetClientId"), CreateJsonNumber(targetClientId == RpcClientId_Invalid ? serviceRef.clientId : targetClientId));
+			AddJsonObjectField(request, WString::Unmanaged(L"typeId"), CreateJsonNumber(typeId));
+			AddJsonObjectField(request, WString::Unmanaged(L"service"), CreateRpcObjectReferenceJson(serviceRef));
+
+			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
+			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectOps_RegisterService"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
+			CHECK_ERROR(ReadRequestId(response) == ReadRequestId(request), ERROR_MESSAGE_PREFIX L"Unexpected response request id.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		Ptr<JsonNode> RpcJsonObjectOps::Translate(Ptr<JsonNode> message, IRpcObjectOps* ops, IRpcLifecycle* lifecycle)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectOps::Translate(Ptr<JsonNode>, IRpcObjectOps*)#"
+			CHECK_ERROR(ops, ERROR_MESSAGE_PREFIX L"Object ops is required.");
+			auto request = GetJsonObject(message);
+			auto rpcMethod = GetJsonString(GetJsonObjectField(request, WString::Unmanaged(L"rpcMethod")));
+			auto requestId = ReadRequestId(request);
+			auto sourceClientId = ReadSourceClientId(request);
+			auto targetClientId = ReadTargetClientId(request);
+			auto response = CreateRpcMessage(rpcMethod, requestId, targetClientId);
+			AddJsonObjectField(response, WString::Unmanaged(L"targetClientId"), CreateJsonNumber(sourceClientId));
+
+			if (rpcMethod == WString::Unmanaged(L"IObjectOps_InvokeMethod"))
+			{
+				auto result = ops->InvokeMethod(
+					GetRpcObjectReferenceFromJson(GetJsonObjectField(request, WString::Unmanaged(L"ref"))),
+					GetJsonInt(GetJsonObjectField(request, WString::Unmanaged(L"methodId"))),
+					JsonArrayToValueArray(GetJsonObjectField(request, WString::Unmanaged(L"arguments")))
+					);
+				AddJsonObjectField(response, WString::Unmanaged(L"response"), MethodResultToJsonResponse(result));
+			}
+			else if (rpcMethod == WString::Unmanaged(L"IObjectOps_EndInvokeMethod"))
+			{
+				ops->EndInvokeMethod(GetJsonInt(GetJsonObjectField(request, WString::Unmanaged(L"slot"))));
+			}
+			else if (rpcMethod == WString::Unmanaged(L"IObjectOps_ObjectHold"))
+			{
+				ops->ObjectHold(
+					GetRpcObjectReferenceFromJson(GetJsonObjectField(request, WString::Unmanaged(L"ref"))),
+					GetJsonInt(GetJsonObjectField(request, WString::Unmanaged(L"remoteClientId"))),
+					GetJsonBool(GetJsonObjectField(request, WString::Unmanaged(L"hold")))
+					);
+			}
+			else if (rpcMethod == WString::Unmanaged(L"IObjectOps_RegisterService"))
+			{
+				CHECK_ERROR(lifecycle, ERROR_MESSAGE_PREFIX L"Lifecycle is required to translate RegisterService.");
+				ops->RegisterService(
+					GetJsonInt(GetJsonObjectField(request, WString::Unmanaged(L"typeId"))),
+					lifecycle->RefToPtr(GetRpcObjectReferenceFromJson(GetJsonObjectField(request, WString::Unmanaged(L"service"))))
+					);
+			}
+			else
+			{
+				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unexpected RPC method.");
+			}
+			return response;
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+/***********************************************************************
+* RpcJsonObjectEventOps
+***********************************************************************/
+
+		RpcJsonObjectEventOps::RpcJsonObjectEventOps(IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer)
+			: dispatcher(_dispatcher)
+			, serializer(_serializer)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectEventOps::RpcJsonObjectEventOps(...)#"
+			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		RpcJsonObjectEventOps::RpcJsonObjectEventOps(vint _sourceClientId, IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer)
+			: sourceClientId(_sourceClientId)
+			, dispatcher(_dispatcher)
+			, serializer(_serializer)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectEventOps::RpcJsonObjectEventOps(...)#"
+			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		RpcJsonObjectEventOps::~RpcJsonObjectEventOps()
+		{
+		}
+
+		Value RpcJsonObjectEventOps::InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<IValueArray> arguments)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectEventOps::InvokeEvent(RpcObjectReference, vint, Ptr<IValueArray>)#"
+			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
+			auto request = CreateRpcMessage(WString::Unmanaged(L"IObjectEventOps_InvokeEvent"), dispatcher->AllocateRequestId(), sourceClientId);
+			AddJsonObjectField(request, WString::Unmanaged(L"ref"), CreateRpcObjectReferenceJson(ref));
+			AddJsonObjectField(request, WString::Unmanaged(L"eventId"), CreateJsonNumber(eventId));
+			AddJsonObjectField(request, WString::Unmanaged(L"arguments"), ValueArrayToJsonArray(arguments, serializer));
+
+			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
+			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectEventOps_InvokeEvent"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
+			CHECK_ERROR(ReadRequestId(response) == ReadRequestId(request), ERROR_MESSAGE_PREFIX L"Unexpected response request id.");
+			return BoxValue(CreateSerializedEventExceptionMap(GetJsonObjectField(response, WString::Unmanaged(L"response"))));
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		Ptr<JsonNode> RpcJsonObjectEventOps::Translate(Ptr<JsonNode> message, IRpcObjectEventOps* ops)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectEventOps::Translate(Ptr<JsonNode>, IRpcObjectEventOps*)#"
+			CHECK_ERROR(ops, ERROR_MESSAGE_PREFIX L"Object event ops is required.");
+			auto request = GetJsonObject(message);
+			auto rpcMethod = GetJsonString(GetJsonObjectField(request, WString::Unmanaged(L"rpcMethod")));
+			CHECK_ERROR(rpcMethod == WString::Unmanaged(L"IObjectEventOps_InvokeEvent"), ERROR_MESSAGE_PREFIX L"Unexpected RPC method.");
+			auto requestId = ReadRequestId(request);
+			auto sourceClientId = ReadSourceClientId(request);
+			auto response = CreateRpcMessage(rpcMethod, requestId, RpcClientId_Invalid);
+			AddJsonObjectField(response, WString::Unmanaged(L"targetClientId"), CreateJsonNumber(sourceClientId));
+
+			auto result = ops->InvokeEvent(
+				GetRpcObjectReferenceFromJson(GetJsonObjectField(request, WString::Unmanaged(L"ref"))),
+				GetJsonInt(GetJsonObjectField(request, WString::Unmanaged(L"eventId"))),
+				JsonArrayToValueArray(GetJsonObjectField(request, WString::Unmanaged(L"arguments")))
+				);
+			AddJsonObjectField(response, WString::Unmanaged(L"response"), CreateEventExceptionResponse(ValueToJsonNode(result, nullptr)));
+			return response;
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+/***********************************************************************
+* Request Id
+***********************************************************************/
+
+		vint ReadRequestId(Ptr<JsonNode> message)
+		{
+			return GetJsonInt(GetJsonObjectField(GetJsonObject(message), WString::Unmanaged(L"rpcRequestId")));
+		}
+
+		void WriteRequestId(Ptr<JsonNode> message, vint requestId)
+		{
+			SetJsonObjectField(GetJsonObject(message), WString::Unmanaged(L"rpcRequestId"), CreateJsonNumber(requestId));
 		}
 	}
 }

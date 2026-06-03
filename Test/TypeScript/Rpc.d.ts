@@ -55,6 +55,7 @@ export type RpcEventExceptionMap =
 export interface IObjectOps_InvokeMethod_Request<T>
 {
   rpcMethod: "IObjectOps_InvokeMethod";
+  rpcRequestId: number;
   sourceClientId: number;
   targetClientId: number;
   ref: system_RpcObjectReference;
@@ -65,6 +66,7 @@ export interface IObjectOps_InvokeMethod_Request<T>
 export interface IObjectOps_InvokeMethod_Response<T>
 {
   rpcMethod: "IObjectOps_InvokeMethod";
+  rpcRequestId: number;
   sourceClientId: number;
   targetClientId: number;
   response: T | system_RpcByvalReturnValue<T>;
@@ -73,6 +75,7 @@ export interface IObjectOps_InvokeMethod_Response<T>
 export interface IObjectOps_EndInvokeMethod_Request
 {
   rpcMethod: "IObjectOps_EndInvokeMethod";
+  rpcRequestId: number;
   sourceClientId: number;
   targetClientId: number;
   slot: number;
@@ -81,6 +84,7 @@ export interface IObjectOps_EndInvokeMethod_Request
 export interface IObjectOps_EndInvokeMethod_Response
 {
   rpcMethod: "IObjectOps_EndInvokeMethod";
+  rpcRequestId: number;
   sourceClientId: number;
   targetClientId: number;
 }
@@ -88,6 +92,7 @@ export interface IObjectOps_EndInvokeMethod_Response
 export interface IObjectOps_ObjectHold_Request
 {
   rpcMethod: "IObjectOps_ObjectHold";
+  rpcRequestId: number;
   sourceClientId: number;
   targetClientId: number;
   ref: system_RpcObjectReference;
@@ -98,6 +103,7 @@ export interface IObjectOps_ObjectHold_Request
 export interface IObjectOps_ObjectHold_Response
 {
   rpcMethod: "IObjectOps_ObjectHold";
+  rpcRequestId: number;
   sourceClientId: number;
   targetClientId: number;
 }
@@ -105,6 +111,7 @@ export interface IObjectOps_ObjectHold_Response
 export interface IObjectOps_RegisterService_Request
 {
   rpcMethod: "IObjectOps_RegisterService";
+  rpcRequestId: number;
   sourceClientId: number;
   targetClientId: number;
   typeId: number;
@@ -114,6 +121,7 @@ export interface IObjectOps_RegisterService_Request
 export interface IObjectOps_RegisterService_Response
 {
   rpcMethod: "IObjectOps_RegisterService";
+  rpcRequestId: number;
   sourceClientId: number;
   targetClientId: number;
 }
@@ -121,6 +129,7 @@ export interface IObjectOps_RegisterService_Response
 export interface IObjectEventOps_InvokeEvent_Request<T>
 {
   rpcMethod: "IObjectEventOps_InvokeEvent";
+  rpcRequestId: number;
   sourceClientId: number;
   ref: system_RpcObjectReference;
   eventId: number;
@@ -130,6 +139,7 @@ export interface IObjectEventOps_InvokeEvent_Request<T>
 export interface IObjectEventOps_InvokeEvent_Response
 {
   rpcMethod: "IObjectEventOps_InvokeEvent";
+  rpcRequestId: number;
   sourceClientId: number;
   targetClientId: number;
   response: RpcEventExceptionMap;

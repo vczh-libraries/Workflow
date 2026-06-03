@@ -65,6 +65,7 @@ Predefined Types
 			F(vl::rpc_controller::RpcException)\
 			F(vl::rpc_controller::RpcByvalReturnValue)\
 			F(vl::rpc_controller::IRpcSerializer)\
+			F(vl::rpc_controller::IRpcJsonMessageDispatcher)\
 			F(vl::rpc_controller::IRpcListOps)\
 			F(vl::rpc_controller::IRpcListEventOps)\
 			F(vl::rpc_controller::IRpcObjectOps)\
@@ -107,6 +108,18 @@ Interface Implementation Proxy (Implement)
 					INVOKEGET_INTERFACE_PROXY(Deserialize, value);
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcSerializer)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcJsonMessageDispatcher)
+				vl::vint AllocateRequestId()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(AllocateRequestId);
+				}
+
+				vl::Ptr<vl::glr::json::JsonNode> OnJsonRequest(vl::Ptr<vl::glr::json::JsonNode> message)override
+				{
+					INVOKEGET_INTERFACE_PROXY(OnJsonRequest, message);
+				}
+			END_INTERFACE_PROXY(vl::rpc_controller::IRpcJsonMessageDispatcher)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcListOps)
 				vl::rpc_controller::RpcObjectReference EnumCreate(vl::rpc_controller::RpcObjectReference ref)override
