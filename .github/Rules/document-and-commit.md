@@ -8,11 +8,16 @@
     - Second commit has all new files that not created by you (aka auto generated), focus on *.txt files. The commit title would be the first commit appending ` [txt]`
     - Third commit has all new files that not created by you (aka auto generated), focus on the rest. The commit title would be the first commit appending ` [generated]`
     - Typical folders for generated files:
-      - `Test\Generated`
-      - `Test\SourceCppGen`
-      - `Test\SourceCppGenRpc`
-      - `Test\UnitTest\Generated_*`
+      - `Test/Generated`
+      - `Test/SourceCppGen`
+      - `Test/SourceCppGenRpc`
+      - `Test/UnitTest\Generated_*`
+      - `Test/TypeScript/Json*`
   - Otherwise, One commit is good.
+  - Pay attention when `investigate.prompt.md` is tagged, if it is a multi-tasks request:
+    - Check out the  `## Git Commits and Multi-Task Request` session.
+    - Commits structure here are for each separate task.
+    - You are required to perform a task and immediately push changes, before touching the next task.
 
 ## RPC Specific
 
@@ -21,7 +26,3 @@
   - `TODO_RPC_Definition.md`
   - `TODO_RPC_Json.md`
   - `TODO_RPC_GeneratedWrappers.md`
-
-## Multi-Tasks Request
-
-Pay attention when `investigate.prompt.md` is tagged, if it is a multi-tasks request, each task might require to create commits separately.
