@@ -15,8 +15,6 @@ namespace vl
 {
 	namespace rpc_controller
 	{
-		class IRpcSerializer;
-
 		constexpr vint RpcTypeId_NotFound = -100;
 		constexpr vint RpcClientId_Invalid = -1;
 		constexpr vint RpcObjectId_Invalid = -1;
@@ -80,6 +78,19 @@ namespace vl
 		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_GetValues = -20;
 
 		inline constexpr vint				RpcEventId_IValueObservableList_ItemChanged = -1;
+
+/***********************************************************************
+* Interfaces (Serialization)
+***********************************************************************/
+
+		class IRpcSerializer
+			: public virtual reflection::IDescriptable
+			, public reflection::Description<IRpcSerializer>
+		{
+		public:
+			virtual reflection::description::Value					Serialize(const reflection::description::Value& value) = 0;
+			virtual reflection::description::Value					Deserialize(const reflection::description::Value& value) = 0;
+		};
 
 /***********************************************************************
 * Interfaces (Operations)

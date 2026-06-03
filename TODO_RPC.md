@@ -19,12 +19,8 @@
 - Redirect list ops to object ops.
   - Review
   - Test case to handle `IRpcListOps` exceptions.
-- JSON schema for rpc interfaces.
-  - JSON async dispatcher with JSON channel
-  - logging from JSON channel
-  - Triple threading demo only for metaonly. Meanwhile no reflection logs JSON values.
-  - TeatCasesRpc.h test macros and include different header files.
 - Review JSON related constructions.
+- Review `RpcDualJsonDispatcherMock.h` for `CppTest_Metaonly`.
 - Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
 - Consider how to run a CLI based dual processes demo to test RPC.
 

@@ -17,19 +17,6 @@ namespace vl
 	{
 
 /***********************************************************************
-* Serialization
-***********************************************************************/
-
-		class IRpcSerializer
-			: public virtual reflection::IDescriptable
-			, public reflection::Description<IRpcSerializer>
-		{
-		public:
-			virtual reflection::description::Value					Serialize(const reflection::description::Value& value) = 0;
-			virtual reflection::description::Value					Deserialize(const reflection::description::Value& value) = 0;
-		};
-
-/***********************************************************************
 * Collection Caller Wrappers
 ***********************************************************************/
 
