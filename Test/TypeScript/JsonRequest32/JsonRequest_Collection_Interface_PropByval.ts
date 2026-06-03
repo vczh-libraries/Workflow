@@ -1,0 +1,33 @@
+﻿import type { KnownTypeSchema, UnknownTypeSchema } from "./Serialization_Collection_Interface_PropByval";
+import type { Request, Response } from "../Rpc";
+
+export const json : (Request<KnownTypeSchema | UnknownTypeSchema> | Response<KnownTypeSchema | UnknownTypeSchema>)[] = [
+  {"rpcMethod":"IObjectOps_ObjectHold","rpcRequestId":1,"sourceClientId":2,"targetClientId":1,"ref":{"clientId":1,"objectId":0,"typeId":0},"remoteClientId":2,"hold":true},
+  {"rpcMethod":"IObjectOps_ObjectHold","rpcRequestId":1,"sourceClientId":1,"targetClientId":2},
+  {"rpcMethod":"IObjectOps_InvokeMethod","rpcRequestId":2,"sourceClientId":2,"targetClientId":1,"ref":{"clientId":1,"objectId":0,"typeId":0},"methodId":2,"arguments":[{"$":"list","values":[{"$":"system::RpcObjectReference","clientId":2,"objectId":0,"typeId":3},{"$":"system::RpcObjectReference","clientId":2,"objectId":1,"typeId":3},{"$":"system::RpcObjectReference","clientId":2,"objectId":2,"typeId":3}]}]},
+  {"rpcMethod":"IObjectOps_ObjectHold","rpcRequestId":3,"sourceClientId":1,"targetClientId":2,"ref":{"clientId":2,"objectId":0,"typeId":3},"remoteClientId":1,"hold":true},
+  {"rpcMethod":"IObjectOps_ObjectHold","rpcRequestId":3,"sourceClientId":2,"targetClientId":1},
+  {"rpcMethod":"IObjectOps_ObjectHold","rpcRequestId":4,"sourceClientId":1,"targetClientId":2,"ref":{"clientId":2,"objectId":1,"typeId":3},"remoteClientId":1,"hold":true},
+  {"rpcMethod":"IObjectOps_ObjectHold","rpcRequestId":4,"sourceClientId":2,"targetClientId":1},
+  {"rpcMethod":"IObjectOps_ObjectHold","rpcRequestId":5,"sourceClientId":1,"targetClientId":2,"ref":{"clientId":2,"objectId":2,"typeId":3},"remoteClientId":1,"hold":true},
+  {"rpcMethod":"IObjectOps_ObjectHold","rpcRequestId":5,"sourceClientId":2,"targetClientId":1},
+  {"rpcMethod":"IObjectOps_InvokeMethod","rpcRequestId":2,"sourceClientId":1,"targetClientId":2,"response":null},
+  {"rpcMethod":"IObjectOps_InvokeMethod","rpcRequestId":6,"sourceClientId":2,"targetClientId":1,"ref":{"clientId":1,"objectId":0,"typeId":0},"methodId":1,"arguments":[]},
+  {"rpcMethod":"IObjectOps_InvokeMethod","rpcRequestId":6,"sourceClientId":1,"targetClientId":2,"response":{"value":{"$":"list","values":[{"$":"system::RpcObjectReference","clientId":2,"objectId":0,"typeId":3},{"$":"system::RpcObjectReference","clientId":2,"objectId":1,"typeId":3},{"$":"system::RpcObjectReference","clientId":2,"objectId":2,"typeId":3},{"$":"system::RpcObjectReference","clientId":1,"objectId":1,"typeId":3}]},"slot":0}},
+  {"rpcMethod":"IObjectOps_ObjectHold","rpcRequestId":7,"sourceClientId":2,"targetClientId":1,"ref":{"clientId":1,"objectId":1,"typeId":3},"remoteClientId":2,"hold":true},
+  {"rpcMethod":"IObjectOps_ObjectHold","rpcRequestId":7,"sourceClientId":1,"targetClientId":2},
+  {"rpcMethod":"IObjectOps_EndInvokeMethod","rpcRequestId":8,"sourceClientId":2,"targetClientId":1,"slot":0},
+  {"rpcMethod":"IObjectOps_EndInvokeMethod","rpcRequestId":8,"sourceClientId":1,"targetClientId":2},
+  {"rpcMethod":"IObjectOps_InvokeMethod","rpcRequestId":9,"sourceClientId":1,"targetClientId":2,"ref":{"clientId":2,"objectId":0,"typeId":3},"methodId":4,"arguments":[]},
+  {"rpcMethod":"IObjectOps_InvokeMethod","rpcRequestId":9,"sourceClientId":2,"targetClientId":1,"response":"1"},
+  {"rpcMethod":"IObjectOps_InvokeMethod","rpcRequestId":10,"sourceClientId":1,"targetClientId":2,"ref":{"clientId":2,"objectId":1,"typeId":3},"methodId":4,"arguments":[]},
+  {"rpcMethod":"IObjectOps_InvokeMethod","rpcRequestId":10,"sourceClientId":2,"targetClientId":1,"response":"2"},
+  {"rpcMethod":"IObjectOps_InvokeMethod","rpcRequestId":11,"sourceClientId":1,"targetClientId":2,"ref":{"clientId":2,"objectId":2,"typeId":3},"methodId":4,"arguments":[]},
+  {"rpcMethod":"IObjectOps_InvokeMethod","rpcRequestId":11,"sourceClientId":2,"targetClientId":1,"response":"3"},
+  {"rpcMethod":"IObjectOps_InvokeMethod","rpcRequestId":12,"sourceClientId":2,"targetClientId":1,"ref":{"clientId":1,"objectId":1,"typeId":3},"methodId":4,"arguments":[]},
+  {"rpcMethod":"IObjectOps_InvokeMethod","rpcRequestId":12,"sourceClientId":1,"targetClientId":2,"response":"4"},
+  {"rpcMethod":"IObjectOps_ObjectHold","rpcRequestId":13,"sourceClientId":2,"targetClientId":1,"ref":{"clientId":1,"objectId":1,"typeId":3},"remoteClientId":2,"hold":false},
+  {"rpcMethod":"IObjectOps_ObjectHold","rpcRequestId":13,"sourceClientId":1,"targetClientId":2},
+  {"rpcMethod":"IObjectOps_ObjectHold","rpcRequestId":14,"sourceClientId":2,"targetClientId":1,"ref":{"clientId":1,"objectId":0,"typeId":0},"remoteClientId":2,"hold":false},
+  {"rpcMethod":"IObjectOps_ObjectHold","rpcRequestId":14,"sourceClientId":1,"targetClientId":2}
+];
