@@ -18,6 +18,7 @@
 - Validate expectations against implementation and existing tests [2]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [2]
 - Treat Debug memory leak dumps as required failures [2]
+- Proactively remove code made redundant by refactoring [2]
 - Prefer well-defined tests over ambiguous edge cases [1]
 - Prefer `operator<=> = default` for lexicographic key structs [1]
 - Prefer two-pointer merge for sorted range maps [1]
@@ -35,7 +36,6 @@
 - `collections::List` has deleted copy constructor; use `std::move()` for structs with `List` members [1]
 - Compare type descriptors by pointer when descriptor identity is available [1]
 - Parse and validate before queuing asynchronous work [1]
-- Proactively remove code made redundant by refactoring [2]
 - Keep design documentation aligned with code after refactoring [1]
 
 # Refinements
