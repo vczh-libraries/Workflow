@@ -3,8 +3,8 @@
 # Orders
 
 - Avoid explicit Workflow types/casts when implicit typing works [5]
+- Remove pure RPC redirection layers once dispatcher/ops can own the call [4]
 - Read and aggregate RPC event exception maps through `IRpcLifecycle::ReadEventException` [3]
-- Remove pure RPC redirection layers once dispatcher/ops can own the call [3]
 - Generated RPC test id maps must come from `rpc_GetIds()` / `SetIdMap` [2]
 - Keep RPC-specific fixes out of generic C++ / Workflow codegen surfaces [2]
 - Interpret `IRpcWrapperBase` as remote-wrapper identity [2]
@@ -20,6 +20,7 @@
 - Delegate predefined RPC JSON handling to C++ static helpers [2]
 - Propagate RPC method exceptions via `system::RpcException` [2]
 - Keep Workflow library helpers out-of-line with explicit `extern` [2]
+- Keep TypeScript RPC dispatcher envelopes separate from value schemas [2]
 - Apply `RunRpcTestCase` changes to every harness variant [1]
 - Keep RPC JSON test harness setup under `VCZH_DEBUG_NO_REFLECTION` [1]
 - Use generated strong typed RPC ops for event listeners [1]
@@ -53,9 +54,10 @@
 - Keep RPC wrapper generation recursive across inherited interface members [1]
 - Reject RPC internal transport structs from user RPC signatures [1]
 - Workflow catch variables are `system::Exception^`; use `.Message` [1]
-- Keep TypeScript RPC dispatcher envelopes separate from value schemas [1]
 - Prefix generated RPC C++ file names to avoid basename collisions [1]
 - Prefer generic `BoxValue`/`UnboxValue` over specialized RPC box/unbox helpers [1]
+- Keep shared Workflow test output path helpers in `Helper.h` / `Helper.cpp` [1]
+- Use request-envelope adapters for RPC JSON dispatcher paths [1]
 
 # Refinements
 
@@ -88,6 +90,8 @@ All RPC wrappers, including predefined collection wrappers and generated interfa
 Classes such as lifecycle adapters or object-op redirection wrappers should be removed when they only forward to another object without owning behavior. Prefer direct registration through the controller, dispatcher, or generated ops implementation that already has the required authority.
 
 This extends to dispatcher transport methods that exist only for a redirected layer. Once `IRpcListOps` / `IRpcListEventOps` are pure caller/callee adapters over object ops, delete the list-specific dispatcher methods (`IRpcDispatcher::BroadcastFromClient_ListEventOps`, `IRpcDispatcher::SendToClient_ListOps`) and their reflection registration and mocks. Build `RpcCallerListOps` from `IRpcDispatcher::SendToClient_ObjectOps` and `RpcCallerListEventOps` from `IRpcDispatcher::BroadcastFromClient_ObjectEventOps`. Because `InvokeListMethod` already calls `ReadMethodResult`, `RpcCallerListOps` methods must not call `ReadMethodResult` again.
+
+For the dual-lifecycle RPC test dispatcher, the flat path has exactly two lifecycles. `RpcDualDispatcherMockBase::BroadcastFromClient_ObjectEventOps` can directly return the other lifecycle controller's `GetObjectEventOps()`, and `RpcDualDispatcherMock` does not need cached flat object/event wrapper fields if it becomes identical to the base dispatcher. Keep service registry, finalization, object hold/unhold routing, and JSON-recording wrappers that still own output capture behavior.
 
 ## Keep RPC service lookup in `IRpcDispatcher` and register ops locally
 
@@ -275,6 +279,8 @@ Workflow `catch (ex)` variables are exception objects. When a script needs the t
 
 `Test/TypeScript/Rpc.d.ts` owns the shared dispatcher envelope schema for `IRpcListOps`, `IRpcObjectOps`, `IRpcListEventOps`, and `IRpcObjectEventOps`. Generated `Serialization_*.d.ts` files own concrete value schemas; connect the two with a generic payload type such as `KnownTypeSchema | UnknownTypeSchema`, and only add `<T>` to envelope interfaces that actually carry serialized payloads. `SendToClient_*` requests include `targetClientId`, broadcast requests omit it, and all responses include both `sourceClientId` and `targetClientId`.
 
+Every dispatcher request and response envelope should carry `rpcRequestId: number`. Caller-side request construction should allocate/write a request id, callee-side translation should reuse that id in the response, and shared request/response transcript types should remain separate from concrete serialization schemas.
+
 ## Prefix generated RPC C++ file names to avoid basename collisions
 
 Generated RPC C++ include, reflection, and default implementation file names should include the `Rpc` prefix from `TestRpcCompile.cpp` inputs. Once generated file basenames are unique, remove obsolete project `ObjectFileName` rename workarounds and stale Linux vmake exclusions for old collisions such as `Event.cpp` and `Overloading.cpp`.
@@ -282,3 +288,11 @@ Generated RPC C++ include, reflection, and default implementation file names sho
 ## Prefer generic `BoxValue`/`UnboxValue` over specialized RPC box/unbox helpers
 
 `BoxValue` and `UnboxValue` already handle null and cover the RPC transport payloads, so do not keep parallel specialized helpers. Remove `BoxRpcObjectReference`, `BoxRpcException`, `BoxRpcEventExceptionMap`, `UnboxRpcEventExceptionMap`, `BoxPrimitiveArgument`, `UnboxPrimitiveArgument`, and `CreateRpcEventExceptionMap` (a pure rename), and replace call sites with `BoxValue`, `UnboxValue`, and `IValueDictionary::Create`. Drop the now-redundant nullptr tests across `Source/Library/Rpc` because the generic helpers already accept null. This is distinct from `RpcBoxByref` / `RpcUnboxByref`, which stay interface-only for byref shared pointers.
+
+## Keep shared Workflow test output path helpers in `Helper.h` / `Helper.cpp`
+
+Path helpers used by Workflow test components should live beside the other shared test path helpers in `Test/Source/Helper.h` and `Test/Source/Helper.cpp`, not as private copies inside a dispatcher mock. For JSON value output, keep the Windows Win32/x64 layout consistent with the other helpers, but make the GCC/Linux branch return only the x64 path because Linux tests do not run x86.
+
+## Use request-envelope adapters for RPC JSON dispatcher paths
+
+`RpcJsonObjectOps` and `RpcJsonObjectEventOps` should adapt generated JSON ops to `IRpcJsonMessageDispatcher` request/response envelopes. Caller-side methods build `Rpc.d.ts` request objects, write or allocate `rpcRequestId`, call `OnJsonRequest`, and decode the response payload back into the `JsonNode`-boxed shape expected by generated wrappers. Static `Translate` methods perform the reverse: parse the request envelope, invoke the target ops interface, normalize exceptions or byval-return data as needed, and build a response envelope that reuses the request id.

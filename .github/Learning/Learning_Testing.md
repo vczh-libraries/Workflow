@@ -2,16 +2,16 @@
 
 # Orders
 
+- Run TypeScript RPC schema verification after JSON or dispatcher-schema changes [8]
 - Wire generated RPC C++ files into shared vcxitems after `CompilerTest_LoadAndCompile` [7]
 - Compare `RuntimeTest` and `CppTest*` failures before choosing an RPC root cause [6]
-- Run TypeScript RPC schema verification after JSON or dispatcher-schema changes [6]
 - Preserve RPC/Workflow sample intent; only adjust syntax or diagnostics [5]
 - RPC byref/byval container samples must verify wrapper/copy semantics at every level [5]
 - Commit direct edits and large generated outputs separately when requested [4]
 - Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder [4]
 - Run `CompilerTest_LoadAndCompile` at least once before downstream RPC generated-C++ tests [4]
 - Split RPC sample definitions and tests consistently [3]
-- Pure refactors should not touch generated RPC outputs [3]
+- Pure refactors should not touch generated RPC outputs [4]
 - Workflow analyzer error tests may change values when preserving the error code [1]
 - Workflow samples use `raise`, not `throw` [1]
 - Workflow range syntax for inclusive generated loops is `range [1, xs.Count]` [1]
@@ -22,6 +22,7 @@
 - Split broad RPC samples by focused behavior [1]
 - Use static scans for Workflow library declaration and inline-refactor checks [1]
 - Verify generated RPC file renames with stale-reference scans [1]
+- Audit RPC JSON request transcripts for request id pairing [1]
 
 # Refinements
 
@@ -69,6 +70,8 @@ When `CompilerTest_LoadAndCompile` runs stably and reports Workflow compile erro
 
 For refactors that only reorganize code or move helper functions, generated RPC files should remain unchanged. If `CompilerTest_LoadAndCompile` updates generated files after such a refactor, investigate the behavior change instead of accepting the diff blindly. Release amalgamation files may still change after the required `Build.ps1 Workflow` step when source files changed.
 
+If `Tools/Tools/Build.ps1 Workflow` rewrites dependency files under `Import` during a pure Workflow refactor, do not keep those generated dependency changes unless the task is explicitly about dependency import syncing. `Project.md` treats `Import` as prepared foreign dependency output, so restore those script-produced `Import` changes after confirming they are unrelated to the requested Workflow change.
+
 ## Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder
 
 Adding a sample to `IndexRpc.txt` is not enough for solution hygiene. Ensure every `Test/Resources/Rpc/*.txt` sample is also included under the `Resource Files/Rpc` folder in the `CompilerTest_LoadAndCompile` project and filters.
@@ -80,6 +83,8 @@ Some compiler generated binaries are not covered by git. Before relying on `Runt
 ## Run TypeScript RPC schema verification after JSON or dispatcher-schema changes
 
 After changing RPC JSON serialization, generated `.d.ts` output, JSON value dumps, or the shared dispatcher schema, run `Test/TypeScript/prepare.ps1` and then `npm run build` in `Test/TypeScript`. When package files or dependencies change, run the package install step first (`npm install` or `npm ci` as appropriate). TypeScript failures often point to real mismatches between generated values and the documented RPC JSON schema.
+
+This also applies when adding JSON request/response transcript folders such as `JsonRequest32` and `JsonRequest64`. Add them to `prepare.ps1` and `tsconfig.json`, then verify the TypeScript package against `Request<KnownTypeSchema | UnknownTypeSchema> | Response<KnownTypeSchema | UnknownTypeSchema>` values.
 
 ## Split RPC sample definitions and tests consistently
 
@@ -104,3 +109,7 @@ For Workflow library header/source cleanup, use static scans alongside builds to
 ## Verify generated RPC file renames with stale-reference scans
 
 After generated RPC C++ file renames, verify that generated-file adds and deletes balance as expected for the rename, `TestCasesRpc.cpp` includes the new names, every path referenced by `Generated_CppRpc.vcxitems` and `Generated_ReflectionRpc.vcxitems` exists, and stale names or old `ObjectFileName` workarounds no longer appear in project, filter, or Linux vmake files.
+
+## Audit RPC JSON request transcripts for request id pairing
+
+When generating `Test/TypeScript/JsonRequest32` and `Test/TypeScript/JsonRequest64`, audit the transcript files in addition to type-checking them. Each test-case file should start request ids at 1, increment per request, and have exactly one response that reuses the matching request id. Sample representative files manually and prefer a small script for the complete per-file audit when many transcripts are generated.
