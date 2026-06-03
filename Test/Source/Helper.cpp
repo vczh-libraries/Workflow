@@ -2,8 +2,48 @@
 #include <windows.h>
 #endif
 
+#ifdef VCZH_DEBUG_NO_REFLECTION
+#include "../../Import/Vlpp.h"
+
+using namespace vl;
+#else
 #include "Helper.h"
 #include "../../Source/Parser/Generated/WorkflowAst_Json.h"
+#endif
+
+#if defined VCZH_MSVC
+WString GetExePath()
+{
+	wchar_t buffer[65536];
+	GetModuleFileName(NULL, buffer, sizeof(buffer) / sizeof(*buffer));
+	vint pos = -1;
+	vint index = 0;
+	while (buffer[index])
+	{
+		if (buffer[index] == L'\\')
+		{
+			pos = index;
+		}
+		index++;
+	}
+	return WString::CopyFrom(buffer, pos + 1);
+}
+#endif
+
+WString GetJsonValueOutputPath()
+{
+#if defined VCZH_MSVC
+#ifdef VCZH_64
+	return GetExePath() + L"..\\..\\..\\TypeScript\\JsonValues64\\";
+#else
+	return GetExePath() + L"..\\..\\TypeScript\\JsonValues32\\";
+#endif
+#elif defined VCZH_GCC
+	return L"../../TypeScript/JsonValues64/";
+#endif
+}
+
+#ifndef VCZH_DEBUG_NO_REFLECTION
 
 WfCpuArchitecture testCpuArchitecture = WfCpuArchitecture::AsExecutable;
 Ptr<workflow::Parser> workflowParser;
@@ -33,25 +73,6 @@ void ReleaseWorkflowTable()
 {
 	workflowParser = nullptr;
 }
-
-#if defined VCZH_MSVC
-WString GetExePath()
-{
-	wchar_t buffer[65536];
-	GetModuleFileName(NULL, buffer, sizeof(buffer) / sizeof(*buffer));
-	vint pos = -1;
-	vint index = 0;
-	while (buffer[index])
-	{
-		if (buffer[index] == L'\\')
-		{
-			pos = index;
-		}
-		index++;
-	}
-	return WString::CopyFrom(buffer, pos + 1);
-}
-#endif
 
 WString GetTestResourcePath()
 {
@@ -603,3 +624,5 @@ void LogSampleAssemblyBinary(const WString& sampleName, const WString& itemName,
 	assembly->Serialize(fileStream);
 	TEST_PRINT(L"    serialized: " + i64tow(fileStream.Size()) + L" bytes");
 }
+
+#endif

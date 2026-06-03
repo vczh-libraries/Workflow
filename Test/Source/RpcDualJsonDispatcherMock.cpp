@@ -1,9 +1,7 @@
-#ifdef _MSC_VER
-#include <windows.h>
-#endif
-
 #include "RpcDualJsonDispatcherMock.h"
 #include "../../Source/Library/Rpc/WfLibraryRpcWrappers.h"
+
+extern vl::WString GetJsonValueOutputPath();
 
 namespace vl
 {
@@ -16,42 +14,6 @@ namespace vl
 
 		namespace
 		{
-#if defined VCZH_MSVC
-			WString GetExePath()
-			{
-				wchar_t buffer[65536];
-				GetModuleFileName(NULL, buffer, sizeof(buffer) / sizeof(*buffer));
-				vint pos = -1;
-				vint index = 0;
-				while (buffer[index])
-				{
-					if (buffer[index] == L'\\')
-					{
-						pos = index;
-					}
-					index++;
-				}
-				return WString::CopyFrom(buffer, pos + 1);
-			}
-#endif
-
-			WString GetJsonValueOutputPath()
-			{
-#if defined VCZH_MSVC
-#ifdef VCZH_64
-				return GetExePath() + L"..\\..\\..\\TypeScript\\JsonValues64\\";
-#else
-				return GetExePath() + L"..\\..\\TypeScript\\JsonValues32\\";
-#endif
-#elif defined VCZH_GCC
-#ifdef VCZH_64
-				return L"../../TypeScript/JsonValues64/";
-#else
-				return L"../../TypeScript/JsonValues32/";
-#endif
-#endif
-			}
-
 			class RpcJsonObjectEventOpsMock : public Object, public IRpcObjectEventOps
 			{
 			private:
@@ -163,7 +125,7 @@ namespace vl
 		void RpcDualJsonDispatcherMock::DumpJsonValues(const WString& itemName)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonDispatcherMock::DumpJsonValues(const WString&)#"
-			auto folderPath = GetJsonValueOutputPath();
+			auto folderPath = ::GetJsonValueOutputPath();
 			filesystem::Folder folder(folderPath);
 			if (!folder.Exists())
 			{
