@@ -21,3 +21,7 @@
   - `TODO_RPC_Definition.md`
   - `TODO_RPC_Json.md`
   - `TODO_RPC_GeneratedWrappers.md`
+
+## Multi-Tasks Request
+
+Pay attention when `investigate.prompt.md` is tagged, if it is a multi-tasks request, each task might require to create commits separately.
