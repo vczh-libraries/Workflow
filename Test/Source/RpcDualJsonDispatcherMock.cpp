@@ -15,6 +15,15 @@ namespace vl
 
 		namespace
 		{
+			WString GetDataSchemaImportPath()
+			{
+#if defined VCZH_64 || defined VCZH_GCC
+				return WString::Unmanaged(L"../DataSchema64/Serialization_");
+#else
+				return WString::Unmanaged(L"../DataSchema32/Serialization_");
+#endif
+			}
+
 			Ptr<JsonObject> GetJsonObject(Ptr<JsonNode> node)
 			{
 				auto object = node.Cast<JsonObject>();
@@ -211,7 +220,8 @@ namespace vl
 			stream::EncoderStream encoderStream(fileStream, encoder);
 			stream::StreamWriter writer(encoderStream);
 
-			writer.WriteString(L"import type { KnownTypeSchema, UnknownTypeSchema } from \"./Serialization_");
+			writer.WriteString(L"import type { KnownTypeSchema, UnknownTypeSchema } from \"");
+			writer.WriteString(GetDataSchemaImportPath());
 			writer.WriteString(itemName);
 			writer.WriteLine(L"\";");
 			writer.WriteLine(L"");
@@ -387,7 +397,8 @@ namespace vl
 			stream::EncoderStream encoderStream(fileStream, encoder);
 			stream::StreamWriter writer(encoderStream);
 
-			writer.WriteString(L"import type { KnownTypeSchema, UnknownTypeSchema } from \"./Serialization_");
+			writer.WriteString(L"import type { KnownTypeSchema, UnknownTypeSchema } from \"");
+			writer.WriteString(GetDataSchemaImportPath());
 			writer.WriteString(itemName);
 			writer.WriteLine(L"\";");
 			writer.WriteLine(L"import type { Request, Response } from \"../Rpc\";");
@@ -471,7 +482,7 @@ namespace vl
 			CHECK_ERROR(selfClientId == lifecycle->GetClientId(), ERROR_MESSAGE_PREFIX L"Unexpected client id.");
 			if (!objectEventOps)
 			{
-				objectEventOps = Ptr(new RpcJsonObjectEventOps(selfClientId, this, lifecycle->GetSerializer()));
+				objectEventOps = Ptr(new RpcJsonObjectEventOps(selfClientId, this));
 			}
 			return objectEventOps.Obj();
 #undef ERROR_MESSAGE_PREFIX
@@ -481,7 +492,7 @@ namespace vl
 		{
 			if (!objectOps)
 			{
-				objectOps = Ptr(new RpcJsonObjectOps(lifecycle->GetClientId(), targetClientId, this, lifecycle->GetSerializer(), lifecycle));
+				objectOps = Ptr(new RpcJsonObjectOps(lifecycle->GetClientId(), targetClientId, this, lifecycle));
 			}
 			return objectOps.Obj();
 		}

@@ -37,12 +37,11 @@ namespace vl
 			vint									sourceClientId = RpcClientId_Invalid;
 			vint									targetClientId = RpcClientId_Invalid;
 			IRpcJsonMessageDispatcher*				dispatcher = nullptr;
-			IRpcSerializer*							serializer = nullptr;
 			IRpcLifecycle*							lifecycle = nullptr;
 
 		public:
-			RpcJsonObjectOps(IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer);
-			RpcJsonObjectOps(vint _sourceClientId, vint _targetClientId, IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer, IRpcLifecycle* _lifecycle = nullptr);
+			RpcJsonObjectOps(IRpcJsonMessageDispatcher* _dispatcher);
+			RpcJsonObjectOps(vint _sourceClientId, vint _targetClientId, IRpcJsonMessageDispatcher* _dispatcher, IRpcLifecycle* _lifecycle = nullptr);
 			~RpcJsonObjectOps();
 
 			reflection::description::Value			InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
@@ -58,11 +57,10 @@ namespace vl
 		private:
 			vint									sourceClientId = RpcClientId_Invalid;
 			IRpcJsonMessageDispatcher*				dispatcher = nullptr;
-			IRpcSerializer*							serializer = nullptr;
 
 		public:
-			RpcJsonObjectEventOps(IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer);
-			RpcJsonObjectEventOps(vint _sourceClientId, IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer);
+			RpcJsonObjectEventOps(IRpcJsonMessageDispatcher* _dispatcher);
+			RpcJsonObjectEventOps(vint _sourceClientId, IRpcJsonMessageDispatcher* _dispatcher);
 			~RpcJsonObjectEventOps();
 
 			reflection::description::Value			InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments)override;

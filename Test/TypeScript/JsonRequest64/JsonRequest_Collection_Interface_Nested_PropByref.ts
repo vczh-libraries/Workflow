@@ -1,4 +1,4 @@
-﻿import type { KnownTypeSchema, UnknownTypeSchema } from "./Serialization_Collection_Interface_Nested_PropByref";
+﻿import type { KnownTypeSchema, UnknownTypeSchema } from "../DataSchema64/Serialization_Collection_Interface_Nested_PropByref";
 import type { Request, Response } from "../Rpc";
 
 export const json : (Request<KnownTypeSchema | UnknownTypeSchema> | Response<KnownTypeSchema | UnknownTypeSchema>)[] = [

@@ -1,4 +1,4 @@
-﻿import type { KnownTypeSchema, UnknownTypeSchema } from "./Serialization_CollectionOblist_Interface_Nested_PropByval";
+﻿import type { KnownTypeSchema, UnknownTypeSchema } from "../DataSchema64/Serialization_CollectionOblist_Interface_Nested_PropByval";
 import type { Request, Response } from "../Rpc";
 
 export const json : (Request<KnownTypeSchema | UnknownTypeSchema> | Response<KnownTypeSchema | UnknownTypeSchema>)[] = [

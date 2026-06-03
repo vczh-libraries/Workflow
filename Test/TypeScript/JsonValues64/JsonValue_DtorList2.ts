@@ -1,0 +1,30 @@
+﻿import type { KnownTypeSchema, UnknownTypeSchema } from "../DataSchema64/Serialization_DtorList2";
+
+export const json : (KnownTypeSchema | UnknownTypeSchema)[] = [
+  {"$":"system::RpcObjectReference","clientId":1,"objectId":1,"typeId":-4},
+  {"$":"system::RpcObjectReference","clientId":2,"objectId":0,"typeId":5},
+  ["Int64",0],
+  null,
+  {"$":"system::RpcObjectReference","clientId":1,"objectId":2,"typeId":-4},
+  {"$":"system::RpcObjectReference","clientId":2,"objectId":1,"typeId":5},
+  ["Int64",0],
+  null,
+  {"$":"system::RpcObjectReference","clientId":1,"objectId":3,"typeId":-4},
+  {"$":"system::RpcObjectReference","clientId":2,"objectId":2,"typeId":5},
+  ["Int64",0],
+  null,
+  null,
+  null,
+  {"$":"system::RpcObjectReference","clientId":1,"objectId":4,"typeId":-4},
+  {"$":"system::RpcObjectReference","clientId":2,"objectId":3,"typeId":5},
+  ["Int64",0],
+  null,
+  null,
+  null,
+  {"$":"system::RpcObjectReference","clientId":1,"objectId":5,"typeId":-4},
+  {"$":"system::RpcObjectReference","clientId":2,"objectId":4,"typeId":5},
+  ["Int64",0],
+  null,
+  null,
+  null
+];

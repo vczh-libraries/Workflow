@@ -1,4 +1,4 @@
-﻿import type { KnownTypeSchema, UnknownTypeSchema } from "./Serialization_DtorPropCached";
+﻿import type { KnownTypeSchema, UnknownTypeSchema } from "../DataSchema32/Serialization_DtorPropCached";
 import type { Request, Response } from "../Rpc";
 
 export const json : (Request<KnownTypeSchema | UnknownTypeSchema> | Response<KnownTypeSchema | UnknownTypeSchema>)[] = [

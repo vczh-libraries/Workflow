@@ -333,7 +333,7 @@ namespace vl
 				return object;
 			}
 
-			Ptr<JsonNode> ValueToJsonNode(const Value& value, IRpcSerializer* serializer)
+			Ptr<JsonNode> ValueToJsonNode(const Value& value)
 			{
 				if (value.GetValueType() == Value::SharedPtr)
 				{
@@ -342,20 +342,16 @@ namespace vl
 						return node;
 					}
 				}
-				if (serializer)
-				{
-					return UnboxValue<Ptr<JsonNode>>(serializer->Serialize(value));
-				}
 				CHECK_FAIL(L"RPC JSON value should be a Ptr<JsonNode>.");
 				return nullptr;
 			}
 
-			Ptr<JsonArray> ValueArrayToJsonArray(Ptr<IValueArray> arguments, IRpcSerializer* serializer)
+			Ptr<JsonArray> ValueArrayToJsonArray(Ptr<IValueArray> arguments)
 			{
 				auto array = CreateJsonArray();
 				for (vint i = 0; i < arguments->GetCount(); i++)
 				{
-					array->items.Add(ValueToJsonNode(arguments->Get(i), serializer));
+					array->items.Add(ValueToJsonNode(arguments->Get(i)));
 				}
 				return array;
 			}
@@ -398,12 +394,12 @@ namespace vl
 					if (auto byvalReturnValue = result.GetSharedPtr().Cast<RpcByvalReturnValue>())
 					{
 						auto object = CreateJsonObject();
-						AddJsonObjectField(object, WString::Unmanaged(L"value"), ValueToJsonNode(byvalReturnValue->value, nullptr));
+						AddJsonObjectField(object, WString::Unmanaged(L"value"), ValueToJsonNode(byvalReturnValue->value));
 						AddJsonObjectField(object, WString::Unmanaged(L"slot"), CreateJsonNumber(byvalReturnValue->slot));
 						return object;
 					}
 				}
-				return ValueToJsonNode(result, nullptr);
+				return ValueToJsonNode(result);
 			}
 
 			Value JsonResponseToMethodResult(Ptr<JsonNode> node)
@@ -644,20 +640,18 @@ namespace vl
 * RpcJsonObjectOps
 ***********************************************************************/
 
-		RpcJsonObjectOps::RpcJsonObjectOps(IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer)
+		RpcJsonObjectOps::RpcJsonObjectOps(IRpcJsonMessageDispatcher* _dispatcher)
 			: dispatcher(_dispatcher)
-			, serializer(_serializer)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectOps::RpcJsonObjectOps(...)#"
 			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		RpcJsonObjectOps::RpcJsonObjectOps(vint _sourceClientId, vint _targetClientId, IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer, IRpcLifecycle* _lifecycle)
+		RpcJsonObjectOps::RpcJsonObjectOps(vint _sourceClientId, vint _targetClientId, IRpcJsonMessageDispatcher* _dispatcher, IRpcLifecycle* _lifecycle)
 			: sourceClientId(_sourceClientId)
 			, targetClientId(_targetClientId)
 			, dispatcher(_dispatcher)
-			, serializer(_serializer)
 			, lifecycle(_lifecycle)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectOps::RpcJsonObjectOps(...)#"
@@ -677,7 +671,7 @@ namespace vl
 			AddJsonObjectField(request, WString::Unmanaged(L"targetClientId"), CreateJsonNumber(targetClientId == RpcClientId_Invalid ? ref.clientId : targetClientId));
 			AddJsonObjectField(request, WString::Unmanaged(L"ref"), CreateRpcObjectReferenceJson(ref));
 			AddJsonObjectField(request, WString::Unmanaged(L"methodId"), CreateJsonNumber(methodId));
-			AddJsonObjectField(request, WString::Unmanaged(L"arguments"), ValueArrayToJsonArray(arguments, serializer));
+			AddJsonObjectField(request, WString::Unmanaged(L"arguments"), ValueArrayToJsonArray(arguments));
 
 			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
 			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectOps_InvokeMethod"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
@@ -786,19 +780,17 @@ namespace vl
 * RpcJsonObjectEventOps
 ***********************************************************************/
 
-		RpcJsonObjectEventOps::RpcJsonObjectEventOps(IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer)
+		RpcJsonObjectEventOps::RpcJsonObjectEventOps(IRpcJsonMessageDispatcher* _dispatcher)
 			: dispatcher(_dispatcher)
-			, serializer(_serializer)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectEventOps::RpcJsonObjectEventOps(...)#"
 			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		RpcJsonObjectEventOps::RpcJsonObjectEventOps(vint _sourceClientId, IRpcJsonMessageDispatcher* _dispatcher, IRpcSerializer* _serializer)
+		RpcJsonObjectEventOps::RpcJsonObjectEventOps(vint _sourceClientId, IRpcJsonMessageDispatcher* _dispatcher)
 			: sourceClientId(_sourceClientId)
 			, dispatcher(_dispatcher)
-			, serializer(_serializer)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectEventOps::RpcJsonObjectEventOps(...)#"
 			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
@@ -816,7 +808,7 @@ namespace vl
 			auto request = CreateRpcMessage(WString::Unmanaged(L"IObjectEventOps_InvokeEvent"), dispatcher->AllocateRequestId(), sourceClientId);
 			AddJsonObjectField(request, WString::Unmanaged(L"ref"), CreateRpcObjectReferenceJson(ref));
 			AddJsonObjectField(request, WString::Unmanaged(L"eventId"), CreateJsonNumber(eventId));
-			AddJsonObjectField(request, WString::Unmanaged(L"arguments"), ValueArrayToJsonArray(arguments, serializer));
+			AddJsonObjectField(request, WString::Unmanaged(L"arguments"), ValueArrayToJsonArray(arguments));
 
 			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
 			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectEventOps_InvokeEvent"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
@@ -842,7 +834,7 @@ namespace vl
 				GetJsonInt(GetJsonObjectField(request, WString::Unmanaged(L"eventId"))),
 				JsonArrayToValueArray(GetJsonObjectField(request, WString::Unmanaged(L"arguments")))
 				);
-			AddJsonObjectField(response, WString::Unmanaged(L"response"), CreateEventExceptionResponse(ValueToJsonNode(result, nullptr)));
+			AddJsonObjectField(response, WString::Unmanaged(L"response"), CreateEventExceptionResponse(ValueToJsonNode(result)));
 			return response;
 #undef ERROR_MESSAGE_PREFIX
 		}
