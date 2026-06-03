@@ -4,12 +4,12 @@
 
 - Avoid explicit Workflow types/casts when implicit typing works [5]
 - Read and aggregate RPC event exception maps through `IRpcLifecycle::ReadEventException` [3]
+- Remove pure RPC redirection layers once dispatcher/ops can own the call [3]
 - Generated RPC test id maps must come from `rpc_GetIds()` / `SetIdMap` [2]
 - Keep RPC-specific fixes out of generic C++ / Workflow codegen surfaces [2]
 - Interpret `IRpcWrapperBase` as remote-wrapper identity [2]
 - Use internal properties defensively in `RpcDualLifecycleMock` [2]
 - Store and manage RPC wrappers as `IRpcWrapperBase` [2]
-- Remove pure RPC redirection layers once dispatcher/ops can own the call [2]
 - Keep RPC service lookup in `IRpcDispatcher` and register ops locally [2]
 - Keep RPC byref boxing/unboxing interface-only [2]
 - Split RPC JSON generation into dedicated analyzer/module files [2]
@@ -19,10 +19,10 @@
 - Verify copied RPC metadata recompiles to the same metadata [2]
 - Delegate predefined RPC JSON handling to C++ static helpers [2]
 - Propagate RPC method exceptions via `system::RpcException` [2]
+- Keep Workflow library helpers out-of-line with explicit `extern` [2]
 - Apply `RunRpcTestCase` changes to every harness variant [1]
 - Keep RPC JSON test harness setup under `VCZH_DEBUG_NO_REFLECTION` [1]
 - Use generated strong typed RPC ops for event listeners [1]
-- Keep Workflow library helpers out-of-line with explicit `extern` [1]
 - Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for registering free functions as reflection static methods [1]
 - Enable Workflow proxy support for all related implementable interfaces consistently [1]
 - Workflow `new interface` on reflected C++ interfaces requires proxy registration (`BEGIN_INTERFACE_MEMBER`) [1]
@@ -55,6 +55,7 @@
 - Workflow catch variables are `system::Exception^`; use `.Message` [1]
 - Keep TypeScript RPC dispatcher envelopes separate from value schemas [1]
 - Prefix generated RPC C++ file names to avoid basename collisions [1]
+- Prefer generic `BoxValue`/`UnboxValue` over specialized RPC box/unbox helpers [1]
 
 # Refinements
 
@@ -85,6 +86,8 @@ All RPC wrappers, including predefined collection wrappers and generated interfa
 ## Remove pure RPC redirection layers once dispatcher/ops can own the call
 
 Classes such as lifecycle adapters or object-op redirection wrappers should be removed when they only forward to another object without owning behavior. Prefer direct registration through the controller, dispatcher, or generated ops implementation that already has the required authority.
+
+This extends to dispatcher transport methods that exist only for a redirected layer. Once `IRpcListOps` / `IRpcListEventOps` are pure caller/callee adapters over object ops, delete the list-specific dispatcher methods (`IRpcDispatcher::BroadcastFromClient_ListEventOps`, `IRpcDispatcher::SendToClient_ListOps`) and their reflection registration and mocks. Build `RpcCallerListOps` from `IRpcDispatcher::SendToClient_ObjectOps` and `RpcCallerListEventOps` from `IRpcDispatcher::BroadcastFromClient_ObjectEventOps`. Because `InvokeListMethod` already calls `ReadMethodResult`, `RpcCallerListOps` methods must not call `ReadMethodResult` again.
 
 ## Keep RPC service lookup in `IRpcDispatcher` and register ops locally
 
@@ -125,6 +128,8 @@ Generated RPC wrapper listeners should receive and call the generated strong typ
 ## Keep Workflow library helpers out-of-line with explicit `extern`
 
 For namespace-level helper functions in `Source/Library/WfLibrary*.(h|cpp)` and `Source/Library/Rpc/WfLibrary*.(h|cpp)`, keep non-constant implementations in `.cpp` files instead of `inline` header definitions. Put explicit `extern` on forward declarations, even when C++ would not require it, to match the Workflow library declaration style.
+
+Implement helpers in the `.cpp` whose basename matches the declaring header. Functions declared in `WfLibraryRpc.h` belong in `WfLibraryRpc.cpp`, not in a sibling such as `WfLibraryRpcWrappers.cpp`.
 
 ## Enable Workflow proxy support for all related implementable interfaces consistently
 
@@ -273,3 +278,7 @@ Workflow `catch (ex)` variables are exception objects. When a script needs the t
 ## Prefix generated RPC C++ file names to avoid basename collisions
 
 Generated RPC C++ include, reflection, and default implementation file names should include the `Rpc` prefix from `TestRpcCompile.cpp` inputs. Once generated file basenames are unique, remove obsolete project `ObjectFileName` rename workarounds and stale Linux vmake exclusions for old collisions such as `Event.cpp` and `Overloading.cpp`.
+
+## Prefer generic `BoxValue`/`UnboxValue` over specialized RPC box/unbox helpers
+
+`BoxValue` and `UnboxValue` already handle null and cover the RPC transport payloads, so do not keep parallel specialized helpers. Remove `BoxRpcObjectReference`, `BoxRpcException`, `BoxRpcEventExceptionMap`, `UnboxRpcEventExceptionMap`, `BoxPrimitiveArgument`, `UnboxPrimitiveArgument`, and `CreateRpcEventExceptionMap` (a pure rename), and replace call sites with `BoxValue`, `UnboxValue`, and `IValueDictionary::Create`. Drop the now-redundant nullptr tests across `Source/Library/Rpc` because the generic helpers already accept null. This is distinct from `RpcBoxByref` / `RpcUnboxByref`, which stay interface-only for byref shared pointers.
