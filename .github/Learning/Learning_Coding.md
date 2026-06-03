@@ -5,6 +5,7 @@
 - Avoid explicit Workflow types/casts when implicit typing works [5]
 - Remove pure RPC redirection layers once dispatcher/ops can own the call [4]
 - Read and aggregate RPC event exception maps through `IRpcLifecycle::ReadEventException` [3]
+- Keep TypeScript RPC dispatcher envelopes separate from value schemas [3]
 - Generated RPC test id maps must come from `rpc_GetIds()` / `SetIdMap` [2]
 - Keep RPC-specific fixes out of generic C++ / Workflow codegen surfaces [2]
 - Interpret `IRpcWrapperBase` as remote-wrapper identity [2]
@@ -20,7 +21,7 @@
 - Delegate predefined RPC JSON handling to C++ static helpers [2]
 - Propagate RPC method exceptions via `system::RpcException` [2]
 - Keep Workflow library helpers out-of-line with explicit `extern` [2]
-- Keep TypeScript RPC dispatcher envelopes separate from value schemas [2]
+- Validate RPC JSON ops payloads as `JsonNode` values [2]
 - Apply `RunRpcTestCase` changes to every harness variant [1]
 - Keep RPC JSON test harness setup under `VCZH_DEBUG_NO_REFLECTION` [1]
 - Use generated strong typed RPC ops for event listeners [1]
@@ -49,7 +50,6 @@
 - Replace `RpcByvalLifecycleMock` with a real dual-lifecycle setup for wrapper tests [1]
 - Use strong `cast`, not weak `as`, for protocol-owned values [1]
 - Use `RpcByvalReturnValue` slots for JSON byval return lifetimes [1]
-- Validate RPC JSON ops payloads as `JsonNode` values [1]
 - Use pair arrays for RPC JSON map schemas [1]
 - Keep RPC wrapper generation recursive across inherited interface members [1]
 - Reject RPC internal transport structs from user RPC signatures [1]
@@ -255,6 +255,8 @@ RPC object-event and observable-list event transports return an internal excepti
 
 When testing JSON RPC dispatcher paths, every `Value` argument, return value, or array element crossing the ops interfaces should be backed by `Ptr<JsonNode>`. Use a JSON dispatcher mock to `CHECK_ERROR` on non-JSON values so generator bugs surface immediately; generated void-return branches should return a concrete JSON null node instead of an empty `Value`.
 
+`RpcJsonObjectOps` and `RpcJsonObjectEventOps` should not keep an `IRpcSerializer*` fallback just to tolerate non-JSON transport values. Require boxed `JsonNode` payloads at the JSON boundary so invalid generator output fails at the boundary instead of being silently reserialized.
+
 ## Use pair arrays for RPC JSON map schemas
 
 RPC JSON TypeScript schemas represent maps as `[K, V][]`, including unknown map schemas and serialized dictionaries such as `RpcException[int]`. Keep list/observable-list unknown schemas separate from map unknown schemas, and update generated `.d.ts` declarations and JSON values together when the schema shape changes.
@@ -280,6 +282,8 @@ Workflow `catch (ex)` variables are exception objects. When a script needs the t
 `Test/TypeScript/Rpc.d.ts` owns the shared dispatcher envelope schema for `IRpcListOps`, `IRpcObjectOps`, `IRpcListEventOps`, and `IRpcObjectEventOps`. Generated `Serialization_*.d.ts` files own concrete value schemas; connect the two with a generic payload type such as `KnownTypeSchema | UnknownTypeSchema`, and only add `<T>` to envelope interfaces that actually carry serialized payloads. `SendToClient_*` requests include `targetClientId`, broadcast requests omit it, and all responses include both `sourceClientId` and `targetClientId`.
 
 Every dispatcher request and response envelope should carry `rpcRequestId: number`. Caller-side request construction should allocate/write a request id, callee-side translation should reuse that id in the response, and shared request/response transcript types should remain separate from concrete serialization schemas.
+
+Keep generated concrete schema declarations centralized in `DataSchema32` and `DataSchema64`. JSON value and request transcript folders should import `Serialization_*.d.ts` declarations from the matching `DataSchema*` folder instead of carrying their own copies.
 
 ## Prefix generated RPC C++ file names to avoid basename collisions
 

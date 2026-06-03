@@ -2,7 +2,7 @@
 
 # Orders
 
-- Run TypeScript RPC schema verification after JSON or dispatcher-schema changes [8]
+- Run TypeScript RPC schema verification after JSON or dispatcher-schema changes [9]
 - Wire generated RPC C++ files into shared vcxitems after `CompilerTest_LoadAndCompile` [7]
 - Compare `RuntimeTest` and `CppTest*` failures before choosing an RPC root cause [6]
 - Preserve RPC/Workflow sample intent; only adjust syntax or diagnostics [5]
@@ -10,8 +10,8 @@
 - Commit direct edits and large generated outputs separately when requested [4]
 - Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder [4]
 - Run `CompilerTest_LoadAndCompile` at least once before downstream RPC generated-C++ tests [4]
-- Split RPC sample definitions and tests consistently [3]
 - Pure refactors should not touch generated RPC outputs [4]
+- Split RPC sample definitions and tests consistently [3]
 - Workflow analyzer error tests may change values when preserving the error code [1]
 - Workflow samples use `raise`, not `throw` [1]
 - Workflow range syntax for inclusive generated loops is `range [1, xs.Count]` [1]
@@ -23,6 +23,7 @@
 - Use static scans for Workflow library declaration and inline-refactor checks [1]
 - Verify generated RPC file renames with stale-reference scans [1]
 - Audit RPC JSON request transcripts for request id pairing [1]
+- Track generated TypeScript RPC fixtures in git [1]
 
 # Refinements
 
@@ -86,6 +87,8 @@ After changing RPC JSON serialization, generated `.d.ts` output, JSON value dump
 
 This also applies when adding JSON request/response transcript folders such as `JsonRequest32` and `JsonRequest64`. Add them to `prepare.ps1` and `tsconfig.json`, then verify the TypeScript package against `Request<KnownTypeSchema | UnknownTypeSchema> | Response<KnownTypeSchema | UnknownTypeSchema>` values.
 
+When schema declarations are centralized in `DataSchema32` and `DataSchema64`, `prepare.ps1` should copy `Serialization_*.d.ts` only into those folders. `JsonValues*` and `JsonRequest*` fixtures should import the schemas from `../DataSchema*`, then the TypeScript package build verifies that the generated imports and values still match.
+
 ## Split RPC sample definitions and tests consistently
 
 Split RPC samples into `Rpc/SAMPLE.txt` for RPC definitions only and `Rpc/SAMPLE_Test.txt` for executable test logic such as globals, helpers, `serviceMain`, and `clientMain`. Add only `SAMPLE=expected` to `IndexRpc.txt`, but include both files under `Resource Files/Rpc` in `CompilerTest_LoadAndCompile`.
@@ -113,3 +116,7 @@ After generated RPC C++ file renames, verify that generated-file adds and delete
 ## Audit RPC JSON request transcripts for request id pairing
 
 When generating `Test/TypeScript/JsonRequest32` and `Test/TypeScript/JsonRequest64`, audit the transcript files in addition to type-checking them. Each test-case file should start request ids at 1, increment per request, and have exactly one response that reuses the matching request id. Sample representative files manually and prefer a small script for the complete per-file audit when many transcripts are generated.
+
+## Track generated TypeScript RPC fixtures in git
+
+Generated TypeScript RPC fixture files under `Test/TypeScript` should be checked in unless a task explicitly says otherwise. Do not leave `JsonValues*`, `JsonRequest*`, or similar generated `*.ts` fixture folders hidden behind `.gitignore` when the purpose is to review and verify stable generated JSON output.
