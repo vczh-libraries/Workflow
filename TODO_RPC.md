@@ -16,7 +16,6 @@
 
 ## ToDo
 
-- Test case to handle `IRpcListOps` exceptions.
 - Consider how to run a CLI based dual processes demo to test RPC.
 
 ## Knowledge Base
