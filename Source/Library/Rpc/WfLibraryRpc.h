@@ -76,6 +76,7 @@ namespace vl
 		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_ContainsKey = -18;
 		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_GetKeys = -19;
 		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_GetValues = -20;
+		inline constexpr vint				RpcMethodId_IValueArray_Resize = -21;
 
 		inline constexpr vint				RpcEventId_IValueObservableList_ItemChanged = -1;
 
@@ -114,6 +115,7 @@ namespace vl
 			virtual void											ListClear(RpcObjectReference ref) = 0;
 			virtual bool											ListContains(RpcObjectReference ref, const reflection::description::Value& value) = 0;
 			virtual vint											ListIndexOf(RpcObjectReference ref, const reflection::description::Value& value) = 0;
+			virtual void											ArrayResize(RpcObjectReference ref, vint size) = 0;
 
 			virtual vint											DictGetCount(RpcObjectReference ref) = 0;
 			virtual reflection::description::Value					DictGet(RpcObjectReference ref, const reflection::description::Value& key) = 0;

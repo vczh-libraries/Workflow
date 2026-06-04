@@ -26,6 +26,7 @@ export declare const RpcMethodId_IValueDictionary_Clear: -17;
 export declare const RpcMethodId_IValueReadonlyDictionary_ContainsKey: -18;
 export declare const RpcMethodId_IValueReadonlyDictionary_GetKeys: -19;
 export declare const RpcMethodId_IValueReadonlyDictionary_GetValues: -20;
+export declare const RpcMethodId_IValueArray_Resize: -21;
 
 export declare const RpcEventId_IValueObservableList_ItemChanged: -1;
 

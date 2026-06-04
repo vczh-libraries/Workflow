@@ -178,6 +178,7 @@ namespace vl
 			void											ListClear(RpcObjectReference ref)override;
 			bool											ListContains(RpcObjectReference ref, const reflection::description::Value& value)override;
 			vint											ListIndexOf(RpcObjectReference ref, const reflection::description::Value& value)override;
+			void											ArrayResize(RpcObjectReference ref, vint size)override;
 
 			vint											DictGetCount(RpcObjectReference ref)override;
 			reflection::description::Value					DictGet(RpcObjectReference ref, const reflection::description::Value& key)override;
@@ -252,6 +253,7 @@ namespace vl
 			void											ListClear(RpcObjectReference ref)override;
 			bool											ListContains(RpcObjectReference ref, const reflection::description::Value& value)override;
 			vint											ListIndexOf(RpcObjectReference ref, const reflection::description::Value& value)override;
+			void											ArrayResize(RpcObjectReference ref, vint size)override;
 
 			vint											DictGetCount(RpcObjectReference ref)override;
 			reflection::description::Value					DictGet(RpcObjectReference ref, const reflection::description::Value& key)override;

@@ -164,6 +164,7 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_METHOD(ListClear, { L"ref" })
 				CLASS_MEMBER_METHOD(ListContains, { L"ref" _ L"value" })
 				CLASS_MEMBER_METHOD(ListIndexOf, { L"ref" _ L"value" })
+				CLASS_MEMBER_METHOD(ArrayResize, { L"ref" _ L"size" })
 
 				CLASS_MEMBER_METHOD(DictGetCount, { L"ref" })
 				CLASS_MEMBER_METHOD(DictGet, { L"ref" _ L"key" })

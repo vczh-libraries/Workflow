@@ -1,6 +1,6 @@
 module Rpc;
 using system::*;
-using RpcOblistEventException::*;
+using RpcListOpsOblistEventException::*;
 
 func CrashItemChanged(index : int, oldCount : int, newCount : int) : void
 {
@@ -20,12 +20,12 @@ func serviceMain(lc : IRpcLifecycle*) : void
       return _List;
     }
   };
-  lc.RegisterService("RpcOblistEventException::IServer", serverObj);
+  lc.RegisterService("RpcListOpsOblistEventException::IServer", serverObj);
 }
 
 func clientMain(lc : IRpcLifecycle*) : string
 {
-  var server = cast (IServer^) lc.RequestService("RpcOblistEventException::IServer");
+  var server = cast (IServer^) lc.RequestService("RpcListOpsOblistEventException::IServer");
   var xs = server.GetOblist();
 
   try

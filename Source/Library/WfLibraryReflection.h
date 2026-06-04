@@ -182,6 +182,11 @@ Interface Implementation Proxy (Implement)
 					INVOKEGET_INTERFACE_PROXY(ListIndexOf, ref, value);
 				}
 
+				void ArrayResize(vl::rpc_controller::RpcObjectReference ref, vl::vint size)override
+				{
+					INVOKE_INTERFACE_PROXY(ArrayResize, ref, size);
+				}
+
 				vl::vint DictGetCount(vl::rpc_controller::RpcObjectReference ref)override
 				{
 					INVOKEGET_INTERFACE_PROXY(DictGetCount, ref);

@@ -124,7 +124,7 @@ namespace
 
 TEST_FILE
 {
-	TEST_CASE(L"RpcByrefArray forwards Set and shrink-only Resize")
+	TEST_CASE(L"RpcByrefArray forwards Set and Resize")
 	{
 		auto context = CreateContext();
 		Array<vint> values(4);
@@ -147,7 +147,17 @@ TEST_FILE
 			TEST_ASSERT(values[0] == 1);
 			TEST_ASSERT(values[1] == 42);
 
-			TEST_ERROR(proxy->Resize(3));
+			proxy->Resize(5);
+			TEST_ASSERT(values.Count() == 5);
+			TEST_ASSERT(values[0] == 1);
+			TEST_ASSERT(values[1] == 42);
+
+			proxy->Set(4, BoxParameter((vint)50));
+			TEST_ASSERT(values[4] == 50);
+
+			RpcCallerListOps listOps(context.lifecycle2->GetDispatcher()->SendToClient_ObjectOps(ref.clientId), nullptr);
+			TEST_EXCEPTION(listOps.ListClear(ref), Exception, [](const Exception&) {});
+			TEST_EXCEPTION(listOps.ListRemoveAt(ref, 4), Exception, [](const Exception&) {});
 		}
 		// After proxy destroyed, ObjectHold(false) was sent
 	});

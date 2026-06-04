@@ -39,7 +39,7 @@ When new or renamed RPC samples generate C++ files under `Test/SourceCppGenRpc`,
 
 When implementing requested Workflow samples, keep the sample meaning intact and avoid changing parser/compiler/codegen surfaces unless the task explicitly allows it. It is acceptable to fix typos, legal Workflow syntax, namespace names, or add richer output that preserves the scenario being tested.
 
-For exception samples such as `Oblist_EventException`, keep service-side throwing handlers at the original point. Do not move the throwing behavior to the client side just to stabilize generated transcripts, because that removes the exception-handling path the sample exists to test.
+For exception samples such as `ListOps_OblistEventException`, keep service-side throwing handlers at the original point. Do not move the throwing behavior to the client side just to stabilize generated transcripts, because that removes the exception-handling path the sample exists to test.
 
 ## RPC byref/byval container samples must verify wrapper/copy semantics at every level
 

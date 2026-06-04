@@ -219,6 +219,7 @@ When a wrapper performs a method call or list operation, the message is sent to 
 
 - Object method calls use `IRpcDispatcher::SendToClient_ObjectOps(ref.clientId)`.
 - List operations use `IRpcDispatcher::SendToClient_ObjectOps(ref.clientId)->InvokeMethod(...)` with predefined list method ids through `RpcCallerListOps`.
+- Array resize uses its own predefined method id through `IRpcListOps::ArrayResize`; list-only mutation ids such as clear and remove-at should not be accepted as array resize shortcuts.
 
 The returned ops object is the target client's local operation object. The caller should not know or store the target lifecycle directly.
 

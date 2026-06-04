@@ -129,6 +129,7 @@ namespace vl
 				case RpcMethodId_IValueReadonlyDictionary_ContainsKey:
 				case RpcMethodId_IValueReadonlyDictionary_GetKeys:
 				case RpcMethodId_IValueReadonlyDictionary_GetValues:
+				case RpcMethodId_IValueArray_Resize:
 					return true;
 				default:
 					return false;
@@ -410,12 +411,7 @@ namespace vl
 
 		void RpcByrefArray::Resize(vint size)
 		{
-			auto count = GetCount();
-			if (size > count) CHECK_FAIL(L"RpcByrefArray::Resize cannot grow.");
-			for (vint i = count - 1; i >= size; i--)
-			{
-				GetRemoteListOps(lifecycle, ref, serializer)->ListRemoveAt(ref, i);
-			}
+			GetRemoteListOps(lifecycle, ref, serializer)->ArrayResize(ref, size);
 		}
 		
 /***********************************************************************
@@ -661,12 +657,6 @@ namespace vl
 		bool RpcCalleeListOps::ListRemoveAt(RpcObjectReference ref, vint index)
 		{
 			auto obj = lifecycle->RefToPtr(ref);
-			if (auto array = Ptr(obj.Obj()->SafeAggregationCast<IValueArray>()))
-			{
-				CHECK_ERROR(index == array->GetCount() - 1, L"RpcCalleeListOps::ListRemoveAt only supports tail removal for arrays.");
-				array->Resize(index);
-				return true;
-			}
 			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
 				return list->RemoveAt(index);
 			CHECK_FAIL(L"RpcCalleeListOps::ListRemoveAt cannot find the target list.");
@@ -676,11 +666,6 @@ namespace vl
 		void RpcCalleeListOps::ListClear(RpcObjectReference ref)
 		{
 			auto obj = lifecycle->RefToPtr(ref);
-			if (auto array = Ptr(obj.Obj()->SafeAggregationCast<IValueArray>()))
-			{
-				array->Resize(0);
-				return;
-			}
 			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
 			{
 				list->Clear();
@@ -707,6 +692,14 @@ namespace vl
 				return roList->IndexOf(trivial);
 			CHECK_FAIL(L"RpcCalleeListOps::ListIndexOf cannot find the target list.");
 			return -1;
+		}
+
+		void RpcCalleeListOps::ArrayResize(RpcObjectReference ref, vint size)
+		{
+			auto obj = lifecycle->RefToPtr(ref);
+			auto array = Ptr(obj.Obj()->SafeAggregationCast<IValueArray>());
+			CHECK_ERROR(array, L"RpcCalleeListOps::ArrayResize cannot find the target array.");
+			array->Resize(size);
 		}
 
 		vint RpcCalleeListOps::DictGetCount(RpcObjectReference ref)
@@ -822,6 +815,11 @@ namespace vl
 					exceptions = IValueDictionary::Create();
 					exceptions->Set(BoxValue(lifecycle->GetClientId()), BoxValue(RpcException{ ex.Message() }));
 				}
+				catch (const Error& ex)
+				{
+					exceptions = IValueDictionary::Create();
+					exceptions->Set(BoxValue(lifecycle->GetClientId()), BoxValue(RpcException{ WString::Unmanaged(ex.Description()) }));
+				}
 			}
 			return SerializeValue(serializer, BoxValue(exceptions));
 		}
@@ -895,11 +893,18 @@ namespace vl
 					return SerializeValue(serializer, BoxValue(listOps->DictGetKeys(ref)));
 				case RpcMethodId_IValueReadonlyDictionary_GetValues:
 					return SerializeValue(serializer, BoxValue(listOps->DictGetValues(ref)));
+				case RpcMethodId_IValueArray_Resize:
+					listOps->ArrayResize(ref, UnboxValue<vint>(DeserializeValue(serializer, arguments->Get(0))));
+					return SerializeValue(serializer, Value());
 				}
 			}
 			catch (const Exception& ex)
 			{
 				return SerializeValue(serializer, BoxValue(RpcException{ ex.Message() }));
+			}
+			catch (const Error& ex)
+			{
+				return SerializeValue(serializer, BoxValue(RpcException{ WString::Unmanaged(ex.Description()) }));
 			}
 			CHECK_FAIL(L"Unknown RPC list method id.");
 			return {};
@@ -1027,6 +1032,11 @@ namespace vl
 		{
 			auto result = InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueReadonlyList_IndexOf, CreateRpcArguments(value));
 			return UnboxValue<vint>(result);
+		}
+
+		void RpcCallerListOps::ArrayResize(RpcObjectReference ref, vint size)
+		{
+			InvokeListMethod(objectOps, serializer, ref, RpcMethodId_IValueArray_Resize, CreateRpcArguments(SerializeValue(serializer, BoxValue(size))));
 		}
 
 		vint RpcCallerListOps::DictGetCount(RpcObjectReference ref)
