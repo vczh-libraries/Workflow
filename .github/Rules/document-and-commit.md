@@ -2,7 +2,7 @@
 
 - After finishing everything, git commit and git push to the current branch. NO NEED TO make a new branch.
 - Git commit structure:
-  - Multiple committings are strongly recommended to separate manual edited files and generated files.
+  - Multiple commits are strongly recommended to separate manual edited files and generated files.
     - First commit only has all modified files and files you created directly.
     - Followed by a commit with all new files that not created by you (aka auto generated), focus on *.txt files. The commit title would be the first commit appending ` [txt]`.
       - You can skip it if no such file is edited.
