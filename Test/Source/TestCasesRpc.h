@@ -154,9 +154,7 @@ namespace vl
 			lc1->GetController()->Register(ooForList1, oeoForList1, lo1, leo1);
 			lc2->GetController()->Register(ooForList2, oeoForList2, lo2, leo2);
 
-			RpcDualJsonRequestDispatcherMock dispatcher1(lc1.Obj());
-			RpcDualJsonRequestDispatcherMock dispatcher2(lc2.Obj());
-			RpcDualJsonMessageBridge bridge(&dispatcher1, &dispatcher2);
+			RpcDualJsonRequestDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
 			lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops1); });
 			lc2->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops2); });
 
@@ -168,8 +166,8 @@ namespace vl
 			Console::WriteLine(L"    actual   : " + actual);
 			TEST_ASSERT(actual == expected);
 
-			bridge.Finalize();
-			bridge.DumpJsonRequests(itemName);
+			dispatcher.Finalize();
+			dispatcher.DumpJsonRequests(itemName);
 		}
 
 		template<typename TInstance, bool HasEvent>

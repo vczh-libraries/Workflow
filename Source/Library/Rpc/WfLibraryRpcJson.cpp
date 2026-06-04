@@ -419,53 +419,56 @@ namespace vl
 				return BoxValue(node);
 			}
 
-			Ptr<JsonObject> CreatePlainRpcException(Ptr<JsonNode> node)
+			Ptr<JsonNode> SerializePredefinedValue(const Value& value)
 			{
-				auto object = GetJsonObject(node);
-				auto result = CreateJsonObject();
-				AddJsonObjectField(result, WString::Unmanaged(L"message"), GetJsonObjectField(object, WString::Unmanaged(L"message")));
-				return result;
-			}
-
-			Ptr<JsonObject> CreateSerializedRpcException(Ptr<JsonNode> node)
-			{
-				auto object = GetJsonObject(node);
-				auto result = CreateJsonObject();
-				AddJsonObjectField(result, WString::Unmanaged(L"$"), CreateJsonString(WString::Unmanaged(L"system::RpcException")));
-				AddJsonObjectField(result, WString::Unmanaged(L"message"), GetJsonObjectField(object, WString::Unmanaged(L"message")));
-				return result;
-			}
-
-			vint ReadSerializedEventExceptionKey(Ptr<JsonNode> node)
-			{
-				if (auto number = node.Cast<JsonNumber>())
+				RpcJsonSerializeCallback rpcjson_Serialize;
+				rpcjson_Serialize = Func<Ptr<JsonNode>(const Value&)>([&rpcjson_Serialize](const Value& item)
 				{
-					return __vwsn::Parse<vint>(number->content.value);
-				}
-				auto tuple = GetJsonArray(node);
-				CHECK_ERROR(tuple->items.Count() == 2, L"RPC event exception key tuple is expected.");
-				return __vwsn::Parse<vint>(GetJsonNumber(tuple->items[1]));
+					return JsonSerializePredefinedTypes(item, rpcjson_Serialize);
+				});
+				return JsonSerializePredefinedTypes(value, rpcjson_Serialize);
+			}
+
+			Value DeserializePredefinedValue(Ptr<JsonNode> node)
+			{
+				RpcJsonDeserializeCallback rpcjson_Deserialize;
+				rpcjson_Deserialize = Func<Value(Ptr<JsonNode>)>([&rpcjson_Deserialize](Ptr<JsonNode> item)
+				{
+					return JsonDeserializePredefinedTypes(BoxValue(item), rpcjson_Deserialize);
+				});
+				return JsonDeserializePredefinedTypes(BoxValue(node), rpcjson_Deserialize);
+			}
+
+			Ptr<JsonObject> CreatePlainRpcException(const RpcException& exception)
+			{
+				auto result = CreateJsonObject();
+				AddJsonObjectField(result, WString::Unmanaged(L"message"), CreateJsonString(exception.message));
+				return result;
+			}
+
+			RpcException ReadPlainRpcException(Ptr<JsonNode> node)
+			{
+				auto object = GetJsonObject(node);
+				return { GetJsonString(GetJsonObjectField(object, WString::Unmanaged(L"message"))) };
 			}
 
 			Ptr<JsonNode> CreateEventExceptionResponse(Ptr<JsonNode> serialized)
 			{
-				if (auto literal = serialized.Cast<JsonLiteral>())
+				auto value = DeserializePredefinedValue(serialized);
+				if (value.IsNull())
 				{
-					CHECK_ERROR(literal->value == JsonLiteralValue::Null, L"RPC event exception map should be null or a map.");
-					return serialized;
+					return CreateJsonLiteral(JsonLiteralValue::Null);
 				}
 
-				auto object = GetJsonObject(serialized);
-				CHECK_ERROR(GetJsonString(GetJsonObjectField(object, WString::Unmanaged(L"$"))) == WString::Unmanaged(L"map"), L"RPC event exception map is expected.");
-				auto values = GetJsonArray(GetJsonObjectField(object, WString::Unmanaged(L"values")));
+				auto exceptions = UnboxValue<RpcEventExceptionMap>(value);
 				auto result = CreateJsonArray();
-				for (auto item : values->items)
+				auto keys = exceptions->GetKeys();
+				for (vint i = 0; i < keys->GetCount(); i++)
 				{
-					auto pair = GetJsonArray(item);
-					CHECK_ERROR(pair->items.Count() == 2, L"RPC event exception map pair is expected.");
+					auto key = keys->Get(i);
 					auto resultPair = CreateJsonArray();
-					resultPair->items.Add(CreateJsonNumber(ReadSerializedEventExceptionKey(pair->items[0])));
-					resultPair->items.Add(CreatePlainRpcException(pair->items[1]));
+					resultPair->items.Add(CreateJsonNumber(UnboxValue<vint>(key)));
+					resultPair->items.Add(CreatePlainRpcException(UnboxValue<RpcException>(exceptions->Get(key))));
 					result->items.Add(resultPair);
 				}
 				return result;
@@ -476,25 +479,18 @@ namespace vl
 				if (auto literal = response.Cast<JsonLiteral>())
 				{
 					CHECK_ERROR(literal->value == JsonLiteralValue::Null, L"RPC event exception response should be null or an array.");
-					return response;
+					return SerializePredefinedValue({});
 				}
 
 				auto array = GetJsonArray(response);
-				auto object = CreateJsonObject();
-				AddJsonObjectField(object, WString::Unmanaged(L"$"), CreateJsonString(WString::Unmanaged(L"map")));
-				auto values = CreateJsonArray();
-				const auto keyType = sizeof(vint) == sizeof(vint64_t) ? WString::Unmanaged(L"Int64") : WString::Unmanaged(L"Int32");
+				auto exceptions = IValueDictionary::Create();
 				for (auto item : array->items)
 				{
 					auto pair = GetJsonArray(item);
 					CHECK_ERROR(pair->items.Count() == 2, L"RPC event exception response pair is expected.");
-					auto valuePair = CreateJsonArray();
-					valuePair->items.Add(CreateUnknownTuple(keyType, CreateJsonNumber(GetJsonNumber(pair->items[0]))));
-					valuePair->items.Add(CreateSerializedRpcException(pair->items[1]));
-					values->items.Add(valuePair);
+					exceptions->Set(BoxValue(GetJsonInt(pair->items[0])), BoxValue(ReadPlainRpcException(pair->items[1])));
 				}
-				AddJsonObjectField(object, WString::Unmanaged(L"values"), values);
-				return object;
+				return SerializePredefinedValue(BoxValue(exceptions));
 			}
 		}
 
