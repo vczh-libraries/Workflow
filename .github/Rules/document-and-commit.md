@@ -15,13 +15,13 @@
         - `Test/UnitTest/Generated_*`
         - `Test/TypeScript`
   - Pay attention when `investigate.prompt.md` is tagged, if it is a multi-tasks request:
-    - Check out the  `## Git Commits and Multi-Task Request` session.
+    - Check out the `## Git Commits and Multi-Task Request` session.
     - Commits structure here are for each separate task.
     - You are required to perform a task and immediately push changes, before touching the next task.
 
 ## RPC Specific
 
-- If `IRpc*Ops` interfaces in `WfLibraryRpc.h` are changed, the following files may have to be updated accordingly:
+- If `IRpc` interfaces in `WfLibraryRpc.h` are changed, the following files may have to be updated accordingly:
   - `Test/TypeScript/Rpc.d.ts`
   - `TODO_RPC_Definition.md`
   - `TODO_RPC_Json.md`
