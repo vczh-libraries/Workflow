@@ -3,7 +3,7 @@ investigate repro
 Follow
 - `.github\Rules\new-sample.md`
 - `.github\Rules\new-sample-rpc.md`
-- `.github\Rules\verify-and-commit.md`
+- `.github\Rules\document-and-commit.md`
 to add new samples, indentation should be double spaces no matter how the code below is written:
 
 RPC samples are split into two files:
