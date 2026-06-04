@@ -60,9 +60,9 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
             try
             switch (methodId)
             {
-                case rpcmethod_RpcOblistEventException__IServer_GetOblist:
+                case rpcmethod_RpcListOpsOblistEventException__IServer_GetOblist:
                 {
-                    var target = (cast (RpcOblistEventException::IServer^) _lc.RefToPtr(ref));
+                    var target = (cast (RpcListOpsOblistEventException::IServer^) _lc.RefToPtr(ref));
                     var jsonValue0 = system::IRpcLifecycle::RpcBoxByref(target.GetOblist(), _lc);
                     var jsonNode1 = rpcjson_Serialize(jsonValue0);
                     return jsonNode1;
@@ -134,17 +134,17 @@ func rpcops_IRpcObjectEventOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcO
     };
 }
 
-func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Oblist_EventException^)
+func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_ListOps_OblistEventException^)
 {
-    return new (rpcops_IOps_Rpc_Oblist_EventException^)
+    return new (rpcops_IOps_Rpc_ListOps_OblistEventException^)
     {
         var _lc : system::IRpcLifecycle* = lc;
 
-        override func InvokeMethod_RpcOblistEventException__IServer_GetOblist(ref : system::RpcObjectReference) : (observe ::system::Int32[])
+        override func InvokeMethod_RpcListOpsOblistEventException__IServer_GetOblist(ref : system::RpcObjectReference) : (observe ::system::Int32[])
         {
             var arguments : system::Array^ = {};
             arguments.Resize(0);
-            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcOblistEventException__IServer_GetOblist, arguments);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcListOpsOblistEventException__IServer_GetOblist, arguments);
             var jsonResult = (cast (system::JsonNode^) invokeResult);
             var methodResult = rpcjson_Deserialize(jsonResult);
             system::IRpcLifecycle::ReadMethodException(methodResult);
