@@ -1,0 +1,159 @@
+﻿module RpcMetadataJson;
+
+func rpcjson_Serialize(value : object) : (system::JsonNode^)
+{
+    return system::IRpcLifecycle::JsonSerializePredefinedTypes(value, rpcjson_Serialize);
+}
+
+func rpcjson_Deserialize(node : system::JsonNode^) : (object)
+{
+    var object = (node as (system::JsonObject^));
+    if (object is not null)
+    {
+        var jsonFieldValue0 : system::JsonNode^ = null;
+        for (jsonField1 in object.fields)
+        {
+            if ((jsonField1.name.value == "$"))
+            (jsonFieldValue0 = jsonField1.value);
+        }
+        if (jsonFieldValue0 is not null)
+        {
+            var keyword = (cast (system::JsonString^) jsonFieldValue0).content.value;
+            switch (keyword)
+            {
+            }
+        }
+    }
+    return system::IRpcLifecycle::JsonDeserializePredefinedTypes(node, rpcjson_Deserialize);
+}
+
+func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
+{
+    return new (system::IRpcSerializer^)
+    {
+        override func Serialize(value : object) : (object)
+        {
+            var result = rpcjson_Serialize(value);
+            return result;
+        }
+
+        override func Deserialize(value : object) : (object)
+        {
+            return rpcjson_Deserialize((cast (system::JsonNode^) value));
+        }
+    };
+}
+
+func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+{
+    return new (system::IRpcObjectOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _slot : int = 0;
+
+        var _byvalReturnValues : object[int] = {};
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            var unknownId : bool = false;
+            try
+            switch (methodId)
+            {
+                case rpcmethod_RpcListOpsListException__IService_DoSomethingWrong:
+                {
+                    var target = (cast (RpcListOpsListException::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 = rpcjson_Deserialize((cast (system::JsonNode^) arguments[0]));
+                    var jsonNumber1 = new (system::JsonNumber^)();
+                    (jsonNumber1.content = {value : (cast (string) target.DoSomethingWrong((cast (::system::Int32[]) system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc))));});
+                    return jsonNumber1;
+                }
+                default:
+                (unknownId = true);
+            }
+            catch (ex)
+            {
+                return rpcjson_Serialize({message : ex.Message;} of (system::RpcException));
+            }
+            if (unknownId)
+            {
+                raise "Unknown RPC method id.";
+            }
+            return rpcjson_Serialize(null);
+        }
+
+        override func EndInvokeMethod(slot : int) : (void)
+        {
+            _byvalReturnValues.Remove(slot);
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _lc.LocalObjectHold(ref, remoteClientId);
+            }
+            else
+            {
+                _lc.LocalObjectUnhold(ref, remoteClientId);
+            }
+        }
+
+        override func RegisterService(typeId : int, service : system::Interface^) : (void)
+        {
+            {
+                if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
+                {
+                    _lc.Dispatcher.RegisterService(typeId, _lc.PtrToRef(service));
+                }
+                else
+                {
+                    if (rpcwrapper_IsInterfaceTypeId(typeId))
+                    {
+                        raise "RPC service type id is not an @rpc:Ctor interface.";
+                    }
+                    else
+                    {
+                        raise "RPC service type id does not exist.";
+                    }
+                }
+            }
+        }
+    };
+}
+
+func rpcops_IRpcObjectEventOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+{
+    return new (system::IRpcObjectEventOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (object)
+        {
+            raise "Unknown RPC event id.";
+        }
+    };
+}
+
+func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_ListOps_ListException^)
+{
+    return new (rpcops_IOps_Rpc_ListOps_ListException^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcListOpsListException__IService_DoSomethingWrong(ref : system::RpcObjectReference, arg_xs : ::system::Int32[]) : (::system::Int32)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonValue0 = system::IRpcLifecycle::RpcBoxByval(arg_xs, _lc);
+            var jsonNode1 = rpcjson_Serialize(jsonValue0);
+            arguments.Set(0, jsonNode1);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcListOpsListException__IService_DoSomethingWrong, arguments);
+            var jsonResult = (cast (system::JsonNode^) invokeResult);
+            var methodResult = rpcjson_Deserialize(jsonResult);
+            system::IRpcLifecycle::ReadMethodException(methodResult);
+            var jsonValue2 = (cast (::system::Int32) (cast (string) rpcjson_Deserialize(jsonResult)));
+            return jsonValue2;
+        }
+    };
+}

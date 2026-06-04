@@ -1,0 +1,203 @@
+﻿module RpcMetadata;
+
+var rpctype_RpcListOpsDictionaryException__IService : int = 0;
+
+var rpcmethod_RpcListOpsDictionaryException__IService_DoSomethingWrong : int = 1;
+
+func rpc_GetIds() : (int[string])
+{
+    var result : int[string] = {};
+    result.Set("RpcListOpsDictionaryException::IService", 0);
+    result.Set("RpcListOpsDictionaryException::IService.DoSomethingWrong", 1);
+    return result;
+}
+
+func rpcwrapper_IsInterfaceTypeId(typeId : int) : (bool)
+{
+    if (((typeId >= -7) and (typeId <= -1)))
+    return true;
+    switch (typeId)
+    {
+        case rpctype_RpcListOpsDictionaryException__IService:
+        return true;
+        default:
+        return false;
+    }
+}
+
+func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
+{
+    switch (typeId)
+    {
+        case rpctype_RpcListOpsDictionaryException__IService:
+        return true;
+        default:
+        return false;
+    }
+}
+
+interface rpcops_IOps_Rpc_ListOps_DictionaryException
+{
+    func InvokeMethod_RpcListOpsDictionaryException__IService_DoSomethingWrong(ref : system::RpcObjectReference, arg_xs : ::system::Int32[::system::String]) : (::system::Int32);
+}
+
+func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+{
+    return new (system::IRpcObjectOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _slot : int = 0;
+
+        var _byvalReturnValues : object[int] = {};
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            var unknownId : bool = false;
+            try
+            switch (methodId)
+            {
+                case rpcmethod_RpcListOpsDictionaryException__IService_DoSomethingWrong:
+                {
+                    var target = (cast (RpcListOpsDictionaryException::IService^) _lc.RefToPtr(ref));
+                    return target.DoSomethingWrong((cast (::system::Int32[::system::String]) system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc)));
+                }
+                default:
+                (unknownId = true);
+            }
+            catch (ex)
+            {
+                return {message : ex.Message;} of (system::RpcException);
+            }
+            if (unknownId)
+            {
+                raise "Unknown RPC method id.";
+            }
+            return null;
+        }
+
+        override func EndInvokeMethod(slot : int) : (void)
+        {
+            _byvalReturnValues.Remove(slot);
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _lc.LocalObjectHold(ref, remoteClientId);
+            }
+            else
+            {
+                _lc.LocalObjectUnhold(ref, remoteClientId);
+            }
+        }
+
+        override func RegisterService(typeId : int, service : system::Interface^) : (void)
+        {
+            {
+                if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
+                {
+                    _lc.Dispatcher.RegisterService(typeId, _lc.PtrToRef(service));
+                }
+                else
+                {
+                    if (rpcwrapper_IsInterfaceTypeId(typeId))
+                    {
+                        raise "RPC service type id is not an @rpc:Ctor interface.";
+                    }
+                    else
+                    {
+                        raise "RPC service type id does not exist.";
+                    }
+                }
+            }
+        }
+    };
+}
+
+func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+{
+    return new (system::IRpcObjectEventOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (object)
+        {
+            raise "Unknown RPC event id.";
+        }
+    };
+}
+
+func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_ListOps_DictionaryException^)
+{
+    return new (rpcops_IOps_Rpc_ListOps_DictionaryException^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcListOpsDictionaryException__IService_DoSomethingWrong(ref : system::RpcObjectReference, arg_xs : ::system::Int32[::system::String]) : (::system::Int32)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg_xs, _lc));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcListOpsDictionaryException__IService_DoSomethingWrong, arguments);
+            system::IRpcLifecycle::ReadMethodException(invokeResult);
+            return (cast (::system::Int32) invokeResult);
+        }
+    };
+}
+
+namespace RpcListOpsDictionaryException
+{
+    interface IRpcWrapper_IService : RpcListOpsDictionaryException::IService, system::IRpcWrapperBase
+    {
+    }
+}
+
+func rpcwrapper_RpcListOpsDictionaryException__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_ListOps_DictionaryException^) : (RpcListOpsDictionaryException::IRpcWrapper_IService^)
+{
+    var proxy = new (RpcListOpsDictionaryException::IRpcWrapper_IService^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        var _ops : rpcops_IOps_Rpc_ListOps_DictionaryException^ = ops;
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+            (_ops = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
+            }
+        }
+
+        override func DoSomethingWrong(xs : ::system::Int32[::system::String]) : (::system::Int32)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            return _ops.InvokeMethod_RpcListOpsDictionaryException__IService_DoSomethingWrong(_ref, xs);
+        }
+    };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
+    return proxy;
+}
+
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*, ops : rpcops_IOps_Rpc_ListOps_DictionaryException^) : (system::IRpcWrapperBase^)
+{
+    switch (ref.typeId)
+    {
+        case rpctype_RpcListOpsDictionaryException__IService:
+        {
+            return rpcwrapper_RpcListOpsDictionaryException__IService(lc, ref, ops);
+        }
+        default:
+        raise "Unknown RPC type id for wrapper creation.";
+    }
+}
