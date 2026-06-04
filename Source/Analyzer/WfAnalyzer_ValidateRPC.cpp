@@ -1328,26 +1328,8 @@ ValidateModuleRPC_GenerateMetadata
 						auto baseTd = td->GetBaseTypeDescriptor(i);
 						if (!IsRpcInterfaceTd(baseTd, rpcInterfaceAttrTd, rpcInterfaceTds)) continue;
 
-						List<WString> baseFragments;
-						GetTypeFragments(baseTd, baseFragments);
-
-						Ptr<WfType> parentType;
-						for (auto fragment : baseFragments)
-						{
-							if (!parentType)
-							{
-								auto type = Ptr(new WfTopQualifiedType);
-								type->name.value = fragment;
-								parentType = type;
-							}
-							else
-							{
-								auto type = Ptr(new WfChildType);
-								type->parent = parentType;
-								type->name.value = fragment;
-								parentType = type;
-							}
-						}
+						auto typeInfo = Ptr(new TypeDescriptorTypeInfo(baseTd, TypeInfoHint::Normal));
+						auto parentType = GetTypeFromTypeInfo(typeInfo.Obj());
 						if (parentType)
 						{
 							decl->baseTypes.Add(parentType);

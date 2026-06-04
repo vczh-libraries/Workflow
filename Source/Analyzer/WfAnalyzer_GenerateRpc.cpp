@@ -376,13 +376,86 @@ namespace vl
 					return type;
 				}
 
-				Ptr<WfType> CreateMapType(Ptr<WfType> keyType, Ptr<WfType> valueType)
+				Nullable<WfPredefinedTypeName> GetPredefinedTypeFromSystemName(const WString& name)
 				{
-					auto type = Ptr(new WfMapType);
-					type->writability = WfMapWritability::Writable;
-					type->key = keyType;
-					type->value = valueType;
+					if (name == L"Boolean") return WfPredefinedTypeName::Bool;
+					if (name == (sizeof(vint) == sizeof(vint64_t) ? L"Int64" : L"Int32")) return WfPredefinedTypeName::Int;
+					if (name == L"String") return WfPredefinedTypeName::String;
+					if (name == L"Object") return WfPredefinedTypeName::Object;
+					if (name == L"Void") return WfPredefinedTypeName::Void;
+					return {};
+				}
+
+				Ptr<WfType> NormalizeRpcGeneratedType(Ptr<WfType> type)
+				{
+					if (!type)
+					{
+						return nullptr;
+					}
+
+					if (auto child = type.Cast<WfChildType>())
+					{
+						child->parent = NormalizeRpcGeneratedType(child->parent);
+						if (auto reference = child->parent.Cast<WfReferenceType>())
+						{
+							if (reference->name.value == L"system")
+							{
+								if (auto predefined = GetPredefinedTypeFromSystemName(child->name.value))
+								{
+									return CreatePredefinedType(predefined.Value());
+								}
+							}
+						}
+					}
+					else if (auto top = type.Cast<WfTopQualifiedType>())
+					{
+						auto reference = Ptr(new WfReferenceType);
+						reference->name = top->name;
+						return reference;
+					}
+					else if (auto raw = type.Cast<WfRawPointerType>())
+					{
+						raw->element = NormalizeRpcGeneratedType(raw->element);
+					}
+					else if (auto shared = type.Cast<WfSharedPointerType>())
+					{
+						shared->element = NormalizeRpcGeneratedType(shared->element);
+					}
+					else if (auto nullable = type.Cast<WfNullableType>())
+					{
+						nullable->element = NormalizeRpcGeneratedType(nullable->element);
+					}
+					else if (auto enumerable = type.Cast<WfEnumerableType>())
+					{
+						enumerable->element = NormalizeRpcGeneratedType(enumerable->element);
+					}
+					else if (auto map = type.Cast<WfMapType>())
+					{
+						if (map->key)
+						{
+							map->key = NormalizeRpcGeneratedType(map->key);
+						}
+						map->value = NormalizeRpcGeneratedType(map->value);
+					}
+					else if (auto observable = type.Cast<WfObservableListType>())
+					{
+						observable->element = NormalizeRpcGeneratedType(observable->element);
+					}
+					else if (auto function = type.Cast<WfFunctionType>())
+					{
+						function->result = NormalizeRpcGeneratedType(function->result);
+						for (vint i = 0; i < function->arguments.Count(); i++)
+						{
+							function->arguments[i] = NormalizeRpcGeneratedType(function->arguments[i]);
+						}
+					}
 					return type;
+				}
+
+				template<typename T>
+				Ptr<WfType> CreateTypeFromCpp()
+				{
+					return NormalizeRpcGeneratedType(GetTypeFromTypeInfo(TypeInfoRetriver<T>::CreateTypeInfo().Obj()));
 				}
 
 				Ptr<WfExpression> CreateNull()
@@ -539,12 +612,12 @@ namespace vl
 				{
 					auto constructor = CreateConstructor();
 					constructor->arguments.Add(CreateConstructorArgument(CreateReference(L"message"), message));
-					return CreateInfer(constructor, CreateQualifiedType(L"system::RpcException"));
+					return CreateInfer(constructor, CreateTypeFromCpp<rpc_controller::RpcException>());
 				}
 
 				Ptr<WfType> CreateRpcEventExceptionMapType()
 				{
-					return CreateMapType(CreatePredefinedType(WfPredefinedTypeName::Int), CreateQualifiedType(L"system::RpcException"));
+					return CreateTypeFromCpp<Dictionary<vint, rpc_controller::RpcException>>();
 				}
 
 				Ptr<WfExpression> CreateNewClass(Ptr<WfType> type)
@@ -769,7 +842,7 @@ namespace vl
 					if (IsSharedInterfaceType(typeInfo))
 					{
 						auto serializable = byref
-							? CreateCast(CreateQualifiedType(L"system::RpcObjectReference"), value)
+							? CreateCast(CreateTypeFromCpp<rpc_controller::RpcObjectReference>(), value)
 							: value;
 						unboxed = CreateLifecycleHelperCall(byref ? L"RpcUnboxByref" : L"RpcUnboxByval", serializable, lifecycle);
 						return IsRpcStrongTypedCollection(typeInfo) || IsStrongTypedCollectionType(type.Obj())
@@ -816,7 +889,7 @@ namespace vl
 
 				void AddRpcByvalReturnValue(Ptr<WfBlockStatement> block, Ptr<WfExpression> value, Ptr<WfExpression> copiedValue)
 				{
-					AddStatement(block, CreateInferredVariableStatement(L"byvalReturnValue", CreateNewClass(CreateSharedType(L"system::RpcByvalReturnValue"))));
+					AddStatement(block, CreateInferredVariableStatement(L"byvalReturnValue", CreateNewClass(CreateTypeFromCpp<Ptr<rpc_controller::RpcByvalReturnValue>>())));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"byvalReturnValue"), L"value"), value)));
 					AddStatement(block, CreateExpressionStatement(CreateAssign(CreateMember(CreateReference(L"byvalReturnValue"), L"slot"), CreateReference(L"_slot"))));
 					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_byvalReturnValues"), L"Set"), CreateReference(L"_slot"), copiedValue)));
@@ -1398,18 +1471,18 @@ namespace vl
 
 				Ptr<WfDeclaration> GenerateObjectOpsFactory(const List<RpcInterfaceModel>& interfaces)
 				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectOps", CreateSharedType(L"system::IRpcObjectOps"), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
-					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectOps")).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectOps", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					auto newOps = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>()).Cast<WfNewInterfaceExpression>();
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
 					newOps->declarations.Add(CreateVariableDeclaration(L"_slot", CreatePredefinedType(WfPredefinedTypeName::Int), CreateInt(0)));
-					newOps->declarations.Add(CreateVariableDeclaration(L"_byvalReturnValues", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::Int), CreatePredefinedType(WfPredefinedTypeName::Object)), CreateConstructor()));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_byvalReturnValues", CreateTypeFromCpp<Dictionary<vint, Value>>(), CreateConstructor()));
 
 					{
 						auto invokeMethod = CreateFunctionDeclaration(L"InvokeMethod", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
-						invokeMethod->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+						invokeMethod->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
 						invokeMethod->arguments.Add(CreateFunctionArgument(L"methodId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						invokeMethod->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
+						invokeMethod->arguments.Add(CreateFunctionArgument(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>()));
 						auto block = invokeMethod->statement.Cast<WfBlockStatement>();
 						AddStatement(block, CreateVariableStatement(L"unknownId", CreatePredefinedType(WfPredefinedTypeName::Bool), CreateBool(false)));
 						auto catchBlock = CreateBlock();
@@ -1431,7 +1504,7 @@ namespace vl
 
 					{
 						auto objectHold = CreateFunctionDeclaration(L"ObjectHold", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						objectHold->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+						objectHold->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
 						objectHold->arguments.Add(CreateFunctionArgument(L"remoteClientId", CreatePredefinedType(WfPredefinedTypeName::Int)));
 						objectHold->arguments.Add(CreateFunctionArgument(L"hold", CreatePredefinedType(WfPredefinedTypeName::Bool)));
 						auto trueBranch = CreateBlock();
@@ -1445,7 +1518,7 @@ namespace vl
 					{
 						auto registerService = CreateFunctionDeclaration(L"RegisterService", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
 						registerService->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						registerService->arguments.Add(CreateFunctionArgument(L"service", CreateSharedType(L"system::Interface")));
+						registerService->arguments.Add(CreateFunctionArgument(L"service", CreateTypeFromCpp<Ptr<reflection::IDescriptable>>()));
 						auto block = registerService->statement.Cast<WfBlockStatement>();
 						AddStatement(block, BuildRegisterService());
 						newOps->declarations.Add(registerService);
@@ -1457,16 +1530,16 @@ namespace vl
 
 				Ptr<WfDeclaration> GenerateObjectEventOpsFactory(const List<RpcInterfaceModel>& interfaces)
 				{
-					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectEventOps", CreateSharedType(L"system::IRpcObjectEventOps"), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
-					auto newOps = CreateNewInterface(CreateSharedType(L"system::IRpcObjectEventOps")).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
+					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectEventOps", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectEventOps>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					auto newOps = CreateNewInterface(CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectEventOps>>()).Cast<WfNewInterfaceExpression>();
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
 
 					{
 						auto invokeEvent = CreateFunctionDeclaration(L"InvokeEvent", CreatePredefinedType(WfPredefinedTypeName::Object), WfFunctionKind::Override);
-						invokeEvent->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+						invokeEvent->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
 						invokeEvent->arguments.Add(CreateFunctionArgument(L"eventId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateSharedType(L"system::Array")));
+						invokeEvent->arguments.Add(CreateFunctionArgument(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>()));
 						auto block = invokeEvent->statement.Cast<WfBlockStatement>();
 						if (!HasRpcEvents(interfaces))
 						{
@@ -1682,7 +1755,7 @@ namespace vl
 					}
 
 					{
-						auto baseType = CreateQualifiedType(L"system::IRpcWrapperBase");
+						auto baseType = CreateTypeFromCpp<rpc_controller::IRpcWrapperBase>();
 						interfaceDecl->baseTypes.Add(baseType);
 					}
 
@@ -1716,8 +1789,8 @@ namespace vl
 
 					auto mangledName = MangleRpcFullName(interfaceModel.fullName);
 					auto functionDecl = CreateFunctionDeclaration(L"rpclistener_" + mangledName, CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"target", CreateRawType(interfaceModel.fullName)));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
@@ -1759,9 +1832,9 @@ namespace vl
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpclistener_Attach", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Normal);
 					functionDecl->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"obj", CreateRawType(L"system::Interface")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"obj", CreateTypeFromCpp<reflection::IDescriptable*>()));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
@@ -1824,7 +1897,7 @@ namespace vl
 
 				void AddRpcOpsFunctionArguments(Ptr<WfFunctionDeclaration> functionDecl, const List<RpcParamModel>& params)
 				{
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
 					for (auto&& paramModel : params)
 					{
 						functionDecl->arguments.Add(CreateFunctionArgument(GetRpcOpsArgumentName(paramModel), CopyType(paramModel.type.Obj())));
@@ -1835,7 +1908,7 @@ namespace vl
 					Ptr<WfBlockStatement> block,
 					const List<RpcParamModel>& params)
 				{
-					AddStatement(block, CreateVariableStatement(L"arguments", CreateSharedType(L"system::Array"), CreateConstructor()));
+					AddStatement(block, CreateVariableStatement(L"arguments", CreateTypeFromCpp<Ptr<IValueArray>>(), CreateConstructor()));
 					AddStatement(block, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"arguments"), L"Resize"), CreateInt(params.Count()))));
 
 					for (vint i = 0; i < params.Count(); i++)
@@ -1907,7 +1980,7 @@ namespace vl
 						AddRpcMethodExceptionRaise(block, CreateReference(L"invokeResult"));
 						AddStatement(block, CreateInferredVariableStatement(
 							L"byvalReturnValue",
-							CreateCast(CreateSharedType(L"system::RpcByvalReturnValue"), CreateReference(L"invokeResult"))));
+							CreateCast(CreateTypeFromCpp<Ptr<rpc_controller::RpcByvalReturnValue>>(), CreateReference(L"invokeResult"))));
 						AddStatement(block, CreateInferredVariableStatement(
 							L"result",
 							CreateRpcUnboxExpression(
@@ -1972,9 +2045,9 @@ namespace vl
 				Ptr<WfDeclaration> GenerateRpcOpsFactory(const WString& assemblyName, const List<RpcInterfaceModel>& interfaces)
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IOps_Create", CreateSharedType(GetRpcOpsInterfaceName(assemblyName)), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
 					auto newOps = CreateNewInterface(CreateSharedType(GetRpcOpsInterfaceName(assemblyName))).Cast<WfNewInterfaceExpression>();
-					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
+					newOps->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
 
 					for (auto&& interfaceModel : interfaces)
 					{
@@ -2004,14 +2077,14 @@ namespace vl
 					CollectInterfaceEvents(interfaceModel, interfaces, events);
 
 					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_" + mangledName, CreateSharedType(wrapperInterfaceFullName), WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"proxyRef", CreateQualifiedType(L"system::RpcObjectReference")));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"proxyRef", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
 					auto proxyExpr = CreateNewInterface(CreateSharedType(wrapperInterfaceFullName)).Cast<WfNewInterfaceExpression>();
-					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_lc", CreateRawType(L"system::IRpcLifecycle"), CreateReference(L"lc")));
-					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_ref", CreateQualifiedType(L"system::RpcObjectReference"), CreateReference(L"proxyRef")));
+					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>(), CreateReference(L"lc")));
+					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>(), CreateReference(L"proxyRef")));
 					proxyExpr->declarations.Add(CreateVariableDeclaration(L"_ops", CreateSharedType(opsInterfaceName), CreateReference(L"ops")));
 					for (auto propertyModel : properties)
 					{
@@ -2185,11 +2258,9 @@ namespace vl
 
 				Ptr<WfDeclaration> GenerateWrapperDispatcher(const List<RpcInterfaceModel>& interfaces, const WString& opsInterfaceName)
 				{
-					auto returnType = Ptr(new WfSharedPointerType);
-					returnType->element = CreateQualifiedType(L"system::IRpcWrapperBase");
-					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_Create", returnType, WfFunctionKind::Normal);
-					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateQualifiedType(L"system::RpcObjectReference")));
-					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateRawType(L"system::IRpcLifecycle")));
+					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_Create", CreateTypeFromCpp<Ptr<rpc_controller::IRpcWrapperBase>>(), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"ref", CreateTypeFromCpp<rpc_controller::RpcObjectReference>()));
+					functionDecl->arguments.Add(CreateFunctionArgument(L"lc", CreateTypeFromCpp<rpc_controller::IRpcLifecycle*>()));
 					functionDecl->arguments.Add(CreateFunctionArgument(L"ops", CreateSharedType(opsInterfaceName)));
 					auto block = functionDecl->statement.Cast<WfBlockStatement>();
 
@@ -2246,9 +2317,9 @@ namespace vl
 				}
 
 				{
-					auto getIds = CreateFunctionDeclaration(L"rpc_GetIds", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::String), CreatePredefinedType(WfPredefinedTypeName::Int)), WfFunctionKind::Normal);
+					auto getIds = CreateFunctionDeclaration(L"rpc_GetIds", CreateTypeFromCpp<Dictionary<WString, vint>>(), WfFunctionKind::Normal);
 					auto block = getIds->statement.Cast<WfBlockStatement>();
-					AddStatement(block, CreateVariableStatement(L"result", CreateMapType(CreatePredefinedType(WfPredefinedTypeName::String), CreatePredefinedType(WfPredefinedTypeName::Int)), CreateConstructor()));
+					AddStatement(block, CreateVariableStatement(L"result", CreateTypeFromCpp<Dictionary<WString, vint>>(), CreateConstructor()));
 					id = 0;
 					for (auto fullName : manager->rpcMetadata->orderedIds)
 					{

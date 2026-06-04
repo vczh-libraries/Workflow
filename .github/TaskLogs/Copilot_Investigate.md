@@ -48,6 +48,7 @@ Task 2 success criteria:
 # PROPOSALS
 
 - No.1 Collapse JSON dual dispatcher onto the shared dual dispatcher base [CONFIRMED]
+- No.2 Generate fixed RPC Workflow types from C++ type info [CONFIRMED]
 
 ## No.1 Collapse JSON dual dispatcher onto the shared dual dispatcher base [CONFIRMED]
 
@@ -60,3 +61,15 @@ Implemented Task 1 by changing `Test/Source/RpcDualJsonDispatcherMock.*` so `Rpc
 ### CONFIRMED
 
 Task 1 is confirmed by successful Debug builds for x64 and Win32, `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile` x64, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on both x64 and Win32, plus `Test/TypeScript/prepare.ps1` and `npm run build` after installing the pinned TypeScript dependency with `npm ci`. Static scans found no remaining `RpcDualJsonMessageBridge`, `SetBridge`, `CreateSerializedRpcException`, or `ReadSerializedEventExceptionKey` usage in source/test code. Generated reflection metadata changed because `IRpcJsonMessageDispatcher` is now emitted, and TypeScript JSON request fixtures changed according to the new single-dispatcher trace.
+
+## No.2 Generate fixed RPC Workflow types from C++ type info [CONFIRMED]
+
+Replace hand-built `WfType` AST construction with `GetTypeFromTypeInfo(TypeInfoRetriver<T>::CreateTypeInfo().Obj())` when the target type is a fixed C++ runtime type, including RPC maps, callback function types, object/value primitives, JSON node classes, RPC operation interfaces, lifecycle pointers, and reflected base interface descriptors. Keep name-based helper construction for generated user/model types and other dynamic type names that cannot be named as a C++ template type. Delete helpers that become unused after the conversion.
+
+### CODE CHANGE
+
+Implemented Task 2 by adding a `CreateTypeFromCpp<T>()` path around `GetTypeFromTypeInfo(TypeInfoRetriver<T>::CreateTypeInfo().Obj())` for fixed RPC/runtime types in `WfAnalyzer_GenerateRpc.cpp` and `WfAnalyzer_GenerateRpc_JsonSerialization.cpp`. The generated type tree is normalized back to the existing Workflow spelling for predefined `system::*` aliases and root-qualified runtime symbols so wrapper text remains stable. Replaced hand-built AST types for RPC exceptions, object references, lifecycle pointers, operation interfaces, serializer/json node classes, reflection values, and runtime dictionaries. Removed the now-unused `CreateMapType`, `CreateRpcJsonSerializeCallbackType`, and `CreateRpcJsonDeserializeCallbackType` helpers. In `WfAnalyzer_ValidateRPC.cpp`, reflected RPC base interfaces now go through `TypeDescriptorTypeInfo` and `GetTypeFromTypeInfo` instead of rebuilding type fragments manually.
+
+### CONFIRMED
+
+Task 2 is confirmed by successful Debug builds for x64 and Win32, plus `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on both x64 and Win32. `Test/TypeScript/prepare.ps1` and `npm run build` both completed successfully. Static scans found no remaining fixed `Create(Raw|Shared|Qualified)Type(L"system::...")` calls, no `CreateMapType`, and no removed JSON callback helper usage in the RPC generator files. `git status` shows no generated `*.txt` changes after the wrapper/compiler runs.
