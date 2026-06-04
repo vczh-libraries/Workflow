@@ -1,62 +1,13 @@
-#ifdef _MSC_VER
+#ifdef VCZH_MSVC
 #include <windows.h>
 #endif
 
-#if defined VCZH_DEBUG_NO_REFLECTION || defined VCZH_TEST_HELPER_PATH_ONLY
-#include "../../Import/Vlpp.h"
-
-using namespace vl;
-#else
 #include "Helper.h"
 #include "../../Source/Parser/Generated/WorkflowAst_Json.h"
-#endif
 
 #if defined VCZH_MSVC
-WString GetExePath()
-{
-	wchar_t buffer[65536];
-	GetModuleFileName(NULL, buffer, sizeof(buffer) / sizeof(*buffer));
-	vint pos = -1;
-	vint index = 0;
-	while (buffer[index])
-	{
-		if (buffer[index] == L'\\')
-		{
-			pos = index;
-		}
-		index++;
-	}
-	return WString::CopyFrom(buffer, pos + 1);
-}
+extern WString GetExePath();
 #endif
-
-WString GetJsonValueOutputPath()
-{
-#if defined VCZH_MSVC
-#ifdef VCZH_64
-	return GetExePath() + L"..\\..\\..\\TypeScript\\JsonValues64\\";
-#else
-	return GetExePath() + L"..\\..\\TypeScript\\JsonValues32\\";
-#endif
-#elif defined VCZH_GCC
-	return L"../../TypeScript/JsonValues64/";
-#endif
-}
-
-WString GetJsonRequestOutputPath()
-{
-#if defined VCZH_MSVC
-#ifdef VCZH_64
-	return GetExePath() + L"..\\..\\..\\TypeScript\\JsonRequest64\\";
-#else
-	return GetExePath() + L"..\\..\\TypeScript\\JsonRequest32\\";
-#endif
-#elif defined VCZH_GCC
-	return L"../../TypeScript/JsonRequest64/";
-#endif
-}
-
-#if !defined VCZH_DEBUG_NO_REFLECTION && !defined VCZH_TEST_HELPER_PATH_ONLY
 
 WfCpuArchitecture testCpuArchitecture = WfCpuArchitecture::AsExecutable;
 Ptr<workflow::Parser> workflowParser;
@@ -637,5 +588,3 @@ void LogSampleAssemblyBinary(const WString& sampleName, const WString& itemName,
 	assembly->Serialize(fileStream);
 	TEST_PRINT(L"    serialized: " + i64tow(fileStream.Size()) + L" bytes");
 }
-
-#endif

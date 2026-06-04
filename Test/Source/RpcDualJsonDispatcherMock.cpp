@@ -1,7 +1,7 @@
 #include "RpcDualJsonDispatcherMock.h"
 #include "../../Source/Library/Rpc/WfLibraryRpcWrappers.h"
 
-extern vl::WString GetJsonValueOutputPath();
+extern vl::WString GetJsonValuesOutputPath();
 extern vl::WString GetJsonRequestOutputPath();
 
 namespace vl
@@ -227,9 +227,8 @@ namespace vl
 		void RpcDualJsonDispatcherMock::DumpJsonValues(const WString& itemName)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonDispatcherMock::DumpJsonValues(const WString&)#"
-			auto folderPath = ::GetJsonValueOutputPath();
+			auto folderPath = ::GetJsonValuesOutputPath();
 			filesystem::Folder folder(folderPath);
-			folder.Delete(true);
 			if (!folder.Exists())
 			{
 				CHECK_ERROR(folder.Create(true), ERROR_MESSAGE_PREFIX L"Failed to create JSON value output folder.");
@@ -407,7 +406,6 @@ namespace vl
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestDispatcherMock::DumpJsonRequests(const WString&)#"
 			auto folderPath = ::GetJsonRequestOutputPath();
 			filesystem::Folder folder(folderPath);
-			folder.Delete(true);
 			if (!folder.Exists())
 			{
 				CHECK_ERROR(folder.Create(true), ERROR_MESSAGE_PREFIX L"Failed to create JSON request output folder.");

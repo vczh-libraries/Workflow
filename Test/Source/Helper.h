@@ -23,8 +23,6 @@ extern workflow::Parser&	GetWorkflowParser();
 extern void					ReleaseWorkflowTable();
 extern WString				GetTestResourcePath();
 extern WString				GetTestOutputBasePath();
-extern WString				GetJsonValueOutputPath();
-extern WString				GetJsonRequestOutputPath();
 extern WString				GetCppOutputPath();
 extern WString				GetCppOutputPath32();
 extern WString				GetCppOutputPath64();

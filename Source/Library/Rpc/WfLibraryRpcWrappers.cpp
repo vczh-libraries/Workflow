@@ -789,27 +789,40 @@ namespace vl
 
 		Value RpcCalleeListEventOps::OnItemChanged(RpcObjectReference ref, vint index, vint oldCount, vint newCount)
 		{
-			auto controller = lifecycle->GetController();
+			struct SuppressFlag
+			{
+				IRpcLifecycle*		lifecycle;
+				RpcObjectReference	ref;
+
+				SuppressFlag(IRpcLifecycle* _lifecycle, RpcObjectReference _ref)
+					: lifecycle(_lifecycle)
+					, ref(_ref)
+				{
+					lifecycle->GetController()->SetItemChangedSuppressedFlag(ref, true);
+				}
+				~SuppressFlag()
+				{
+					lifecycle->GetController()->SetItemChangedSuppressedFlag(ref, false);
+				}
+			};
+
 			auto obj = lifecycle->RefToPtr(ref);
 			auto observable = Ptr(obj.Obj()->SafeAggregationCast<IValueObservableList>());
 			CHECK_ERROR(observable, L"RpcCalleeListEventOps::OnItemChanged cannot find the target observable list.");
-			controller->SetItemChangedSuppressedFlag(ref, true);
+
 			RpcEventExceptionMap exceptions;
-			try
 			{
-				observable->ItemChanged(index, oldCount, newCount);
+				SuppressFlag suppressFlag(lifecycle, ref);
+				try
+				{
+					observable->ItemChanged(index, oldCount, newCount);
+				}
+				catch (const Exception& ex)
+				{
+					exceptions = IValueDictionary::Create();
+					exceptions->Set(BoxValue(lifecycle->GetClientId()), BoxValue(RpcException{ ex.Message() }));
+				}
 			}
-			catch (const Exception& ex)
-			{
-				exceptions = IValueDictionary::Create();
-				exceptions->Set(BoxValue(lifecycle->GetClientId()), BoxValue(RpcException{ ex.Message() }));
-			}
-			catch (...)
-			{
-				controller->SetItemChangedSuppressedFlag(ref, false);
-				throw;
-			}
-			controller->SetItemChangedSuppressedFlag(ref, false);
 			return SerializeValue(serializer, BoxValue(exceptions));
 		}
 
