@@ -26,38 +26,38 @@ namespace vl
 		class RpcControllerDefault : public Object, public IRpcController
 		{
 		protected:
-			Ptr<IRpcObjectOps>									objectCallback;
-			Ptr<IRpcObjectEventOps>								eventCallback;
-			Ptr<IRpcListOps>									listCallback;
-			Ptr<IRpcListEventOps>								listEventCallback;
-			collections::Dictionary<RpcEventSuppressionKey, vint>				eventSuppressedFlags;
-			collections::Dictionary<RpcObjectReference, vint>					itemChangedSuppressedFlags;
+			Ptr<IRpcObjectOps>										objectCallback;
+			Ptr<IRpcObjectEventOps>									eventCallback;
+			Ptr<IRpcListOps>										listCallback;
+			Ptr<IRpcListEventOps>									listEventCallback;
+			collections::Dictionary<RpcEventSuppressionKey, vint>	eventSuppressedFlags;
+			collections::Dictionary<RpcObjectReference, vint>		itemChangedSuppressedFlags;
 
 			template<typename TKey>
-			static void											SetSuppressedFlag(collections::Dictionary<TKey, vint>& flags, const TKey& key, bool suppressed);
+			static void												SetSuppressedFlag(collections::Dictionary<TKey, vint>& flags, const TKey& key, bool suppressed);
 
 			template<typename TKey>
-			static bool											GetSuppressedFlag(const collections::Dictionary<TKey, vint>& flags, const TKey& key);
+			static bool												GetSuppressedFlag(const collections::Dictionary<TKey, vint>& flags, const TKey& key);
 
 		public:
 
 			RpcControllerDefault();
 			~RpcControllerDefault();
 
-			void												Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback);
+			void													Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback);
 
 			// IRpcController
 
-			IRpcListOps*										GetListOps()override;
-			IRpcObjectOps*										GetObjectOps()override;
-			IRpcListEventOps*									GetListEventOps()override;
-			IRpcObjectEventOps*									GetObjectEventOps()override;
+			IRpcListOps*											GetListOps()override;
+			IRpcObjectOps*											GetObjectOps()override;
+			IRpcListEventOps*										GetListEventOps()override;
+			IRpcObjectEventOps*										GetObjectEventOps()override;
 
-			void												Finalize()override;
-			void												SetEventSuppressedFlag(RpcObjectReference ref, vint eventId, bool suppressed)override;
-			bool												GetEventSuppressedFlag(RpcObjectReference ref, vint eventId)override;
-			void												SetItemChangedSuppressedFlag(RpcObjectReference ref, bool suppressed)override;
-			bool												GetItemChangedSuppressedFlag(RpcObjectReference ref)override;
+			void													Finalize()override;
+			void													SetEventSuppressedFlag(RpcObjectReference ref, vint eventId, bool suppressed)override;
+			bool													GetEventSuppressedFlag(RpcObjectReference ref, vint eventId)override;
+			void													SetItemChangedSuppressedFlag(RpcObjectReference ref, bool suppressed)override;
+			bool													GetItemChangedSuppressedFlag(RpcObjectReference ref)override;
 		};
 	}
 }

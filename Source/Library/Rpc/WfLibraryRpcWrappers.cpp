@@ -135,8 +135,39 @@ namespace vl
 				}
 			}
 
-			extern Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc);
-			extern Value RpcUnboxValueByref(const Value& serializable, IRpcLifecycle* lc);
+			Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc)
+			{
+				if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
+				if (trivial.IsNull()) return trivial;
+
+				if (trivial.GetValueType() == Value::SharedPtr)
+				{
+					if (auto raw = trivial.GetRawPtr())
+					{
+						if (auto obj = dynamic_cast<IDescriptable*>(raw))
+						{
+							return BoxValue(RpcBoxByref(Ptr<IDescriptable>(obj), lc));
+						}
+					}
+				}
+
+				return trivial;
+			}
+
+			Value RpcUnboxValueByref(const Value& serializable, IRpcLifecycle* lc)
+			{
+				if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
+				if (serializable.IsNull()) return serializable;
+
+				if (IsRpcObjectReferenceValue(serializable))
+				{
+					auto ref = GetRpcObjectReference(serializable);
+					auto obj = RpcUnboxByref(ref, lc);
+					return BoxValue(obj);
+				}
+
+				return serializable;
+			}
 
 		}
 		
@@ -1054,48 +1085,5 @@ namespace vl
 			ReadEventException(UnboxValue<RpcEventExceptionMap>(DeserializeValue(serializer, result)));
 			return result;
 		}
-
-/***********************************************************************
-* Helpers
-***********************************************************************/
-
-		namespace
-		{
-			Value RpcBoxValueByref(const Value& trivial, IRpcLifecycle* lc)
-			{
-				if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
-				if (trivial.IsNull()) return trivial;
-
-				if (trivial.GetValueType() == Value::SharedPtr)
-				{
-					if (auto raw = trivial.GetRawPtr())
-					{
-						if (auto obj = dynamic_cast<IDescriptable*>(raw))
-						{
-							return BoxValue(RpcBoxByref(Ptr<IDescriptable>(obj), lc));
-						}
-					}
-				}
-
-				return trivial;
-			}
-
-			Value RpcUnboxValueByref(const Value& serializable, IRpcLifecycle* lc)
-			{
-				if (!lc) CHECK_FAIL(L"IRpcLifecycle cannot be null.");
-				if (serializable.IsNull()) return serializable;
-
-				if (IsRpcObjectReferenceValue(serializable))
-				{
-					auto ref = GetRpcObjectReference(serializable);
-					auto obj = RpcUnboxByref(ref, lc);
-					return BoxValue(obj);
-				}
-
-				return serializable;
-			}
-		}
-
-
 	}
 }

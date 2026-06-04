@@ -63,7 +63,6 @@ namespace vl
 			void														RegisterService(RpcDualJsonRequestDispatcherMock* dispatcher, vint typeId, rpc_controller::RpcObjectReference ref);
 			rpc_controller::RpcObjectReference							RequestService(vint typeId);
 			Ptr<glr::json::JsonNode>									OnJsonRequest(RpcDualJsonRequestDispatcherMock* dispatcher, Ptr<glr::json::JsonNode> message);
-			collections::List<Ptr<glr::json::JsonNode>>&					JsonRequests();
 			void														DumpJsonRequests(const WString& itemName);
 		};
 

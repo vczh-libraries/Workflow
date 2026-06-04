@@ -16,12 +16,7 @@
 
 ## ToDo
 
-- Redirect list ops to object ops.
-  - Review
-  - Test case to handle `IRpcListOps` exceptions.
-- Review JSON related constructions.
-- Review `RpcDualJsonDispatcherMock.h` for `CppTest_Metaonly`.
-- Refactor wrapper generation to use C++ type -> ITypeInfo -> WfType helper, eliminate innecessary helpers.
+- Test case to handle `IRpcListOps` exceptions.
 - Consider how to run a CLI based dual processes demo to test RPC.
 
 ## Knowledge Base

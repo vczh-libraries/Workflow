@@ -377,11 +377,6 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		List<Ptr<JsonNode>>& RpcDualJsonMessageBridge::JsonRequests()
-		{
-			return jsonRequests;
-		}
-
 		void RpcDualJsonMessageBridge::DumpJsonRequests(const WString& itemName)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonMessageBridge::DumpJsonRequests(const WString&)#"
