@@ -29,6 +29,17 @@ When possible, use `TypeInfoRetriver` inside `GetTypeFromTypeInfo` to avoid crea
 
 # UPDATES
 
+## UPDATE
+
+Your overall work is good, just one more fix.
+
+						auto typeInfo = Ptr(new TypeDescriptorTypeInfo(baseTd, TypeInfoHint::Normal));
+						auto parentType = GetTypeFromTypeInfo(typeInfo.Obj());
+
+this sounds wired. There is a `GetExpressionFromTypeDescriptor` function, you can create `GetTypeFromTypeDescriptor` for the code sample above, and also replace everywhere that use this pattern. By the way, you are also going to scan if any cpp in Source/Analyzer folder use this pattern too. For example, `GenerateInterfaceDecl` has a similar piece of code like `GetExpressionFromTypeDescriptor`, your new `GetTypeFromTypeDescriptor` will be able to use here. It can be also used in `GetTypeFromTypeInfo`. Now one function for 3 places.
+
+Success is defined by no generated code gets changed and all test projects pass. Follow `document-and-commit.md` for finishing part.
+
 # TEST [CONFIRMED]
 
 Task 1 is confirmed by static inspection: the current JSON RPC harness has two `RpcDualJsonRequestDispatcherMock` instances connected through `RpcDualJsonMessageBridge`, duplicating dispatch behavior that belongs in `RpcDualDispatcherMockBase`.
@@ -49,6 +60,7 @@ Task 2 success criteria:
 
 - No.1 Collapse JSON dual dispatcher onto the shared dual dispatcher base [CONFIRMED]
 - No.2 Generate fixed RPC Workflow types from C++ type info [CONFIRMED]
+- No.3 Share type descriptor to Workflow type conversion [CONFIRMED]
 
 ## No.1 Collapse JSON dual dispatcher onto the shared dual dispatcher base [CONFIRMED]
 
@@ -73,3 +85,15 @@ Implemented Task 2 by adding a `CreateTypeFromCpp<T>()` path around `GetTypeFrom
 ### CONFIRMED
 
 Task 2 is confirmed by successful Debug builds for x64 and Win32, plus `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on both x64 and Win32. `Test/TypeScript/prepare.ps1` and `npm run build` both completed successfully. Static scans found no remaining fixed `Create(Raw|Shared|Qualified)Type(L"system::...")` calls, no `CreateMapType`, and no removed JSON callback helper usage in the RPC generator files. `git status` shows no generated `*.txt` changes after the wrapper/compiler runs.
+
+## No.3 Share type descriptor to Workflow type conversion [CONFIRMED]
+
+Create `GetTypeFromTypeDescriptor` beside `GetExpressionFromTypeDescriptor`, use it from `GetTypeFromTypeInfo`, and replace analyzer code that creates `TypeDescriptorTypeInfo` only to convert an `ITypeDescriptor` back into a Workflow type AST. This keeps direct descriptor-to-type conversion in one place while preserving generated wrapper output.
+
+### CODE CHANGE
+
+Implemented the follow-up by adding `GetTypeFromTypeDescriptor` beside `GetExpressionFromTypeDescriptor` in `WfAnalyzer_TypeInfo.cpp` and declaring it in `WfAnalyzer.h`. `GetTypeFromTypeInfo` now delegates its `ITypeInfo::TypeDescriptor` case to this helper. `GenerateInterfaceDecl` uses it directly for reflected RPC base interfaces, and `ExpandMixinCastExpression` uses it as the element builder for raw/shared pointer `WfType` AST nodes instead of creating temporary `TypeDescriptorTypeInfo` objects just to feed `GetTypeFromTypeInfo`.
+
+### CONFIRMED
+
+The proposal is confirmed by successful Debug builds for x64 and Win32, all listed unit-test projects on both x64 and Win32 (`LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`), `Test/TypeScript/prepare.ps1`, and `npm run build` run again after restoring generated fixture churn from the test run. Static scans in `Source/Analyzer` found no remaining `GetTypeFromTypeInfo` path that manually builds a temporary `TypeDescriptorTypeInfo` only to convert an `ITypeDescriptor` into a `WfType`. Final `git status` contains no generated file changes.

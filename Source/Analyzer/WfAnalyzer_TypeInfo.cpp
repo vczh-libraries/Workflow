@@ -124,6 +124,35 @@ GetExpressionFromTypeDescriptor
 			}
 
 /***********************************************************************
+GetTypeFromTypeDescriptor
+***********************************************************************/
+
+			Ptr<WfType> GetTypeFromTypeDescriptor(reflection::description::ITypeDescriptor* typeDescriptor)
+			{
+				List<WString> fragments;
+				GetTypeFragments(typeDescriptor, fragments);
+
+				Ptr<WfType> parentType;
+				for (auto fragment : fragments)
+				{
+					if (!parentType)
+					{
+						auto type = Ptr(new WfTopQualifiedType);
+						type->name.value = fragment;
+						parentType = type;
+					}
+					else
+					{
+						auto type = Ptr(new WfChildType);
+						type->parent = parentType;
+						type->name.value = fragment;
+						parentType = type;
+					}
+				}
+				return parentType;
+			}
+
+/***********************************************************************
 GetTypeFromTypeInfo
 ***********************************************************************/
 
@@ -173,27 +202,7 @@ GetTypeFromTypeInfo
 					}
 				case ITypeInfo::TypeDescriptor:
 					{
-						List<WString> fragments;
-						GetTypeFragments(typeInfo->GetTypeDescriptor(), fragments);
-
-						Ptr<WfType> parentType;
-						for (auto fragment : fragments)
-						{
-							if (!parentType)
-							{
-								auto type = Ptr(new WfTopQualifiedType);
-								type->name.value = fragment;
-								parentType = type;
-							}
-							else
-							{
-								auto type = Ptr(new WfChildType);
-								type->parent = parentType;
-								type->name.value = fragment;
-								parentType = type;
-							}
-						}
-						return parentType;
+						return GetTypeFromTypeDescriptor(typeInfo->GetTypeDescriptor());
 					}
 				case ITypeInfo::Generic:
 					{

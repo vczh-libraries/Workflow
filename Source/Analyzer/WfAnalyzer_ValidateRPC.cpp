@@ -1328,8 +1328,7 @@ ValidateModuleRPC_GenerateMetadata
 						auto baseTd = td->GetBaseTypeDescriptor(i);
 						if (!IsRpcInterfaceTd(baseTd, rpcInterfaceAttrTd, rpcInterfaceTds)) continue;
 
-						auto typeInfo = Ptr(new TypeDescriptorTypeInfo(baseTd, TypeInfoHint::Normal));
-						auto parentType = GetTypeFromTypeInfo(typeInfo.Obj());
+						auto parentType = GetTypeFromTypeDescriptor(baseTd);
 						if (parentType)
 						{
 							decl->baseTypes.Add(parentType);
