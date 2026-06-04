@@ -6,12 +6,12 @@
 - Wire generated RPC C++ files into shared vcxitems after `CompilerTest_LoadAndCompile` [7]
 - Compare `RuntimeTest` and `CppTest*` failures before choosing an RPC root cause [6]
 - Preserve RPC/Workflow sample intent; only adjust syntax or diagnostics [6]
+- Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder [5]
+- Run `CompilerTest_LoadAndCompile` at least once before downstream RPC generated-C++ tests [5]
 - RPC byref/byval container samples must verify wrapper/copy semantics at every level [5]
 - Commit direct edits and large generated outputs separately when requested [4]
-- Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder [4]
-- Run `CompilerTest_LoadAndCompile` at least once before downstream RPC generated-C++ tests [4]
 - Pure refactors should not touch generated RPC outputs [4]
-- Split RPC sample definitions and tests consistently [3]
+- Split RPC sample definitions and tests consistently [4]
 - Workflow analyzer error tests may change values when preserving the error code [1]
 - Workflow samples use `raise`, not `throw` [1]
 - Workflow range syntax for inclusive generated loops is `range [1, xs.Count]` [1]
@@ -24,6 +24,7 @@
 - Verify generated RPC file renames with stale-reference scans [1]
 - Audit RPC JSON request transcripts for request id pairing [1]
 - Track generated TypeScript RPC fixtures in git [1]
+- Use 2-space indentation in Workflow sample files [1]
 
 # Refinements
 
@@ -94,6 +95,10 @@ When schema declarations are centralized in `DataSchema32` and `DataSchema64`, `
 ## Split RPC sample definitions and tests consistently
 
 Split RPC samples into `Rpc/SAMPLE.txt` for RPC definitions only and `Rpc/SAMPLE_Test.txt` for executable test logic such as globals, helpers, `serviceMain`, and `clientMain`. Add only `SAMPLE=expected` to `IndexRpc.txt`, but include both files under `Resource Files/Rpc` in `CompilerTest_LoadAndCompile`.
+
+## Use 2-space indentation in Workflow sample files
+
+When adding or updating Workflow samples, indent the sample body with 2 spaces even if provided draft snippets use a wider indent. Keep requested semantics intact while normalizing sample formatting to the repo preference.
 
 ## Type-check shared `Rpc.d.ts` standalone
 

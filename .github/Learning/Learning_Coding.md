@@ -4,10 +4,10 @@
 
 - Avoid explicit Workflow types/casts when implicit typing works [5]
 - Remove pure RPC redirection layers once dispatcher/ops can own the call [4]
+- Keep RPC-specific fixes out of generic C++ / Workflow codegen surfaces [3]
 - Read and aggregate RPC event exception maps through `IRpcLifecycle::ReadEventException` [3]
 - Keep TypeScript RPC dispatcher envelopes separate from value schemas [3]
 - Generated RPC test id maps must come from `rpc_GetIds()` / `SetIdMap` [2]
-- Keep RPC-specific fixes out of generic C++ / Workflow codegen surfaces [2]
 - Interpret `IRpcWrapperBase` as remote-wrapper identity [2]
 - Use internal properties defensively in `RpcDualLifecycleMock` [2]
 - Store and manage RPC wrappers as `IRpcWrapperBase` [2]
@@ -58,6 +58,7 @@
 - Prefer generic `BoxValue`/`UnboxValue` over specialized RPC box/unbox helpers [1]
 - Keep shared Workflow test output path helpers in `Helper.h` / `Helper.cpp` [1]
 - Use request-envelope adapters for RPC JSON dispatcher paths [1]
+- Keep RPC array resizing separate from list-only mutations [1]
 
 # Refinements
 
@@ -72,6 +73,8 @@ Generated `TestCasesRpc.cpp` must not rebuild lifecycle id maps from an assumed 
 ## Keep RPC-specific fixes out of generic C++ / Workflow codegen surfaces
 
 When an RPC test exposes a failure, keep the fix in RPC metadata generation, RPC wrapper Workflow generation, `WfLibraryRpc*`, or the RPC test lifecycle unless the generic compiler/codegen surface is proven to own the bug. The user explicitly rejected broad changes to generic C++ wrapper/expression generation for RPC-only event and signature issues.
+
+If reflected collection access raises an internal `Error` during an RPC sample, prefer fixing the reflection wrapper boundary that exposes the collection operation rather than adding broad `Error` catches to generated `InvokeMethod` / `InvokeEvent` or generic Workflow runtime paths.
 
 ## Interpret `IRpcWrapperBase` as remote-wrapper identity
 
@@ -302,3 +305,7 @@ Path helpers used by Workflow test components should live beside the other share
 ## Use request-envelope adapters for RPC JSON dispatcher paths
 
 `RpcJsonObjectOps` and `RpcJsonObjectEventOps` should adapt generated JSON ops to `IRpcJsonMessageDispatcher` request/response envelopes. Caller-side methods build `Rpc.d.ts` request objects, write or allocate `rpcRequestId`, call `OnJsonRequest`, and decode the response payload back into the `JsonNode`-boxed shape expected by generated wrappers. Static `Translate` methods perform the reverse: parse the request envelope, invoke the target ops interface, normalize exceptions or byval-return data as needed, and build a response envelope that reuses the request id.
+
+## Keep RPC array resizing separate from list-only mutations
+
+`RpcByrefArray::Resize` should call a dedicated `IRpcListOps::ArrayResize`-style operation. Do not implement array resize by disguising it as `ListClear`, `ListRemoveAt`, or another list-only mutation. List-only operations against arrays should report RPC exceptions instead of silently resizing or removing array elements.
