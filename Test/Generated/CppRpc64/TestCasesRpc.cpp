@@ -105,6 +105,8 @@
 #include "RpcEventReflection.h"
 #include "RpcEventArgsReflection.h"
 #include "RpcEventOblistReflection.h"
+#include "RpcListOps_DictionaryExceptionReflection.h"
+#include "RpcListOps_ListExceptionReflection.h"
 #include "RpcListOps_OblistEventExceptionReflection.h"
 #include "RpcFailDoubleRegistrationReflection.h"
 #include "RpcInheritanceReflection.h"
@@ -242,6 +244,8 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_EventTypes();
 	 LoadRpc_EventArgsTypes();
 	 LoadRpc_EventOblistTypes();
+	 LoadRpc_ListOps_DictionaryExceptionTypes();
+	 LoadRpc_ListOps_ListExceptionTypes();
 	 LoadRpc_ListOps_OblistEventExceptionTypes();
 	 LoadRpc_FailDoubleRegistrationTypes();
 	 LoadRpc_InheritanceTypes();
@@ -1600,6 +1604,30 @@ TEST_CASE(L"Rpc:EventOblist")
 		{
 			auto& instance = ::vl_workflow_global::Rpc_EventOblist::Instance();
 			if (dynamic_cast<::RpcEventOblist::IService*>(obj)) return instance.rpctype_RpcEventOblist__IService;
+			return RpcTypeId_NotFound;
+		}
+		);
+});
+
+TEST_CASE(L"Rpc:ListOps_DictionaryException")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_ListOps_DictionaryException, false>(L"ListOps_DictionaryException", L"ArrayBase<T, K>::Get(vint)#Argument index not in range.",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_ListOps_DictionaryException::Instance();
+			if (dynamic_cast<::RpcListOpsDictionaryException::IService*>(obj)) return instance.rpctype_RpcListOpsDictionaryException__IService;
+			return RpcTypeId_NotFound;
+		}
+		);
+});
+
+TEST_CASE(L"Rpc:ListOps_ListException")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_ListOps_ListException, false>(L"ListOps_ListException", L"ArrayBase<T, K>::Get(vint)#Argument index not in range.",
+		[](IDescriptable* obj) -> vint
+		{
+			auto& instance = ::vl_workflow_global::Rpc_ListOps_ListException::Instance();
+			if (dynamic_cast<::RpcListOpsListException::IService*>(obj)) return instance.rpctype_RpcListOpsListException__IService;
 			return RpcTypeId_NotFound;
 		}
 		);
