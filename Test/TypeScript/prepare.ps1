@@ -21,10 +21,6 @@ function CopySerializationFiles($metadataFolder, $schemaFolder) {
     Copy-Item (Join-Path $repoRoot "$metadataFolder\Serialization_*.d.ts") $targetDir
 }
 
-ClearSerializationFiles "JsonValues32"
-ClearSerializationFiles "JsonValues64"
-ClearSerializationFiles "JsonRequest32"
-ClearSerializationFiles "JsonRequest64"
 CopySerializationFiles "Test\Generated\RpcMetadata32" "DataSchema32"
 CopySerializationFiles "Test\Generated\RpcMetadata64" "DataSchema64"
 
