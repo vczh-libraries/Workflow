@@ -261,6 +261,16 @@ interface system::IRpcDispatcher : system::Interface {
 
 }
 
+@FullName:vl::rpc_controller::IRpcJsonMessageDispatcher
+interface system::IRpcJsonMessageDispatcher : system::Interface {
+    function AllocateRequestId() : system::Int32;
+    function OnJsonRequest(message : system::JsonNode^) : system::JsonNode^;
+
+    @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcJsonMessageDispatcher>::Create($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcJsonMessageDispatcher>::Create)
+    constructor (proxy : system::InterfaceProxy^) : system::IRpcJsonMessageDispatcher^;
+}
+
 @FullName:vl::rpc_controller::IRpcLifecycle
 interface system::IRpcLifecycle : system::Interface {
     property ClientId : system::Int32 { get:GetClientId }
