@@ -5,7 +5,7 @@
 - Run TypeScript RPC schema verification after JSON or dispatcher-schema changes [9]
 - Wire generated RPC C++ files into shared vcxitems after `CompilerTest_LoadAndCompile` [7]
 - Compare `RuntimeTest` and `CppTest*` failures before choosing an RPC root cause [6]
-- Preserve RPC/Workflow sample intent; only adjust syntax or diagnostics [5]
+- Preserve RPC/Workflow sample intent; only adjust syntax or diagnostics [6]
 - RPC byref/byval container samples must verify wrapper/copy semantics at every level [5]
 - Commit direct edits and large generated outputs separately when requested [4]
 - Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder [4]
@@ -38,6 +38,8 @@ When new or renamed RPC samples generate C++ files under `Test/SourceCppGenRpc`,
 ## Preserve RPC/Workflow sample intent; only adjust syntax or diagnostics
 
 When implementing requested Workflow samples, keep the sample meaning intact and avoid changing parser/compiler/codegen surfaces unless the task explicitly allows it. It is acceptable to fix typos, legal Workflow syntax, namespace names, or add richer output that preserves the scenario being tested.
+
+For exception samples such as `Oblist_EventException`, keep service-side throwing handlers at the original point. Do not move the throwing behavior to the client side just to stabilize generated transcripts, because that removes the exception-handling path the sample exists to test.
 
 ## RPC byref/byval container samples must verify wrapper/copy semantics at every level
 

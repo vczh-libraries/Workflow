@@ -22,6 +22,7 @@
 - Propagate RPC method exceptions via `system::RpcException` [2]
 - Keep Workflow library helpers out-of-line with explicit `extern` [2]
 - Validate RPC JSON ops payloads as `JsonNode` values [2]
+- RPC event workarounds should match the actual `Event<T>` behavior [2]
 - Apply `RunRpcTestCase` changes to every harness variant [1]
 - Keep RPC JSON test harness setup under `VCZH_DEBUG_NO_REFLECTION` [1]
 - Use generated strong typed RPC ops for event listeners [1]
@@ -43,7 +44,6 @@
 - Generate cached RPC properties as per-property typed fields [1]
 - Mark RPC sample properties with the intended `@rpc:Dynamic` / `@rpc:Cached` attributes [1]
 - Workflow `observe T[]` defaults to RPC byref semantics [1]
-- RPC event workarounds should match the actual `Event<T>` behavior [1]
 - Do not reflect RPC lifecycle mocks just to expose their controller [1]
 - Finalize RPC dispatcher/lifecycle/controller explicitly before unloading Workflow context [1]
 - Let wrapper constructors/destructors send `ObjectHold` through the dispatcher [1]
@@ -206,6 +206,8 @@ For RPC metadata defaults, `observe T[]` behaves like a collection that should d
 ## RPC event workarounds should match the actual `Event<T>` behavior
 
 Do not change generic expression generation just to compensate for RPC event dispatch unless `Event<T>` itself requires it. After the `Event<T>::operator()` move bug was fixed, generated RPC wrappers no longer need to introduce local variables solely to keep event arguments as lvalues before invoking multiple handlers.
+
+Also do not depend on `Event<T>` handler invocation order to stabilize RPC event exception behavior. If a service-side handler and lifecycle forwarding handler can both receive the same observable-list event, suppress and forward through the RPC lifecycle deterministically while preserving the original throwing point instead of moving the user or test handler.
 
 ## Do not reflect RPC lifecycle mocks just to expose their controller
 
