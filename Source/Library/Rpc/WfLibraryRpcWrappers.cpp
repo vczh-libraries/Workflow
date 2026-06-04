@@ -576,8 +576,7 @@ namespace vl
 			}
 			else
 			{
-				CHECK_FAIL(L"RpcCalleeListOps::EnumCreate cannot find the target collection.");
-				return {};
+				throw Exception(L"RpcCalleeListOps::EnumCreate cannot find the target collection.");
 			}
 
 			return lifecycle->PtrToRef(enumerator);
@@ -587,7 +586,7 @@ namespace vl
 		{
 			auto obj = lifecycle->RefToPtr(enumerator);
 			auto e = Ptr(obj.Obj()->SafeAggregationCast<IValueEnumerator>());
-			CHECK_ERROR(e, L"RpcCalleeListOps::EnumNext cannot find the target enumerator.");
+			if (!e) throw Exception(L"RpcCalleeListOps::EnumNext cannot find the target enumerator.");
 			return e->Next();
 		}
 
@@ -595,7 +594,7 @@ namespace vl
 		{
 			auto obj = lifecycle->RefToPtr(enumerator);
 			auto e = Ptr(obj.Obj()->SafeAggregationCast<IValueEnumerator>());
-			CHECK_ERROR(e, L"RpcCalleeListOps::EnumGetCurrent cannot find the target enumerator.");
+			if (!e) throw Exception(L"RpcCalleeListOps::EnumGetCurrent cannot find the target enumerator.");
 			return SerializeValue(serializer, RpcBoxValueByref(e->GetCurrent(), lifecycle));
 		}
 
@@ -604,8 +603,7 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
 				return roList->GetCount();
-			CHECK_FAIL(L"RpcCalleeListOps::ListGetCount cannot find the target list.");
-			return 0;
+			throw Exception(L"RpcCalleeListOps::ListGetCount cannot find the target list.");
 		}
 
 		Value RpcCalleeListOps::ListGet(RpcObjectReference ref, vint index)
@@ -613,8 +611,7 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
 				return SerializeValue(serializer, RpcBoxValueByref(roList->Get(index), lifecycle));
-			CHECK_FAIL(L"RpcCalleeListOps::ListGet cannot find the target list.");
-			return {};
+			throw Exception(L"RpcCalleeListOps::ListGet cannot find the target list.");
 		}
 
 		void RpcCalleeListOps::ListSet(RpcObjectReference ref, vint index, const Value& value)
@@ -631,7 +628,7 @@ namespace vl
 				list->Set(index, trivial);
 				return;
 			}
-			CHECK_FAIL(L"RpcCalleeListOps::ListSet cannot find the target list.");
+			throw Exception(L"RpcCalleeListOps::ListSet cannot find the target list.");
 		}
 
 		vint RpcCalleeListOps::ListAdd(RpcObjectReference ref, const Value& value)
@@ -640,8 +637,7 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
 				return list->Add(trivial);
-			CHECK_FAIL(L"RpcCalleeListOps::ListAdd cannot find a writable list.");
-			return -1;
+			throw Exception(L"RpcCalleeListOps::ListAdd cannot find a writable list.");
 		}
 
 		vint RpcCalleeListOps::ListInsert(RpcObjectReference ref, vint index, const Value& value)
@@ -650,8 +646,7 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
 				return list->Insert(index, trivial);
-			CHECK_FAIL(L"RpcCalleeListOps::ListInsert cannot find a writable list.");
-			return -1;
+			throw Exception(L"RpcCalleeListOps::ListInsert cannot find a writable list.");
 		}
 
 		bool RpcCalleeListOps::ListRemoveAt(RpcObjectReference ref, vint index)
@@ -659,8 +654,7 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto list = Ptr(obj.Obj()->SafeAggregationCast<IValueList>()))
 				return list->RemoveAt(index);
-			CHECK_FAIL(L"RpcCalleeListOps::ListRemoveAt cannot find the target list.");
-			return false;
+			throw Exception(L"RpcCalleeListOps::ListRemoveAt cannot find the target list.");
 		}
 
 		void RpcCalleeListOps::ListClear(RpcObjectReference ref)
@@ -671,7 +665,7 @@ namespace vl
 				list->Clear();
 				return;
 			}
-			CHECK_FAIL(L"RpcCalleeListOps::ListClear cannot find the target list.");
+			throw Exception(L"RpcCalleeListOps::ListClear cannot find the target list.");
 		}
 
 		bool RpcCalleeListOps::ListContains(RpcObjectReference ref, const Value& value)
@@ -680,8 +674,7 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
 				return roList->Contains(trivial);
-			CHECK_FAIL(L"RpcCalleeListOps::ListContains cannot find the target list.");
-			return false;
+			throw Exception(L"RpcCalleeListOps::ListContains cannot find the target list.");
 		}
 
 		vint RpcCalleeListOps::ListIndexOf(RpcObjectReference ref, const Value& value)
@@ -690,15 +683,14 @@ namespace vl
 			auto obj = lifecycle->RefToPtr(ref);
 			if (auto roList = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyList>()))
 				return roList->IndexOf(trivial);
-			CHECK_FAIL(L"RpcCalleeListOps::ListIndexOf cannot find the target list.");
-			return -1;
+			throw Exception(L"RpcCalleeListOps::ListIndexOf cannot find the target list.");
 		}
 
 		void RpcCalleeListOps::ArrayResize(RpcObjectReference ref, vint size)
 		{
 			auto obj = lifecycle->RefToPtr(ref);
 			auto array = Ptr(obj.Obj()->SafeAggregationCast<IValueArray>());
-			CHECK_ERROR(array, L"RpcCalleeListOps::ArrayResize cannot find the target array.");
+			if (!array) throw Exception(L"RpcCalleeListOps::ArrayResize cannot find the target array.");
 			array->Resize(size);
 		}
 
@@ -706,7 +698,7 @@ namespace vl
 		{
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
-			CHECK_ERROR(dict, L"RpcCalleeListOps::DictGetCount cannot find the target dictionary.");
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictGetCount cannot find the target dictionary.");
 			return dict->GetCount();
 		}
 
@@ -714,7 +706,7 @@ namespace vl
 		{
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
-			CHECK_ERROR(dict, L"RpcCalleeListOps::DictGet cannot find the target dictionary.");
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictGet cannot find the target dictionary.");
 			auto trivialKey = RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle);
 			return SerializeValue(serializer, RpcBoxValueByref(dict->Get(trivialKey), lifecycle));
 		}
@@ -723,7 +715,7 @@ namespace vl
 		{
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
-			CHECK_ERROR(dict, L"RpcCalleeListOps::DictSet cannot find the target dictionary.");
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictSet cannot find the target dictionary.");
 			auto trivialKey = RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle);
 			auto trivialValue = RpcUnboxValueByref(DeserializeValue(serializer, value), lifecycle);
 			dict->Set(trivialKey, trivialValue);
@@ -733,7 +725,7 @@ namespace vl
 		{
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
-			CHECK_ERROR(dict, L"RpcCalleeListOps::DictRemove cannot find the target dictionary.");
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictRemove cannot find the target dictionary.");
 			return dict->Remove(RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle));
 		}
 
@@ -741,7 +733,7 @@ namespace vl
 		{
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueDictionary>());
-			CHECK_ERROR(dict, L"RpcCalleeListOps::DictClear cannot find the target dictionary.");
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictClear cannot find the target dictionary.");
 			dict->Clear();
 		}
 
@@ -749,7 +741,7 @@ namespace vl
 		{
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
-			CHECK_ERROR(dict, L"RpcCalleeListOps::DictContainsKey cannot find the target dictionary.");
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictContainsKey cannot find the target dictionary.");
 			return dict->GetKeys()->Contains(RpcUnboxValueByref(DeserializeValue(serializer, key), lifecycle));
 		}
 
@@ -757,7 +749,7 @@ namespace vl
 		{
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
-			CHECK_ERROR(dict, L"RpcCalleeListOps::DictGetKeys cannot find the target dictionary.");
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictGetKeys cannot find the target dictionary.");
 			return lifecycle->PtrToRef(dict->GetKeys());
 		}
 
@@ -765,7 +757,7 @@ namespace vl
 		{
 			auto obj = lifecycle->RefToPtr(ref);
 			auto dict = Ptr(obj.Obj()->SafeAggregationCast<IValueReadonlyDictionary>());
-			CHECK_ERROR(dict, L"RpcCalleeListOps::DictGetValues cannot find the target dictionary.");
+			if (!dict) throw Exception(L"RpcCalleeListOps::DictGetValues cannot find the target dictionary.");
 			return lifecycle->PtrToRef(dict->GetValues());
 		}
 		
@@ -814,11 +806,6 @@ namespace vl
 				{
 					exceptions = IValueDictionary::Create();
 					exceptions->Set(BoxValue(lifecycle->GetClientId()), BoxValue(RpcException{ ex.Message() }));
-				}
-				catch (const Error& ex)
-				{
-					exceptions = IValueDictionary::Create();
-					exceptions->Set(BoxValue(lifecycle->GetClientId()), BoxValue(RpcException{ WString::Unmanaged(ex.Description()) }));
 				}
 			}
 			return SerializeValue(serializer, BoxValue(exceptions));
@@ -901,10 +888,6 @@ namespace vl
 			catch (const Exception& ex)
 			{
 				return SerializeValue(serializer, BoxValue(RpcException{ ex.Message() }));
-			}
-			catch (const Error& ex)
-			{
-				return SerializeValue(serializer, BoxValue(RpcException{ WString::Unmanaged(ex.Description()) }));
 			}
 			CHECK_FAIL(L"Unknown RPC list method id.");
 			return {};

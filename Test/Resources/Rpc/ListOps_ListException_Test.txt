@@ -1,0 +1,32 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcListOpsListException::*;
+
+var s = "";
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcListOpsListException::IService^)
+  {
+    override func DoSomethingWrong(xs : int[]) : int
+    {
+      return xs[10];
+    }
+  };
+  lc.RegisterService("RpcListOpsListException::IService", serviceObj);
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (RpcListOpsListException::IService^) lc.RequestService("RpcListOpsListException::IService");
+  try
+  {
+    service.DoSomethingWrong({});
+  }
+  catch (ex)
+  {
+    s = ex.Message;
+  }
+  return s;
+}

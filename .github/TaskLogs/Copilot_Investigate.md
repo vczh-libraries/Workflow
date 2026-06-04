@@ -157,6 +157,8 @@ Use `CompilerTest_LoadAndCompile` to regenerate and verify RPC samples after ren
 
 Use the RPC runtime tests and generated C++ tests required by `Project.md` after generated artifacts change.
 
+The requested finish rule was corrected to `.github/Rules/document-and-commit.md`; `.github/Rules/verify-and-commit.md` and `.github/Rules/document-and-verify.md` do not exist.
+
 # PROPOSALS
 
 - No.1 Add `IRpcListOps::ArrayResize` and keep list mutations list-only
@@ -170,7 +172,7 @@ The array resize path should be an explicit list-op method id, implemented by `R
 - Add a new predefined RPC method id and `IRpcListOps::ArrayResize`.
 - Implement caller/callee dispatch for array resizing.
 - Update reflection proxies, metadata declarations, TypeScript RPC constants, and byref array tests.
-- Catch both `Exception` and `Error` in C++ list method/event dispatch paths and serialize both as `RpcException`.
+- Make RPC list-op target-shape failures throw `Exception` directly, so list-only requests against arrays are serialized through the existing RPC exception path.
 - Rename the RPC sample files and namespace from `Oblist_EventException` / `RpcOblistEventException` to `ListOps_OblistEventException` / `RpcListOpsOblistEventException`.
 
 ### TEST RESULT
@@ -180,3 +182,27 @@ The array resize path should be an explicit list-op method id, implemented by `R
 [CONFIRMED] The renamed `ListOps_OblistEventException` sample compiles, generates metadata/C++ wrappers, and passes in runtime and generated C++ test modes.
 
 [CONFIRMED] Verified with Debug x64 and Win32 builds, `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`.
+
+- No.2 Add list/dictionary exception RPC samples and convert reflected collection `Error`s
+
+## No.2 Add list/dictionary exception RPC samples and convert reflected collection `Error`s
+
+The new samples need to prove that collection access failures thrown by reflected value wrappers are visible to Workflow RPC clients as ordinary exceptions. Instead of changing Workflow runtime code generation or broad RPC `InvokeMethod` / `InvokeEvent` catches, update VlppReflection collection wrappers so collection `Error`s are rethrown as `Exception`s at the wrapper boundary, then release the generated VlppReflection import back into Workflow.
+
+### CODE CHANGE
+
+- Add `ListOps_ListException` and `ListOps_DictionaryException` RPC samples, using `RpcListOpsListException` and `RpcListOpsDictionaryException` namespaces.
+- Register both RPC definition files in `IndexRpc.txt`, and register both definition/test files in `CompilerTest_LoadAndCompile`.
+- Regenerate Workflow, metadata, TypeScript, source C++ RPC, and Debug Win32/x64 generated C++ RPC artifacts.
+- Update upstream VlppReflection collection wrappers to translate `Error` to `Exception` for reflected enumerator, list, array, and dictionary operations.
+- Release upstream `VlppReflection.h` into Workflow `Import`, leaving `WfCpp_Statement.cpp` and `WfRuntimeExecution.cpp` unchanged and removing the broad generated/runtime `Error` catch approach.
+
+### TEST RESULT
+
+[CONFIRMED] The two new RPC samples pass in interpreted/runtime and generated C++ modes, with both returning `ArrayBase<T, K>::Get(vint)#Argument index not in range.`.
+
+[CONFIRMED] Workflow Debug x64 build and tests passed: `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`.
+
+[CONFIRMED] Workflow Debug Win32 build and tests passed: `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `LibraryTest`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`.
+
+[CONFIRMED] Upstream VlppReflection Debug Win32 and x64 builds passed, including `UnitTest`, `Metadata_Generate`, and `Metadata_Test`.
