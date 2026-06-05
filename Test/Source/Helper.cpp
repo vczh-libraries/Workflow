@@ -1,4 +1,5 @@
 #ifdef VCZH_MSVC
+#define _WINSOCKAPI_
 #include <windows.h>
 #endif
 

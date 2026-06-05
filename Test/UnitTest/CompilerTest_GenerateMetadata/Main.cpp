@@ -2,6 +2,7 @@
 #include "../../../Source/Library/WfLibraryReflection.h"
 #include "../../Source/CppTypes.h"
 #ifdef VCZH_MSVC
+#define _WINSOCKAPI_
 #include <windows.h>
 #endif
 

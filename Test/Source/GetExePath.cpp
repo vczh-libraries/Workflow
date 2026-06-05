@@ -1,4 +1,5 @@
 #include <Vlpp.h>
+#define _WINSOCKAPI_
 #include <Windows.h>
 
 using namespace vl;
