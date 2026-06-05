@@ -940,8 +940,6 @@ namespace vl
 {
 	namespace rpc_controller
 	{
-		class IRpcSerializer;
-
 		constexpr vint RpcTypeId_NotFound = -100;
 		constexpr vint RpcClientId_Invalid = -1;
 		constexpr vint RpcObjectId_Invalid = -1;
@@ -1003,8 +1001,22 @@ namespace vl
 		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_ContainsKey = -18;
 		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_GetKeys = -19;
 		inline constexpr vint				RpcMethodId_IValueReadonlyDictionary_GetValues = -20;
+		inline constexpr vint				RpcMethodId_IValueArray_Resize = -21;
 
 		inline constexpr vint				RpcEventId_IValueObservableList_ItemChanged = -1;
+
+/***********************************************************************
+* Interfaces (Serialization)
+***********************************************************************/
+
+		class IRpcSerializer
+			: public virtual reflection::IDescriptable
+			, public reflection::Description<IRpcSerializer>
+		{
+		public:
+			virtual reflection::description::Value					Serialize(const reflection::description::Value& value) = 0;
+			virtual reflection::description::Value					Deserialize(const reflection::description::Value& value) = 0;
+		};
 
 /***********************************************************************
 * Interfaces (Operations)
@@ -1028,6 +1040,7 @@ namespace vl
 			virtual void											ListClear(RpcObjectReference ref) = 0;
 			virtual bool											ListContains(RpcObjectReference ref, const reflection::description::Value& value) = 0;
 			virtual vint											ListIndexOf(RpcObjectReference ref, const reflection::description::Value& value) = 0;
+			virtual void											ArrayResize(RpcObjectReference ref, vint size) = 0;
 
 			virtual vint											DictGetCount(RpcObjectReference ref) = 0;
 			virtual reflection::description::Value					DictGet(RpcObjectReference ref, const reflection::description::Value& key) = 0;
@@ -1137,14 +1150,14 @@ namespace vl
 * Helpers
 ***********************************************************************/
 
-		extern RpcObjectReference							RpcBoxByref		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
-		extern Ptr<reflection::IDescriptable>				RpcUnboxByref	(RpcObjectReference serializable, IRpcLifecycle* lc);
-		extern reflection::description::Value				RpcCopyByval	(const reflection::description::Value& trivial, IRpcLifecycle* lc);
-		extern reflection::description::Value				RpcBoxByval		(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
-		extern reflection::description::Value				RpcBoxByval		(const reflection::description::Value& trivial, IRpcLifecycle* lc);
-		extern Ptr<reflection::IDescriptable>				RpcUnboxByval	(const reflection::description::Value& serializable, IRpcLifecycle* lc);
-		extern void											ReadMethodException(const reflection::description::Value& value);
-		extern void											ReadEventException(RpcEventExceptionMap exceptions);
+		extern RpcObjectReference					RpcBoxByref(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
+		extern Ptr<reflection::IDescriptable>		RpcUnboxByref(RpcObjectReference serializable, IRpcLifecycle* lc);
+		extern reflection::description::Value		RpcCopyByval(const reflection::description::Value& trivial, IRpcLifecycle* lc);
+		extern reflection::description::Value		RpcBoxByval(Ptr<reflection::IDescriptable> trivial, IRpcLifecycle* lc);
+		extern reflection::description::Value		RpcBoxByval(const reflection::description::Value& trivial, IRpcLifecycle* lc);
+		extern Ptr<reflection::IDescriptable>		RpcUnboxByval(const reflection::description::Value& serializable, IRpcLifecycle* lc);
+		extern void									ReadMethodException(const reflection::description::Value& value);
+		extern void									ReadEventException(RpcEventExceptionMap exceptions);
 	}
 }
 
@@ -1181,38 +1194,38 @@ namespace vl
 		class RpcControllerDefault : public Object, public IRpcController
 		{
 		protected:
-			Ptr<IRpcObjectOps>									objectCallback;
-			Ptr<IRpcObjectEventOps>								eventCallback;
-			Ptr<IRpcListOps>									listCallback;
-			Ptr<IRpcListEventOps>								listEventCallback;
-			collections::Dictionary<RpcEventSuppressionKey, vint>				eventSuppressedFlags;
-			collections::Dictionary<RpcObjectReference, vint>					itemChangedSuppressedFlags;
+			Ptr<IRpcObjectOps>										objectCallback;
+			Ptr<IRpcObjectEventOps>									eventCallback;
+			Ptr<IRpcListOps>										listCallback;
+			Ptr<IRpcListEventOps>									listEventCallback;
+			collections::Dictionary<RpcEventSuppressionKey, vint>	eventSuppressedFlags;
+			collections::Dictionary<RpcObjectReference, vint>		itemChangedSuppressedFlags;
 
 			template<typename TKey>
-			static void											SetSuppressedFlag(collections::Dictionary<TKey, vint>& flags, const TKey& key, bool suppressed);
+			static void												SetSuppressedFlag(collections::Dictionary<TKey, vint>& flags, const TKey& key, bool suppressed);
 
 			template<typename TKey>
-			static bool											GetSuppressedFlag(const collections::Dictionary<TKey, vint>& flags, const TKey& key);
+			static bool												GetSuppressedFlag(const collections::Dictionary<TKey, vint>& flags, const TKey& key);
 
 		public:
 
 			RpcControllerDefault();
 			~RpcControllerDefault();
 
-			void												Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback);
+			void													Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback);
 
 			// IRpcController
 
-			IRpcListOps*										GetListOps()override;
-			IRpcObjectOps*										GetObjectOps()override;
-			IRpcListEventOps*									GetListEventOps()override;
-			IRpcObjectEventOps*									GetObjectEventOps()override;
+			IRpcListOps*											GetListOps()override;
+			IRpcObjectOps*											GetObjectOps()override;
+			IRpcListEventOps*										GetListEventOps()override;
+			IRpcObjectEventOps*										GetObjectEventOps()override;
 
-			void												Finalize()override;
-			void												SetEventSuppressedFlag(RpcObjectReference ref, vint eventId, bool suppressed)override;
-			bool												GetEventSuppressedFlag(RpcObjectReference ref, vint eventId)override;
-			void												SetItemChangedSuppressedFlag(RpcObjectReference ref, bool suppressed)override;
-			bool												GetItemChangedSuppressedFlag(RpcObjectReference ref)override;
+			void													Finalize()override;
+			void													SetEventSuppressedFlag(RpcObjectReference ref, vint eventId, bool suppressed)override;
+			bool													GetEventSuppressedFlag(RpcObjectReference ref, vint eventId)override;
+			void													SetItemChangedSuppressedFlag(RpcObjectReference ref, bool suppressed)override;
+			bool													GetItemChangedSuppressedFlag(RpcObjectReference ref)override;
 		};
 	}
 }
@@ -1244,6 +1257,55 @@ namespace vl
 
 		extern Ptr<glr::json::JsonNode>				JsonSerializePredefinedTypes(const reflection::description::Value& value, const RpcJsonSerializeCallback& rpcjson_Serialize);
 		extern reflection::description::Value		JsonDeserializePredefinedTypes(const reflection::description::Value& value, const RpcJsonDeserializeCallback& rpcjson_Deserialize);
+
+		class IRpcJsonMessageDispatcher
+			: public virtual reflection::IDescriptable
+			, public reflection::Description<IRpcJsonMessageDispatcher>
+		{
+		public:
+			virtual vint							AllocateRequestId() = 0;
+			virtual Ptr<glr::json::JsonNode>		OnJsonRequest(Ptr<glr::json::JsonNode> message) = 0;
+		};
+
+		class RpcJsonObjectOps : public Object, public IRpcObjectOps
+		{
+		private:
+			vint									sourceClientId = RpcClientId_Invalid;
+			vint									targetClientId = RpcClientId_Invalid;
+			IRpcJsonMessageDispatcher*				dispatcher = nullptr;
+			IRpcLifecycle*							lifecycle = nullptr;
+
+		public:
+			RpcJsonObjectOps(IRpcJsonMessageDispatcher* _dispatcher);
+			RpcJsonObjectOps(vint _sourceClientId, vint _targetClientId, IRpcJsonMessageDispatcher* _dispatcher, IRpcLifecycle* _lifecycle = nullptr);
+			~RpcJsonObjectOps();
+
+			reflection::description::Value			InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
+			void									EndInvokeMethod(vint slot)override;
+			void									ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)override;
+			void									RegisterService(vint typeId, Ptr<reflection::IDescriptable> service)override;
+
+			static Ptr<glr::json::JsonNode>			Translate(Ptr<glr::json::JsonNode> message, IRpcObjectOps* ops, IRpcLifecycle* lifecycle = nullptr);
+		};
+
+		class RpcJsonObjectEventOps : public Object, public IRpcObjectEventOps
+		{
+		private:
+			vint									sourceClientId = RpcClientId_Invalid;
+			IRpcJsonMessageDispatcher*				dispatcher = nullptr;
+
+		public:
+			RpcJsonObjectEventOps(IRpcJsonMessageDispatcher* _dispatcher);
+			RpcJsonObjectEventOps(vint _sourceClientId, IRpcJsonMessageDispatcher* _dispatcher);
+			~RpcJsonObjectEventOps();
+
+			reflection::description::Value			InvokeEvent(RpcObjectReference ref, vint eventId, Ptr<reflection::description::IValueArray> arguments)override;
+
+			static Ptr<glr::json::JsonNode>			Translate(Ptr<glr::json::JsonNode> message, IRpcObjectEventOps* ops);
+		};
+
+		extern vint									ReadRequestId(Ptr<glr::json::JsonNode> message);
+		extern void									WriteRequestId(Ptr<glr::json::JsonNode> message, vint requestId);
 	}
 }
 
@@ -1401,19 +1463,6 @@ namespace vl
 {
 	namespace rpc_controller
 	{
-
-/***********************************************************************
-* Serialization
-***********************************************************************/
-
-		class IRpcSerializer
-			: public virtual reflection::IDescriptable
-			, public reflection::Description<IRpcSerializer>
-		{
-		public:
-			virtual reflection::description::Value					Serialize(const reflection::description::Value& value) = 0;
-			virtual reflection::description::Value					Deserialize(const reflection::description::Value& value) = 0;
-		};
 
 /***********************************************************************
 * Collection Caller Wrappers
@@ -1577,6 +1626,7 @@ namespace vl
 			void											ListClear(RpcObjectReference ref)override;
 			bool											ListContains(RpcObjectReference ref, const reflection::description::Value& value)override;
 			vint											ListIndexOf(RpcObjectReference ref, const reflection::description::Value& value)override;
+			void											ArrayResize(RpcObjectReference ref, vint size)override;
 
 			vint											DictGetCount(RpcObjectReference ref)override;
 			reflection::description::Value					DictGet(RpcObjectReference ref, const reflection::description::Value& key)override;
@@ -1651,6 +1701,7 @@ namespace vl
 			void											ListClear(RpcObjectReference ref)override;
 			bool											ListContains(RpcObjectReference ref, const reflection::description::Value& value)override;
 			vint											ListIndexOf(RpcObjectReference ref, const reflection::description::Value& value)override;
+			void											ArrayResize(RpcObjectReference ref, vint size)override;
 
 			vint											DictGetCount(RpcObjectReference ref)override;
 			reflection::description::Value					DictGet(RpcObjectReference ref, const reflection::description::Value& key)override;
@@ -1745,6 +1796,7 @@ Predefined Types
 			F(vl::rpc_controller::RpcException)\
 			F(vl::rpc_controller::RpcByvalReturnValue)\
 			F(vl::rpc_controller::IRpcSerializer)\
+			F(vl::rpc_controller::IRpcJsonMessageDispatcher)\
 			F(vl::rpc_controller::IRpcListOps)\
 			F(vl::rpc_controller::IRpcListEventOps)\
 			F(vl::rpc_controller::IRpcObjectOps)\
@@ -1787,6 +1839,18 @@ Interface Implementation Proxy (Implement)
 					INVOKEGET_INTERFACE_PROXY(Deserialize, value);
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcSerializer)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcJsonMessageDispatcher)
+				vl::vint AllocateRequestId()override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(AllocateRequestId);
+				}
+
+				vl::Ptr<vl::glr::json::JsonNode> OnJsonRequest(vl::Ptr<vl::glr::json::JsonNode> message)override
+				{
+					INVOKEGET_INTERFACE_PROXY(OnJsonRequest, message);
+				}
+			END_INTERFACE_PROXY(vl::rpc_controller::IRpcJsonMessageDispatcher)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcListOps)
 				vl::rpc_controller::RpcObjectReference EnumCreate(vl::rpc_controller::RpcObjectReference ref)override
@@ -1847,6 +1911,11 @@ Interface Implementation Proxy (Implement)
 				vl::vint ListIndexOf(vl::rpc_controller::RpcObjectReference ref, const vl::reflection::description::Value& value)override
 				{
 					INVOKEGET_INTERFACE_PROXY(ListIndexOf, ref, value);
+				}
+
+				void ArrayResize(vl::rpc_controller::RpcObjectReference ref, vl::vint size)override
+				{
+					INVOKE_INTERFACE_PROXY(ArrayResize, ref, size);
 				}
 
 				vl::vint DictGetCount(vl::rpc_controller::RpcObjectReference ref)override

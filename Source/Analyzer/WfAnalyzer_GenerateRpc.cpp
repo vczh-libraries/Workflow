@@ -452,11 +452,14 @@ namespace vl
 					return type;
 				}
 
+#ifndef VCZH_WORKFLOW_RPC_GENERATING_CREATE_TYPE_FROM_CPP
+#define VCZH_WORKFLOW_RPC_GENERATING_CREATE_TYPE_FROM_CPP
 				template<typename T>
 				Ptr<WfType> CreateTypeFromCpp()
 				{
 					return NormalizeRpcGeneratedType(GetTypeFromTypeInfo(TypeInfoRetriver<T>::CreateTypeInfo().Obj()));
 				}
+#endif
 
 				Ptr<WfExpression> CreateNull()
 				{

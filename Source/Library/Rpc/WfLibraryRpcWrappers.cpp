@@ -14,6 +14,8 @@ namespace vl
 
 		namespace
 		{
+#ifndef VCZH_WORKFLOW_RPC_OBJECT_REFERENCE_VALUE_HELPERS
+#define VCZH_WORKFLOW_RPC_OBJECT_REFERENCE_VALUE_HELPERS
 			bool IsRpcObjectReferenceValue(const Value& value)
 			{
 				return value.GetValueType() == Value::BoxedValue && value.GetBoxedValue().Cast<IValueType::TypedBox<RpcObjectReference>>();
@@ -25,6 +27,7 @@ namespace vl
 				CHECK_ERROR(boxed, L"RpcObjectReference is expected.");
 				return boxed->value;
 			}
+#endif
 
 			IRpcWrapperBase* CastRpcWrapperBase(IDescriptable* obj)
 			{

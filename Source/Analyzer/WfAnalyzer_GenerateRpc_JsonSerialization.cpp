@@ -84,11 +84,14 @@ namespace vl
 				Ptr<WfExpression> CreateRpcOpsObjectEventInvoke(const RpcEventModel& eventModel);
 				Ptr<WfType> NormalizeRpcGeneratedType(Ptr<WfType> type);
 
+#ifndef VCZH_WORKFLOW_RPC_GENERATING_CREATE_TYPE_FROM_CPP
+#define VCZH_WORKFLOW_RPC_GENERATING_CREATE_TYPE_FROM_CPP
 				template<typename T>
 				Ptr<WfType> CreateTypeFromCpp()
 				{
 					return NormalizeRpcGeneratedType(GetTypeFromTypeInfo(TypeInfoRetriver<T>::CreateTypeInfo().Obj()));
 				}
+#endif
 
 				enum class RpcJsonPrimitiveKind
 				{
