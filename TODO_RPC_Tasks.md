@@ -91,10 +91,13 @@ So you should not expect that the subsequent response should be responding to yo
   - `PushTask`, adds it to the list (`List<Func<void()>>`) and increase a semaphore.
   - `Exit`, set a flag, increase a semaphore, all subsequent `PushTask` will fail.
   - `HasExited`, return a bool that is only set to true in the last line of the thread function.
-  - The thread function itself will wait for a semaphore in a loop:
+  - Protected `RunOneTask`:
+    - Wait for a semaphore.
     - Remove the first item from the list.
-    - Execute it after `SpinLock` protection, or when the list is empty, it means `Exit` is called, quit the loop. Therefore the thread function exits.
-  - All three functions will need to use the same `SpinLock` to access the list and the exit flag.
+    - Execute it after `SpinLock` protection and returns true, or when the list is empty, it means `Exit` is called, increase a semaphore and returns false.
+      - Increaseing a semaphore when returning false is important, it ensures that the exit flag always make the semaphore staying signaled.
+  - The thread function run `RunOneTask` until it returns false.
+  - All three functions will need to use the same `SpinLock` to access the list and the exit flag. 
 
 For Client:
 - `main` function starts all initialization.
