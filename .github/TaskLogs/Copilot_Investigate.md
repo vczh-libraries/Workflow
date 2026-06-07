@@ -7,118 +7,85 @@ Follow `REPO-ROOT/.github/Rules/document-and-commit.md` to finish the work.
 
 ## Task 1
 
-Delete `Test/Resources/Runtime`, `IndexRuntime.txt`, `TestRuntimeCompiler.cpp` and all related stuff, including generated files. I would like to remove this test file completely.
-Delete `IRpcOperations::GetList(Event)?Ops`, as list ops are called by `RpcCalleeObject(Event)?OpsForList`.
-- This would also delete the last two arguments from `IRpcController::Register`.
-Delete `IRpcObjectOps::RegisterService`.
-- This would also require `RpcLifecycleBase::RegisterService` to call the dispatcher directly just like how `RequestService` is done.
+`Test/UnitTest/Generated_Apps_ChatBot/Generated_Apps_ChatBot.vcxitems` has wild cards, which is not allowed, enumerate files explicitly.
 
-Remove `RpcLifecycleBase::dispatcher`, all access should go through `GetDispatcher`, which should already be the case.
-Remove `RpcLifeCycleBase::GetDispatcher` overloading, as it becomes useless when `dispatcher` is removed.
-Add `bool broadcast` to `IRpcJsonMessageDispatcher::OnJsonRequest`, set it to true when calling from `RpcJsonEventObjectOps`.
+Refactor of `IRpcLifecycle`:
 
-In `Rpc.d.ts`:
-- Remove `RequestService` related stuff.
-- Remove `targetClientId` from `IObjectOps_RegisterService_Request` as it is a broadcast request.
-- Rename `IObjectEventOps_InvokeEvent_Response` to `Broadcast_Response`, all broadcast request should return this.
-- `Test/TypeScript` should builds after changing to `Rpc.d.ts` with new generated files from other test projects.
+- Rename `IRpcLifecycle::RegisterService` to `RegisterLocalService`, registering a local object as a service.
+- Add `IRpcLifecycle::DeclareRemoteService(vint typeId, vint clientId)`, declare a registered remote service.
+- Add `IRpcLifecycle::GetRegisteredLocalServices`, returns a const& dictionary of local registered services.
+- Update `IRpcLifecycle::RequestService(vint typeId)`, returns the local registered service or call `IRpcDispatcher::RequestService`.
+- Add `IRpcLifecycle::Initialize` calling `IRpcDispatcher::Initialize`. `RegisterLocalService` will throw after that.
+- New functions will be implemented in `RpcLifecycleBase`.
+  - `RegisterLocalService` throw if the type id already exists.
+  - `DeclareRemoteService` overrides old entries if type id already exists.
+  - `RequestService` prioritize local service over remote service.
+- Test samples need to change so that it calls `IRpcLifecycle::RegisterLocalService`.
 
-## Task 2
+Refactor of `IRpcDispatcher`:
+- Delete `IRpcDispatcher::IsRegisteredService`.
+- Update `IRpcDispatcher::RegisterService` to `IRpcDispatcher::DeclareLocalService(typeId, clientId)`.
+- Add `IRpcDispatcher::Initialize`.
+- In test mocks:
+  - `Initialize` keeps empty.
+  - `RegisterService` calls `IRpcLifecycle::DeclareRemoteService` of the other side.
+  - Services registration will always be in `RpcLifecycleBase`, test mocks should no longer maintain service registration.
+  - Currently both `RpcLifecycleBase` and all `IRpcDispatcher` mocks maintain services, which is incorrect.
 
-Add `Test/Apps/ChatBot` folder, with a Workflow module `ChatAPI.txt`:
-```Workflow
-module ChatAPI;
+The goal is that, when user implements its own protocol of RPC, `IRpcDispatcher` and `IRpcJsonMessageDispatcher` will be pure for data transmission, they should not maintain any data or state.
 
-namespace chatapi
-{
-  @rpc:Interface
-  interface IChatServer
-  {
-    event OnUserAdded(name: string);
-    event OnUserRemoved(name: string);
-    event OnSpoken(speakerName: string, message: string);
-    event OnServerShutdown();
+# UPDATES
 
-    func AddUser(name: string) : bool;
-    func RemoveUser(name : string) : bool;
-    func Speak(speakerName: string, message: string) : void;
-  }
-}
-```
+## UPDATE
 
-Add `TestAppCompile.cpp` to `CompilerTest_LoadAndCompile` and build `Test/Apps/ChatBot` to `Test/Generated/Apps/ChatBot`:
-- x86 code generated to `Cpp32` folder, git ignored.
-- x64 code generated to `Cpp64` folder, git ignored.
-- merged code generated to `Cpp` folder, git tracked.
-- Using `ChatBotApp` as the assembly name to `WfCppConfig`.
-Add `Test/UnitTest/Generated_Apps_ChatBot/Generated_Apps_ChatBot.vcxitems` to track `Test/Generated/Apps/ChatBot/Cpp`:
-- Put it in `UnitTest.sln` under `Source Files` with other vcxitems projects.
-- No need to separate reflection or other code in two vcxitems projects.
+I think it is better to keep IRpcLifecycle::RequestService using string (type name) instead of vint (type id) as the argument
 
-Under `Test/UnitTest` add `ChatBotServer/ChatBotServer.vcxproj` and `ChatBotClient/ChatBotClient.vcxproj`, both should be CLI application.
-With `VCZH_DEBUG_NO_REFLECTION` for all configuration and `VCZH_CHECK_MEMORY_LEAKS` for `Debug`.
-Put them in `UnitTest.sln` under `Apps_ChatBot`, just like how `*.vcxitems` in `Source Files`.
-Both project uses `VlppImport.vcxitems`, `VlppWorkflow_Library.vcxitems`, `Generated_Apps_ChatBot.vcxitems`.
-You are going to add `Test/Generated/Apps/ChatBot/Cpp` to the import folder so all files can be directly #include.
+Just an amendment, please continue to follow [investigate.prompt.md](.github/prompts/investigate.prompt.md) to finish the work.
 
-Add two `Main.cpp` to each `Source Files` solution folder, each should include the main header in `Test/Generated/Apps/ChatBot`.
-`main` function returns 0, nothing need to be done.
+# TEST [CONFIRMED]
 
-No testing is needed for this task, but you should ensure the whole solution builds.
+The change will be verified by static scans and the existing RPC/unit-test flow:
+- `Generated_Apps_ChatBot.vcxitems` must contain explicit generated ChatBot file entries instead of wildcard includes.
+- No source/test/generated sample should keep calling `IRpcLifecycle::RegisterService`; samples should call `RegisterLocalService`.
+- `IRpcDispatcher` should no longer expose `IsRegisteredService` or service-storage behavior, and dispatcher mocks should only relay local-service declarations to other lifecycles.
+- `RpcLifecycleBase` should own local and remote service registration, reject local registrations after `Initialize`, reject duplicate local service type ids, override duplicate remote declarations, and prefer local services in `RequestService(typeName)`.
+- Build and unit-test coverage should include at least the affected solution build plus RPC-related unit tests, and TypeScript verification should run if shared RPC schema output changes.
 
-# TEST
-
-Task 1: remove the Runtime compiler-test category and RPC redirection APIs, then verify the solution rebuilds, `CompilerTest_LoadAndCompile` can regenerate outputs, and `Test/TypeScript` builds against the updated `Rpc.d.ts`.
-
-Task 2: add the ChatBot app sample and project wiring, then verify `Test/UnitTest/UnitTest.sln` builds.
+Static scans confirmed the old surface is present: `Generated_Apps_ChatBot.vcxitems` uses wildcard `*.cpp` / `*.h` includes, `IRpcDispatcher` exposes `IsRegisteredService` and `RegisterService`, `RpcDualDispatcherMockBase` stores a service dictionary, and RPC samples call `lc.RegisterService(...)`.
 
 # PROPOSALS
 
-- No.1 Remove obsolete Runtime tests and RPC redirections, then regenerate affected outputs [CONFIRMED]
-- No.2 Add ChatBot app generation and CLI projects [CONFIRMED]
+- No.1 Move service ownership to `RpcLifecycleBase` and make dispatchers relay-only [CONFIRMED]
 
-## No.1 Remove obsolete Runtime tests and RPC redirections
-
-### CODE CHANGE
-
-Removed the `Runtime` compiler-test input set and all tracked generated/baseline files that depended on it. The Windows compiler-test project, filters, Linux build metadata, and runtime unit tests no longer reference the deleted `TestRuntimeCompile.cpp`, `IndexRuntime.txt`, or `Test/Resources/Runtime` files.
-
-Simplified RPC registration wiring:
-- Removed `IRpcOperations::GetListOps` / `GetListEventOps` and the extra list-op arguments from `IRpcController::Register`.
-- Removed `IRpcObjectOps::RegisterService`; service registration now goes through `IRpcDispatcher` directly from lifecycle/JSON dispatching.
-- Removed the stored dispatcher from `RpcLifecycleBase`; concrete lifecycles provide `GetDispatcher`.
-- Added `broadcast` to `IRpcJsonMessageDispatcher::OnJsonRequest`, using `true` for event/broadcast requests.
-
-Updated `Rpc.d.ts` and regenerated affected C++/metadata/TypeScript outputs so the removed APIs disappear from generated surfaces and broadcast requests share `Broadcast_Response`.
-
-### CONFIRMED
-
-- `CompilerTest_GenerateMetadata` x64 passed.
-- `CompilerTest_GenerateMetadata` Win32 passed.
-- `CompilerTest_LoadAndCompile` x64 passed and regenerated outputs.
-- `Test/UnitTest/UnitTest.sln` Debug x64 passed.
-- `Test/UnitTest/UnitTest.sln` Debug Win32 passed.
-- `Test/TypeScript/prepare.ps1; npm run build` passed.
-- `LibraryTest` Debug x64 and Win32 passed.
-- `RuntimeTest` Debug x64 and Win32 passed.
-- `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` Debug x64 and Win32 passed.
-- Stale-reference scan for deleted Runtime resources and removed RPC accessors only found the task log text and the intentionally remaining `IRpcListOps`/`IRpcListEventOps` types.
-
-## No.2 Add ChatBot app generation and CLI projects
+## No.1 Move service ownership to `RpcLifecycleBase` and make dispatchers relay-only
 
 ### CODE CHANGE
 
-Added `Test/Apps/ChatBot/ChatAPI.txt` with the `chatapi::IChatServer` RPC interface and generated the merged C++ app output under `Test/Generated/Apps/ChatBot/Cpp`. The architecture-specific `Cpp32` and `Cpp64` generated folders are produced by `CompilerTest_LoadAndCompile` and ignored by git.
-
-Updated `CompilerTest_LoadAndCompile` to generate the ChatBot app with the `ChatBotApp` assembly name and merge the x86/x64 app output into the tracked `Cpp` folder. Added app output path helpers and wired the new test file into the Windows and Linux compiler-test project metadata.
-
-Added `Generated_Apps_ChatBot.vcxitems`, `ChatBotServer`, and `ChatBotClient`, and placed them in `UnitTest.sln` under `Source Files` and `Apps_ChatBot` respectively. Both CLI app projects import `VlppImport.vcxitems`, `VlppWorkflow_Library.vcxitems`, and `Generated_Apps_ChatBot.vcxitems`; their `Main.cpp` files include `ChatBotApp.h` and return 0.
-
-Workflow event declarations are type-only in the parser grammar, so `ChatAPI.txt` uses type-only event payloads while preserving the requested function argument names and generated C++ event signatures.
+Implement the requested lifecycle/dispatcher refactor in one pass:
+- Change the reflected lifecycle API to `Initialize`, `RegisterLocalService(typeId, service)`, `DeclareRemoteService(typeId, clientId)`, `RequestService(typeName)`, plus a C++ `GetRegisteredLocalServices()` accessor.
+- Store local service objects and remote service declarations in `RpcLifecycleBase`; local registration rejects duplicate type ids and rejects calls after initialization, while remote declarations overwrite earlier client ids.
+- Replace dispatcher service storage with relay-only methods: `Initialize()`, `DeclareLocalService(typeId, clientId)`, and `RequestService(typeId)`.
+- Update dual-lifecycle test dispatchers so local declarations call `DeclareRemoteService` on the other lifecycle and service requests read lifecycle-owned local service dictionaries.
+- Update RPC samples to call `RegisterLocalService(rpc_GetIds()[...], ...)` and request services by full type name strings, then regenerate affected outputs.
+- Enumerate the ChatBot generated `.cpp` and `.h` files explicitly in `Generated_Apps_ChatBot.vcxitems`.
 
 ### CONFIRMED
 
-- Built `CompilerTest_LoadAndCompile` Debug x64 to regenerate ChatBot app output.
-- `CompilerTest_LoadAndCompile` produced `Test/Generated/Apps/ChatBot/Cpp32`, `Cpp64`, and merged tracked `Cpp` output.
-- `Test/UnitTest/UnitTest.sln` Debug x64 passed.
-- `Test/UnitTest/UnitTest.sln` Debug Win32 passed.
+Implemented the lifecycle/dispatcher refactor with lifecycle-owned service state:
+- `IRpcLifecycle::RegisterService` is now `RegisterLocalService(typeId, service)`.
+- `IRpcLifecycle::RequestService(typeName)` resolves the type name through the lifecycle id map, returns a matching local service first, and falls back to `IRpcDispatcher::RequestService(typeId)` only for declared remote services.
+- `IRpcDispatcher` no longer exposes `IsRegisteredService`; dispatcher declaration is now `DeclareLocalService(typeId, clientId)`, and `Initialize()` was added.
+- `RpcLifecycleBase` owns local and remote service maps, rejects duplicate local registrations, rejects local registration after initialization, overwrites remote declarations, and exposes `GetRegisteredLocalServices()`.
+- Dual-lifecycle mocks relay local declarations to the other lifecycle and request service objects from lifecycle-owned local service dictionaries.
+- JSON object ops no longer carry service-registration messages.
+- RPC samples and generated outputs use `RegisterLocalService(rpc_GetIds()[...], service)` for registration and `RequestService("...")` for lookup.
+- `Generated_Apps_ChatBot.vcxitems` explicitly enumerates the generated ChatBot source/header files.
+
+Verification completed:
+- Static scan: no scoped source/test/TypeScript references to `RegisterService`, `IsRegisteredService`, or `IObjectOps_RegisterService`.
+- Static scan: no RPC sample calls to `RequestService(rpc_GetIds` or `RegisterService(`.
+- Reflection baseline check: dispatcher `RequestService(typeId)` remains numeric, lifecycle `RequestService(typeName)` is string.
+- Debug solution builds: `MSBUILD "UnitTest.sln" /m:8 /nr:false /p:Configuration=Debug;Platform=x64` and `Platform=Win32`.
+- Debug unit executables via `copilotExecute.ps1`: `LibraryTest` x64/Win32, `CompilerTest_GenerateMetadata` x64/Win32, `CompilerTest_LoadAndCompile` x64, `RuntimeTest` x64/Win32, `CppTest` x64/Win32, `CppTest_Metaonly` x64/Win32, `CppTest_Reflection` x64/Win32.
+- TypeScript: `Test/TypeScript/prepare.ps1` and `npm run build`.
+- Full required verification: `C:\Code\VczhLibraries\Tools\Tools\Build.ps1 Workflow`.

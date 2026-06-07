@@ -29,7 +29,7 @@ func serviceMain(lc : IRpcLifecycle*) : void
       return objs[index];
     }
   };
-  lc.RegisterService("RpcFailDoubleRegistrationTest::IService", serviceObj);
+  lc.RegisterLocalService(rpc_GetIds()["RpcFailDoubleRegistrationTest::IService"], serviceObj);
 }
 
 func CallService(service : RpcFailDoubleRegistrationTest::IService^, indexParameter : int, indexReturn : int) : void

@@ -4,7 +4,7 @@ This document describes the generated C++ functions produced from Workflow RPC m
 
 ## When to Call Generated Functions
 
-Call `rpc_GetIds()` before a lifecycle starts handling RPC objects. It returns the dictionary from RPC type and member names to numeric ids. The lifecycle uses this dictionary to decide whether a local object can be represented by an RPC type id and to resolve service names.
+Call `rpc_GetIds()` before a lifecycle starts handling RPC objects. It returns the dictionary from RPC type and member names to numeric ids. The lifecycle uses this dictionary to decide whether a local object can be represented by an RPC type id and to resolve service names; application code also uses it when registering local services.
 
 Create the generated ops objects once for each lifecycle:
 
@@ -12,13 +12,13 @@ Create the generated ops objects once for each lifecycle:
 - `rpcops_IRpcObjectEventOps(lc)` creates the receive-side object event operations.
 - `rpcops_IOps_Create(lc)` creates strongly typed caller-side method operations used by generated wrappers.
 
-Register these objects with the lifecycle's controller, together with the runtime-provided list operations and list event operations. The generated object ops receive remote method calls, object holds, object unholds, and service registrations. Runtime object-op adapters intercept predefined list method ids and redirect them to the local list operations before delegating all other method ids to the generated object ops. The generated object event ops receive remote object events, while runtime object-event adapters intercept the predefined observable-list event id and redirect it to the local list event operations. The generated caller-side ops are passed to wrappers so wrapper methods can send method calls through the dispatcher.
+Register these objects with the lifecycle's controller, together with the runtime-provided list operations and list event operations. The generated object ops receive remote method calls, object holds, and object unholds. Runtime object-op adapters intercept predefined list method ids and redirect them to the local list operations before delegating all other method ids to the generated object ops. The generated object event ops receive remote object events, while runtime object-event adapters intercept the predefined observable-list event id and redirect it to the local list event operations. The generated caller-side ops are passed to wrappers so wrapper methods can send method calls through the dispatcher.
 
 Register a wrapper factory that calls `rpcwrapper_Create(ref, lc, ops)`. The lifecycle calls this factory when `RefToPtr(ref)` sees that `ref.clientId` belongs to another client. `rpcwrapper_Create` switches on `ref.typeId` and returns the generated wrapper interface for that remote object.
 
 Generated wrappers implement the original RPC interfaces and `IRpcWrapperBase`. Call interface methods on them exactly as normal C++ interface methods. A wrapper method checks that it is still connected to a lifecycle, then delegates to the generated caller-side ops. The wrapper destructor sends an object-unhold message to the owner lifecycle unless the wrapper has already been disconnected.
 
-Call `IRpcLifecycle::RegisterService(fullName, service)` on the service-owning lifecycle to expose a singleton service for an `@rpc:Ctor` interface. The generated `IRpcObjectOps::RegisterService` implementation validates the type id, converts the service object to `RpcObjectReference`, and registers it with the dispatcher. Call `IRpcLifecycle::RequestService(fullName)` from a client lifecycle to get the service as either a local object or a generated wrapper.
+Call `IRpcLifecycle::RegisterLocalService(rpc_GetIds()[fullName], service)` on the service-owning lifecycle to expose a singleton service for an `@rpc:Ctor` interface before calling `IRpcLifecycle::Initialize()`. The lifecycle stores the local service object and asks the dispatcher to declare the service owner to remote lifecycles. Call `IRpcLifecycle::RequestService(fullName)` from a client lifecycle to get the service as either a local object or a generated wrapper.
 
 The helper predicates `rpcwrapper_IsInterfaceTypeId(typeId)` and `rpcwrapper_IsCtorInterfaceTypeId(typeId)` are generated for lifecycle and ops validation. Application code usually does not call them directly unless it is implementing custom lifecycle integration.
 
@@ -56,7 +56,7 @@ On the receive side, generated `IRpcObjectEventOps::InvokeEvent` returns `object
 
 Predefined observable-list wrappers use the same exception map for `IRpcListEventOps::OnItemChanged`, also returned as `object`. The send-side list adapter broadcasts `ItemChanged` through `IRpcDispatcher::BroadcastFromClient_ObjectEventOps(clientId)->InvokeEvent(...)` with the predefined observable-list event id. The receive-side object-event adapter redirects that predefined id to the list event operations, which replay the remote list notification under the item-changed suppression flag, catch local handler exceptions into a one-entry map keyed by the receiver lifecycle's client id, and serialize the map when a serializer is configured. The send-side adapter deserializes before calling `IRpcLifecycle::ReadEventException`.
 
-Service registration finishes by validating that the type id exists and represents an `@rpc:Ctor` interface. The generated ops convert the service pointer to a reference with `PtrToRef`, then register that reference in the dispatcher. Service lookup finishes through the lifecycle: it asks the dispatcher for the service reference and converts that reference to a local pointer or wrapper.
+Service registration finishes in the lifecycle. `RegisterLocalService(typeId, service)` converts the service pointer to a reference with `PtrToRef`, adds the owner hold, stores the service object by type id, and asks the dispatcher to transmit `DeclareLocalService(typeId, clientId)`. Service lookup also finishes through the lifecycle: `RequestService(fullName)` resolves the full type name to a type id, returns a local registered service first, or asks the dispatcher for the remote service reference and converts that reference to a local pointer or wrapper.
 
 ## How Generated JSON Serialization Functions Finish Their Work
 

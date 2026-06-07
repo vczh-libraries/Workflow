@@ -29,7 +29,7 @@ func serviceMain(lc : IRpcLifecycle*) : void
       attach(SomethingHappened, ServiceSomethingHappened);
     }
   };
-  lc.RegisterService("RpcEvent::IService", serviceObj);
+  lc.RegisterLocalService(rpc_GetIds()["RpcEvent::IService"], serviceObj);
 }
 
 func clientMain(lc : IRpcLifecycle*) : string

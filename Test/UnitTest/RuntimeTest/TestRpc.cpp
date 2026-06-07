@@ -202,6 +202,8 @@ TEST_FILE
 					// Run serviceMain with lc1
 					auto serviceMain = LoadFunction<void(IRpcLifecycle*)>(globalContext, L"serviceMain");
 					serviceMain(lc1.Obj());
+					lc1->Initialize();
+					lc2->Initialize();
 
 					// Run clientMain with lc2 and get the result
 					auto clientMain = LoadFunction<WString(IRpcLifecycle*)>(globalContext, L"clientMain");

@@ -282,4 +282,42 @@ TEST_FILE
 		}
 		// Enumerator destroyed - ObjectHold(false) was sent
 	});
+
+	TEST_CASE(L"RpcLifecycle service registry owns local service state")
+	{
+		auto context = CreateContext();
+		auto serviceName = WString::Unmanaged(L"system::IValueList");
+		Dictionary<WString, vint> idMap;
+		idMap.Add(serviceName, RpcTypeId_IValueList);
+		context.lifecycle1->SetIdMap(idMap);
+		context.lifecycle2->SetIdMap(idMap);
+
+		auto service1 = IValueList::Create();
+		auto service2 = IValueList::Create();
+		context.lifecycle1->RegisterLocalService(RpcTypeId_IValueList, Ptr<IDescriptable>(service1.Obj()));
+
+		TEST_ASSERT(context.lifecycle1->GetRegisteredLocalServices().Count() == 1);
+		TEST_ASSERT(context.lifecycle1->RequestService(serviceName).Obj() == service1.Obj());
+
+		auto remoteService = context.lifecycle2->RequestService(serviceName);
+		TEST_ASSERT(remoteService.Obj() != service1.Obj());
+		TEST_ASSERT(dynamic_cast<IValueList*>(remoteService.Obj()) != nullptr);
+		TEST_ASSERT(dynamic_cast<IRpcWrapperBase*>(remoteService.Obj()) != nullptr);
+
+		context.lifecycle2->RegisterLocalService(RpcTypeId_IValueList, Ptr<IDescriptable>(service2.Obj()));
+		TEST_ASSERT(context.lifecycle2->RequestService(serviceName).Obj() == service2.Obj());
+
+		TEST_EXCEPTION(
+			context.lifecycle1->RegisterLocalService(RpcTypeId_IValueList, Ptr<IDescriptable>(service2.Obj())),
+			Exception,
+			[](const Exception&) {}
+			);
+
+		context.lifecycle1->Initialize();
+		TEST_EXCEPTION(
+			context.lifecycle1->RegisterLocalService(RpcTypeId_IValueDictionary, Ptr<IDescriptable>(IValueDictionary::Create().Obj())),
+			Exception,
+			[](const Exception&) {}
+			);
+	});
 }

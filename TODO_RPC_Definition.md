@@ -172,11 +172,13 @@ Lifecycle and controller implementations should not use another lifecycle's obje
 
 ### Service Registration and Lookup
 
-`IRpcDispatcher` owns service lookup. It stores a map from RPC type id to `RpcObjectReference`.
+`IRpcLifecycle` owns service lookup state. A local service is stored in the service-owning lifecycle as a map from RPC type id to the local service object. A remote service is stored in each receiving lifecycle as a map from RPC type id to the client id that declared the service.
 
-`IRpcObjectOps::RegisterService` remains the generated validation and registration hook. It validates that the type id exists and represents an `@rpc:Ctor` interface, converts the service object to a `RpcObjectReference` through the current lifecycle, and calls `IRpcDispatcher::RegisterService(typeId, ref)`.
+`IRpcLifecycle::RegisterLocalService(typeId, service)` records a local service before lifecycle initialization. It converts the service object to a local reference, adds the owner hold, stores the local service object, and calls `IRpcDispatcher::DeclareLocalService(typeId, clientId)` so the dispatcher implementation can transmit the declaration. Registering the same local type id twice is a recoverable service-registration error, and registering after `IRpcLifecycle::Initialize()` is also an error.
 
-`IRpcObjectOps::RequestService` should not exist. There should be only one service lookup authority. `IRpcLifecycle::RequestService(fullName)` resolves `fullName` to `typeId`, asks `IRpcDispatcher::RequestService(typeId)` for the ref, and then calls `RefToPtr(ref)`.
+`IRpcDispatcher::DeclareLocalService(typeId, clientId)` is a data-transmission hook, not service storage. The receiving lifecycle handles the declaration through `IRpcLifecycle::DeclareRemoteService(typeId, clientId)`. Declaring a remote service with the same type id overwrites the earlier remote declaration.
+
+`IRpcObjectOps::RequestService` should not exist. `IRpcLifecycle::RequestService(typeName)` first resolves the type name through the lifecycle RPC id map, then returns the local registered service when that type id exists locally. Otherwise it checks whether the type id has been declared remotely, asks `IRpcDispatcher::RequestService(typeId)` for the remote `RpcObjectReference`, and then calls `RefToPtr(ref)`.
 
 `RefToPtr(ref)` uses `ref.clientId` to decide whether the ref belongs to the current client:
 
@@ -205,13 +207,13 @@ When the interested-client counter decreases to 0, the lifecycle should remove a
 
 There is a special case when `PtrToRef(ptr)` is called but no remote client ever receives the returned ref, so no wrapper constructor sends `ObjectHold(..., true)`. The object-to-ref internal property is the final fallback for this case: if the local object is deleted while the lifecycle is still alive, the property cleanup removes the tracking resource. During lifecycle finalization, implementations should remove these internal properties from all tracked local objects, so objects deleted after the lifecycle is gone do not call back into a finalized lifecycle.
 
-Services use the same local-object tracking, but `RegisterService` adds an owner hold:
+Services use the same local-object tracking, but `RegisterLocalService` adds an owner hold:
 
-- An object registered by `IRpcObjectOps::RegisterService` has an initial interested-client count of 1.
+- An object registered by `IRpcLifecycle::RegisterLocalService` has an initial interested-client count of 1.
 - This hold represents the owner client being in the interested-client list. It is not created by a remote wrapper.
 - Remote clients still send normal hold and unhold messages when they create or destroy wrappers for the service object.
 - When all remote clients unhold the service object, the owner hold remains, so the service is not unregistered by ordinary refcounting.
-- Ordinary service unregistration is not part of the RPC interface. Finalization clears the dispatcher service map and lifecycle local-object tracking, including registered services.
+- Ordinary service unregistration is not part of the RPC interface. Finalization clears lifecycle local-object tracking and local/remote service registration state.
 
 ### Point-to-Point Operations
 

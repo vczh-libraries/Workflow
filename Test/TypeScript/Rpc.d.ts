@@ -109,15 +109,6 @@ export interface IObjectOps_ObjectHold_Response
   targetClientId: number;
 }
 
-export interface IObjectOps_RegisterService_Request
-{
-  rpcMethod: "IObjectOps_RegisterService";
-  rpcRequestId: number;
-  sourceClientId: number;
-  typeId: number;
-  service: system_RpcObjectReference;
-}
-
 export interface IObjectEventOps_InvokeEvent_Request<T>
 {
   rpcMethod: "IObjectEventOps_InvokeEvent";
@@ -130,7 +121,7 @@ export interface IObjectEventOps_InvokeEvent_Request<T>
 
 export interface Broadcast_Response
 {
-  rpcMethod: "IObjectOps_RegisterService" | "IObjectEventOps_InvokeEvent";
+  rpcMethod: "IObjectEventOps_InvokeEvent";
   rpcRequestId: number;
   sourceClientId: number;
   targetClientId: number;
@@ -141,7 +132,6 @@ export type Request<T> =
   | IObjectOps_InvokeMethod_Request<T>
   | IObjectOps_EndInvokeMethod_Request
   | IObjectOps_ObjectHold_Request
-  | IObjectOps_RegisterService_Request
   | IObjectEventOps_InvokeEvent_Request<T>
   ;
 

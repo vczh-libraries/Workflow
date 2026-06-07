@@ -74,29 +74,37 @@ namespace vl
 		{
 			lifecycle2->Finalize();
 			lifecycle1->Finalize();
-			services.Clear();
 		}
 
-		bool RpcDualDispatcherMockBase::IsRegisteredService(RpcObjectReference ref)
+		void RpcDualDispatcherMockBase::Initialize()
 		{
-			return services.Values().Contains(ref);
 		}
 
-		void RpcDualDispatcherMockBase::RegisterService(vint typeId, RpcObjectReference ref)
+		void RpcDualDispatcherMockBase::DeclareLocalService(vint typeId, vint clientId)
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualDispatcherMockBase::RegisterService(vint, RpcObjectReference)#"
-			CHECK_ERROR(!services.Keys().Contains(typeId), ERROR_MESSAGE_PREFIX L"Service is already registered.");
-			services.Set(typeId, ref);
-			GetLifecycle(ref.clientId)->LocalObjectHold(ref, ref.clientId);
-#undef ERROR_MESSAGE_PREFIX
+			GetOtherLifecycle(clientId)->DeclareRemoteService(typeId, clientId);
 		}
 
 		RpcObjectReference RpcDualDispatcherMockBase::RequestService(vint typeId)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualDispatcherMockBase::RequestService(vint)#"
-			auto index = services.Keys().IndexOf(typeId);
-			CHECK_ERROR(index != -1, ERROR_MESSAGE_PREFIX L"Service is not registered.");
-			return services.Values()[index];
+			auto findService = [typeId](RpcDualLifecycleMock* lifecycle, RpcObjectReference& ref)
+			{
+				auto&& services = lifecycle->GetRegisteredLocalServices();
+				auto index = services.Keys().IndexOf(typeId);
+				if (index != -1)
+				{
+					ref = lifecycle->PtrToRef(services.Values()[index]);
+					return true;
+				}
+				return false;
+			};
+
+			RpcObjectReference ref;
+			if (findService(lifecycle1, ref)) return ref;
+			if (findService(lifecycle2, ref)) return ref;
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Service is not registered.");
+			return {};
 #undef ERROR_MESSAGE_PREFIX
 		}
 

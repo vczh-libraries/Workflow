@@ -708,15 +708,13 @@ namespace vl
 		Ptr<JsonNode> RpcJsonObjectOps::Translate(Ptr<JsonNode> message, IRpcObjectOps* ops, IRpcLifecycle* lifecycle)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectOps::Translate(Ptr<JsonNode>, IRpcObjectOps*)#"
+			(void)lifecycle;
 			CHECK_ERROR(ops, ERROR_MESSAGE_PREFIX L"Object ops is required.");
 			auto request = GetJsonObject(message);
 			auto rpcMethod = GetJsonString(GetJsonObjectField(request, WString::Unmanaged(L"rpcMethod")));
 			auto requestId = ReadRequestId(request);
 			auto sourceClientId = ReadSourceClientId(request);
-			auto targetClientId =
-				rpcMethod == WString::Unmanaged(L"IObjectOps_RegisterService")
-				? RpcClientId_Invalid
-				: ReadTargetClientId(request);
+			auto targetClientId = ReadTargetClientId(request);
 			auto response = CreateRpcMessage(rpcMethod, requestId, targetClientId);
 			AddJsonObjectField(response, WString::Unmanaged(L"targetClientId"), CreateJsonNumber(sourceClientId));
 
@@ -740,15 +738,6 @@ namespace vl
 					GetJsonInt(GetJsonObjectField(request, WString::Unmanaged(L"remoteClientId"))),
 					GetJsonBool(GetJsonObjectField(request, WString::Unmanaged(L"hold")))
 					);
-			}
-			else if (rpcMethod == WString::Unmanaged(L"IObjectOps_RegisterService"))
-			{
-				CHECK_ERROR(lifecycle, ERROR_MESSAGE_PREFIX L"Lifecycle is required to translate RegisterService.");
-				lifecycle->GetDispatcher()->RegisterService(
-					GetJsonInt(GetJsonObjectField(request, WString::Unmanaged(L"typeId"))),
-					GetRpcObjectReferenceFromJson(GetJsonObjectField(request, WString::Unmanaged(L"service")))
-				);
-				AddJsonObjectField(response, WString::Unmanaged(L"response"), CreateJsonLiteral(JsonLiteralValue::Null));
 			}
 			else
 			{

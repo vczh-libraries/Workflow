@@ -93,6 +93,8 @@ namespace vl
 			lc2->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops2); });
 
 			instance.serviceMain(lc1.Obj());
+			lc1->Initialize();
+			lc2->Initialize();
 
 			auto actual = instance.clientMain(lc2.Obj());
 
@@ -159,6 +161,8 @@ namespace vl
 			lc2->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops2); });
 
 			instance.serviceMain(lc1.Obj());
+			lc1->Initialize();
+			lc2->Initialize();
 
 			auto actual = instance.clientMain(lc2.Obj());
 
@@ -222,6 +226,8 @@ namespace vl
 			lc2->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops2); });
 
 			instance.serviceMain(lc1.Obj());
+			lc1->Initialize();
+			lc2->Initialize();
 
 			auto actual = instance.clientMain(lc2.Obj());
 

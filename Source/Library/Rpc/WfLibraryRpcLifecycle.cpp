@@ -365,7 +365,18 @@ namespace vl
 				auto props = localObjectProperties.Values().Get(localObjectProperties.Count() - 1);
 				RemoveLocalObject(props->ref, true);
 			}
+			registeredLocalServices.Clear();
+			registeredRemoteServices.Clear();
 			controller.Finalize();
+		}
+
+		void RpcLifecycleBase::Initialize()
+		{
+			if (!initialized)
+			{
+				GetDispatcher()->Initialize();
+				initialized = true;
+			}
 		}
 
 		vint RpcLifecycleBase::GetClientId()
@@ -376,6 +387,11 @@ namespace vl
 		RpcControllerDefault* RpcLifecycleBase::GetController()
 		{
 			return &controller;
+		}
+
+		const RpcLocalServiceMap& RpcLifecycleBase::GetRegisteredLocalServices()
+		{
+			return registeredLocalServices;
 		}
 
 		void RpcLifecycleBase::LocalObjectHold(RpcObjectReference ref, vint remoteClientId)
@@ -408,22 +424,47 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RpcLifecycleBase::RegisterService(const WString& fullName, Ptr<IDescriptable> service)
+		void RpcLifecycleBase::RegisterLocalService(vint typeId, Ptr<IDescriptable> service)
 		{
-			auto index = idMap.Keys().IndexOf(fullName);
-			if (index == -1)
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::RegisterLocalService(vint, Ptr<IDescriptable>)#"
+			CHECK_ERROR(service, ERROR_MESSAGE_PREFIX L"Service is required.");
+			if (initialized)
 			{
-				CHECK_FAIL(L"Unknown RPC type id.");
+				throw Exception(ERROR_MESSAGE_PREFIX L"RegisterLocalService cannot be called after Initialize.");
 			}
-			auto typeId = idMap.Values()[index];
-			GetDispatcher()->RegisterService(typeId, PtrToRef(service));
+			if (registeredLocalServices.Keys().Contains(typeId))
+			{
+				throw Exception(ERROR_MESSAGE_PREFIX L"Service is already registered.");
+			}
+
+			auto ref = PtrToRef(service);
+			LocalObjectHold(ref, clientId);
+			registeredLocalServices.Set(typeId, service);
+			GetDispatcher()->DeclareLocalService(typeId, clientId);
+#undef ERROR_MESSAGE_PREFIX
 		}
 
-		Ptr<IDescriptable> RpcLifecycleBase::RequestService(const WString& fullName)
+		void RpcLifecycleBase::DeclareRemoteService(vint typeId, vint remoteClientId)
 		{
-			if (idMap.Keys().Contains(fullName))
+			registeredRemoteServices.Set(typeId, remoteClientId);
+		}
+
+		Ptr<IDescriptable> RpcLifecycleBase::RequestService(WString typeName)
+		{
+			auto typeIndex = idMap.Keys().IndexOf(typeName);
+			if (typeIndex == -1)
 			{
-				auto typeId = idMap.Get(fullName);
+				return nullptr;
+			}
+			auto typeId = idMap.Values()[typeIndex];
+
+			if (auto index = registeredLocalServices.Keys().IndexOf(typeId); index != -1)
+			{
+				return registeredLocalServices.Values()[index];
+			}
+
+			if (registeredRemoteServices.Keys().Contains(typeId))
+			{
 				auto ref = GetDispatcher()->RequestService(typeId);
 				return RefToPtr(ref);
 			}

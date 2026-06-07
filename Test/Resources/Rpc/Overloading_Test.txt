@@ -34,7 +34,7 @@ func serviceMain(lc : IRpcLifecycle*) : void
       return $"$(value1),$(value2),$(value3),$(value4.StringValue)";
     }
   };
-  lc.RegisterService("RpcOverloadingTest::IService", serviceObj);
+  lc.RegisterLocalService(rpc_GetIds()["RpcOverloadingTest::IService"], serviceObj);
 }
 
 func clientMain(lc : IRpcLifecycle*) : string

@@ -36,6 +36,7 @@ namespace vl
 		};
 
 		using RpcEventExceptionMap = Ptr<reflection::description::IValueDictionary>;
+		using RpcLocalServiceMap = collections::Dictionary<vint, Ptr<reflection::IDescriptable>>;
 
 		extern void												MergeRpcEventExceptionMap(RpcEventExceptionMap target, RpcEventExceptionMap source);
 
@@ -172,8 +173,8 @@ namespace vl
 		{
 		public:
 			virtual void							Finalize() = 0;
-			virtual bool							IsRegisteredService(RpcObjectReference ref) = 0;
-			virtual void							RegisterService(vint typeId, RpcObjectReference ref) = 0;
+			virtual void							Initialize() = 0;
+			virtual void							DeclareLocalService(vint typeId, vint clientId) = 0;
 			virtual RpcObjectReference				RequestService(vint typeId) = 0;
 
 			virtual IRpcObjectEventOps*				BroadcastFromClient_ObjectEventOps(vint selfClientId) = 0;
@@ -246,9 +247,9 @@ namespace vl
 		* Registering Service:
 		*   -> IRpcLifecycle->RegisterLocalService
 		*   {
-		*     -> IRpcLifecycle->GetDispatcher()->DeclareLocalService
+		*     -> IRpcLifecycle->GetDispatcher()->DeclareLocalService(typeId, clientId)
 		*     ---- NETWORK PROTOCOL (broadcast) ----
-		*     -> IRpcLifecycle::DeclareRemoteService
+		*     -> IRpcLifecycle::DeclareRemoteService(typeId, clientId)
 		*   }
 		*/
 		class IRpcLifecycle
@@ -257,16 +258,19 @@ namespace vl
 		{
 		public:
 			virtual void							Finalize() = 0;
+			virtual void							Initialize() = 0;
 			virtual vint							GetClientId() = 0;
 			virtual IRpcDispatcher*					GetDispatcher() = 0;
 			virtual IRpcController*					GetController() = 0;
 			virtual IRpcSerializer*					GetSerializer() = 0;
+			virtual const RpcLocalServiceMap&		GetRegisteredLocalServices() = 0;
 			virtual Ptr<reflection::IDescriptable>	RefToPtr(RpcObjectReference ref) = 0;
 			virtual RpcObjectReference				PtrToRef(Ptr<reflection::IDescriptable> obj) = 0;
 			virtual void							LocalObjectHold(RpcObjectReference ref, vint remoteClientId) = 0;
 			virtual void							LocalObjectUnhold(RpcObjectReference ref, vint remoteClientId) = 0;
-			virtual void							RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service) = 0;
-			virtual Ptr<reflection::IDescriptable>	RequestService(const WString& fullName) = 0;
+			virtual void							RegisterLocalService(vint typeId, Ptr<reflection::IDescriptable> service) = 0;
+			virtual void							DeclareRemoteService(vint typeId, vint clientId) = 0;
+			virtual Ptr<reflection::IDescriptable>	RequestService(WString typeName) = 0;
 		};
 
 		class IRpcWrapperBase

@@ -16,7 +16,6 @@ namespace vl
 		private:
 			RpcDualLifecycleMock*													lifecycle1 = nullptr;
 			RpcDualLifecycleMock*													lifecycle2 = nullptr;
-			collections::Dictionary<vint, rpc_controller::RpcObjectReference>		services;
 
 			RpcDualLifecycleMock*													GetLifecycle(vint clientId)const;
 			RpcDualLifecycleMock*													GetOtherLifecycle(vint clientId)const;
@@ -25,8 +24,8 @@ namespace vl
 			~RpcDualDispatcherMockBase();
 
 			void																	Finalize()override;
-			bool																	IsRegisteredService(rpc_controller::RpcObjectReference ref)override;
-			void																	RegisterService(vint typeId, rpc_controller::RpcObjectReference ref)override;
+			void																	Initialize()override;
+			void																	DeclareLocalService(vint typeId, vint clientId)override;
 			rpc_controller::RpcObjectReference										RequestService(vint typeId)override;
 			rpc_controller::IRpcObjectEventOps*										BroadcastFromClient_ObjectEventOps(vint selfClientId)override;
 			rpc_controller::IRpcObjectOps*											SendToClient_ObjectOps(vint targetClientId)override;
