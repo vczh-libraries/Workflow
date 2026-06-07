@@ -196,7 +196,7 @@ namespace vl
 		};
 
 		/*
-		* Call graph for JSON based RPC
+		* [Configuration]
 		* 
 		* Calling IRpcLifecycle->GetController()->Register
 		*   serializer = rpcops_IRpcSerializer()
@@ -205,25 +205,45 @@ namespace vl
 		*     eventOps: RpcCalleeObjectEventOpsForList(RpcCalleeListEventOps(lifecycle, serializer), rpcops_IRpcObjectEventOpsJson, serializer)
 		*     );
 		* 
-		* Calling Method:
+		* Triggering RpcLifecycleBase::AttachLocalObjectEvents
+		*   call rpclistener_Attach(ref.typeId, this, ref, obj, (cached)rpcops_IOps_CreateJson(this))
+		* 
+		* [Call graph for JSON based RPC]
+		* 
+		* Calling Method of Remote Object:
 		*   -> IMyInterface::Method (generated Workflow code)
 		*   -> rpcops_IOps_<Application>::InvokeMethod_IMyInterface_Method (generated Workflow code)
 		*   {
 		*     -> IRpcLifecycle->GetDispatcher()->SendToClient_ObjectOps()->InvokeMethod
 		*     -> RpcJsonObjectOps::InvokeMethod
 		*     -> IRpcJsonMessageDispatcher::OnJsonRequest
-		*     ---- NETWORK PROTOCOL ----
+		*     ---- NETWORK PROTOCOL (request) ----
 		*     -> RpcJsonObjectOps::Translate
-		*     -> IRpcLifecycle->GetController()->GetObjectOps()
+		*     -> IRpcLifecycle->GetController()->GetObjectOps()->InvokeMethod
 		*     -> RpcCalleeObjectOpsForList::InvokeMethod
-		*     -> rpcops_IRpcObjectOps()->InvokeMethod (generated Workflow code)
-		*     -> IMyInterface::Method
+		*     -> rpcops_IRpcObjectOpsJson()->InvokeMethod (generated Workflow code)
+		*     -> IMyInterface::Method (actual)
+		*     ---- NETWORK PROTOCOL (response) ----
 		*   }
 		*   { optional EndInvokeMethod when @rpc:Byval on return value }
 		* 
-		* Triggering Event of Local Object:
+		* Triggering Event of Remote Object (events are automatically hooked when creating a wrapper for a remote object):
+		*   -> IMyInterface::SomethingHappened
+		*   -> rpcops_IOps_<Application>::InvokeMethod_IMyInterface_SomethingHappened (generated Workflow code)
+		*   {
+		*     -> IRpcLifecycle->GetDispatcher()->BroadcastFromClient_ObjectEventOps()->InvokeEvent
+		*     -> RpcJsonObjectOps::InvokeEvent
+		*     -> IRpcJsonMessageDispatcher::OnJsonRequest
+		*     ---- NETWORK PROTOCOL (broadcast) ----
+		*     -> RpcJsonEventObjectOps::Translate
+		*     -> IRpcLifecycle->GetController()->GetObjectOps()->InvokeEvent
+		*     -> RpcCalleeObjectEventOpsForList::InvokeEvent
+		*     -> rpcops_IRpcObjectEventOpsJson()->InvokeEvent (generated Workflow code)
+		*     -> IMyInterface::SomethingHappened
+		*   }
 		* 
-		* Triggering Event of Remote Object:
+		* Triggering Event of Local Object (when a local object is tracked, RpcLifecycleBase::AttachLocalObjectEvents will be called)
+		*   The same to remote object.
 		* 
 		* Registering Service:
 		* 
