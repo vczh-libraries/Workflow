@@ -160,6 +160,46 @@ WString GetCppMergePathRpc()
 #endif
 }
 
+WString GetAppOutputPath(const WString& appName)
+{
+#if defined VCZH_MSVC
+	return GetTestOutputBasePath() + L"Apps\\" + appName + L"\\Cpp" + GetBits() + L"\\";
+#elif defined VCZH_GCC
+	return GetTestOutputBasePath() + L"Apps/" + appName + L"/Cpp" + GetBits() + L"/";
+#endif
+}
+
+WString GetAppOutputPath32(const WString& appName)
+{
+#if defined VCZH_MSVC
+	return GetTestOutputBasePath() + L"Apps\\" + appName + L"\\Cpp32\\";
+#elif defined VCZH_GCC
+	return GetTestOutputBasePath() + L"Apps/" + appName + L"/Cpp32/";
+#endif
+}
+
+WString GetAppOutputPath64(const WString& appName)
+{
+#if defined VCZH_MSVC
+	return GetTestOutputBasePath() + L"Apps\\" + appName + L"\\Cpp64\\";
+#elif defined VCZH_GCC
+	return GetTestOutputBasePath() + L"Apps/" + appName + L"/Cpp64/";
+#endif
+}
+
+WString GetAppMergePath(const WString& appName)
+{
+#if defined VCZH_MSVC
+#ifdef VCZH_64
+	return GetExePath() + L"..\\..\\..\\Generated\\Apps\\" + appName + L"\\Cpp\\";
+#else
+	return GetExePath() + L"..\\..\\Generated\\Apps\\" + appName + L"\\Cpp\\";
+#endif
+#elif defined VCZH_GCC
+	return L"../../Generated/Apps/" + appName + L"/Cpp/";
+#endif
+}
+
 WString GetWorkflowOutputPath()
 {
 #if defined VCZH_MSVC

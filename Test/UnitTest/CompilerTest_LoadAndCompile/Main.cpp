@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
 		Folder folder(path);
 		if (!folder.Exists())
 		{
-			CHECK_ERROR(folder.Create(false) == true, msgCreate);
+			CHECK_ERROR(folder.Create(true) == true, msgCreate);
 		}
 		else
 		{
@@ -189,6 +189,22 @@ int main(int argc, char* argv[])
 		L"Failed to delete file from output folder.");
 
 	OUTPUT_FOLDERS(CLEAN_OUTPUT_FOLDER)
+
+	createOrCleanFolder(GetAppOutputPath32(L"ChatBot"),
+		L"Failed to create app output folder.",
+		L"Failed to get files from app output folder.",
+		L"Failed to delete file from app output folder.");
+	createOrCleanFolder(GetAppOutputPath64(L"ChatBot"),
+		L"Failed to create app output folder.",
+		L"Failed to get files from app output folder.",
+		L"Failed to delete file from app output folder.");
+	{
+		Folder folder(GetAppMergePath(L"ChatBot"));
+		if (!folder.Exists())
+		{
+			CHECK_ERROR(folder.Create(true) == true, L"Failed to create app merge folder.");
+		}
+	}
 
 #undef CLEAN_OUTPUT_FOLDER
 #undef OUTPUT_FOLDERS
@@ -266,6 +282,44 @@ int main(int argc, char* argv[])
 			auto file32 = GetCppOutputPath32Rpc() + fileName;
 			auto file64 = GetCppOutputPath64Rpc() + fileName;
 			auto fileOutput = GetCppMergePathRpc() + fileName;
+
+			auto code = MergeCppMultiPlatform(File(file32).ReadAllTextByBom(), File(file64).ReadAllTextByBom());
+
+			File file(fileOutput);
+			if (file.Exists())
+			{
+				code = MergeCppFileContent(file.ReadAllTextByBom(), code);
+			}
+
+			if (file.Exists())
+			{
+				auto originalCode = file.ReadAllTextByBom();
+				if (originalCode == code)
+				{
+					continue;
+				}
+			}
+
+			file.WriteAllText(code, false, BomEncoder::Mbcs);
+		}
+	}
+
+	{
+		console::Console::WriteLine(L"<Merging Apps: ChatBot>");
+		SortedList<WString> fileNames32;
+		SortedList<WString> fileNames64;
+		{
+			FillFileNames(GetAppOutputPath32(L"ChatBot"), fileNames32);
+			FillFileNames(GetAppOutputPath64(L"ChatBot"), fileNames64);
+			CHECK_ERROR(CompareEnumerable(fileNames32, fileNames64) == 0, L"App file names in x64 and x86 folder are different.");
+		}
+
+		for (auto fileName : fileNames32)
+		{
+			console::Console::WriteLine(L"    " + fileName);
+			auto file32 = GetAppOutputPath32(L"ChatBot") + fileName;
+			auto file64 = GetAppOutputPath64(L"ChatBot") + fileName;
+			auto fileOutput = GetAppMergePath(L"ChatBot") + fileName;
 
 			auto code = MergeCppMultiPlatform(File(file32).ReadAllTextByBom(), File(file64).ReadAllTextByBom());
 

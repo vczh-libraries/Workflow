@@ -1,0 +1,18 @@
+module ChatAPI;
+using system::*;
+
+namespace chatapi
+{
+  @rpc:Interface
+  interface IChatServer
+  {
+    event OnUserAdded(string);
+    event OnUserRemoved(string);
+    event OnSpoken(string, string);
+    event OnServerShutdown();
+
+    func AddUser(name : string) : bool;
+    func RemoveUser(name : string) : bool;
+    func Speak(speakerName : string, message : string) : void;
+  }
+}

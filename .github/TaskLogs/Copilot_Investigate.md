@@ -75,6 +75,7 @@ Task 2: add the ChatBot app sample and project wiring, then verify `Test/UnitTes
 # PROPOSALS
 
 - No.1 Remove obsolete Runtime tests and RPC redirections, then regenerate affected outputs [CONFIRMED]
+- No.2 Add ChatBot app generation and CLI projects [CONFIRMED]
 
 ## No.1 Remove obsolete Runtime tests and RPC redirections
 
@@ -102,3 +103,22 @@ Updated `Rpc.d.ts` and regenerated affected C++/metadata/TypeScript outputs so t
 - `RuntimeTest` Debug x64 and Win32 passed.
 - `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` Debug x64 and Win32 passed.
 - Stale-reference scan for deleted Runtime resources and removed RPC accessors only found the task log text and the intentionally remaining `IRpcListOps`/`IRpcListEventOps` types.
+
+## No.2 Add ChatBot app generation and CLI projects
+
+### CODE CHANGE
+
+Added `Test/Apps/ChatBot/ChatAPI.txt` with the `chatapi::IChatServer` RPC interface and generated the merged C++ app output under `Test/Generated/Apps/ChatBot/Cpp`. The architecture-specific `Cpp32` and `Cpp64` generated folders are produced by `CompilerTest_LoadAndCompile` and ignored by git.
+
+Updated `CompilerTest_LoadAndCompile` to generate the ChatBot app with the `ChatBotApp` assembly name and merge the x86/x64 app output into the tracked `Cpp` folder. Added app output path helpers and wired the new test file into the Windows and Linux compiler-test project metadata.
+
+Added `Generated_Apps_ChatBot.vcxitems`, `ChatBotServer`, and `ChatBotClient`, and placed them in `UnitTest.sln` under `Source Files` and `Apps_ChatBot` respectively. Both CLI app projects import `VlppImport.vcxitems`, `VlppWorkflow_Library.vcxitems`, and `Generated_Apps_ChatBot.vcxitems`; their `Main.cpp` files include `ChatBotApp.h` and return 0.
+
+Workflow event declarations are type-only in the parser grammar, so `ChatAPI.txt` uses type-only event payloads while preserving the requested function argument names and generated C++ event signatures.
+
+### CONFIRMED
+
+- Built `CompilerTest_LoadAndCompile` Debug x64 to regenerate ChatBot app output.
+- `CompilerTest_LoadAndCompile` produced `Test/Generated/Apps/ChatBot/Cpp32`, `Cpp64`, and merged tracked `Cpp` output.
+- `Test/UnitTest/UnitTest.sln` Debug x64 passed.
+- `Test/UnitTest/UnitTest.sln` Debug Win32 passed.
