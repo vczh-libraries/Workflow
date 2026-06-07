@@ -29,18 +29,14 @@ namespace chatapi
   @rpc:Interface
   interface IChatServer
   {
-    func AddUser(name: string, client: IChatClient^) : bool;
-    func RemoveUser(name : string, client: IChatClient^) : bool;
-    func Speak(speakerName: string, message: string) : void;
-  }
-
-  @rpc:Interface
-  interface IChatClient
-  {
     event OnUserAdded(name: string);
     event OnUserRemoved(name: string);
     event OnSpoken(speakerName: string, message: string);
     event OnServerShutdown();
+
+    func AddUser(name: string) : bool;
+    func RemoveUser(name : string) : bool;
+    func Speak(speakerName: string, message: string) : void;
   }
 }
 ```
@@ -67,23 +63,23 @@ When the server receives a client:
 - if it does not implement a `RpcChat` channel, reject it immediately.
 - otherwise, send the local client id back.
 Implement `IChatServer`, register it has a server so that it is exposed to all client.
-- `AddServer` maintains a name with a `IChatClient^` in a `Dictionary`. If the name already exists, returns false.
+- `AddUser` maintains a name with the client id in a `Dictionary`. If the name already exists, returns false.
   - Only when succeeded triggers `OnUserAdded` on all clients.
-- `RemoveUser` removes `name` from the dictionary, verify that the name is binding with that `IChatClient^` object, otherwise returns false. `OnServerShutdown` will not be triggered.
+- `RemoveUser` removes `name` from the dictionary, verify that the name is binding with that client, otherwise returns false. `OnServerShutdown` will not be triggered.
   - Only when succeeded triggers `OnUserRemoved` on all clients.
 - `Speak` broadcast messages to all other client. `speakerName` is the speaker, all clients except the `speakerName` will have its `OnSpoken` event triggered.
 When user press ENTER, the server triggers all `OnServerShutdown`, shot the `HttpServer` and exit. `Console::Read` could be used here.
 
 `main` function:
 - Starts all initialization.
-- When user input `exit`, call `IChatClient::OnServerShutdown`, stop the server and exit.
+- When user input `exit`, call `IChatServer::OnServerShutdown`, stop the server and exit.
 
 ### ChatBotClient
 
 Start a manual signal event.
 Start a `HttpClient` with `RpcChat` channel.
 After connecting to the server, wait for the first message from the channel, it should be the client id representing the server, we calls it `server id`. Signal the manual signal event.
-Implement `IChatClient` and hook it with the `RpcChat` channel.
+Request `IChatServer` and hook all events.
 When the application starts, `Console::Read` a user name and call `IChatServer::AddUser`.
 When `exit` is entered, call `IChatServer::RemoveUser` and exit.
 When `OnUserAdded` is triggered, print a line `speakerName joined`.
@@ -103,7 +99,7 @@ When `OnServerShutdown` is triggered, stop the `HttpClient` and exit, no `IChatS
 
 - A global spin lock should be held to run:
   - `Console::Write`.
-  - `IChatServer` and `IChatClient` in two `main` function.
+  - `IChatServer` in two `main` function.
   - Consecutive calls could be called in one single `SPIN_LOCK`.
 - Such spin lock will be a variable in two `main` function.
 
@@ -131,7 +127,7 @@ So you should not expect that the subsequent response should be responding to yo
   - `PushJson`: lockDispatcher{ if (exited) return false; push JsonNode; } increase lockTasks; return true;
   - `TryPopJson`: decrease lockTasks; lockDispatcher { if (exited && empty list) return nullptr; pop task; } return task;
 - In `OnJsonRequest`:
-  - Send json through 
+  - **HOW TO WAIT FOR ALL EVENT RESPONSES**?
 
 ### Testing
 
