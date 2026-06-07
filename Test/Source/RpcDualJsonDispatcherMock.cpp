@@ -381,11 +381,6 @@ namespace vl
 				receiver = GetJsonLifecycle(ReadTargetClientId(message));
 				response = RpcJsonObjectOps::Translate(message, receiver->GetController()->GetObjectOps(), receiver);
 			}
-			else if (broadcast && rpcMethod == WString::Unmanaged(L"IObjectOps_RegisterService"))
-			{
-				receiver = GetOtherJsonLifecycle(sourceClientId);
-				response = RpcJsonObjectOps::Translate(message, receiver->GetController()->GetObjectOps(), receiver);
-			}
 			else if (broadcast && IsRpcMethod(rpcMethod, WString::Unmanaged(L"IObjectEventOps_")))
 			{
 				receiver = GetOtherJsonLifecycle(sourceClientId);

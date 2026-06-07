@@ -18,6 +18,14 @@
 
 - `ChatBotServer` and `ChatBotClient` project.
   - Declaration of service registration from every client connection.
+    - Delete `IRpcDispatcher::IsRegisteredService`.
+    - Add `IRpcLifecycle::RegisterLocalService`, registering a local object as a service.
+    - Add `IRpcLifecycle::GetRegisteredLocalServices`, a dictionary.
+    - Add `IRpcLifecycle::RequestService`, returns the local registered service or call `IRpcDispatcher::RequestService`.
+    - Add `IRpcLifecycle::Initialize` calling `IRpcDispatcher::Initialize`. `RegisterLocalService` will throw after that.
+    - Delete `IRpcDispatcher::RegisterService`.
+    - Add `IRpcDispatcher::Initialize`. All mocks keeps an empty implementation.
+      - In the real implementation, all local registered service will be sent to the server, and `IRpcLifecycle::NewRemoteServices(clientId, typeIds)` will be called whenever a remote service appears.
   - How does `InvokeEvent` collect results from all client? Might need to update `IChannel::BroadcastFromClient` and enable a return value.
   - Update `UnitTest/README.md` and `Project.md`.
 
