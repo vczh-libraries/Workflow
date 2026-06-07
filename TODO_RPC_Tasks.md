@@ -7,6 +7,8 @@ Follow `REPO-ROOT/.github/Rules/document-and-commit.md` to finish the work.
 ## Task 1
 
 Delete `Test/Resources/Runtime`, `IndexRuntime.txt`, `TestRuntimeCompiler.cpp` and all related stuff, including generated files. I would like to remove this test file completely.
+Delete `IRpcOperations::GetList(Event)?Ops`, as list ops are called by `RpcCalleeObject(Event)?OpsForList`.
+- This would also delete the last two arguments from `IRpcController::Register`.
 
 Remove `RpcLifecycleBase::dispatcher`, all access should go through `GetDispatcher`, which should already be the case.
 Remove `RpcLifeCycleBase::GetDispatcher` overloading, as it becomes useless when `dispatcher` is removed.
@@ -141,3 +143,5 @@ To make sure the code works, you are going to run the below complete process and
 - Chat on each client as a round, do 3 round.
 - `exit` on one client, the others should be notified.
 - Exit the server, the rest of the clients should also exit.
+
+I am going to run this testing process after you claiming to finish the work, you'd better run this testing process carefully to make sure your claim is true.

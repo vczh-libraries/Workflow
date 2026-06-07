@@ -195,6 +195,40 @@ namespace vl
 			virtual bool							GetItemChangedSuppressedFlag(RpcObjectReference ref) = 0;
 		};
 
+		/*
+		* Call graph for JSON based RPC
+		* 
+		* Calling IRpcLifecycle->GetController()->Register
+		*   serializer = rpcops_IRpcSerializer()
+		*   Register(
+		*     objectOps: RpcCalleeObjectOpsForList(RpcCalleeListOps(lifecycle, serializer), rpcops_IRpcObjectOpsJson, serializer)
+		*     eventOps: RpcCalleeObjectEventOpsForList(RpcCalleeListEventOps(lifecycle, serializer), rpcops_IRpcObjectEventOpsJson, serializer)
+		*     );
+		* 
+		* Calling Method:
+		*   -> IMyInterface::Method (generated Workflow code)
+		*   -> rpcops_IOps_<Application>::InvokeMethod_IMyInterface_Method (generated Workflow code)
+		*   {
+		*     -> IRpcLifecycle->GetDispatcher()->SendToClient_ObjectOps()->InvokeMethod
+		*     -> RpcJsonObjectOps::InvokeMethod
+		*     -> IRpcJsonMessageDispatcher::OnJsonRequest
+		*     ---- NETWORK PROTOCOL ----
+		*     -> RpcJsonObjectOps::Translate
+		*     -> IRpcLifecycle->GetController()->GetObjectOps()
+		*     -> RpcCalleeObjectOpsForList::InvokeMethod
+		*     -> rpcops_IRpcObjectOps()->InvokeMethod (generated Workflow code)
+		*     -> IMyInterface::Method
+		*   }
+		*   { optional EndInvokeMethod when @rpc:Byval on return value }
+		* 
+		* Triggering Event of Local Object:
+		* 
+		* Triggering Event of Remote Object:
+		* 
+		* Registering Service:
+		* 
+		* Requesting Service:
+		*/
 		class IRpcLifecycle
 			: public virtual reflection::IDescriptable
 			, public reflection::Description<IRpcLifecycle>
