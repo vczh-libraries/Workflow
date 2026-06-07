@@ -527,27 +527,6 @@ Closures
 		}
 	}
 
-	void __vwsnc12_Rpc_Inheritance_EventException_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::RegisterService(::vl::vint64_t typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service)
-	{
-		{
-			if (GLOBAL_NAME rpcwrapper_IsCtorInterfaceTypeId(typeId))
-			{
-				::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->RegisterService(typeId, ::vl::__vwsn::This(_lc)->PtrToRef(service));
-			}
-			else
-			{
-				if (GLOBAL_NAME rpcwrapper_IsInterfaceTypeId(typeId))
-				{
-					throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
-				}
-				else
-				{
-					throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id does not exist."));
-				}
-			}
-		}
-	}
-
 	//-------------------------------------------------------------------
 
 	__vwsnc13_Rpc_Inheritance_EventException_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps::__vwsnc13_Rpc_Inheritance_EventException_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
@@ -754,27 +733,6 @@ Closures
 		else
 		{
 			::vl::__vwsn::This(_lc)->LocalObjectUnhold(ref, remoteClientId);
-		}
-	}
-
-	void __vwsnc3_Rpc_Inheritance_EventException_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::RegisterService(::vl::vint64_t typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service)
-	{
-		{
-			if (GLOBAL_NAME rpcwrapper_IsCtorInterfaceTypeId(typeId))
-			{
-				::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->RegisterService(typeId, ::vl::__vwsn::This(_lc)->PtrToRef(service));
-			}
-			else
-			{
-				if (GLOBAL_NAME rpcwrapper_IsInterfaceTypeId(typeId))
-				{
-					throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id is not an @rpc:Ctor interface."));
-				}
-				else
-				{
-					throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC service type id does not exist."));
-				}
-			}
 		}
 	}
 

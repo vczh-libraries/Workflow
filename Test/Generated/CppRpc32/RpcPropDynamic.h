@@ -155,7 +155,6 @@ Closures
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		void EndInvokeMethod(::vl::vint32_t slot) override;
 		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t remoteClientId, bool hold) override;
-		void RegisterService(::vl::vint32_t typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service) override;
 	};
 
 	class __vwsnc3_Rpc_PropDynamic_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
@@ -214,7 +213,6 @@ Closures
 		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 		void EndInvokeMethod(::vl::vint32_t slot) override;
 		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t remoteClientId, bool hold) override;
-		void RegisterService(::vl::vint32_t typeId, ::vl::Ptr<::vl::reflection::IDescriptable> service) override;
 	};
 
 	class __vwsnc8_Rpc_PropDynamic_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
