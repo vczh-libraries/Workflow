@@ -48,7 +48,7 @@ func serviceMain(lc : IRpcLifecycle*) : void
       return xs;
     }
   };
-  lc.RegisterService("RpcCollection::InByref::OutByref::IService", serviceObj);
+  lc.RegisterLocalService(rpc_GetIds()["RpcCollection::InByref::OutByref::IService"], serviceObj);
 }
 
 func Print5(xs : int[]) : string
@@ -119,7 +119,7 @@ func serviceMain(lc : IRpcLifecycle*) : (void)
             return xs;
         }
     };
-    lc.RegisterService("RpcCollection::InByref::OutByref::IService", serviceObj);
+    lc.RegisterLocalService(rpc_GetIds()["RpcCollection::InByref::OutByref::IService"], serviceObj);
 }
 
 func Print5(xs : int[]) : (string)
@@ -237,7 +237,7 @@ AST
             "writability": "Writable"
         }
     }, {
-        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 8, "column": 0, "index": 136}, "end": {"row": 26, "column": 0, "index": 615}, "codeIndex": -1}},
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 8, "column": 0, "index": 136}, "end": {"row": 26, "column": 0, "index": 634}, "codeIndex": -1}},
         "attributes": [],
         "name": { "value": "serviceMain", "codeRange": {"start": {"row": 8, "column": 5, "index": 141}, "end": {"row": 8, "column": 15, "index": 151}, "codeIndex": -1}},
         "anonymity": "Named",
@@ -259,7 +259,7 @@ AST
             "name": "Void"
         },
         "statement": {
-            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 9, "column": 0, "index": 182}, "end": {"row": 26, "column": 0, "index": 615}, "codeIndex": -1}},
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 9, "column": 0, "index": 182}, "end": {"row": 26, "column": 0, "index": 634}, "codeIndex": -1}},
             "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
             "statements": [{
                 "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 10, "column": 2, "index": 187}, "end": {"row": 24, "column": 3, "index": 531}, "codeIndex": -1}},
@@ -407,19 +407,31 @@ AST
                     "type": null
                 }
             }, {
-                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 25, "column": 2, "index": 536}, "end": {"row": 25, "column": 78, "index": 612}, "codeIndex": -1}},
+                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 25, "column": 2, "index": 536}, "end": {"row": 25, "column": 97, "index": 631}, "codeIndex": -1}},
                 "expression": {
-                    "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 25, "column": 2, "index": 536}, "end": {"row": 25, "column": 77, "index": 611}, "codeIndex": -1}},
+                    "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 25, "column": 2, "index": 536}, "end": {"row": 25, "column": 96, "index": 630}, "codeIndex": -1}},
                     "arguments": [{
-                        "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 25, "column": 21, "index": 555}, "end": {"row": 25, "column": 64, "index": 598}, "codeIndex": -1}},
-                        "value": { "value": "RpcCollection::InByref::OutByref::IService", "codeRange": {"start": {"row": 25, "column": 21, "index": 555}, "end": {"row": 25, "column": 64, "index": 598}, "codeIndex": -1}}
+                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 25, "column": 26, "index": 560}, "end": {"row": 25, "column": 83, "index": 617}, "codeIndex": -1}},
+                        "first": {
+                            "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 25, "column": 26, "index": 560}, "end": {"row": 25, "column": 37, "index": 571}, "codeIndex": -1}},
+                            "arguments": [],
+                            "function": {
+                                "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 25, "column": 26, "index": 560}, "end": {"row": 25, "column": 35, "index": 569}, "codeIndex": -1}},
+                                "name": { "value": "rpc_GetIds", "codeRange": {"start": {"row": 25, "column": 26, "index": 560}, "end": {"row": 25, "column": 35, "index": 569}, "codeIndex": -1}}
+                            }
+                        },
+                        "op": "Index",
+                        "second": {
+                            "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 25, "column": 39, "index": 573}, "end": {"row": 25, "column": 82, "index": 616}, "codeIndex": -1}},
+                            "value": { "value": "RpcCollection::InByref::OutByref::IService", "codeRange": {"start": {"row": 25, "column": 39, "index": 573}, "end": {"row": 25, "column": 82, "index": 616}, "codeIndex": -1}}
+                        }
                     }, {
-                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 25, "column": 67, "index": 601}, "end": {"row": 25, "column": 76, "index": 610}, "codeIndex": -1}},
-                        "name": { "value": "serviceObj", "codeRange": {"start": {"row": 25, "column": 67, "index": 601}, "end": {"row": 25, "column": 76, "index": 610}, "codeIndex": -1}}
+                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 25, "column": 86, "index": 620}, "end": {"row": 25, "column": 95, "index": 629}, "codeIndex": -1}},
+                        "name": { "value": "serviceObj", "codeRange": {"start": {"row": 25, "column": 86, "index": 620}, "end": {"row": 25, "column": 95, "index": 629}, "codeIndex": -1}}
                     }],
                     "function": {
-                        "$ast": { "type": "MemberExpression", "codeRange": {"start": {"row": 25, "column": 2, "index": 536}, "end": {"row": 25, "column": 19, "index": 553}, "codeIndex": -1}},
-                        "name": { "value": "RegisterService", "codeRange": {"start": {"row": 25, "column": 5, "index": 539}, "end": {"row": 25, "column": 19, "index": 553}, "codeIndex": -1}},
+                        "$ast": { "type": "MemberExpression", "codeRange": {"start": {"row": 25, "column": 2, "index": 536}, "end": {"row": 25, "column": 24, "index": 558}, "codeIndex": -1}},
+                        "name": { "value": "RegisterLocalService", "codeRange": {"start": {"row": 25, "column": 5, "index": 539}, "end": {"row": 25, "column": 24, "index": 558}, "codeIndex": -1}},
                         "parent": {
                             "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 25, "column": 2, "index": 536}, "end": {"row": 25, "column": 3, "index": 537}, "codeIndex": -1}},
                             "name": { "value": "lc", "codeRange": {"start": {"row": 25, "column": 2, "index": 536}, "end": {"row": 25, "column": 3, "index": 537}, "codeIndex": -1}}
@@ -429,19 +441,19 @@ AST
             }]
         }
     }, {
-        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 28, "column": 0, "index": 620}, "end": {"row": 31, "column": 0, "index": 712}, "codeIndex": -1}},
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 28, "column": 0, "index": 639}, "end": {"row": 31, "column": 0, "index": 731}, "codeIndex": -1}},
         "attributes": [],
-        "name": { "value": "Print5", "codeRange": {"start": {"row": 28, "column": 5, "index": 625}, "end": {"row": 28, "column": 10, "index": 630}, "codeIndex": -1}},
+        "name": { "value": "Print5", "codeRange": {"start": {"row": 28, "column": 5, "index": 644}, "end": {"row": 28, "column": 10, "index": 649}, "codeIndex": -1}},
         "anonymity": "Named",
         "arguments": [{
-            "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 28, "column": 12, "index": 632}, "end": {"row": 28, "column": 21, "index": 641}, "codeIndex": -1}},
+            "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 28, "column": 12, "index": 651}, "end": {"row": 28, "column": 21, "index": 660}, "codeIndex": -1}},
             "attributes": [],
-            "name": { "value": "xs", "codeRange": {"start": {"row": 28, "column": 12, "index": 632}, "end": {"row": 28, "column": 13, "index": 633}, "codeIndex": -1}},
+            "name": { "value": "xs", "codeRange": {"start": {"row": 28, "column": 12, "index": 651}, "end": {"row": 28, "column": 13, "index": 652}, "codeIndex": -1}},
             "type": {
-                "$ast": { "type": "MapType", "codeRange": {"start": {"row": 28, "column": 17, "index": 637}, "end": {"row": 28, "column": 21, "index": 641}, "codeIndex": -1}},
+                "$ast": { "type": "MapType", "codeRange": {"start": {"row": 28, "column": 17, "index": 656}, "end": {"row": 28, "column": 21, "index": 660}, "codeIndex": -1}},
                 "key": null,
                 "value": {
-                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 28, "column": 17, "index": 637}, "end": {"row": 28, "column": 19, "index": 639}, "codeIndex": -1}},
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 28, "column": 17, "index": 656}, "end": {"row": 28, "column": 19, "index": 658}, "codeIndex": -1}},
                     "name": "Int"
                 },
                 "writability": "Writable"
@@ -449,37 +461,37 @@ AST
         }],
         "functionKind": "Normal",
         "returnType": {
-            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 28, "column": 26, "index": 646}, "end": {"row": 28, "column": 31, "index": 651}, "codeIndex": -1}},
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 28, "column": 26, "index": 665}, "end": {"row": 28, "column": 31, "index": 670}, "codeIndex": -1}},
             "name": "String"
         },
         "statement": {
-            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 29, "column": 0, "index": 654}, "end": {"row": 31, "column": 0, "index": 712}, "codeIndex": -1}},
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 29, "column": 0, "index": 673}, "end": {"row": 31, "column": 0, "index": 731}, "codeIndex": -1}},
             "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
             "statements": [{
-                "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 30, "column": 2, "index": 659}, "end": {"row": 30, "column": 52, "index": 709}, "codeIndex": -1}},
+                "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 30, "column": 2, "index": 678}, "end": {"row": 30, "column": 52, "index": 728}, "codeIndex": -1}},
                 "expression": {
-                    "$ast": { "type": "FormatExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}},
+                    "$ast": { "type": "FormatExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}},
                     "expandedExpression": {
-                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}},
+                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}},
                         "first": {
-                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}},
+                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}},
                             "first": {
-                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}},
+                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}},
                                 "first": {
-                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}},
+                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}},
                                     "first": {
-                                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}},
+                                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}},
                                         "first": {
-                                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}},
+                                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}},
                                             "first": {
-                                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}},
+                                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}},
                                                 "first": {
-                                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}},
+                                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}},
                                                     "first": {
-                                                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}},
+                                                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}},
                                                         "first": {
-                                                            "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}},
-                                                            "value": { "value": "", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}}
+                                                            "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}},
+                                                            "value": { "value": "", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}}
                                                         },
                                                         "op": "FlagAnd",
                                                         "second": {
@@ -497,8 +509,8 @@ AST
                                                     },
                                                     "op": "FlagAnd",
                                                     "second": {
-                                                        "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}},
-                                                        "value": { "value": "", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}}
+                                                        "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}},
+                                                        "value": { "value": "", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}}
                                                     }
                                                 },
                                                 "op": "FlagAnd",
@@ -517,8 +529,8 @@ AST
                                             },
                                             "op": "FlagAnd",
                                             "second": {
-                                                "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}},
-                                                "value": { "value": "", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}}
+                                                "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}},
+                                                "value": { "value": "", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}}
                                             }
                                         },
                                         "op": "FlagAnd",
@@ -537,8 +549,8 @@ AST
                                     },
                                     "op": "FlagAnd",
                                     "second": {
-                                        "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}},
-                                        "value": { "value": "", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}}
+                                        "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}},
+                                        "value": { "value": "", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}}
                                     }
                                 },
                                 "op": "FlagAnd",
@@ -557,8 +569,8 @@ AST
                             },
                             "op": "FlagAnd",
                             "second": {
-                                "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}},
-                                "value": { "value": "", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}}
+                                "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}},
+                                "value": { "value": "", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}}
                             }
                         },
                         "op": "FlagAnd",
@@ -575,62 +587,62 @@ AST
                             }
                         }
                     },
-                    "value": { "value": "$(xs[0])$(xs[1])$(xs[2])$(xs[3])$(xs[4])", "codeRange": {"start": {"row": 30, "column": 9, "index": 666}, "end": {"row": 30, "column": 51, "index": 708}, "codeIndex": -1}}
+                    "value": { "value": "$(xs[0])$(xs[1])$(xs[2])$(xs[3])$(xs[4])", "codeRange": {"start": {"row": 30, "column": 9, "index": 685}, "end": {"row": 30, "column": 51, "index": 727}, "codeIndex": -1}}
                 }
             }]
         }
     }, {
-        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 33, "column": 0, "index": 717}, "end": {"row": 51, "column": 0, "index": 1196}, "codeIndex": -1}},
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 33, "column": 0, "index": 736}, "end": {"row": 51, "column": 0, "index": 1215}, "codeIndex": -1}},
         "attributes": [],
-        "name": { "value": "clientMain", "codeRange": {"start": {"row": 33, "column": 5, "index": 722}, "end": {"row": 33, "column": 14, "index": 731}, "codeIndex": -1}},
+        "name": { "value": "clientMain", "codeRange": {"start": {"row": 33, "column": 5, "index": 741}, "end": {"row": 33, "column": 14, "index": 750}, "codeIndex": -1}},
         "anonymity": "Named",
         "arguments": [{
-            "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 33, "column": 16, "index": 733}, "end": {"row": 33, "column": 34, "index": 751}, "codeIndex": -1}},
+            "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 33, "column": 16, "index": 752}, "end": {"row": 33, "column": 34, "index": 770}, "codeIndex": -1}},
             "attributes": [],
-            "name": { "value": "lc", "codeRange": {"start": {"row": 33, "column": 16, "index": 733}, "end": {"row": 33, "column": 17, "index": 734}, "codeIndex": -1}},
+            "name": { "value": "lc", "codeRange": {"start": {"row": 33, "column": 16, "index": 752}, "end": {"row": 33, "column": 17, "index": 753}, "codeIndex": -1}},
             "type": {
-                "$ast": { "type": "RawPointerType", "codeRange": {"start": {"row": 33, "column": 21, "index": 738}, "end": {"row": 33, "column": 34, "index": 751}, "codeIndex": -1}},
+                "$ast": { "type": "RawPointerType", "codeRange": {"start": {"row": 33, "column": 21, "index": 757}, "end": {"row": 33, "column": 34, "index": 770}, "codeIndex": -1}},
                 "element": {
-                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 33, "column": 21, "index": 738}, "end": {"row": 33, "column": 33, "index": 750}, "codeIndex": -1}},
-                    "name": { "value": "IRpcLifecycle", "codeRange": {"start": {"row": 33, "column": 21, "index": 738}, "end": {"row": 33, "column": 33, "index": 750}, "codeIndex": -1}}
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 33, "column": 21, "index": 757}, "end": {"row": 33, "column": 33, "index": 769}, "codeIndex": -1}},
+                    "name": { "value": "IRpcLifecycle", "codeRange": {"start": {"row": 33, "column": 21, "index": 757}, "end": {"row": 33, "column": 33, "index": 769}, "codeIndex": -1}}
                 }
             }
         }],
         "functionKind": "Normal",
         "returnType": {
-            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 33, "column": 39, "index": 756}, "end": {"row": 33, "column": 44, "index": 761}, "codeIndex": -1}},
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 33, "column": 39, "index": 775}, "end": {"row": 33, "column": 44, "index": 780}, "codeIndex": -1}},
             "name": "String"
         },
         "statement": {
-            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 34, "column": 0, "index": 764}, "end": {"row": 51, "column": 0, "index": 1196}, "codeIndex": -1}},
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 34, "column": 0, "index": 783}, "end": {"row": 51, "column": 0, "index": 1215}, "codeIndex": -1}},
             "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
             "statements": [{
-                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 35, "column": 2, "index": 769}, "end": {"row": 35, "column": 24, "index": 791}, "codeIndex": -1}},
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 35, "column": 2, "index": 788}, "end": {"row": 35, "column": 24, "index": 810}, "codeIndex": -1}},
                 "variable": {
-                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 35, "column": 2, "index": 769}, "end": {"row": 35, "column": 24, "index": 791}, "codeIndex": -1}},
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 35, "column": 2, "index": 788}, "end": {"row": 35, "column": 24, "index": 810}, "codeIndex": -1}},
                     "attributes": [],
-                    "name": { "value": "xsOrigin", "codeRange": {"start": {"row": 35, "column": 6, "index": 773}, "end": {"row": 35, "column": 13, "index": 780}, "codeIndex": -1}},
+                    "name": { "value": "xsOrigin", "codeRange": {"start": {"row": 35, "column": 6, "index": 792}, "end": {"row": 35, "column": 13, "index": 799}, "codeIndex": -1}},
                     "expression": {
-                        "$ast": { "type": "ConstructorExpression", "codeRange": {"start": {"row": 35, "column": 17, "index": 784}, "end": {"row": 35, "column": 23, "index": 790}, "codeIndex": -1}},
+                        "$ast": { "type": "ConstructorExpression", "codeRange": {"start": {"row": 35, "column": 17, "index": 803}, "end": {"row": 35, "column": 23, "index": 809}, "codeIndex": -1}},
                         "arguments": [{
-                            "$ast": { "type": "ConstructorArgument", "codeRange": {"start": {"row": 35, "column": 18, "index": 785}, "end": {"row": 35, "column": 18, "index": 785}, "codeIndex": -1}},
+                            "$ast": { "type": "ConstructorArgument", "codeRange": {"start": {"row": 35, "column": 18, "index": 804}, "end": {"row": 35, "column": 18, "index": 804}, "codeIndex": -1}},
                             "key": {
-                                "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 35, "column": 18, "index": 785}, "end": {"row": 35, "column": 18, "index": 785}, "codeIndex": -1}},
-                                "value": { "value": "1", "codeRange": {"start": {"row": 35, "column": 18, "index": 785}, "end": {"row": 35, "column": 18, "index": 785}, "codeIndex": -1}}
+                                "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 35, "column": 18, "index": 804}, "end": {"row": 35, "column": 18, "index": 804}, "codeIndex": -1}},
+                                "value": { "value": "1", "codeRange": {"start": {"row": 35, "column": 18, "index": 804}, "end": {"row": 35, "column": 18, "index": 804}, "codeIndex": -1}}
                             },
                             "value": null
                         }, {
-                            "$ast": { "type": "ConstructorArgument", "codeRange": {"start": {"row": 35, "column": 20, "index": 787}, "end": {"row": 35, "column": 20, "index": 787}, "codeIndex": -1}},
+                            "$ast": { "type": "ConstructorArgument", "codeRange": {"start": {"row": 35, "column": 20, "index": 806}, "end": {"row": 35, "column": 20, "index": 806}, "codeIndex": -1}},
                             "key": {
-                                "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 35, "column": 20, "index": 787}, "end": {"row": 35, "column": 20, "index": 787}, "codeIndex": -1}},
-                                "value": { "value": "2", "codeRange": {"start": {"row": 35, "column": 20, "index": 787}, "end": {"row": 35, "column": 20, "index": 787}, "codeIndex": -1}}
+                                "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 35, "column": 20, "index": 806}, "end": {"row": 35, "column": 20, "index": 806}, "codeIndex": -1}},
+                                "value": { "value": "2", "codeRange": {"start": {"row": 35, "column": 20, "index": 806}, "end": {"row": 35, "column": 20, "index": 806}, "codeIndex": -1}}
                             },
                             "value": null
                         }, {
-                            "$ast": { "type": "ConstructorArgument", "codeRange": {"start": {"row": 35, "column": 22, "index": 789}, "end": {"row": 35, "column": 22, "index": 789}, "codeIndex": -1}},
+                            "$ast": { "type": "ConstructorArgument", "codeRange": {"start": {"row": 35, "column": 22, "index": 808}, "end": {"row": 35, "column": 22, "index": 808}, "codeIndex": -1}},
                             "key": {
-                                "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 35, "column": 22, "index": 789}, "end": {"row": 35, "column": 22, "index": 789}, "codeIndex": -1}},
-                                "value": { "value": "3", "codeRange": {"start": {"row": 35, "column": 22, "index": 789}, "end": {"row": 35, "column": 22, "index": 789}, "codeIndex": -1}}
+                                "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 35, "column": 22, "index": 808}, "end": {"row": 35, "column": 22, "index": 808}, "codeIndex": -1}},
+                                "value": { "value": "3", "codeRange": {"start": {"row": 35, "column": 22, "index": 808}, "end": {"row": 35, "column": 22, "index": 808}, "codeIndex": -1}}
                             },
                             "value": null
                         }]
@@ -638,134 +650,134 @@ AST
                     "type": null
                 }
             }, {
-                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 36, "column": 2, "index": 796}, "end": {"row": 36, "column": 96, "index": 890}, "codeIndex": -1}},
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 36, "column": 2, "index": 815}, "end": {"row": 36, "column": 96, "index": 909}, "codeIndex": -1}},
                 "variable": {
-                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 36, "column": 2, "index": 796}, "end": {"row": 36, "column": 96, "index": 890}, "codeIndex": -1}},
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 36, "column": 2, "index": 815}, "end": {"row": 36, "column": 96, "index": 909}, "codeIndex": -1}},
                     "attributes": [],
-                    "name": { "value": "service", "codeRange": {"start": {"row": 36, "column": 6, "index": 800}, "end": {"row": 36, "column": 12, "index": 806}, "codeIndex": -1}},
+                    "name": { "value": "service", "codeRange": {"start": {"row": 36, "column": 6, "index": 819}, "end": {"row": 36, "column": 12, "index": 825}, "codeIndex": -1}},
                     "expression": {
-                        "$ast": { "type": "TypeCastingExpression", "codeRange": {"start": {"row": 36, "column": 16, "index": 810}, "end": {"row": 36, "column": 95, "index": 889}, "codeIndex": -1}},
+                        "$ast": { "type": "TypeCastingExpression", "codeRange": {"start": {"row": 36, "column": 16, "index": 829}, "end": {"row": 36, "column": 95, "index": 908}, "codeIndex": -1}},
                         "expression": {
-                            "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 36, "column": 33, "index": 827}, "end": {"row": 36, "column": 95, "index": 889}, "codeIndex": -1}},
+                            "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 36, "column": 33, "index": 846}, "end": {"row": 36, "column": 95, "index": 908}, "codeIndex": -1}},
                             "arguments": [{
-                                "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 36, "column": 51, "index": 845}, "end": {"row": 36, "column": 94, "index": 888}, "codeIndex": -1}},
-                                "value": { "value": "RpcCollection::InByref::OutByref::IService", "codeRange": {"start": {"row": 36, "column": 51, "index": 845}, "end": {"row": 36, "column": 94, "index": 888}, "codeIndex": -1}}
+                                "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 36, "column": 51, "index": 864}, "end": {"row": 36, "column": 94, "index": 907}, "codeIndex": -1}},
+                                "value": { "value": "RpcCollection::InByref::OutByref::IService", "codeRange": {"start": {"row": 36, "column": 51, "index": 864}, "end": {"row": 36, "column": 94, "index": 907}, "codeIndex": -1}}
                             }],
                             "function": {
-                                "$ast": { "type": "MemberExpression", "codeRange": {"start": {"row": 36, "column": 33, "index": 827}, "end": {"row": 36, "column": 49, "index": 843}, "codeIndex": -1}},
-                                "name": { "value": "RequestService", "codeRange": {"start": {"row": 36, "column": 36, "index": 830}, "end": {"row": 36, "column": 49, "index": 843}, "codeIndex": -1}},
+                                "$ast": { "type": "MemberExpression", "codeRange": {"start": {"row": 36, "column": 33, "index": 846}, "end": {"row": 36, "column": 49, "index": 862}, "codeIndex": -1}},
+                                "name": { "value": "RequestService", "codeRange": {"start": {"row": 36, "column": 36, "index": 849}, "end": {"row": 36, "column": 49, "index": 862}, "codeIndex": -1}},
                                 "parent": {
-                                    "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 36, "column": 33, "index": 827}, "end": {"row": 36, "column": 34, "index": 828}, "codeIndex": -1}},
-                                    "name": { "value": "lc", "codeRange": {"start": {"row": 36, "column": 33, "index": 827}, "end": {"row": 36, "column": 34, "index": 828}, "codeIndex": -1}}
+                                    "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 36, "column": 33, "index": 846}, "end": {"row": 36, "column": 34, "index": 847}, "codeIndex": -1}},
+                                    "name": { "value": "lc", "codeRange": {"start": {"row": 36, "column": 33, "index": 846}, "end": {"row": 36, "column": 34, "index": 847}, "codeIndex": -1}}
                                 }
                             }
                         },
                         "strategy": "Strong",
                         "type": {
-                            "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 36, "column": 21, "index": 815}, "end": {"row": 36, "column": 31, "index": 825}, "codeIndex": -1}},
+                            "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 36, "column": 21, "index": 834}, "end": {"row": 36, "column": 31, "index": 844}, "codeIndex": -1}},
                             "element": {
-                                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 36, "column": 22, "index": 816}, "end": {"row": 36, "column": 29, "index": 823}, "codeIndex": -1}},
-                                "name": { "value": "IService", "codeRange": {"start": {"row": 36, "column": 22, "index": 816}, "end": {"row": 36, "column": 29, "index": 823}, "codeIndex": -1}}
+                                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 36, "column": 22, "index": 835}, "end": {"row": 36, "column": 29, "index": 842}, "codeIndex": -1}},
+                                "name": { "value": "IService", "codeRange": {"start": {"row": 36, "column": 22, "index": 835}, "end": {"row": 36, "column": 29, "index": 842}, "codeIndex": -1}}
                             }
                         }
                     },
                     "type": null
                 }
             }, {
-                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 37, "column": 2, "index": 895}, "end": {"row": 37, "column": 35, "index": 928}, "codeIndex": -1}},
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 37, "column": 2, "index": 914}, "end": {"row": 37, "column": 35, "index": 947}, "codeIndex": -1}},
                 "variable": {
-                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 37, "column": 2, "index": 895}, "end": {"row": 37, "column": 35, "index": 928}, "codeIndex": -1}},
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 37, "column": 2, "index": 914}, "end": {"row": 37, "column": 35, "index": 947}, "codeIndex": -1}},
                     "attributes": [],
-                    "name": { "value": "xs", "codeRange": {"start": {"row": 37, "column": 6, "index": 899}, "end": {"row": 37, "column": 7, "index": 900}, "codeIndex": -1}},
+                    "name": { "value": "xs", "codeRange": {"start": {"row": 37, "column": 6, "index": 918}, "end": {"row": 37, "column": 7, "index": 919}, "codeIndex": -1}},
                     "expression": {
-                        "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 37, "column": 11, "index": 904}, "end": {"row": 37, "column": 34, "index": 927}, "codeIndex": -1}},
+                        "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 37, "column": 11, "index": 923}, "end": {"row": 37, "column": 34, "index": 946}, "codeIndex": -1}},
                         "arguments": [{
-                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 37, "column": 26, "index": 919}, "end": {"row": 37, "column": 33, "index": 926}, "codeIndex": -1}},
-                            "name": { "value": "xsOrigin", "codeRange": {"start": {"row": 37, "column": 26, "index": 919}, "end": {"row": 37, "column": 33, "index": 926}, "codeIndex": -1}}
+                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 37, "column": 26, "index": 938}, "end": {"row": 37, "column": 33, "index": 945}, "codeIndex": -1}},
+                            "name": { "value": "xsOrigin", "codeRange": {"start": {"row": 37, "column": 26, "index": 938}, "end": {"row": 37, "column": 33, "index": 945}, "codeIndex": -1}}
                         }],
                         "function": {
-                            "$ast": { "type": "MemberExpression", "codeRange": {"start": {"row": 37, "column": 11, "index": 904}, "end": {"row": 37, "column": 24, "index": 917}, "codeIndex": -1}},
-                            "name": { "value": "DoList", "codeRange": {"start": {"row": 37, "column": 19, "index": 912}, "end": {"row": 37, "column": 24, "index": 917}, "codeIndex": -1}},
+                            "$ast": { "type": "MemberExpression", "codeRange": {"start": {"row": 37, "column": 11, "index": 923}, "end": {"row": 37, "column": 24, "index": 936}, "codeIndex": -1}},
+                            "name": { "value": "DoList", "codeRange": {"start": {"row": 37, "column": 19, "index": 931}, "end": {"row": 37, "column": 24, "index": 936}, "codeIndex": -1}},
                             "parent": {
-                                "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 37, "column": 11, "index": 904}, "end": {"row": 37, "column": 17, "index": 910}, "codeIndex": -1}},
-                                "name": { "value": "service", "codeRange": {"start": {"row": 37, "column": 11, "index": 904}, "end": {"row": 37, "column": 17, "index": 910}, "codeIndex": -1}}
+                                "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 37, "column": 11, "index": 923}, "end": {"row": 37, "column": 17, "index": 929}, "codeIndex": -1}},
+                                "name": { "value": "service", "codeRange": {"start": {"row": 37, "column": 11, "index": 923}, "end": {"row": 37, "column": 17, "index": 929}, "codeIndex": -1}}
                             }
                         }
                     },
                     "type": null
                 }
             }, {
-                "$ast": { "type": "IfStatement", "codeRange": {"start": {"row": 39, "column": 2, "index": 935}, "end": {"row": 42, "column": 2, "index": 1047}, "codeIndex": -1}},
+                "$ast": { "type": "IfStatement", "codeRange": {"start": {"row": 39, "column": 2, "index": 954}, "end": {"row": 42, "column": 2, "index": 1066}, "codeIndex": -1}},
                 "expression": {
-                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 39, "column": 6, "index": 939}, "end": {"row": 39, "column": 19, "index": 952}, "codeIndex": -1}},
+                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 39, "column": 6, "index": 958}, "end": {"row": 39, "column": 19, "index": 971}, "codeIndex": -1}},
                     "first": {
-                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 39, "column": 6, "index": 939}, "end": {"row": 39, "column": 7, "index": 940}, "codeIndex": -1}},
-                        "name": { "value": "xs", "codeRange": {"start": {"row": 39, "column": 6, "index": 939}, "end": {"row": 39, "column": 7, "index": 940}, "codeIndex": -1}}
+                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 39, "column": 6, "index": 958}, "end": {"row": 39, "column": 7, "index": 959}, "codeIndex": -1}},
+                        "name": { "value": "xs", "codeRange": {"start": {"row": 39, "column": 6, "index": 958}, "end": {"row": 39, "column": 7, "index": 959}, "codeIndex": -1}}
                     },
                     "op": "NE",
                     "second": {
-                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 39, "column": 12, "index": 945}, "end": {"row": 39, "column": 19, "index": 952}, "codeIndex": -1}},
-                        "name": { "value": "xsOrigin", "codeRange": {"start": {"row": 39, "column": 12, "index": 945}, "end": {"row": 39, "column": 19, "index": 952}, "codeIndex": -1}}
+                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 39, "column": 12, "index": 964}, "end": {"row": 39, "column": 19, "index": 971}, "codeIndex": -1}},
+                        "name": { "value": "xsOrigin", "codeRange": {"start": {"row": 39, "column": 12, "index": 964}, "end": {"row": 39, "column": 19, "index": 971}, "codeIndex": -1}}
                     }
                 },
                 "falseBranch": null,
                 "name": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
                 "trueBranch": {
-                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 40, "column": 2, "index": 958}, "end": {"row": 42, "column": 2, "index": 1047}, "codeIndex": -1}},
+                    "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 40, "column": 2, "index": 977}, "end": {"row": 42, "column": 2, "index": 1066}, "codeIndex": -1}},
                     "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
                     "statements": [{
-                        "$ast": { "type": "RaiseExceptionStatement", "codeRange": {"start": {"row": 41, "column": 4, "index": 965}, "end": {"row": 41, "column": 81, "index": 1042}, "codeIndex": -1}},
+                        "$ast": { "type": "RaiseExceptionStatement", "codeRange": {"start": {"row": 41, "column": 4, "index": 984}, "end": {"row": 41, "column": 81, "index": 1061}, "codeIndex": -1}},
                         "expression": {
-                            "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 41, "column": 10, "index": 971}, "end": {"row": 41, "column": 80, "index": 1041}, "codeIndex": -1}},
-                            "value": { "value": "Return value xs should be the original parameter object in clientMain", "codeRange": {"start": {"row": 41, "column": 10, "index": 971}, "end": {"row": 41, "column": 80, "index": 1041}, "codeIndex": -1}}
+                            "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 41, "column": 10, "index": 990}, "end": {"row": 41, "column": 80, "index": 1060}, "codeIndex": -1}},
+                            "value": { "value": "Return value xs should be the original parameter object in clientMain", "codeRange": {"start": {"row": 41, "column": 10, "index": 990}, "end": {"row": 41, "column": 80, "index": 1060}, "codeIndex": -1}}
                         }
                     }]
                 },
                 "type": null
             }, {
-                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 44, "column": 2, "index": 1054}, "end": {"row": 44, "column": 19, "index": 1071}, "codeIndex": -1}},
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 44, "column": 2, "index": 1073}, "end": {"row": 44, "column": 19, "index": 1090}, "codeIndex": -1}},
                 "variable": {
-                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 44, "column": 2, "index": 1054}, "end": {"row": 44, "column": 19, "index": 1071}, "codeIndex": -1}},
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 44, "column": 2, "index": 1073}, "end": {"row": 44, "column": 19, "index": 1090}, "codeIndex": -1}},
                     "attributes": [],
-                    "name": { "value": "xsClient", "codeRange": {"start": {"row": 44, "column": 6, "index": 1058}, "end": {"row": 44, "column": 13, "index": 1065}, "codeIndex": -1}},
+                    "name": { "value": "xsClient", "codeRange": {"start": {"row": 44, "column": 6, "index": 1077}, "end": {"row": 44, "column": 13, "index": 1084}, "codeIndex": -1}},
                     "expression": {
-                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 44, "column": 17, "index": 1069}, "end": {"row": 44, "column": 18, "index": 1070}, "codeIndex": -1}},
-                        "name": { "value": "xs", "codeRange": {"start": {"row": 44, "column": 17, "index": 1069}, "end": {"row": 44, "column": 18, "index": 1070}, "codeIndex": -1}}
+                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 44, "column": 17, "index": 1088}, "end": {"row": 44, "column": 18, "index": 1089}, "codeIndex": -1}},
+                        "name": { "value": "xs", "codeRange": {"start": {"row": 44, "column": 17, "index": 1088}, "end": {"row": 44, "column": 18, "index": 1089}, "codeIndex": -1}}
                     },
                     "type": null
                 }
             }, {
-                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 45, "column": 2, "index": 1076}, "end": {"row": 45, "column": 11, "index": 1085}, "codeIndex": -1}},
+                "$ast": { "type": "ExpressionStatement", "codeRange": {"start": {"row": 45, "column": 2, "index": 1095}, "end": {"row": 45, "column": 11, "index": 1104}, "codeIndex": -1}},
                 "expression": {
-                    "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 45, "column": 2, "index": 1076}, "end": {"row": 45, "column": 10, "index": 1084}, "codeIndex": -1}},
+                    "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 45, "column": 2, "index": 1095}, "end": {"row": 45, "column": 10, "index": 1103}, "codeIndex": -1}},
                     "arguments": [{
-                        "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 45, "column": 9, "index": 1083}, "end": {"row": 45, "column": 9, "index": 1083}, "codeIndex": -1}},
-                        "value": { "value": "5", "codeRange": {"start": {"row": 45, "column": 9, "index": 1083}, "end": {"row": 45, "column": 9, "index": 1083}, "codeIndex": -1}}
+                        "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 45, "column": 9, "index": 1102}, "end": {"row": 45, "column": 9, "index": 1102}, "codeIndex": -1}},
+                        "value": { "value": "5", "codeRange": {"start": {"row": 45, "column": 9, "index": 1102}, "end": {"row": 45, "column": 9, "index": 1102}, "codeIndex": -1}}
                     }],
                     "function": {
-                        "$ast": { "type": "MemberExpression", "codeRange": {"start": {"row": 45, "column": 2, "index": 1076}, "end": {"row": 45, "column": 7, "index": 1081}, "codeIndex": -1}},
-                        "name": { "value": "Add", "codeRange": {"start": {"row": 45, "column": 5, "index": 1079}, "end": {"row": 45, "column": 7, "index": 1081}, "codeIndex": -1}},
+                        "$ast": { "type": "MemberExpression", "codeRange": {"start": {"row": 45, "column": 2, "index": 1095}, "end": {"row": 45, "column": 7, "index": 1100}, "codeIndex": -1}},
+                        "name": { "value": "Add", "codeRange": {"start": {"row": 45, "column": 5, "index": 1098}, "end": {"row": 45, "column": 7, "index": 1100}, "codeIndex": -1}},
                         "parent": {
-                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 45, "column": 2, "index": 1076}, "end": {"row": 45, "column": 3, "index": 1077}, "codeIndex": -1}},
-                            "name": { "value": "xs", "codeRange": {"start": {"row": 45, "column": 2, "index": 1076}, "end": {"row": 45, "column": 3, "index": 1077}, "codeIndex": -1}}
+                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 45, "column": 2, "index": 1095}, "end": {"row": 45, "column": 3, "index": 1096}, "codeIndex": -1}},
+                            "name": { "value": "xs", "codeRange": {"start": {"row": 45, "column": 2, "index": 1095}, "end": {"row": 45, "column": 3, "index": 1096}, "codeIndex": -1}}
                         }
                     }
                 }
             }, {
-                "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 47, "column": 2, "index": 1092}, "end": {"row": 50, "column": 28, "index": 1193}, "codeIndex": -1}},
+                "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 47, "column": 2, "index": 1111}, "end": {"row": 50, "column": 28, "index": 1212}, "codeIndex": -1}},
                 "expression": {
-                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 48, "column": 4, "index": 1104}, "end": {"row": 50, "column": 27, "index": 1192}, "codeIndex": -1}},
+                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 48, "column": 4, "index": 1123}, "end": {"row": 50, "column": 27, "index": 1211}, "codeIndex": -1}},
                     "first": {
-                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 48, "column": 4, "index": 1104}, "end": {"row": 49, "column": 28, "index": 1160}, "codeIndex": -1}},
+                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 48, "column": 4, "index": 1123}, "end": {"row": 49, "column": 28, "index": 1179}, "codeIndex": -1}},
                         "first": {
-                            "$ast": { "type": "FormatExpression", "codeRange": {"start": {"row": 48, "column": 4, "index": 1104}, "end": {"row": 48, "column": 27, "index": 1127}, "codeIndex": -1}},
+                            "$ast": { "type": "FormatExpression", "codeRange": {"start": {"row": 48, "column": 4, "index": 1123}, "end": {"row": 48, "column": 27, "index": 1146}, "codeIndex": -1}},
                             "expandedExpression": {
-                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 48, "column": 4, "index": 1104}, "end": {"row": 48, "column": 27, "index": 1127}, "codeIndex": -1}},
+                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 48, "column": 4, "index": 1123}, "end": {"row": 48, "column": 27, "index": 1146}, "codeIndex": -1}},
                                 "first": {
-                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 48, "column": 4, "index": 1104}, "end": {"row": 48, "column": 27, "index": 1127}, "codeIndex": -1}},
+                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 48, "column": 4, "index": 1123}, "end": {"row": 48, "column": 27, "index": 1146}, "codeIndex": -1}},
                                     "first": {
-                                        "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 48, "column": 4, "index": 1104}, "end": {"row": 48, "column": 27, "index": 1127}, "codeIndex": -1}},
-                                        "value": { "value": "[", "codeRange": {"start": {"row": 48, "column": 4, "index": 1104}, "end": {"row": 48, "column": 27, "index": 1127}, "codeIndex": -1}}
+                                        "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 48, "column": 4, "index": 1123}, "end": {"row": 48, "column": 27, "index": 1146}, "codeIndex": -1}},
+                                        "value": { "value": "[", "codeRange": {"start": {"row": 48, "column": 4, "index": 1123}, "end": {"row": 48, "column": 27, "index": 1146}, "codeIndex": -1}}
                                     },
                                     "op": "FlagAnd",
                                     "second": {
@@ -782,22 +794,22 @@ AST
                                 },
                                 "op": "FlagAnd",
                                 "second": {
-                                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 48, "column": 4, "index": 1104}, "end": {"row": 48, "column": 27, "index": 1127}, "codeIndex": -1}},
-                                    "value": { "value": "]", "codeRange": {"start": {"row": 48, "column": 4, "index": 1104}, "end": {"row": 48, "column": 27, "index": 1127}, "codeIndex": -1}}
+                                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 48, "column": 4, "index": 1123}, "end": {"row": 48, "column": 27, "index": 1146}, "codeIndex": -1}},
+                                    "value": { "value": "]", "codeRange": {"start": {"row": 48, "column": 4, "index": 1123}, "end": {"row": 48, "column": 27, "index": 1146}, "codeIndex": -1}}
                                 }
                             },
-                            "value": { "value": "[$(Print5(xsOrigin))]", "codeRange": {"start": {"row": 48, "column": 4, "index": 1104}, "end": {"row": 48, "column": 27, "index": 1127}, "codeIndex": -1}}
+                            "value": { "value": "[$(Print5(xsOrigin))]", "codeRange": {"start": {"row": 48, "column": 4, "index": 1123}, "end": {"row": 48, "column": 27, "index": 1146}, "codeIndex": -1}}
                         },
                         "op": "FlagAnd",
                         "second": {
-                            "$ast": { "type": "FormatExpression", "codeRange": {"start": {"row": 49, "column": 4, "index": 1136}, "end": {"row": 49, "column": 28, "index": 1160}, "codeIndex": -1}},
+                            "$ast": { "type": "FormatExpression", "codeRange": {"start": {"row": 49, "column": 4, "index": 1155}, "end": {"row": 49, "column": 28, "index": 1179}, "codeIndex": -1}},
                             "expandedExpression": {
-                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 49, "column": 4, "index": 1136}, "end": {"row": 49, "column": 28, "index": 1160}, "codeIndex": -1}},
+                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 49, "column": 4, "index": 1155}, "end": {"row": 49, "column": 28, "index": 1179}, "codeIndex": -1}},
                                 "first": {
-                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 49, "column": 4, "index": 1136}, "end": {"row": 49, "column": 28, "index": 1160}, "codeIndex": -1}},
+                                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 49, "column": 4, "index": 1155}, "end": {"row": 49, "column": 28, "index": 1179}, "codeIndex": -1}},
                                     "first": {
-                                        "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 49, "column": 4, "index": 1136}, "end": {"row": 49, "column": 28, "index": 1160}, "codeIndex": -1}},
-                                        "value": { "value": "[", "codeRange": {"start": {"row": 49, "column": 4, "index": 1136}, "end": {"row": 49, "column": 28, "index": 1160}, "codeIndex": -1}}
+                                        "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 49, "column": 4, "index": 1155}, "end": {"row": 49, "column": 28, "index": 1179}, "codeIndex": -1}},
+                                        "value": { "value": "[", "codeRange": {"start": {"row": 49, "column": 4, "index": 1155}, "end": {"row": 49, "column": 28, "index": 1179}, "codeIndex": -1}}
                                     },
                                     "op": "FlagAnd",
                                     "second": {
@@ -814,23 +826,23 @@ AST
                                 },
                                 "op": "FlagAnd",
                                 "second": {
-                                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 49, "column": 4, "index": 1136}, "end": {"row": 49, "column": 28, "index": 1160}, "codeIndex": -1}},
-                                    "value": { "value": "]", "codeRange": {"start": {"row": 49, "column": 4, "index": 1136}, "end": {"row": 49, "column": 28, "index": 1160}, "codeIndex": -1}}
+                                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 49, "column": 4, "index": 1155}, "end": {"row": 49, "column": 28, "index": 1179}, "codeIndex": -1}},
+                                    "value": { "value": "]", "codeRange": {"start": {"row": 49, "column": 4, "index": 1155}, "end": {"row": 49, "column": 28, "index": 1179}, "codeIndex": -1}}
                                 }
                             },
-                            "value": { "value": "[$(Print5(xsService))]", "codeRange": {"start": {"row": 49, "column": 4, "index": 1136}, "end": {"row": 49, "column": 28, "index": 1160}, "codeIndex": -1}}
+                            "value": { "value": "[$(Print5(xsService))]", "codeRange": {"start": {"row": 49, "column": 4, "index": 1155}, "end": {"row": 49, "column": 28, "index": 1179}, "codeIndex": -1}}
                         }
                     },
                     "op": "FlagAnd",
                     "second": {
-                        "$ast": { "type": "FormatExpression", "codeRange": {"start": {"row": 50, "column": 4, "index": 1169}, "end": {"row": 50, "column": 27, "index": 1192}, "codeIndex": -1}},
+                        "$ast": { "type": "FormatExpression", "codeRange": {"start": {"row": 50, "column": 4, "index": 1188}, "end": {"row": 50, "column": 27, "index": 1211}, "codeIndex": -1}},
                         "expandedExpression": {
-                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 50, "column": 4, "index": 1169}, "end": {"row": 50, "column": 27, "index": 1192}, "codeIndex": -1}},
+                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 50, "column": 4, "index": 1188}, "end": {"row": 50, "column": 27, "index": 1211}, "codeIndex": -1}},
                             "first": {
-                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 50, "column": 4, "index": 1169}, "end": {"row": 50, "column": 27, "index": 1192}, "codeIndex": -1}},
+                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 50, "column": 4, "index": 1188}, "end": {"row": 50, "column": 27, "index": 1211}, "codeIndex": -1}},
                                 "first": {
-                                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 50, "column": 4, "index": 1169}, "end": {"row": 50, "column": 27, "index": 1192}, "codeIndex": -1}},
-                                    "value": { "value": "[", "codeRange": {"start": {"row": 50, "column": 4, "index": 1169}, "end": {"row": 50, "column": 27, "index": 1192}, "codeIndex": -1}}
+                                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 50, "column": 4, "index": 1188}, "end": {"row": 50, "column": 27, "index": 1211}, "codeIndex": -1}},
+                                    "value": { "value": "[", "codeRange": {"start": {"row": 50, "column": 4, "index": 1188}, "end": {"row": 50, "column": 27, "index": 1211}, "codeIndex": -1}}
                                 },
                                 "op": "FlagAnd",
                                 "second": {
@@ -847,11 +859,11 @@ AST
                             },
                             "op": "FlagAnd",
                             "second": {
-                                "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 50, "column": 4, "index": 1169}, "end": {"row": 50, "column": 27, "index": 1192}, "codeIndex": -1}},
-                                "value": { "value": "]", "codeRange": {"start": {"row": 50, "column": 4, "index": 1169}, "end": {"row": 50, "column": 27, "index": 1192}, "codeIndex": -1}}
+                                "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 50, "column": 4, "index": 1188}, "end": {"row": 50, "column": 27, "index": 1211}, "codeIndex": -1}},
+                                "value": { "value": "]", "codeRange": {"start": {"row": 50, "column": 4, "index": 1188}, "end": {"row": 50, "column": 27, "index": 1211}, "codeIndex": -1}}
                             }
                         },
-                        "value": { "value": "[$(Print5(xsClient))]", "codeRange": {"start": {"row": 50, "column": 4, "index": 1169}, "end": {"row": 50, "column": 27, "index": 1192}, "codeIndex": -1}}
+                        "value": { "value": "[$(Print5(xsClient))]", "codeRange": {"start": {"row": 50, "column": 4, "index": 1188}, "end": {"row": 50, "column": 27, "index": 1211}, "codeIndex": -1}}
                     }
                 }
             }]
