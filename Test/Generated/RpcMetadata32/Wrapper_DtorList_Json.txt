@@ -123,27 +123,6 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                 _lc.LocalObjectUnhold(ref, remoteClientId);
             }
         }
-
-        override func RegisterService(typeId : int, service : system::Interface^) : (void)
-        {
-            {
-                if (rpcwrapper_IsCtorInterfaceTypeId(typeId))
-                {
-                    _lc.Dispatcher.RegisterService(typeId, _lc.PtrToRef(service));
-                }
-                else
-                {
-                    if (rpcwrapper_IsInterfaceTypeId(typeId))
-                    {
-                        raise "RPC service type id is not an @rpc:Ctor interface.";
-                    }
-                    else
-                    {
-                        raise "RPC service type id does not exist.";
-                    }
-                }
-            }
-        }
     };
 }
 

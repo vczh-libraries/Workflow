@@ -264,7 +264,7 @@ interface system::IRpcDispatcher : system::Interface {
 @FullName:vl::rpc_controller::IRpcJsonMessageDispatcher
 interface system::IRpcJsonMessageDispatcher : system::Interface {
     function AllocateRequestId() : system::Int32;
-    function OnJsonRequest(message : system::JsonNode^) : system::JsonNode^;
+    function OnJsonRequest(message : system::JsonNode^, broadcast : system::Boolean) : system::JsonNode^;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcJsonMessageDispatcher>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcJsonMessageDispatcher>::Create)
@@ -371,7 +371,6 @@ interface system::IRpcObjectOps : system::Interface {
     function EndInvokeMethod(slot : system::Int32) : system::Void;
     function InvokeMethod(ref : system::RpcObjectReference, methodId : system::Int32, arguments : system::Array^) : system::Object;
     function ObjectHold(ref : system::RpcObjectReference, remoteClientId : system::Int32, hold : system::Boolean) : system::Void;
-    function RegisterService(typeId : system::Int32, service : system::Interface^) : system::Void;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectOps>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectOps>::Create)
@@ -380,13 +379,9 @@ interface system::IRpcObjectOps : system::Interface {
 
 @FullName:vl::rpc_controller::IRpcOperations
 interface system::IRpcOperations : system::Interface {
-    property ListEventOps : system::IRpcListEventOps* { get:GetListEventOps }
-    property ListOps : system::IRpcListOps* { get:GetListOps }
     property ObjectEventOps : system::IRpcObjectEventOps* { get:GetObjectEventOps }
     property ObjectOps : system::IRpcObjectOps* { get:GetObjectOps }
 
-    function GetListEventOps() : system::IRpcListEventOps*;
-    function GetListOps() : system::IRpcListOps*;
     function GetObjectEventOps() : system::IRpcObjectEventOps*;
     function GetObjectOps() : system::IRpcObjectOps*;
 
