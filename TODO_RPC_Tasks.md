@@ -8,6 +8,14 @@ Follow `REPO-ROOT/.github/Rules/document-and-commit.md` to finish the work.
 
 Delete `Test/Resources/Runtime`, `IndexRuntime.txt`, `TestRuntimeCompiler.cpp` and all related stuff, including generated files. I would like to remove this test file completely.
 
+Remove `RpcLifecycleBase::dispatcher`, all access should go through `GetDispatcher`, which should already be the case.
+Remove `RpcLifeCycleBase::GetDispatcher` overloading, as it becomes useless when `dispatcher` is removed.
+Add `bool broadcast` to `IRpcJsonMessageDispatcher::OnJsonRequest`, set it to true when calling from `InvokeEvent`.
+
+In `Rpc.d.ts`:
+- Remove `targetClientId` from `IObjectOps_RegisterService_Request` as it is a broadcast request.
+- Rename `IObjectEventOps_InvokeEvent_Response` to `Broadcast_Response`, all broadcast request should return this.
+
 ## Task 2
 
 Add `Test/Apps/ChatBot` folder, with a Workflow module `ChatAPI.txt`:
@@ -52,7 +60,10 @@ You are going to add `Test/Generated/Apps/ChatBot/Cpp` to the import folder so a
 
 It hosts an `localhost:8888/WorkflowChatBot` using `vl::inter_process::HttpServer`.
 A `RpcChat` channel is used.
-When the server receives a client, if it does not implement a `RpcChat` channel, reject it immediately.
+Register a local client for RPC, remember its client id.
+When the server receives a client:
+- if it does not implement a `RpcChat` channel, reject it immediately.
+- otherwise, send the local client id back.
 Implement `IChatServer`, register it has a server so that it is exposed to all client.
 - `AddServer` maintains a name with a `IChatClient^` in a `Dictionary`. If the name already exists, returns false.
   - Only when succeeded triggers `OnUserAdded` on all clients.
@@ -61,8 +72,15 @@ Implement `IChatServer`, register it has a server so that it is exposed to all c
 - `Speak` broadcast messages to all other client. `speakerName` is the speaker, all clients except the `speakerName` will have its `OnSpoken` event triggered.
 When user press ENTER, the server triggers all `OnServerShutdown`, shot the `HttpServer` and exit. `Console::Read` could be used here.
 
+`main` function:
+- Starts all initialization.
+- When user input `exit`, call `IChatClient::OnServerShutdown`, stop the server and exit.
+
 ### ChatBotClient
 
+Start a manual signal event.
+Start a `HttpClient` with `RpcChat` channel.
+After connecting to the server, wait for the first message from the channel, it should be the client id representing the server, we calls it `server id`. Signal the manual signal event.
 Implement `IChatClient` and hook it with the `RpcChat` channel.
 When the application starts, `Console::Read` a user name and call `IChatServer::AddUser`.
 When `exit` is entered, call `IChatServer::RemoveUser` and exit.
@@ -71,13 +89,32 @@ When `OnUserRemoved` is triggered, print a line `speakerName left`.
 When `OnSpoken` is triggered, print a line `speakerName> message`.
 When `OnServerShutdown` is triggered, stop the `HttpClient` and exit, no `IChatServer` call is needed, including `RemoveUser`.
 
+`main` function:
+- Starts all initialization, wait for the manual signal event to signal.
+- When `OnServerShutdown`, print "Server shutdown, press ENTER to exit.".
+- Wait for the first input and call `IChatServer::AddUser`. Even when the first input is `exit`, `exit` becomes the user name.
+- When user input `exit`, call `IChatServer::RemoveUser`, stop the client and exit.
+- When user input others, call `IChatServer::Speak`.
+- From the second input, if `OnServerShutdown` has triggered, stop the client and exit.
+
+### Thread Safety
+
+- A global spin lock should be held to run:
+  - `Console::Write`.
+  - `IChatServer` and `IChatClient` in two `main` function.
+  - Consecutive calls could be called in one single `SPIN_LOCK`.
+- Such spin lock will be a variable in two `main` function.
+
 ### Connecting RPC with Channel
+
+Sharable code between client and server should be put in `Test/UnitTest/ChatBotServer/Shared`:
+- `ChatBotDispatcher`
+- `ChatBotJsonDispatcher`.
 
 Just like `RunRpcTestCase_JsonRequest`, you need to start the dispatcher with a `IRpcJsonMessageDispatcher` implementation:
 - You are only allowed to use source files in `Source` and `Test/Generated/Apps/ChatBot/Cpp`.
 - `IRpcJsonMessageDispatcher::AllocateRequestId` should be incremental from 1.
 - `ReadRequestId` is useful to know the id entering and leaving `IRpcJsonMessageDispatcher::OnJsonRequest`.
-- `Console::WriteLine` is not thread safe, you can only call this function in the same thread.
 
 `IRpcJsonMessageDispatcher::OnJsonRequest` is a blocked function, but requests could be nested, for example:
 - A request sends to remote.
@@ -86,41 +123,13 @@ Just like `RunRpcTestCase_JsonRequest`, you need to start the dispatcher with a 
 - Remote responses the original request.
 So you should not expect that the subsequent response should be responding to your request. Therefore the application should be organized like this.
 
-`TaskLoopThread`
-- Inherit from `Thread` and expose:
-  - `PushTask`, adds it to the list (`List<Func<void()>>`) and increase a semaphore.
-  - `Exit`, set a flag, increase a semaphore, all subsequent `PushTask` will fail.
-  - `HasExited`, return a bool that is only set to true in the last line of the thread function.
-  - The thread function itself will wait for a semaphore in a loop:
-    - Remove the first item from the list.
-    - Execute it after `SpinLock` protection, or when the list is empty, it means `Exit` is called, quit the loop. Therefore the thread function exits.
-  - All three functions will need to use the same `SpinLock` to access the list and the exit flag.
-
-For Client:
-- `main` function starts all initialization.
-  - Start `TaskLoopThread`
-    - `Initialize` with `Ptr<IChatServer>` and `Ptr<IChatClient>`.
-      - All events on `IChatClient` is hooked, when anything is triggered, `PushTask` to call `Console::Write`.
-      - Except `OnServerShotdown`, prints "Server shotdown, press ENTER to exit.".
-  - `main` will listen `Console::Read` until `TashLoopThread::HasExited` returns true.
-    - The first input will be the user name, call `PushTask` for `IChatServer::AddUser`. Even when the first input is `exit`, `exit` becomes the user name, instead of a existing action.
-    - When user input `exit`, `PushTask` for `IChatServer::RemoveUser` and print "Press ENTER to exit." and `Exit`. DO NOT break the loop here. User will need to make another input to exit.
-    - When user input others, `PushTask` for `IChatServer::Speak`.
-    - From the second input, read `HasExited` first, if it returns true, ignore the input text, skip any action and break the loop to exit the main function.
-
-For Server:
-- `main` function starts all initialization.
-  - Start `TaskLoopThread`
-    - `Initialize` with `Ptr<IChatServer>`.
-      - All events on `IChatServer` is hooked, when anything is triggered, `PushTask` to call other `IChatClient`.
-  - `main` will listen to two `Console::Read`.
-    - The first one call `PushTask` for `IChatClient::OnServerShutdown` and print "Press ENTER to exit.".
-    - The second one does nothing, and exit the main function.
-
-Sharable code between client and server should be put in `Test/UnitTest/ChatBotServer/Shared`.
-- The task loop thread class could be shared, but the constructor and `Initialize` function will be implemented separately by inheriting in server and client.
-- Only put code that shares, and make them sharable as your best effort.
-- In the shared code there should not be any flag to distinguish client and server, otherwise you are putting non-sharable code.
+`ChatBotJsonDispatcher` implements both `Thread` and `IRpcJsonMessageDispatcher`, accepts a clientId and `SpinLock& lockUI` comming from the `### Thread Safety` section.
+- The thread maintains a task list `List<Ptr<JsonNode>>`, with a `SpinLock lockDispatcher` and `Semaphore lockTasks`.
+  - `NotifyExit`: lockDispatcher{ exited = true; } increase lockTasks;
+  - `PushJson`: lockDispatcher{ if (exited) return false; push JsonNode; } increase lockTasks; return true;
+  - `TryPopJson`: decrease lockTasks; lockDispatcher { if (exited && empty list) return nullptr; pop task; } return task;
+- In `OnJsonRequest`:
+  - Send json through 
 
 ### Testing
 
