@@ -2,7 +2,6 @@ investigate repro
 
 DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
 Follow `REPO-ROOT/.github/Rules/document-and-commit.md` to finish the work.
-- You should perform coding, testing, git push per task, one after another, no mixing is allowed.
 
 ## Task 1
 
@@ -20,8 +19,9 @@ In `Rpc.d.ts`:
 - Remove `RequestService` related stuff.
 - Remove `targetClientId` from `IObjectOps_RegisterService_Request` as it is a broadcast request.
 - Rename `IObjectEventOps_InvokeEvent_Response` to `Broadcast_Response`, all broadcast request should return this.
+- `Test/TypeScript` should builds after changing to `Rpc.d.ts` with new generated files from other test projects.
 
-## Task 1
+## Task 2
 
 Add `Test/Apps/ChatBot` folder, with a Workflow module `ChatAPI.txt`:
 ```Workflow
@@ -48,16 +48,25 @@ Add `TestAppCompile.cpp` to `CompilerTest_LoadAndCompile` and build `Test/Apps/C
 - x86 code generated to `Cpp32` folder, git ignored.
 - x64 code generated to `Cpp64` folder, git ignored.
 - merged code generated to `Cpp` folder, git tracked.
-Add `Test/UnitTest/Generated_Apps_ChatBot/Generated_Apps_ChatBot.vcxitems` to track `Test/Generated/Apps/ChatBot/Cpp`, put it in `UnitTest.sln` under `Source Files` with other vcxitems projects.
-
-## Task 2
+- Using `ChatBotApp` as the assembly name to `WfCppConfig`.
+Add `Test/UnitTest/Generated_Apps_ChatBot/Generated_Apps_ChatBot.vcxitems` to track `Test/Generated/Apps/ChatBot/Cpp`:
+- Put it in `UnitTest.sln` under `Source Files` with other vcxitems projects.
+- No need to separate reflection or other code in two vcxitems projects.
 
 Under `Test/UnitTest` add `ChatBotServer/ChatBotServer.vcxproj` and `ChatBotClient/ChatBotClient.vcxproj`, both should be CLI application.
-Put them in `UnitTest.sln` under `Apps_ChatBot`, just like `Source Files`.
+With `VCZH_DEBUG_NO_REFLECTION` for all configuration and `VCZH_CHECK_MEMORY_LEAKS` for `Debug`.
+Put them in `UnitTest.sln` under `Apps_ChatBot`, just like how `*.vcxitems` in `Source Files`.
 Both project uses `VlppImport.vcxitems`, `VlppWorkflow_Library.vcxitems`, `Generated_Apps_ChatBot.vcxitems`.
 You are going to add `Test/Generated/Apps/ChatBot/Cpp` to the import folder so all files can be directly #include.
 
-### ChatBotServer
+Add two `Main.cpp` to each `Source Files` solution folder, each should include the main header in `Test/Generated/Apps/ChatBot`.
+`main` function returns 0, nothing need to be done.
+
+No testing is needed for this task, but you should ensure the whole solution builds.
+
+## Task 1
+
+### ChatBotServer.vcxproj
 
 It hosts an `localhost:8888/WorkflowChatBot` using `vl::inter_process::HttpServer`.
 A `RpcChat` channel is used.
@@ -77,7 +86,7 @@ When user press ENTER, the server triggers all `OnServerShutdown`, shot the `Htt
 - Starts all initialization.
 - When user input `exit`, call `IChatServer::OnServerShutdown`, stop the server and exit.
 
-### ChatBotClient
+### ChatBotClient.vcxproj
 
 Start a manual signal event.
 Start a `HttpClient` with `RpcChat` channel.
