@@ -18,7 +18,7 @@
 
 - `ChatBotServer` and `ChatBotClient` project.
   - Declaration of service registration from every client connection.
-  - How does `InvokeEvent` collect results from all client?
+  - How does `InvokeEvent` collect results from all client? Might need to update `IChannel::BroadcastFromClient` and enable a return value.
   - Update `UnitTest/README.md` and `Project.md`.
 
 ## Knowledge Base

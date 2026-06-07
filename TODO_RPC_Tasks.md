@@ -5,67 +5,6 @@ Follow `REPO-ROOT/.github/Rules/document-and-commit.md` to finish the work.
 
 ## Task 1
 
-Delete `Test/Resources/Runtime`, `IndexRuntime.txt`, `TestRuntimeCompiler.cpp` and all related stuff, including generated files. I would like to remove this test file completely.
-Delete `IRpcOperations::GetList(Event)?Ops`, as list ops are called by `RpcCalleeObject(Event)?OpsForList`.
-- This would also delete the last two arguments from `IRpcController::Register`.
-Delete `IRpcObjectOps::RegisterService`.
-- This would also require `RpcLifecycleBase::RegisterService` to call the dispatcher directly just like how `RequestService` is done.
-
-Remove `RpcLifecycleBase::dispatcher`, all access should go through `GetDispatcher`, which should already be the case.
-Remove `RpcLifeCycleBase::GetDispatcher` overloading, as it becomes useless when `dispatcher` is removed.
-Add `bool broadcast` to `IRpcJsonMessageDispatcher::OnJsonRequest`, set it to true when calling from `RpcJsonEventObjectOps`.
-
-In `Rpc.d.ts`:
-- Remove `RequestService` related stuff.
-- Remove `targetClientId` from `IObjectOps_RegisterService_Request` as it is a broadcast request.
-- Rename `IObjectEventOps_InvokeEvent_Response` to `Broadcast_Response`, all broadcast request should return this.
-- `Test/TypeScript` should builds after changing to `Rpc.d.ts` with new generated files from other test projects.
-
-## Task 2
-
-Add `Test/Apps/ChatBot` folder, with a Workflow module `ChatAPI.txt`:
-```Workflow
-module ChatAPI;
-
-namespace chatapi
-{
-  @rpc:Interface
-  interface IChatServer
-  {
-    event OnUserAdded(name: string);
-    event OnUserRemoved(name: string);
-    event OnSpoken(speakerName: string, message: string);
-    event OnServerShutdown();
-
-    func AddUser(name: string) : bool;
-    func RemoveUser(name : string) : bool;
-    func Speak(speakerName: string, message: string) : void;
-  }
-}
-```
-
-Add `TestAppCompile.cpp` to `CompilerTest_LoadAndCompile` and build `Test/Apps/ChatBot` to `Test/Generated/Apps/ChatBot`:
-- x86 code generated to `Cpp32` folder, git ignored.
-- x64 code generated to `Cpp64` folder, git ignored.
-- merged code generated to `Cpp` folder, git tracked.
-- Using `ChatBotApp` as the assembly name to `WfCppConfig`.
-Add `Test/UnitTest/Generated_Apps_ChatBot/Generated_Apps_ChatBot.vcxitems` to track `Test/Generated/Apps/ChatBot/Cpp`:
-- Put it in `UnitTest.sln` under `Source Files` with other vcxitems projects.
-- No need to separate reflection or other code in two vcxitems projects.
-
-Under `Test/UnitTest` add `ChatBotServer/ChatBotServer.vcxproj` and `ChatBotClient/ChatBotClient.vcxproj`, both should be CLI application.
-With `VCZH_DEBUG_NO_REFLECTION` for all configuration and `VCZH_CHECK_MEMORY_LEAKS` for `Debug`.
-Put them in `UnitTest.sln` under `Apps_ChatBot`, just like how `*.vcxitems` in `Source Files`.
-Both project uses `VlppImport.vcxitems`, `VlppWorkflow_Library.vcxitems`, `Generated_Apps_ChatBot.vcxitems`.
-You are going to add `Test/Generated/Apps/ChatBot/Cpp` to the import folder so all files can be directly #include.
-
-Add two `Main.cpp` to each `Source Files` solution folder, each should include the main header in `Test/Generated/Apps/ChatBot`.
-`main` function returns 0, nothing need to be done.
-
-No testing is needed for this task, but you should ensure the whole solution builds.
-
-## Task 1
-
 ### ChatBotServer.vcxproj
 
 It hosts an `localhost:8888/WorkflowChatBot` using `vl::inter_process::HttpServer`.
