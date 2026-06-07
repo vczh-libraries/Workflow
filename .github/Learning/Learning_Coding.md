@@ -3,7 +3,7 @@
 # Orders
 
 - Avoid explicit Workflow types/casts when implicit typing works [5]
-- Remove pure RPC redirection layers once dispatcher/ops can own the call [4]
+- Remove pure RPC redirection layers once dispatcher/ops can own the call [5]
 - Keep RPC-specific fixes out of generic C++ / Workflow codegen surfaces [3]
 - Read and aggregate RPC event exception maps through `IRpcLifecycle::ReadEventException` [3]
 - Keep TypeScript RPC dispatcher envelopes separate from value schemas [3]
@@ -11,7 +11,7 @@
 - Interpret `IRpcWrapperBase` as remote-wrapper identity [2]
 - Use internal properties defensively in `RpcDualLifecycleMock` [2]
 - Store and manage RPC wrappers as `IRpcWrapperBase` [2]
-- Keep RPC service lookup in `IRpcDispatcher` and register ops locally [2]
+- Keep RPC service state in `RpcLifecycleBase`, not dispatchers [2]
 - Keep RPC byref boxing/unboxing interface-only [2]
 - Split RPC JSON generation into dedicated analyzer/module files [2]
 - Move reusable RPC controller/lifecycle code into `Source/Library/Rpc` with strict dependencies [2]
@@ -27,6 +27,7 @@
 - Keep RPC JSON test harness setup under `VCZH_DEBUG_NO_REFLECTION` [1]
 - Use generated strong typed RPC ops for event listeners [1]
 - Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for registering free functions as reflection static methods [1]
+- Workflow interface event declarations use type-only payloads [1]
 - Enable Workflow proxy support for all related implementable interfaces consistently [1]
 - Workflow `new interface` on reflected C++ interfaces requires proxy registration (`BEGIN_INTERFACE_MEMBER`) [1]
 - Workflow static method call syntax uses `::` not `.` [1]
@@ -94,11 +95,15 @@ Classes such as lifecycle adapters or object-op redirection wrappers should be r
 
 This extends to dispatcher transport methods that exist only for a redirected layer. Once `IRpcListOps` / `IRpcListEventOps` are pure caller/callee adapters over object ops, delete the list-specific dispatcher methods (`IRpcDispatcher::BroadcastFromClient_ListEventOps`, `IRpcDispatcher::SendToClient_ListOps`) and their reflection registration and mocks. Build `RpcCallerListOps` from `IRpcDispatcher::SendToClient_ObjectOps` and `RpcCallerListEventOps` from `IRpcDispatcher::BroadcastFromClient_ObjectEventOps`. Because `InvokeListMethod` already calls `ReadMethodResult`, `RpcCallerListOps` methods must not call `ReadMethodResult` again.
 
+When service registration moves into lifecycle-owned state, remove object-op registration messages and JSON service-registration request shapes instead of keeping them as compatibility redirects.
+
 For the dual-lifecycle RPC test dispatcher, the flat path has exactly two lifecycles. `RpcDualDispatcherMockBase::BroadcastFromClient_ObjectEventOps` can directly return the other lifecycle controller's `GetObjectEventOps()`, and `RpcDualDispatcherMock` does not need cached flat object/event wrapper fields if it becomes identical to the base dispatcher. Keep service registry, finalization, object hold/unhold routing, and JSON-recording wrappers that still own output capture behavior.
 
-## Keep RPC service lookup in `IRpcDispatcher` and register ops locally
+## Keep RPC service state in `RpcLifecycleBase`, not dispatchers
 
-`IRpcDispatcher` should be the single authority for service lookup. Generated `IRpcObjectOps::RegisterService` can validate type ids and register service refs, but `IRpcObjectOps::RequestService` should not exist. Lifecycles should register their ops locally, ask the dispatcher for a service ref, and then use the ref's client id to decide local-vs-wrapper behavior.
+RPC dispatchers should be pure transmission/relay layers and should not maintain service-registration state. Store local service objects and remote service declarations in `RpcLifecycleBase`; let dispatcher mocks relay local declarations to the other lifecycle instead of keeping their own service dictionaries.
+
+The reflected lifecycle surface should distinguish local registration from remote declaration: `RegisterLocalService(typeId, service)` rejects duplicate local type ids and rejects calls after `Initialize()`, while `DeclareRemoteService(typeId, clientId)` may overwrite an earlier remote declaration. `IRpcLifecycle::RequestService` should take a type-name string, resolve the lifecycle id map, return a matching local service first, and only then ask `IRpcDispatcher::RequestService(typeId)` for a declared remote service.
 
 ## Keep RPC byref boxing/unboxing interface-only
 
@@ -119,6 +124,10 @@ When exposing existing namespace-scope free functions (e.g. `vl::rpc_controller:
 CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcBoxByref, { L"trivial" _ L"lc" }, Value(*)(const Value&, IRpcLifeCycle*), vl::rpc_controller::RpcBoxByref)
 ```
 This keeps the class declaration clean and avoids code duplication.
+
+## Workflow interface event declarations use type-only payloads
+
+Workflow interface event declarations in samples use type-only payload syntax. Do not write named event arguments such as `event OnSpoken(speakerName: string, message: string);`; write the legal type-only event declaration while preserving requested method argument names and the generated C++ event signatures where applicable.
 
 ## Apply `RunRpcTestCase` changes to every harness variant
 

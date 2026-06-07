@@ -16,6 +16,7 @@
 - Workflow samples use `raise`, not `throw` [1]
 - Workflow range syntax for inclusive generated loops is `range [1, xs.Count]` [1]
 - RPC destructor samples should track non-service objects when services never unregister [1]
+- Enumerate generated app vcxitems explicitly [1]
 - Use generated `Parsing.*.txt` logs for `CompilerTest_LoadAndCompile` Workflow compile errors [1]
 - Type-check shared `Rpc.d.ts` standalone [1]
 - Add analyzer-error samples for reserved RPC transport types [1]
@@ -35,6 +36,10 @@ For RPC behavior failures, keep running enough of `RuntimeTest`, `CppTest`, `Cpp
 ## Wire generated RPC C++ files into shared vcxitems after `CompilerTest_LoadAndCompile`
 
 When new or renamed RPC samples generate C++ files under `Test/SourceCppGenRpc`, add the corresponding `.cpp` / `.h` entries to `Test/UnitTest/Generated_CppRpc/Generated_CppRpc.vcxitems` and reflection files to `Test/UnitTest/Generated_ReflectionRpc/Generated_ReflectionRpc.vcxitems`. Link failures in `CppTest*` after successful `CompilerTest_LoadAndCompile` are often just missing shared-item entries or stale references to generated files that were renamed.
+
+## Enumerate generated app vcxitems explicitly
+
+Generated app shared-item projects such as `Test/UnitTest/Generated_Apps_ChatBot/Generated_Apps_ChatBot.vcxitems` should list generated `.cpp` and `.h` files explicitly. Do not use wildcard includes such as `*.cpp` or `*.h`; keep the file list reviewable and stable after `CompilerTest_LoadAndCompile` regenerates app output.
 
 ## Preserve RPC/Workflow sample intent; only adjust syntax or diagnostics
 
