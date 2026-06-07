@@ -55,7 +55,7 @@ Global Functions
 	void Rpc_Collection_Nested_PropDefault::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
 		auto serviceObj = ::vl::Ptr<::RpcCollection::Nested::PropDefault::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_Collection_Nested_PropDefault_serviceMain__RpcCollection_Nested_PropDefault_IService());
-		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcCollection::Nested::PropDefault::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollection::Nested::PropDefault::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Rpc_Collection_Nested_PropDefault::Print(::vl::Ptr<::vl::reflection::description::IValueList> xs)

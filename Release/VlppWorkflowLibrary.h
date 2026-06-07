@@ -961,6 +961,7 @@ namespace vl
 		};
 
 		using RpcEventExceptionMap = Ptr<reflection::description::IValueDictionary>;
+		using RpcLocalServiceMap = collections::Dictionary<vint, Ptr<reflection::IDescriptable>>;
 
 		extern void												MergeRpcEventExceptionMap(RpcEventExceptionMap target, RpcEventExceptionMap source);
 
@@ -1060,7 +1061,6 @@ namespace vl
 			virtual reflection::description::Value					InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments) = 0;
 			virtual void											EndInvokeMethod(vint slot) = 0;
 			virtual void											ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold) = 0;
-			virtual void											RegisterService(vint typeId, Ptr<reflection::IDescriptable> service) = 0;
 		};
 
 		class IRpcListEventOps
@@ -1088,9 +1088,7 @@ namespace vl
 			, public reflection::Description<IRpcOperations>
 		{
 		public:
-			virtual IRpcListOps*					GetListOps() = 0;
 			virtual IRpcObjectOps*					GetObjectOps() = 0;
-			virtual IRpcListEventOps*				GetListEventOps() = 0;
 			virtual IRpcObjectEventOps*				GetObjectEventOps() = 0;
 		};
 
@@ -1100,8 +1098,8 @@ namespace vl
 		{
 		public:
 			virtual void							Finalize() = 0;
-			virtual bool							IsRegisteredService(RpcObjectReference ref) = 0;
-			virtual void							RegisterService(vint typeId, RpcObjectReference ref) = 0;
+			virtual void							Initialize() = 0;
+			virtual void							DeclareLocalService(vint typeId, vint clientId) = 0;
 			virtual RpcObjectReference				RequestService(vint typeId) = 0;
 
 			virtual IRpcObjectEventOps*				BroadcastFromClient_ObjectEventOps(vint selfClientId) = 0;
@@ -1120,22 +1118,84 @@ namespace vl
 			virtual bool							GetItemChangedSuppressedFlag(RpcObjectReference ref) = 0;
 		};
 
+		/*
+		* [Configuration]
+		* 
+		* Calling IRpcLifecycle->GetController()->Register
+		*   serializer = rpcops_IRpcSerializer()
+		*   Register(
+		*     objectOps: RpcCalleeObjectOpsForList(RpcCalleeListOps(lifecycle, serializer), rpcops_IRpcObjectOpsJson, serializer)
+		*     eventOps: RpcCalleeObjectEventOpsForList(RpcCalleeListEventOps(lifecycle, serializer), rpcops_IRpcObjectEventOpsJson, serializer)
+		*   );
+		* 
+		* Triggering RpcLifecycleBase::AttachLocalObjectEvents
+		*   call rpclistener_Attach(ref.typeId, this, ref, obj, (cached)rpcops_IOps_CreateJson(this))
+		* 
+		* [Call graph for JSON based RPC]
+		* 
+		* Calling Method of Remote Object:
+		*   -> IMyInterface::Method (generated Workflow code)
+		*   -> rpcops_IOps_<Application>::InvokeMethod_IMyInterface_Method (generated Workflow code)
+		*   {
+		*     -> IRpcLifecycle->GetDispatcher()->SendToClient_ObjectOps()->InvokeMethod
+		*     -> RpcJsonObjectOps::InvokeMethod
+		*     -> IRpcJsonMessageDispatcher::OnJsonRequest
+		*     ---- NETWORK PROTOCOL (request) ----
+		*     -> RpcJsonObjectOps::Translate
+		*     -> IRpcLifecycle->GetController()->GetObjectOps()->InvokeMethod
+		*     -> RpcCalleeObjectOpsForList::InvokeMethod
+		*     -> rpcops_IRpcObjectOpsJson()->InvokeMethod (generated Workflow code)
+		*     -> IMyInterface::Method (actual)
+		*     ---- NETWORK PROTOCOL (response) ----
+		*   }
+		*   { optional EndInvokeMethod when @rpc:Byval on return value }
+		* 
+		* Triggering Event of Remote Object (events are automatically hooked when creating a wrapper for a remote object):
+		*   -> IMyInterface::SomethingHappened
+		*   -> rpcops_IOps_<Application>::InvokeMethod_IMyInterface_SomethingHappened (generated Workflow code)
+		*   {
+		*     -> IRpcLifecycle->GetDispatcher()->BroadcastFromClient_ObjectEventOps()->InvokeEvent
+		*     -> RpcJsonEventObjectOps::InvokeEvent
+		*     -> IRpcJsonMessageDispatcher::OnJsonRequest
+		*     ---- NETWORK PROTOCOL (broadcast) ----
+		*     -> RpcJsonEventObjectOps::Translate
+		*     -> IRpcLifecycle->GetController()->GetObjectOps()->InvokeEvent
+		*     -> RpcCalleeObjectEventOpsForList::InvokeEvent
+		*     -> rpcops_IRpcObjectEventOpsJson()->InvokeEvent (generated Workflow code)
+		*     -> IMyInterface::SomethingHappened
+		*     ---- NETWORK PROTOCOL (response) ----
+		*   }
+		* 
+		* Triggering Event of Local Object (when a local object is tracked, RpcLifecycleBase::AttachLocalObjectEvents will be called)
+		*   The same to remote object.
+		* 
+		* Registering Service:
+		*   -> IRpcLifecycle->RegisterLocalService
+		*   {
+		*     -> IRpcLifecycle->GetDispatcher()->DeclareLocalService(typeId, clientId)
+		*     ---- NETWORK PROTOCOL (broadcast) ----
+		*     -> IRpcLifecycle::DeclareRemoteService(typeId, clientId)
+		*   }
+		*/
 		class IRpcLifecycle
 			: public virtual reflection::IDescriptable
 			, public reflection::Description<IRpcLifecycle>
 		{
 		public:
 			virtual void							Finalize() = 0;
+			virtual void							Initialize() = 0;
 			virtual vint							GetClientId() = 0;
 			virtual IRpcDispatcher*					GetDispatcher() = 0;
 			virtual IRpcController*					GetController() = 0;
 			virtual IRpcSerializer*					GetSerializer() = 0;
+			virtual const RpcLocalServiceMap&		GetRegisteredLocalServices() = 0;
 			virtual Ptr<reflection::IDescriptable>	RefToPtr(RpcObjectReference ref) = 0;
 			virtual RpcObjectReference				PtrToRef(Ptr<reflection::IDescriptable> obj) = 0;
 			virtual void							LocalObjectHold(RpcObjectReference ref, vint remoteClientId) = 0;
 			virtual void							LocalObjectUnhold(RpcObjectReference ref, vint remoteClientId) = 0;
-			virtual void							RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service) = 0;
-			virtual Ptr<reflection::IDescriptable>	RequestService(const WString& fullName) = 0;
+			virtual void							RegisterLocalService(vint typeId, Ptr<reflection::IDescriptable> service) = 0;
+			virtual void							DeclareRemoteService(vint typeId, vint clientId) = 0;
+			virtual Ptr<reflection::IDescriptable>	RequestService(WString typeName) = 0;
 		};
 
 		class IRpcWrapperBase
@@ -1196,8 +1256,6 @@ namespace vl
 		protected:
 			Ptr<IRpcObjectOps>										objectCallback;
 			Ptr<IRpcObjectEventOps>									eventCallback;
-			Ptr<IRpcListOps>										listCallback;
-			Ptr<IRpcListEventOps>									listEventCallback;
 			collections::Dictionary<RpcEventSuppressionKey, vint>	eventSuppressedFlags;
 			collections::Dictionary<RpcObjectReference, vint>		itemChangedSuppressedFlags;
 
@@ -1212,13 +1270,11 @@ namespace vl
 			RpcControllerDefault();
 			~RpcControllerDefault();
 
-			void													Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback);
+			void													Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback);
 
 			// IRpcController
 
-			IRpcListOps*											GetListOps()override;
 			IRpcObjectOps*											GetObjectOps()override;
-			IRpcListEventOps*										GetListEventOps()override;
 			IRpcObjectEventOps*										GetObjectEventOps()override;
 
 			void													Finalize()override;
@@ -1264,7 +1320,7 @@ namespace vl
 		{
 		public:
 			virtual vint							AllocateRequestId() = 0;
-			virtual Ptr<glr::json::JsonNode>		OnJsonRequest(Ptr<glr::json::JsonNode> message) = 0;
+			virtual Ptr<glr::json::JsonNode>		OnJsonRequest(Ptr<glr::json::JsonNode> message, bool broadcast) = 0;
 		};
 
 		class RpcJsonObjectOps : public Object, public IRpcObjectOps
@@ -1273,17 +1329,15 @@ namespace vl
 			vint									sourceClientId = RpcClientId_Invalid;
 			vint									targetClientId = RpcClientId_Invalid;
 			IRpcJsonMessageDispatcher*				dispatcher = nullptr;
-			IRpcLifecycle*							lifecycle = nullptr;
 
 		public:
 			RpcJsonObjectOps(IRpcJsonMessageDispatcher* _dispatcher);
-			RpcJsonObjectOps(vint _sourceClientId, vint _targetClientId, IRpcJsonMessageDispatcher* _dispatcher, IRpcLifecycle* _lifecycle = nullptr);
+			RpcJsonObjectOps(vint _sourceClientId, vint _targetClientId, IRpcJsonMessageDispatcher* _dispatcher);
 			~RpcJsonObjectOps();
 
 			reflection::description::Value			InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
 			void									EndInvokeMethod(vint slot)override;
 			void									ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)override;
-			void									RegisterService(vint typeId, Ptr<reflection::IDescriptable> service)override;
 
 			static Ptr<glr::json::JsonNode>			Translate(Ptr<glr::json::JsonNode> message, IRpcObjectOps* ops, IRpcLifecycle* lifecycle = nullptr);
 		};
@@ -1392,7 +1446,10 @@ namespace vl
 			RpcControllerDefault							controller;
 			vint											clientId = RpcClientId_Invalid;
 			vint											nextObjectId = RpcObjectId_Invalid;
+			bool											initialized = false;
 			LocalProperties									localObjectProperties;
+			RpcLocalServiceMap								registeredLocalServices;
+			collections::Dictionary<vint, vint>				registeredRemoteServices;
 			static WString									InternalProperty_LocalObjectTracker;
 			static WString									InternalProperty_WrapperTracker;
 			UniversalWrapperFactory							universalWrapperFactory;
@@ -1409,7 +1466,6 @@ namespace vl
 			Ptr<reflection::IDescriptable>					CreateCallerProxy(RpcObjectReference ref, IRpcSerializer* serializer);
 			void											DisconnectWrappersForFinalize();
 		protected:
-			IRpcDispatcher*									dispatcher = nullptr;
 			collections::Dictionary<WString, vint>			idMap;
 			Ptr<IRpcSerializer>								serializer;
 
@@ -1427,13 +1483,15 @@ namespace vl
 			// IRpcLifecycle
 
 			void											Finalize()override;
+			void											Initialize()override;
 			vint											GetClientId()override;
-			IRpcDispatcher*									GetDispatcher()override;
 			RpcControllerDefault*							GetController()override;
+			const RpcLocalServiceMap&						GetRegisteredLocalServices()override;
 			void											LocalObjectHold(RpcObjectReference ref, vint remoteClientId)override;
 			void											LocalObjectUnhold(RpcObjectReference ref, vint remoteClientId)override;
-			void											RegisterService(const WString& fullName, Ptr<reflection::IDescriptable> service)override;
-			Ptr<reflection::IDescriptable>					RequestService(const WString& fullName)override;
+			void											RegisterLocalService(vint typeId, Ptr<reflection::IDescriptable> service)override;
+			void											DeclareRemoteService(vint typeId, vint clientId)override;
+			Ptr<reflection::IDescriptable>					RequestService(WString typeName)override;
 			Ptr<reflection::IDescriptable>					RefToPtr(RpcObjectReference ref)override;
 			Ptr<reflection::IDescriptable>					RefToPtr(RpcObjectReference ref, IRpcSerializer* serializer);
 			RpcObjectReference								PtrToRef(Ptr<reflection::IDescriptable> obj)override;
@@ -1663,7 +1721,6 @@ namespace vl
 			reflection::description::Value					InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
 			void											EndInvokeMethod(vint slot)override;
 			void											ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)override;
-			void											RegisterService(vint typeId, Ptr<reflection::IDescriptable> service)override;
 		};
 
 		class RpcCalleeObjectEventOpsForList : public Object, public IRpcObjectEventOps
@@ -1846,9 +1903,9 @@ Interface Implementation Proxy (Implement)
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(AllocateRequestId);
 				}
 
-				vl::Ptr<vl::glr::json::JsonNode> OnJsonRequest(vl::Ptr<vl::glr::json::JsonNode> message)override
+				vl::Ptr<vl::glr::json::JsonNode> OnJsonRequest(vl::Ptr<vl::glr::json::JsonNode> message, bool broadcast)override
 				{
-					INVOKEGET_INTERFACE_PROXY(OnJsonRequest, message);
+					INVOKEGET_INTERFACE_PROXY(OnJsonRequest, message, broadcast);
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcJsonMessageDispatcher)
 
@@ -1975,10 +2032,6 @@ Interface Implementation Proxy (Implement)
 					INVOKE_INTERFACE_PROXY(ObjectHold, ref, remoteClientId, hold);
 				}
 
-				void RegisterService(vl::vint typeId, vl::Ptr<vl::reflection::IDescriptable> service)override
-				{
-					INVOKE_INTERFACE_PROXY(RegisterService, typeId, service);
-				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcObjectOps)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcListEventOps)

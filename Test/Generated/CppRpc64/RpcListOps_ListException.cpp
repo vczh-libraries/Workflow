@@ -54,7 +54,7 @@ Global Functions
 	void Rpc_ListOps_ListException::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
 		auto serviceObj = ::vl::Ptr<::RpcListOpsListException::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_ListOps_ListException_serviceMain__RpcListOpsListException_IService());
-		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcListOpsListException::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcListOpsListException::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Rpc_ListOps_ListException::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)

@@ -70,7 +70,7 @@ Global Functions
 	void Rpc_DtorPropCachedListVByref::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
 		auto serviceObj = ::vl::Ptr<::RpcDtorPropCachedListVByref::IService>(new ::vl_workflow_global::__vwsnc2_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService());
-		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcDtorPropCachedListVByref::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCachedListVByref::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Rpc_DtorPropCachedListVByref::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)

@@ -1144,7 +1144,7 @@ WfLoadLibraryTypes
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcJsonMessageDispatcher)
 				CLASS_MEMBER_METHOD(AllocateRequestId, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(OnJsonRequest, { L"message" })
+				CLASS_MEMBER_METHOD(OnJsonRequest, { L"message" _ L"broadcast" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcJsonMessageDispatcher)
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcListOps)
@@ -1181,7 +1181,6 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_METHOD(InvokeMethod, { L"ref" _ L"methodId" _ L"arguments" })
 				CLASS_MEMBER_METHOD(EndInvokeMethod, { L"slot" })
 				CLASS_MEMBER_METHOD(ObjectHold, { L"ref" _ L"remoteClientId" _ L"hold" })
-				CLASS_MEMBER_METHOD(RegisterService, { L"typeId" _ L"service" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectOps)
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectEventOps)
@@ -1189,16 +1188,14 @@ WfLoadLibraryTypes
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectEventOps)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcOperations)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ListOps)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ObjectOps)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ListEventOps)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ObjectEventOps)
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcOperations)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcDispatcher)
 				CLASS_MEMBER_METHOD(Finalize, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(IsRegisteredService, { L"ref" })
-				CLASS_MEMBER_METHOD(RegisterService, { L"typeId" _ L"ref" })
+				CLASS_MEMBER_METHOD(Initialize, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(DeclareLocalService, { L"typeId" _ L"clientId" })
 				CLASS_MEMBER_METHOD(RequestService, { L"typeId" })
 				CLASS_MEMBER_METHOD(BroadcastFromClient_ObjectEventOps, { L"selfClientId" })
 				CLASS_MEMBER_METHOD(SendToClient_ObjectOps, { L"targetClientId" })
@@ -1215,6 +1212,7 @@ WfLoadLibraryTypes
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcLifecycle)
 				CLASS_MEMBER_METHOD(Finalize, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(Initialize, NO_PARAMETER)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ClientId)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Dispatcher)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(Controller)
@@ -1223,8 +1221,9 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_METHOD(PtrToRef, { L"obj" })
 				CLASS_MEMBER_METHOD(LocalObjectHold, { L"ref" _ L"remoteClientId" })
 				CLASS_MEMBER_METHOD(LocalObjectUnhold, { L"ref" _ L"remoteClientId" })
-				CLASS_MEMBER_METHOD(RegisterService, { L"fullName" _ L"service" })
-				CLASS_MEMBER_METHOD(RequestService, { L"fullName" })
+				CLASS_MEMBER_METHOD(RegisterLocalService, { L"typeId" _ L"service" })
+				CLASS_MEMBER_METHOD(DeclareRemoteService, { L"typeId" _ L"clientId" })
+				CLASS_MEMBER_METHOD(RequestService, { L"typeName" })
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcBoxByref, { L"trivial" _ L"lc" }, vl::rpc_controller::RpcObjectReference(*)(vl::Ptr<vl::reflection::IDescriptable>, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcBoxByref)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcUnboxByref, { L"serializable" _ L"lc" }, vl::Ptr<vl::reflection::IDescriptable>(*)(vl::rpc_controller::RpcObjectReference, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcUnboxByref)
 				CLASS_MEMBER_STATIC_EXTERNALMETHOD(RpcCopyByval, { L"trivial" _ L"lc" }, Value(*)(const Value&, vl::rpc_controller::IRpcLifecycle*), vl::rpc_controller::RpcCopyByval)
@@ -1916,27 +1915,15 @@ namespace vl
 		{
 		}
 
-		void RpcControllerDefault::Register(Ptr<IRpcObjectOps> _objectCallback, Ptr<IRpcObjectEventOps> _eventCallback, Ptr<IRpcListOps> _listCallback, Ptr<IRpcListEventOps> _listEventCallback)
+		void RpcControllerDefault::Register(Ptr<IRpcObjectOps> _objectCallback, Ptr<IRpcObjectEventOps> _eventCallback)
 		{
 			objectCallback = _objectCallback;
 			eventCallback = _eventCallback;
-			listCallback = _listCallback;
-			listEventCallback = _listEventCallback;
-		}
-
-		IRpcListOps* RpcControllerDefault::GetListOps()
-		{
-			return listCallback.Obj();
 		}
 
 		IRpcObjectOps* RpcControllerDefault::GetObjectOps()
 		{
 			return objectCallback.Obj();
-		}
-
-		IRpcListEventOps* RpcControllerDefault::GetListEventOps()
-		{
-			return listEventCallback.Obj();
 		}
 
 		IRpcObjectEventOps* RpcControllerDefault::GetObjectEventOps()
@@ -2657,11 +2644,10 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		RpcJsonObjectOps::RpcJsonObjectOps(vint _sourceClientId, vint _targetClientId, IRpcJsonMessageDispatcher* _dispatcher, IRpcLifecycle* _lifecycle)
+		RpcJsonObjectOps::RpcJsonObjectOps(vint _sourceClientId, vint _targetClientId, IRpcJsonMessageDispatcher* _dispatcher)
 			: sourceClientId(_sourceClientId)
 			, targetClientId(_targetClientId)
 			, dispatcher(_dispatcher)
-			, lifecycle(_lifecycle)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectOps::RpcJsonObjectOps(...)#"
 			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
@@ -2682,7 +2668,7 @@ namespace vl
 			AddJsonObjectField(request, WString::Unmanaged(L"methodId"), CreateJsonNumber(methodId));
 			AddJsonObjectField(request, WString::Unmanaged(L"arguments"), ValueArrayToJsonArray(arguments));
 
-			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
+			auto response = GetJsonObject(dispatcher->OnJsonRequest(request, false));
 			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectOps_InvokeMethod"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
 			CHECK_ERROR(ReadRequestId(response) == ReadRequestId(request), ERROR_MESSAGE_PREFIX L"Unexpected response request id.");
 			return JsonResponseToMethodResult(GetJsonObjectField(response, WString::Unmanaged(L"response")));
@@ -2697,7 +2683,7 @@ namespace vl
 			AddJsonObjectField(request, WString::Unmanaged(L"targetClientId"), CreateJsonNumber(targetClientId));
 			AddJsonObjectField(request, WString::Unmanaged(L"slot"), CreateJsonNumber(slot));
 
-			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
+			auto response = GetJsonObject(dispatcher->OnJsonRequest(request, false));
 			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectOps_EndInvokeMethod"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
 			CHECK_ERROR(ReadRequestId(response) == ReadRequestId(request), ERROR_MESSAGE_PREFIX L"Unexpected response request id.");
 #undef ERROR_MESSAGE_PREFIX
@@ -2713,25 +2699,8 @@ namespace vl
 			AddJsonObjectField(request, WString::Unmanaged(L"remoteClientId"), CreateJsonNumber(remoteClientId));
 			AddJsonObjectField(request, WString::Unmanaged(L"hold"), CreateJsonBool(hold));
 
-			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
+			auto response = GetJsonObject(dispatcher->OnJsonRequest(request, false));
 			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectOps_ObjectHold"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
-			CHECK_ERROR(ReadRequestId(response) == ReadRequestId(request), ERROR_MESSAGE_PREFIX L"Unexpected response request id.");
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		void RpcJsonObjectOps::RegisterService(vint typeId, Ptr<IDescriptable> service)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectOps::RegisterService(vint, Ptr<IDescriptable>)#"
-			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
-			CHECK_ERROR(lifecycle, ERROR_MESSAGE_PREFIX L"Lifecycle is required.");
-			auto serviceRef = lifecycle->PtrToRef(service);
-			auto request = CreateRpcMessage(WString::Unmanaged(L"IObjectOps_RegisterService"), dispatcher->AllocateRequestId(), sourceClientId == RpcClientId_Invalid ? serviceRef.clientId : sourceClientId);
-			AddJsonObjectField(request, WString::Unmanaged(L"targetClientId"), CreateJsonNumber(targetClientId == RpcClientId_Invalid ? serviceRef.clientId : targetClientId));
-			AddJsonObjectField(request, WString::Unmanaged(L"typeId"), CreateJsonNumber(typeId));
-			AddJsonObjectField(request, WString::Unmanaged(L"service"), CreateRpcObjectReferenceJson(serviceRef));
-
-			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
-			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectOps_RegisterService"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
 			CHECK_ERROR(ReadRequestId(response) == ReadRequestId(request), ERROR_MESSAGE_PREFIX L"Unexpected response request id.");
 #undef ERROR_MESSAGE_PREFIX
 		}
@@ -2739,6 +2708,7 @@ namespace vl
 		Ptr<JsonNode> RpcJsonObjectOps::Translate(Ptr<JsonNode> message, IRpcObjectOps* ops, IRpcLifecycle* lifecycle)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectOps::Translate(Ptr<JsonNode>, IRpcObjectOps*)#"
+			(void)lifecycle;
 			CHECK_ERROR(ops, ERROR_MESSAGE_PREFIX L"Object ops is required.");
 			auto request = GetJsonObject(message);
 			auto rpcMethod = GetJsonString(GetJsonObjectField(request, WString::Unmanaged(L"rpcMethod")));
@@ -2767,14 +2737,6 @@ namespace vl
 					GetRpcObjectReferenceFromJson(GetJsonObjectField(request, WString::Unmanaged(L"ref"))),
 					GetJsonInt(GetJsonObjectField(request, WString::Unmanaged(L"remoteClientId"))),
 					GetJsonBool(GetJsonObjectField(request, WString::Unmanaged(L"hold")))
-					);
-			}
-			else if (rpcMethod == WString::Unmanaged(L"IObjectOps_RegisterService"))
-			{
-				CHECK_ERROR(lifecycle, ERROR_MESSAGE_PREFIX L"Lifecycle is required to translate RegisterService.");
-				ops->RegisterService(
-					GetJsonInt(GetJsonObjectField(request, WString::Unmanaged(L"typeId"))),
-					lifecycle->RefToPtr(GetRpcObjectReferenceFromJson(GetJsonObjectField(request, WString::Unmanaged(L"service"))))
 					);
 			}
 			else
@@ -2819,7 +2781,7 @@ namespace vl
 			AddJsonObjectField(request, WString::Unmanaged(L"eventId"), CreateJsonNumber(eventId));
 			AddJsonObjectField(request, WString::Unmanaged(L"arguments"), ValueArrayToJsonArray(arguments));
 
-			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
+			auto response = GetJsonObject(dispatcher->OnJsonRequest(request, true));
 			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectEventOps_InvokeEvent"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
 			CHECK_ERROR(ReadRequestId(response) == ReadRequestId(request), ERROR_MESSAGE_PREFIX L"Unexpected response request id.");
 			return BoxValue(CreateSerializedEventExceptionMap(GetJsonObjectField(response, WString::Unmanaged(L"response"))));
@@ -3233,7 +3195,18 @@ namespace vl
 				auto props = localObjectProperties.Values().Get(localObjectProperties.Count() - 1);
 				RemoveLocalObject(props->ref, true);
 			}
+			registeredLocalServices.Clear();
+			registeredRemoteServices.Clear();
 			controller.Finalize();
+		}
+
+		void RpcLifecycleBase::Initialize()
+		{
+			if (!initialized)
+			{
+				GetDispatcher()->Initialize();
+				initialized = true;
+			}
 		}
 
 		vint RpcLifecycleBase::GetClientId()
@@ -3241,17 +3214,14 @@ namespace vl
 			return clientId;
 		}
 
-		IRpcDispatcher* RpcLifecycleBase::GetDispatcher()
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::GetDispatcher()#"
-			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"No dispatcher registered.");
-			return dispatcher;
-#undef ERROR_MESSAGE_PREFIX
-		}
-
 		RpcControllerDefault* RpcLifecycleBase::GetController()
 		{
 			return &controller;
+		}
+
+		const RpcLocalServiceMap& RpcLifecycleBase::GetRegisteredLocalServices()
+		{
+			return registeredLocalServices;
 		}
 
 		void RpcLifecycleBase::LocalObjectHold(RpcObjectReference ref, vint remoteClientId)
@@ -3284,21 +3254,47 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RpcLifecycleBase::RegisterService(const WString& fullName, Ptr<IDescriptable> service)
+		void RpcLifecycleBase::RegisterLocalService(vint typeId, Ptr<IDescriptable> service)
 		{
-			auto index = idMap.Keys().IndexOf(fullName);
-			if (index == -1)
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::RegisterLocalService(vint, Ptr<IDescriptable>)#"
+			CHECK_ERROR(service, ERROR_MESSAGE_PREFIX L"Service is required.");
+			if (initialized)
 			{
-				CHECK_FAIL(L"Unknown RPC type id.");
+				throw Exception(ERROR_MESSAGE_PREFIX L"RegisterLocalService cannot be called after Initialize.");
 			}
-			controller.GetObjectOps()->RegisterService(idMap.Values()[index], service);
+			if (registeredLocalServices.Keys().Contains(typeId))
+			{
+				throw Exception(ERROR_MESSAGE_PREFIX L"Service is already registered.");
+			}
+
+			auto ref = PtrToRef(service);
+			LocalObjectHold(ref, clientId);
+			registeredLocalServices.Set(typeId, service);
+			GetDispatcher()->DeclareLocalService(typeId, clientId);
+#undef ERROR_MESSAGE_PREFIX
 		}
 
-		Ptr<IDescriptable> RpcLifecycleBase::RequestService(const WString& fullName)
+		void RpcLifecycleBase::DeclareRemoteService(vint typeId, vint remoteClientId)
 		{
-			if (idMap.Keys().Contains(fullName))
+			registeredRemoteServices.Set(typeId, remoteClientId);
+		}
+
+		Ptr<IDescriptable> RpcLifecycleBase::RequestService(WString typeName)
+		{
+			auto typeIndex = idMap.Keys().IndexOf(typeName);
+			if (typeIndex == -1)
 			{
-				auto typeId = idMap.Get(fullName);
+				return nullptr;
+			}
+			auto typeId = idMap.Values()[typeIndex];
+
+			if (auto index = registeredLocalServices.Keys().IndexOf(typeId); index != -1)
+			{
+				return registeredLocalServices.Values()[index];
+			}
+
+			if (registeredRemoteServices.Keys().Contains(typeId))
+			{
 				auto ref = GetDispatcher()->RequestService(typeId);
 				return RefToPtr(ref);
 			}
@@ -4296,11 +4292,6 @@ namespace vl
 		void RpcCalleeObjectOpsForList::ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)
 		{
 			objectOps->ObjectHold(ref, remoteClientId, hold);
-		}
-
-		void RpcCalleeObjectOpsForList::RegisterService(vint typeId, Ptr<IDescriptable> service)
-		{
-			objectOps->RegisterService(typeId, service);
 		}
 
 /***********************************************************************

@@ -58,7 +58,7 @@ Global Functions
 	void Rpc_DtorList2::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
 		auto serviceObj = ::vl::Ptr<::RpcDtorList2::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_DtorList2_serviceMain__RpcDtorList2_IService());
-		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcDtorList2::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorList2::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::Ptr<::RpcDtorList2::IValue> Rpc_DtorList2::MakeValue()

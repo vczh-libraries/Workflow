@@ -62,7 +62,7 @@ Global Functions
 	void Rpc_PropDynamic::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
 		auto serviceObj = ::vl::Ptr<::RpcPropDynamic::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_PropDynamic_serviceMain__RpcPropDynamic_IService());
-		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcPropDynamic::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDynamic::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Rpc_PropDynamic::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)

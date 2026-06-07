@@ -57,7 +57,7 @@ Global Functions
 	void Rpc_ListOps_OblistEventException::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
 		auto serverObj = ::vl::Ptr<::RpcListOpsOblistEventException::IServer>(new ::vl_workflow_global::__vwsnc1_Rpc_ListOps_OblistEventException_serviceMain__RpcListOpsOblistEventException_IServer());
-		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcListOpsOblistEventException::IServer"), ::vl::Ptr<::vl::reflection::IDescriptable>(serverObj));
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcListOpsOblistEventException::IServer")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serverObj));
 	}
 
 	::vl::WString Rpc_ListOps_OblistEventException::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)

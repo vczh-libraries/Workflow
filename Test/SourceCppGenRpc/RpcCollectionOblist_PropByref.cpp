@@ -55,7 +55,7 @@ Global Functions
 	void Rpc_CollectionOblist_PropByref::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
 		auto serviceObj = ::vl::Ptr<::RpcCollectionOblist::InByref::PropByref::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_CollectionOblist_PropByref_serviceMain__RpcCollectionOblist_InByref_PropByref_IService());
-		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcCollectionOblist::InByref::PropByref::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionOblist::InByref::PropByref::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Rpc_CollectionOblist_PropByref::Print5(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs)

@@ -67,7 +67,7 @@ Global Functions
 	void Rpc_LocalAndWrapper::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
 		auto service = ::vl::Ptr<::RpcWrapperTest::IService>(new ::vl_workflow_global::__vwsnc3_Rpc_LocalAndWrapper_serviceMain__RpcWrapperTest_IService());
-		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcWrapperTest::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(service));
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcWrapperTest::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(service));
 	}
 
 	::vl::WString Rpc_LocalAndWrapper::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)

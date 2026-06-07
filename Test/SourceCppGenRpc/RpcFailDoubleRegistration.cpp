@@ -65,7 +65,7 @@ Global Functions
 	void Rpc_FailDoubleRegistration::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
 		auto serviceObj = ::vl::Ptr<::RpcFailDoubleRegistrationTest::IService>(new ::vl_workflow_global::__vwsnc2_Rpc_FailDoubleRegistration_serviceMain__RpcFailDoubleRegistrationTest_IService());
-		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcFailDoubleRegistrationTest::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcFailDoubleRegistrationTest::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	void Rpc_FailDoubleRegistration::CallService(::vl::Ptr<::RpcFailDoubleRegistrationTest::IService> service, ::vl::vint indexParameter, ::vl::vint indexReturn)

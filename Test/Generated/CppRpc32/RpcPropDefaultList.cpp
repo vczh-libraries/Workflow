@@ -79,7 +79,7 @@ Global Functions
 	void Rpc_PropDefaultList::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
 		auto serviceObj = ::vl::Ptr<::RpcPropDefaultList::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_PropDefaultList_serviceMain__RpcPropDefaultList_IService());
-		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcPropDefaultList::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultList::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Rpc_PropDefaultList::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)

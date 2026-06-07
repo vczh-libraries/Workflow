@@ -60,7 +60,7 @@ Global Functions
 	void Rpc_Overloading::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
 		auto serviceObj = ::vl::Ptr<::RpcOverloadingTest::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_Overloading_serviceMain__RpcOverloadingTest_IService());
-		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcOverloadingTest::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcOverloadingTest::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Rpc_Overloading::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)

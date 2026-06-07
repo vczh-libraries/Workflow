@@ -118,7 +118,7 @@ Global Functions
 	void Rpc_CollectionDict_Interface_PropByref::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
 		auto serviceObj = ::vl::Ptr<::RpcCollectionDict::Interface::InByref::PropByref::IService>(new ::vl_workflow_global::__vwsnc2_Rpc_CollectionDict_Interface_PropByref_serviceMain__RpcCollectionDict_Interface_InByref_PropByref_IService());
-		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::InByref::PropByref::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::InByref::PropByref::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Rpc_CollectionDict_Interface_PropByref::Print(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)

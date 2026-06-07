@@ -59,7 +59,7 @@ Global Functions
 	void Rpc_PrimitiveTypes::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
 		auto service = ::vl::Ptr<::RpcPrimitiveTest::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_PrimitiveTypes_serviceMain__RpcPrimitiveTest_IService());
-		::vl::__vwsn::This(lc)->RegisterService(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService"), ::vl::Ptr<::vl::reflection::IDescriptable>(service));
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPrimitiveTest::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(service));
 	}
 
 	::vl::WString Rpc_PrimitiveTypes::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)
