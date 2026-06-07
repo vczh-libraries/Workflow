@@ -115,9 +115,9 @@ Interface Implementation Proxy (Implement)
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(AllocateRequestId);
 				}
 
-				vl::Ptr<vl::glr::json::JsonNode> OnJsonRequest(vl::Ptr<vl::glr::json::JsonNode> message)override
+				vl::Ptr<vl::glr::json::JsonNode> OnJsonRequest(vl::Ptr<vl::glr::json::JsonNode> message, bool broadcast)override
 				{
-					INVOKEGET_INTERFACE_PROXY(OnJsonRequest, message);
+					INVOKEGET_INTERFACE_PROXY(OnJsonRequest, message, broadcast);
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcJsonMessageDispatcher)
 
@@ -244,10 +244,6 @@ Interface Implementation Proxy (Implement)
 					INVOKE_INTERFACE_PROXY(ObjectHold, ref, remoteClientId, hold);
 				}
 
-				void RegisterService(vl::vint typeId, vl::Ptr<vl::reflection::IDescriptable> service)override
-				{
-					INVOKE_INTERFACE_PROXY(RegisterService, typeId, service);
-				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcObjectOps)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(vl::rpc_controller::IRpcListEventOps)

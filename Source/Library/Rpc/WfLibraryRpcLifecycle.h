@@ -93,7 +93,6 @@ namespace vl
 			Ptr<reflection::IDescriptable>					CreateCallerProxy(RpcObjectReference ref, IRpcSerializer* serializer);
 			void											DisconnectWrappersForFinalize();
 		protected:
-			IRpcDispatcher*									dispatcher = nullptr;
 			collections::Dictionary<WString, vint>			idMap;
 			Ptr<IRpcSerializer>								serializer;
 
@@ -112,7 +111,6 @@ namespace vl
 
 			void											Finalize()override;
 			vint											GetClientId()override;
-			IRpcDispatcher*									GetDispatcher()override;
 			RpcControllerDefault*							GetController()override;
 			void											LocalObjectHold(RpcObjectReference ref, vint remoteClientId)override;
 			void											LocalObjectUnhold(RpcObjectReference ref, vint remoteClientId)override;

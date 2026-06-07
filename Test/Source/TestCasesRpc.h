@@ -85,8 +85,8 @@ namespace vl
 				});
 			}
 
-			lc1->GetController()->Register(ooForList1, oeoForList1, lo1, leo1);
-			lc2->GetController()->Register(ooForList2, oeoForList2, lo2, leo2);
+			lc1->GetController()->Register(ooForList1, oeoForList1);
+			lc2->GetController()->Register(ooForList2, oeoForList2);
 
 			RpcDualJsonDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
 			lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops1); });
@@ -151,8 +151,8 @@ namespace vl
 				});
 			}
 
-			lc1->GetController()->Register(ooForList1, oeoForList1, lo1, leo1);
-			lc2->GetController()->Register(ooForList2, oeoForList2, lo2, leo2);
+			lc1->GetController()->Register(ooForList1, oeoForList1);
+			lc2->GetController()->Register(ooForList2, oeoForList2);
 
 			RpcDualJsonRequestDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
 			lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops1); });
@@ -214,8 +214,8 @@ namespace vl
 				});
 			}
 
-			lc1->GetController()->Register(ooForList1, oeoForList1, lo1, leo1);
-			lc2->GetController()->Register(ooForList2, oeoForList2, lo2, leo2);
+			lc1->GetController()->Register(ooForList1, oeoForList1);
+			lc2->GetController()->Register(ooForList2, oeoForList2);
 
 			RpcDualDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
 			lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops1); });

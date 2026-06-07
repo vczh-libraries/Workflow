@@ -28,8 +28,6 @@ namespace vl
 		protected:
 			Ptr<IRpcObjectOps>										objectCallback;
 			Ptr<IRpcObjectEventOps>									eventCallback;
-			Ptr<IRpcListOps>										listCallback;
-			Ptr<IRpcListEventOps>									listEventCallback;
 			collections::Dictionary<RpcEventSuppressionKey, vint>	eventSuppressedFlags;
 			collections::Dictionary<RpcObjectReference, vint>		itemChangedSuppressedFlags;
 
@@ -44,13 +42,11 @@ namespace vl
 			RpcControllerDefault();
 			~RpcControllerDefault();
 
-			void													Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback, Ptr<IRpcListOps> listCallback, Ptr<IRpcListEventOps> listEventCallback);
+			void													Register(Ptr<IRpcObjectOps> objectCallback, Ptr<IRpcObjectEventOps> eventCallback);
 
 			// IRpcController
 
-			IRpcListOps*											GetListOps()override;
 			IRpcObjectOps*											GetObjectOps()override;
-			IRpcListEventOps*										GetListEventOps()override;
 			IRpcObjectEventOps*										GetObjectEventOps()override;
 
 			void													Finalize()override;

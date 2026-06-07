@@ -215,7 +215,6 @@ namespace vl
 			reflection::description::Value					InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
 			void											EndInvokeMethod(vint slot)override;
 			void											ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)override;
-			void											RegisterService(vint typeId, Ptr<reflection::IDescriptable> service)override;
 		};
 
 		class RpcCalleeObjectEventOpsForList : public Object, public IRpcObjectEventOps

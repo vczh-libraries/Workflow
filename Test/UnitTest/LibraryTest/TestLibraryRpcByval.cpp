@@ -33,7 +33,6 @@ namespace
 				lifecycle->LocalObjectUnhold(ref, remoteClientId);
 			}
 		}
-		void RegisterService(vint typeId, Ptr<IDescriptable> service)override										{ CHECK_FAIL(L"Not Supported!"); }
 	};
 
 	class StubObjectEventOps : public Object, public IRpcObjectEventOps
@@ -97,8 +96,8 @@ namespace
 		auto objectOps2 = Ptr(new StubObjectOps(context.lifecycle2.Obj()));
 		auto objectEventOps1 = Ptr(new StubObjectEventOps);
 		auto objectEventOps2 = Ptr(new StubObjectEventOps);
-		context.lifecycle1->GetController()->Register(Ptr(new RpcCalleeObjectOpsForList(context.listOps1, objectOps1, nullptr)), Ptr(new RpcCalleeObjectEventOpsForList(context.listEventOps1, objectEventOps1, nullptr)), context.listOps1, context.listEventOps1);
-		context.lifecycle2->GetController()->Register(Ptr(new RpcCalleeObjectOpsForList(context.listOps2, objectOps2, nullptr)), Ptr(new RpcCalleeObjectEventOpsForList(context.listEventOps2, objectEventOps2, nullptr)), context.listOps2, context.listEventOps2);
+		context.lifecycle1->GetController()->Register(Ptr(new RpcCalleeObjectOpsForList(context.listOps1, objectOps1, nullptr)), Ptr(new RpcCalleeObjectEventOpsForList(context.listEventOps1, objectEventOps1, nullptr)));
+		context.lifecycle2->GetController()->Register(Ptr(new RpcCalleeObjectOpsForList(context.listOps2, objectOps2, nullptr)), Ptr(new RpcCalleeObjectEventOpsForList(context.listEventOps2, objectEventOps2, nullptr)));
 		context.dispatcher = Ptr(new RpcDualDispatcherMock(context.lifecycle1.Obj(), context.lifecycle2.Obj()));
 		return context;
 	}

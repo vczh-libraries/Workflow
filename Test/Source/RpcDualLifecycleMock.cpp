@@ -18,6 +18,14 @@ namespace vl
 			(void)obj;
 		}
 
+		IRpcDispatcher* RpcDualLifecycleMock::GetDispatcher()
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualLifecycleMock::GetDispatcher()#"
+			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"No dispatcher registered.");
+			return dispatcher;
+#undef ERROR_MESSAGE_PREFIX
+		}
+
 		void RpcDualLifecycleMock::SetDispatcher(IRpcDispatcher* _dispatcher)
 		{
 			dispatcher = _dispatcher;

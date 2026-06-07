@@ -644,11 +644,10 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		RpcJsonObjectOps::RpcJsonObjectOps(vint _sourceClientId, vint _targetClientId, IRpcJsonMessageDispatcher* _dispatcher, IRpcLifecycle* _lifecycle)
+		RpcJsonObjectOps::RpcJsonObjectOps(vint _sourceClientId, vint _targetClientId, IRpcJsonMessageDispatcher* _dispatcher)
 			: sourceClientId(_sourceClientId)
 			, targetClientId(_targetClientId)
 			, dispatcher(_dispatcher)
-			, lifecycle(_lifecycle)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectOps::RpcJsonObjectOps(...)#"
 			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
@@ -669,7 +668,7 @@ namespace vl
 			AddJsonObjectField(request, WString::Unmanaged(L"methodId"), CreateJsonNumber(methodId));
 			AddJsonObjectField(request, WString::Unmanaged(L"arguments"), ValueArrayToJsonArray(arguments));
 
-			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
+			auto response = GetJsonObject(dispatcher->OnJsonRequest(request, false));
 			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectOps_InvokeMethod"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
 			CHECK_ERROR(ReadRequestId(response) == ReadRequestId(request), ERROR_MESSAGE_PREFIX L"Unexpected response request id.");
 			return JsonResponseToMethodResult(GetJsonObjectField(response, WString::Unmanaged(L"response")));
@@ -684,7 +683,7 @@ namespace vl
 			AddJsonObjectField(request, WString::Unmanaged(L"targetClientId"), CreateJsonNumber(targetClientId));
 			AddJsonObjectField(request, WString::Unmanaged(L"slot"), CreateJsonNumber(slot));
 
-			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
+			auto response = GetJsonObject(dispatcher->OnJsonRequest(request, false));
 			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectOps_EndInvokeMethod"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
 			CHECK_ERROR(ReadRequestId(response) == ReadRequestId(request), ERROR_MESSAGE_PREFIX L"Unexpected response request id.");
 #undef ERROR_MESSAGE_PREFIX
@@ -700,25 +699,8 @@ namespace vl
 			AddJsonObjectField(request, WString::Unmanaged(L"remoteClientId"), CreateJsonNumber(remoteClientId));
 			AddJsonObjectField(request, WString::Unmanaged(L"hold"), CreateJsonBool(hold));
 
-			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
+			auto response = GetJsonObject(dispatcher->OnJsonRequest(request, false));
 			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectOps_ObjectHold"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
-			CHECK_ERROR(ReadRequestId(response) == ReadRequestId(request), ERROR_MESSAGE_PREFIX L"Unexpected response request id.");
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		void RpcJsonObjectOps::RegisterService(vint typeId, Ptr<IDescriptable> service)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcJsonObjectOps::RegisterService(vint, Ptr<IDescriptable>)#"
-			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"Dispatcher is required.");
-			CHECK_ERROR(lifecycle, ERROR_MESSAGE_PREFIX L"Lifecycle is required.");
-			auto serviceRef = lifecycle->PtrToRef(service);
-			auto request = CreateRpcMessage(WString::Unmanaged(L"IObjectOps_RegisterService"), dispatcher->AllocateRequestId(), sourceClientId == RpcClientId_Invalid ? serviceRef.clientId : sourceClientId);
-			AddJsonObjectField(request, WString::Unmanaged(L"targetClientId"), CreateJsonNumber(targetClientId == RpcClientId_Invalid ? serviceRef.clientId : targetClientId));
-			AddJsonObjectField(request, WString::Unmanaged(L"typeId"), CreateJsonNumber(typeId));
-			AddJsonObjectField(request, WString::Unmanaged(L"service"), CreateRpcObjectReferenceJson(serviceRef));
-
-			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
-			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectOps_RegisterService"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
 			CHECK_ERROR(ReadRequestId(response) == ReadRequestId(request), ERROR_MESSAGE_PREFIX L"Unexpected response request id.");
 #undef ERROR_MESSAGE_PREFIX
 		}
@@ -731,7 +713,10 @@ namespace vl
 			auto rpcMethod = GetJsonString(GetJsonObjectField(request, WString::Unmanaged(L"rpcMethod")));
 			auto requestId = ReadRequestId(request);
 			auto sourceClientId = ReadSourceClientId(request);
-			auto targetClientId = ReadTargetClientId(request);
+			auto targetClientId =
+				rpcMethod == WString::Unmanaged(L"IObjectOps_RegisterService")
+				? RpcClientId_Invalid
+				: ReadTargetClientId(request);
 			auto response = CreateRpcMessage(rpcMethod, requestId, targetClientId);
 			AddJsonObjectField(response, WString::Unmanaged(L"targetClientId"), CreateJsonNumber(sourceClientId));
 
@@ -759,10 +744,11 @@ namespace vl
 			else if (rpcMethod == WString::Unmanaged(L"IObjectOps_RegisterService"))
 			{
 				CHECK_ERROR(lifecycle, ERROR_MESSAGE_PREFIX L"Lifecycle is required to translate RegisterService.");
-				ops->RegisterService(
+				lifecycle->GetDispatcher()->RegisterService(
 					GetJsonInt(GetJsonObjectField(request, WString::Unmanaged(L"typeId"))),
-					lifecycle->RefToPtr(GetRpcObjectReferenceFromJson(GetJsonObjectField(request, WString::Unmanaged(L"service"))))
-					);
+					GetRpcObjectReferenceFromJson(GetJsonObjectField(request, WString::Unmanaged(L"service")))
+				);
+				AddJsonObjectField(response, WString::Unmanaged(L"response"), CreateJsonLiteral(JsonLiteralValue::Null));
 			}
 			else
 			{
@@ -806,7 +792,7 @@ namespace vl
 			AddJsonObjectField(request, WString::Unmanaged(L"eventId"), CreateJsonNumber(eventId));
 			AddJsonObjectField(request, WString::Unmanaged(L"arguments"), ValueArrayToJsonArray(arguments));
 
-			auto response = GetJsonObject(dispatcher->OnJsonRequest(request));
+			auto response = GetJsonObject(dispatcher->OnJsonRequest(request, true));
 			CHECK_ERROR(GetJsonString(GetJsonObjectField(response, WString::Unmanaged(L"rpcMethod"))) == WString::Unmanaged(L"IObjectEventOps_InvokeEvent"), ERROR_MESSAGE_PREFIX L"Unexpected response method.");
 			CHECK_ERROR(ReadRequestId(response) == ReadRequestId(request), ERROR_MESSAGE_PREFIX L"Unexpected response request id.");
 			return BoxValue(CreateSerializedEventExceptionMap(GetJsonObjectField(response, WString::Unmanaged(L"response"))));

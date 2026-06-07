@@ -195,8 +195,8 @@ TEST_FILE
 					auto ooForList2 = Ptr(new RpcCalleeObjectOpsForList(lo2, oo2, nullptr));
 					auto oeoForList2 = Ptr(new RpcCalleeObjectEventOpsForList(leo2, oeo2, nullptr));
 
-					lc1->GetController()->Register(ooForList1, oeoForList1, lo1, leo1);
-					lc2->GetController()->Register(ooForList2, oeoForList2, lo2, leo2);
+					lc1->GetController()->Register(ooForList1, oeoForList1);
+					lc2->GetController()->Register(ooForList2, oeoForList2);
 					RpcDualDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
 
 					// Run serviceMain with lc1

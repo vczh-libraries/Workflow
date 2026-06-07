@@ -906,11 +906,6 @@ namespace vl
 			objectOps->ObjectHold(ref, remoteClientId, hold);
 		}
 
-		void RpcCalleeObjectOpsForList::RegisterService(vint typeId, Ptr<IDescriptable> service)
-		{
-			objectOps->RegisterService(typeId, service);
-		}
-
 /***********************************************************************
 * RpcCalleeObjectEventOpsForList
 ***********************************************************************/

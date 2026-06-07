@@ -65,7 +65,7 @@ namespace vl
 			rpc_controller::IRpcObjectOps*								SendToClient_ObjectOps(vint targetClientId)override;
 
 			vint														AllocateRequestId()override;
-			Ptr<glr::json::JsonNode>									OnJsonRequest(Ptr<glr::json::JsonNode> message)override;
+			Ptr<glr::json::JsonNode>									OnJsonRequest(Ptr<glr::json::JsonNode> message, bool broadcast)override;
 			void														DumpJsonRequests(const WString& itemName);
 		};
 	}

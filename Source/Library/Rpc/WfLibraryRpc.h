@@ -135,7 +135,6 @@ namespace vl
 			virtual reflection::description::Value					InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments) = 0;
 			virtual void											EndInvokeMethod(vint slot) = 0;
 			virtual void											ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold) = 0;
-			virtual void											RegisterService(vint typeId, Ptr<reflection::IDescriptable> service) = 0;
 		};
 
 		class IRpcListEventOps
@@ -163,9 +162,7 @@ namespace vl
 			, public reflection::Description<IRpcOperations>
 		{
 		public:
-			virtual IRpcListOps*					GetListOps() = 0;
 			virtual IRpcObjectOps*					GetObjectOps() = 0;
-			virtual IRpcListEventOps*				GetListEventOps() = 0;
 			virtual IRpcObjectEventOps*				GetObjectEventOps() = 0;
 		};
 
@@ -203,7 +200,7 @@ namespace vl
 		*   Register(
 		*     objectOps: RpcCalleeObjectOpsForList(RpcCalleeListOps(lifecycle, serializer), rpcops_IRpcObjectOpsJson, serializer)
 		*     eventOps: RpcCalleeObjectEventOpsForList(RpcCalleeListEventOps(lifecycle, serializer), rpcops_IRpcObjectEventOpsJson, serializer)
-		*     );
+		*   );
 		* 
 		* Triggering RpcLifecycleBase::AttachLocalObjectEvents
 		*   call rpclistener_Attach(ref.typeId, this, ref, obj, (cached)rpcops_IOps_CreateJson(this))

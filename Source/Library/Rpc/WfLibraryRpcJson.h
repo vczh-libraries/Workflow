@@ -28,7 +28,7 @@ namespace vl
 		{
 		public:
 			virtual vint							AllocateRequestId() = 0;
-			virtual Ptr<glr::json::JsonNode>		OnJsonRequest(Ptr<glr::json::JsonNode> message) = 0;
+			virtual Ptr<glr::json::JsonNode>		OnJsonRequest(Ptr<glr::json::JsonNode> message, bool broadcast) = 0;
 		};
 
 		class RpcJsonObjectOps : public Object, public IRpcObjectOps
@@ -37,17 +37,15 @@ namespace vl
 			vint									sourceClientId = RpcClientId_Invalid;
 			vint									targetClientId = RpcClientId_Invalid;
 			IRpcJsonMessageDispatcher*				dispatcher = nullptr;
-			IRpcLifecycle*							lifecycle = nullptr;
 
 		public:
 			RpcJsonObjectOps(IRpcJsonMessageDispatcher* _dispatcher);
-			RpcJsonObjectOps(vint _sourceClientId, vint _targetClientId, IRpcJsonMessageDispatcher* _dispatcher, IRpcLifecycle* _lifecycle = nullptr);
+			RpcJsonObjectOps(vint _sourceClientId, vint _targetClientId, IRpcJsonMessageDispatcher* _dispatcher);
 			~RpcJsonObjectOps();
 
 			reflection::description::Value			InvokeMethod(RpcObjectReference ref, vint methodId, Ptr<reflection::description::IValueArray> arguments)override;
 			void									EndInvokeMethod(vint slot)override;
 			void									ObjectHold(RpcObjectReference ref, vint remoteClientId, bool hold)override;
-			void									RegisterService(vint typeId, Ptr<reflection::IDescriptable> service)override;
 
 			static Ptr<glr::json::JsonNode>			Translate(Ptr<glr::json::JsonNode> message, IRpcObjectOps* ops, IRpcLifecycle* lifecycle = nullptr);
 		};

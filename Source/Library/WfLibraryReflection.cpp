@@ -147,7 +147,7 @@ WfLoadLibraryTypes
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcJsonMessageDispatcher)
 				CLASS_MEMBER_METHOD(AllocateRequestId, NO_PARAMETER)
-				CLASS_MEMBER_METHOD(OnJsonRequest, { L"message" })
+				CLASS_MEMBER_METHOD(OnJsonRequest, { L"message" _ L"broadcast" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcJsonMessageDispatcher)
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcListOps)
@@ -184,7 +184,6 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_METHOD(InvokeMethod, { L"ref" _ L"methodId" _ L"arguments" })
 				CLASS_MEMBER_METHOD(EndInvokeMethod, { L"slot" })
 				CLASS_MEMBER_METHOD(ObjectHold, { L"ref" _ L"remoteClientId" _ L"hold" })
-				CLASS_MEMBER_METHOD(RegisterService, { L"typeId" _ L"service" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectOps)
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectEventOps)
@@ -192,9 +191,7 @@ WfLoadLibraryTypes
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcObjectEventOps)
 
 			BEGIN_INTERFACE_MEMBER_NOPROXY(vl::rpc_controller::IRpcOperations)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ListOps)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ObjectOps)
-				CLASS_MEMBER_PROPERTY_READONLY_FAST(ListEventOps)
 				CLASS_MEMBER_PROPERTY_READONLY_FAST(ObjectEventOps)
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcOperations)
 

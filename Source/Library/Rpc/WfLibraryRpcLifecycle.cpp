@@ -373,14 +373,6 @@ namespace vl
 			return clientId;
 		}
 
-		IRpcDispatcher* RpcLifecycleBase::GetDispatcher()
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::GetDispatcher()#"
-			CHECK_ERROR(dispatcher, ERROR_MESSAGE_PREFIX L"No dispatcher registered.");
-			return dispatcher;
-#undef ERROR_MESSAGE_PREFIX
-		}
-
 		RpcControllerDefault* RpcLifecycleBase::GetController()
 		{
 			return &controller;
@@ -423,7 +415,8 @@ namespace vl
 			{
 				CHECK_FAIL(L"Unknown RPC type id.");
 			}
-			controller.GetObjectOps()->RegisterService(idMap.Values()[index], service);
+			auto typeId = idMap.Values()[index];
+			GetDispatcher()->RegisterService(typeId, PtrToRef(service));
 		}
 
 		Ptr<IDescriptable> RpcLifecycleBase::RequestService(const WString& fullName)

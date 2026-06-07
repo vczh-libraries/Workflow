@@ -1434,44 +1434,6 @@ namespace vl
 					return functionDecl;
 				}
 
-				Ptr<WfStatement> BuildRegisterService()
-				{
-					auto block = CreateBlock();
-					auto registerBranch = CreateBlock();
-					AddStatement(
-						registerBranch,
-						CreateExpressionStatement(
-							CreateCall(
-								CreateMember(CreateMember(CreateReference(L"_lc"), L"Dispatcher"), L"RegisterService"),
-								CreateReference(L"typeId"),
-								CreateCall(CreateMember(CreateReference(L"_lc"), L"PtrToRef"), CreateReference(L"service"))
-								)
-							)
-						);
-					auto nonCtorBranch = CreateBlock();
-					AddStatement(nonCtorBranch, CreateRaise(L"RPC service type id is not an @rpc:Ctor interface."));
-					auto invalidTypeIdBranch = CreateBlock();
-					AddStatement(invalidTypeIdBranch, CreateRaise(L"RPC service type id does not exist."));
-					auto invalidRegisterBranch = CreateBlock();
-					AddStatement(
-						invalidRegisterBranch,
-						CreateIf(
-							CreateCall(CreateReference(L"rpcwrapper_IsInterfaceTypeId"), CreateReference(L"typeId")),
-							nonCtorBranch,
-							invalidTypeIdBranch
-							)
-						);
-					AddStatement(
-						block,
-						CreateIf(
-							CreateCall(CreateReference(L"rpcwrapper_IsCtorInterfaceTypeId"), CreateReference(L"typeId")),
-							registerBranch,
-							invalidRegisterBranch
-						)
-					);
-					return block;
-				}
-
 				Ptr<WfDeclaration> GenerateObjectOpsFactory(const List<RpcInterfaceModel>& interfaces)
 				{
 					auto functionDecl = CreateFunctionDeclaration(L"rpcops_IRpcObjectOps", CreateTypeFromCpp<Ptr<rpc_controller::IRpcObjectOps>>(), WfFunctionKind::Normal);
@@ -1516,15 +1478,6 @@ namespace vl
 						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectUnhold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
 						AddStatement(objectHold->statement.Cast<WfBlockStatement>(), CreateIf(CreateReference(L"hold"), trueBranch, falseBranch));
 						newOps->declarations.Add(objectHold);
-					}
-
-					{
-						auto registerService = CreateFunctionDeclaration(L"RegisterService", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						registerService->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						registerService->arguments.Add(CreateFunctionArgument(L"service", CreateTypeFromCpp<Ptr<reflection::IDescriptable>>()));
-						auto block = registerService->statement.Cast<WfBlockStatement>();
-						AddStatement(block, BuildRegisterService());
-						newOps->declarations.Add(registerService);
 					}
 
 					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));

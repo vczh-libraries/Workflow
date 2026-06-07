@@ -18,27 +18,15 @@ namespace vl
 		{
 		}
 
-		void RpcControllerDefault::Register(Ptr<IRpcObjectOps> _objectCallback, Ptr<IRpcObjectEventOps> _eventCallback, Ptr<IRpcListOps> _listCallback, Ptr<IRpcListEventOps> _listEventCallback)
+		void RpcControllerDefault::Register(Ptr<IRpcObjectOps> _objectCallback, Ptr<IRpcObjectEventOps> _eventCallback)
 		{
 			objectCallback = _objectCallback;
 			eventCallback = _eventCallback;
-			listCallback = _listCallback;
-			listEventCallback = _listEventCallback;
-		}
-
-		IRpcListOps* RpcControllerDefault::GetListOps()
-		{
-			return listCallback.Obj();
 		}
 
 		IRpcObjectOps* RpcControllerDefault::GetObjectOps()
 		{
 			return objectCallback.Obj();
-		}
-
-		IRpcListEventOps* RpcControllerDefault::GetListEventOps()
-		{
-			return listEventCallback.Obj();
 		}
 
 		IRpcObjectEventOps* RpcControllerDefault::GetObjectEventOps()

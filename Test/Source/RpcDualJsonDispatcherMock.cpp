@@ -175,10 +175,6 @@ namespace vl
 					ops->ObjectHold(ref, remoteClientId, hold);
 				}
 
-				void RegisterService(vint typeId, Ptr<reflection::IDescriptable> service)override
-				{
-					ops->RegisterService(typeId, service);
-				}
 			};
 		}
 
@@ -360,7 +356,7 @@ namespace vl
 			if (!*opsPtr)
 			{
 				auto sourceLifecycle = GetOtherJsonLifecycle(targetClientId);
-				*opsPtr = Ptr(new RpcJsonObjectOps(sourceLifecycle->GetClientId(), targetClientId, this, sourceLifecycle));
+				*opsPtr = Ptr(new RpcJsonObjectOps(sourceLifecycle->GetClientId(), targetClientId, this));
 			}
 			return opsPtr->Obj();
 #undef ERROR_MESSAGE_PREFIX
@@ -371,21 +367,26 @@ namespace vl
 			return ++nextRequestId;
 		}
 
-		Ptr<JsonNode> RpcDualJsonRequestDispatcherMock::OnJsonRequest(Ptr<JsonNode> message)
+		Ptr<JsonNode> RpcDualJsonRequestDispatcherMock::OnJsonRequest(Ptr<JsonNode> message, bool broadcast)
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestDispatcherMock::OnJsonRequest(Ptr<JsonNode>)#"
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestDispatcherMock::OnJsonRequest(Ptr<JsonNode>, bool)#"
 			auto rpcMethod = ReadRpcMethod(message);
 			auto sourceClientId = ReadSourceClientId(message);
 			jsonRequests.Add(message);
 
 			Ptr<JsonNode> response;
 			RpcDualLifecycleMock* receiver = nullptr;
-			if (IsRpcMethod(rpcMethod, WString::Unmanaged(L"IObjectOps_")))
+			if (!broadcast && IsRpcMethod(rpcMethod, WString::Unmanaged(L"IObjectOps_")))
 			{
 				receiver = GetJsonLifecycle(ReadTargetClientId(message));
 				response = RpcJsonObjectOps::Translate(message, receiver->GetController()->GetObjectOps(), receiver);
 			}
-			else if (IsRpcMethod(rpcMethod, WString::Unmanaged(L"IObjectEventOps_")))
+			else if (broadcast && rpcMethod == WString::Unmanaged(L"IObjectOps_RegisterService"))
+			{
+				receiver = GetOtherJsonLifecycle(sourceClientId);
+				response = RpcJsonObjectOps::Translate(message, receiver->GetController()->GetObjectOps(), receiver);
+			}
+			else if (broadcast && IsRpcMethod(rpcMethod, WString::Unmanaged(L"IObjectEventOps_")))
 			{
 				receiver = GetOtherJsonLifecycle(sourceClientId);
 				response = RpcJsonObjectEventOps::Translate(message, receiver->GetController()->GetObjectEventOps());

@@ -71,7 +71,6 @@ namespace vl
 				void CollectMangledNames(WfLexicalScopeManager* manager);
 				List<RpcInterfaceModel> BuildInterfaceModels(WfLexicalScopeManager* manager);
 				bool HasRpcEvents(const List<RpcInterfaceModel>& interfaces);
-				Ptr<WfStatement> BuildRegisterService();
 				WString GetRpcOpsInterfaceName(const WString& assemblyName);
 				WString GetRpcOpsInvokeMethodName(const RpcMethodModel& methodModel);
 				WString GetRpcOpsInvokeEventName(const RpcEventModel& eventModel);
@@ -1282,15 +1281,6 @@ namespace vl
 						AddStatement(falseBranch, CreateExpressionStatement(CreateCall(CreateMember(CreateReference(L"_lc"), L"LocalObjectUnhold"), CreateReference(L"ref"), CreateReference(L"remoteClientId"))));
 						AddStatement(objectHold->statement.Cast<WfBlockStatement>(), CreateIf(CreateReference(L"hold"), trueBranch, falseBranch));
 						newOps->declarations.Add(objectHold);
-					}
-
-					{
-						auto registerService = CreateFunctionDeclaration(L"RegisterService", CreatePredefinedType(WfPredefinedTypeName::Void), WfFunctionKind::Override);
-						registerService->arguments.Add(CreateFunctionArgument(L"typeId", CreatePredefinedType(WfPredefinedTypeName::Int)));
-						registerService->arguments.Add(CreateFunctionArgument(L"service", CreateTypeFromCpp<Ptr<reflection::IDescriptable>>()));
-						auto block = registerService->statement.Cast<WfBlockStatement>();
-						AddStatement(block, BuildRegisterService());
-						newOps->declarations.Add(registerService);
 					}
 
 					AddStatement(functionDecl->statement.Cast<WfBlockStatement>(), CreateReturn(newOps));

@@ -40,11 +40,14 @@ namespace vl
 
 		class RpcDualLifecycleMock : public rpc_controller::RpcLifecycleBase
 		{
+		private:
+			rpc_controller::IRpcDispatcher*											dispatcher = nullptr;
 		protected:
 			void																	AttachLocalObjectEvents(rpc_controller::RpcObjectReference ref, reflection::IDescriptable* obj)override;
 		public:
 			using rpc_controller::RpcLifecycleBase::RpcLifecycleBase;
 
+			rpc_controller::IRpcDispatcher*											GetDispatcher()override;
 			void																	SetDispatcher(rpc_controller::IRpcDispatcher* _dispatcher);
 		};
 	}
