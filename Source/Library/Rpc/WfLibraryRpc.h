@@ -244,14 +244,12 @@ namespace vl
 		*   The same to remote object.
 		* 
 		* Registering Service:
-		*   -> IRpcLifecycle->RegisterService
+		*   -> IRpcLifecycle->RegisterLocalService
 		*   {
-		*     -> IRpcLifecycle->GetDispatcher()->RegisterService
+		*     -> IRpcLifecycle->GetDispatcher()->DeclareLocalService
+		*     ---- NETWORK PROTOCOL (broadcast) ----
+		*     -> IRpcLifecycle::DeclareRemoteService
 		*   }
-		* 
-		* Requesting Service:
-		*   -> IRpcLifecycle->RequestService
-		*   -> IRpcLifecycle->GetDispatcher()->RequestService
 		*/
 		class IRpcLifecycle
 			: public virtual reflection::IDescriptable

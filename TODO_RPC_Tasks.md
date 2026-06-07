@@ -5,6 +5,35 @@ Follow `REPO-ROOT/.github/Rules/document-and-commit.md` to finish the work.
 
 ## Task 1
 
+`Test/UnitTest/Generated_Apps_ChatBot/Generated_Apps_ChatBot.vcxitems` has wild cards, which is not allowed, enumerate files explicitly.
+
+Refactor of `IRpcLifecycle`:
+
+- Rename `IRpcLifecycle::RegisterService` to `RegisterLocalService`, registering a local object as a service.
+- Add `IRpcLifecycle::DeclareRemoteService(vint typeId, vint clientId)`, declare a registered remote service.
+- Add `IRpcLifecycle::GetRegisteredLocalServices`, returns a const& dictionary of local registered services.
+- Update `IRpcLifecycle::RequestService(vint typeId)`, returns the local registered service or call `IRpcDispatcher::RequestService`.
+- Add `IRpcLifecycle::Initialize` calling `IRpcDispatcher::Initialize`. `RegisterLocalService` will throw after that.
+- New functions will be implemented in `RpcLifecycleBase`.
+  - `RegisterLocalService` throw if the type id already exists.
+  - `DeclareRemoteService` overrides old entries if type id already exists.
+  - `RequestService` prioritize local service over remote service.
+- Test samples need to change so that it calls `IRpcLifecycle::RegisterLocalService`.
+
+Refactor of `IRpcDispatcher`:
+- Delete `IRpcDispatcher::IsRegisteredService`.
+- Update `IRpcDispatcher::RegisterService` to `IRpcDispatcher::DeclareLocalService(typeId, clientId)`.
+- Add `IRpcDispatcher::Initialize`.
+- In test mocks:
+  - `Initialize` keeps empty.
+  - `RegisterService` calls `IRpcLifecycle::DeclareRemoteService` of the other side.
+  - Services registration will always be in `RpcLifecycleBase`, test mocks should no longer maintain service registration.
+  - Currently both `RpcLifecycleBase` and all `IRpcDispatcher` mocks maintain services, which is incorrect.
+
+The goal is that, when user implements its own protocol of RPC, `IRpcDispatcher` and `IRpcJsonMessageDispatcher` will be pure for data transmission, they should not maintain any data or state.
+
+## Task 1
+
 ### ChatBotServer.vcxproj
 
 It hosts an `localhost:8888/WorkflowChatBot` using `vl::inter_process::HttpServer`.
