@@ -16,6 +16,9 @@
 
 ## ToDo
 
+- IRpcDispatcher implemenration for IRpcJsonDispatcher.
+  - RpcJsonDispatcher, with a Translate function.
+  - CppTest_Metaonly need to use two dispatchers, with a bridge to connect two json dispatcher.
 - `ChatBotServer` and `ChatBotClient` project.
   - Declaration of service registration from every client connection.
   - How does `InvokeEvent` collect results from all client? Might need to update `IChannel::BroadcastFromClient` and enable a return value.
