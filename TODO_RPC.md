@@ -16,6 +16,11 @@
 
 ## ToDo
 
+- `ChatBotServer` and `ChatBotClient` project.
+  - Declaration of service registration from every client connection.
+  - How does `InvokeEvent` collect results from all client?
+  - Update `UnitTest/README.md` and `Project.md`.
+
 ## Knowledge Base
 
 - RPC

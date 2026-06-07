@@ -232,7 +232,7 @@ namespace vl
 		*   -> rpcops_IOps_<Application>::InvokeMethod_IMyInterface_SomethingHappened (generated Workflow code)
 		*   {
 		*     -> IRpcLifecycle->GetDispatcher()->BroadcastFromClient_ObjectEventOps()->InvokeEvent
-		*     -> RpcJsonObjectOps::InvokeEvent
+		*     -> RpcJsonEventObjectOps::InvokeEvent
 		*     -> IRpcJsonMessageDispatcher::OnJsonRequest
 		*     ---- NETWORK PROTOCOL (broadcast) ----
 		*     -> RpcJsonEventObjectOps::Translate
@@ -240,14 +240,21 @@ namespace vl
 		*     -> RpcCalleeObjectEventOpsForList::InvokeEvent
 		*     -> rpcops_IRpcObjectEventOpsJson()->InvokeEvent (generated Workflow code)
 		*     -> IMyInterface::SomethingHappened
+		*     ---- NETWORK PROTOCOL (response) ----
 		*   }
 		* 
 		* Triggering Event of Local Object (when a local object is tracked, RpcLifecycleBase::AttachLocalObjectEvents will be called)
 		*   The same to remote object.
 		* 
 		* Registering Service:
+		*   -> IRpcLifecycle->RegisterService
+		*   {
+		*     -> IRpcLifecycle->GetDispatcher()->RegisterService
+		*   }
 		* 
 		* Requesting Service:
+		*   -> IRpcLifecycle->RequestService
+		*   -> IRpcLifecycle->GetDispatcher()->RequestService
 		*/
 		class IRpcLifecycle
 			: public virtual reflection::IDescriptable
