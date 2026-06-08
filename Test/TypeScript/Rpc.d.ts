@@ -53,6 +53,18 @@ export type RpcEventExceptionMap =
   | [number, system_RpcException][]
   ;
 
+export interface MessageBase {
+  rpcRequestId: number;
+  sourceClientId: number;
+}
+
+export interface BroadcastRequest extends MessageBase {
+}
+
+export interface DirectRequest extends MessageBase {
+  targetClientId: number;
+}
+
 export interface IObjectOps_InvokeMethod_Request<T>
 {
   rpcMethod: "IObjectOps_InvokeMethod";
