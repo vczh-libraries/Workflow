@@ -2,19 +2,19 @@
 
 # Orders
 
+- Remove pure RPC redirection layers once dispatcher/ops can own the call [6]
 - Avoid explicit Workflow types/casts when implicit typing works [5]
-- Remove pure RPC redirection layers once dispatcher/ops can own the call [5]
+- Keep TypeScript RPC dispatcher envelopes separate from value schemas [4]
 - Keep RPC-specific fixes out of generic C++ / Workflow codegen surfaces [3]
 - Read and aggregate RPC event exception maps through `IRpcLifecycle::ReadEventException` [3]
-- Keep TypeScript RPC dispatcher envelopes separate from value schemas [3]
+- Keep RPC service state in `RpcLifecycleBase`, not dispatchers [3]
+- Move reusable RPC controller/lifecycle code into `Source/Library/Rpc` with strict dependencies [3]
 - Generated RPC test id maps must come from `rpc_GetIds()` / `SetIdMap` [2]
 - Interpret `IRpcWrapperBase` as remote-wrapper identity [2]
 - Use internal properties defensively in `RpcDualLifecycleMock` [2]
 - Store and manage RPC wrappers as `IRpcWrapperBase` [2]
-- Keep RPC service state in `RpcLifecycleBase`, not dispatchers [2]
 - Keep RPC byref boxing/unboxing interface-only [2]
 - Split RPC JSON generation into dedicated analyzer/module files [2]
-- Move reusable RPC controller/lifecycle code into `Source/Library/Rpc` with strict dependencies [2]
 - Reuse production RPC helpers from `TestRpcCompile.cpp` [2]
 - Treat `@rpc:IdString` and `@rpc:IdNumber` as internal generated metadata [2]
 - Verify copied RPC metadata recompiles to the same metadata [2]
@@ -23,7 +23,9 @@
 - Keep Workflow library helpers out-of-line with explicit `extern` [2]
 - Validate RPC JSON ops payloads as `JsonNode` values [2]
 - RPC event workarounds should match the actual `Event<T>` behavior [2]
-- Apply `RunRpcTestCase` changes to every harness variant [1]
+- Apply `RunRpcTestCase` changes to every harness variant [2]
+- Order generated RPC type checks with derived interfaces before bases [2]
+- Use request-envelope adapters for RPC JSON dispatcher paths [2]
 - Keep RPC JSON test harness setup under `VCZH_DEBUG_NO_REFLECTION` [1]
 - Use generated strong typed RPC ops for event listeners [1]
 - Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for registering free functions as reflection static methods [1]
@@ -37,7 +39,6 @@
 - Do not fake reflected struct fields with placeholder `AddField` registrations [1]
 - Generate RPC metadata from `ITypeDescriptor`, not original AST declarations [1]
 - Resolve RPC default attributes during validation, before wrapper generation [1]
-- Order generated RPC type checks with derived interfaces before bases [1]
 - Check Workflow wrapper status through raw `object` when interface casts are illegal [1]
 - Keep RPC ownership identity in the local-object tracker [1]
 - Reflect concrete byref RPC collection wrappers as collection types [1]
@@ -58,7 +59,6 @@
 - Prefix generated RPC C++ file names to avoid basename collisions [1]
 - Prefer generic `BoxValue`/`UnboxValue` over specialized RPC box/unbox helpers [1]
 - Keep shared Workflow test output path helpers in `Helper.h` / `Helper.cpp` [1]
-- Use request-envelope adapters for RPC JSON dispatcher paths [1]
 - Keep RPC array resizing separate from list-only mutations [1]
 
 # Refinements
@@ -99,11 +99,15 @@ When service registration moves into lifecycle-owned state, remove object-op reg
 
 For the dual-lifecycle RPC test dispatcher, the flat path has exactly two lifecycles. `RpcDualDispatcherMockBase::BroadcastFromClient_ObjectEventOps` can directly return the other lifecycle controller's `GetObjectEventOps()`, and `RpcDualDispatcherMock` does not need cached flat object/event wrapper fields if it becomes identical to the base dispatcher. Keep service registry, finalization, object hold/unhold routing, and JSON-recording wrappers that still own output capture behavior.
 
+For JSON request dispatch, once `RpcJsonDispatcher` and `RpcJsonLifecycle` own the reusable behavior, remove test-only dual JSON lifecycle/dispatcher mocks that only route calls. If lifecycle-owned remote-service state is enough to build a `RpcObjectReference`, delete dispatcher-side `RequestService` contracts instead of preserving a compatibility call.
+
 ## Keep RPC service state in `RpcLifecycleBase`, not dispatchers
 
 RPC dispatchers should be pure transmission/relay layers and should not maintain service-registration state. Store local service objects and remote service declarations in `RpcLifecycleBase`; let dispatcher mocks relay local declarations to the other lifecycle instead of keeping their own service dictionaries.
 
 The reflected lifecycle surface should distinguish local registration from remote declaration: `RegisterLocalService(typeId, service)` rejects duplicate local type ids and rejects calls after `Initialize()`, while `DeclareRemoteService(typeId, clientId)` may overwrite an earlier remote declaration. `IRpcLifecycle::RequestService` should take a type-name string, resolve the lifecycle id map, return a matching local service first, and only then ask `IRpcDispatcher::RequestService(typeId)` for a declared remote service.
+
+For JSON request transport, declaring a local service can be a broadcast request that causes the receiving lifecycle to call `DeclareRemoteService`; the dispatcher still only carries the message while lifecycle state remains authoritative.
 
 ## Keep RPC byref boxing/unboxing interface-only
 
@@ -116,6 +120,8 @@ Keep RPC JSON responsibilities separated from ordinary RPC wrapper generation. J
 ## Move reusable RPC controller/lifecycle code into `Source/Library/Rpc` with strict dependencies
 
 Reusable RPC controller, lifecycle, and wrapper implementations belong under `Source/Library/Rpc` and library vcxitems, not copied through test projects. The base lifecycle layer must not depend on the dual-lifecycle test layer; the thin `RpcDualLifecycleMock` may depend on the base, but not the other way around.
+
+Reusable JSON RPC behavior also belongs in production classes such as `RpcJsonDispatcher` and `RpcJsonLifecycle`, with small callback hooks for generated behavior like event attachment or `DecideTypeId`. Prefer passing generated callbacks into the reusable lifecycle over creating test-only lifecycle subclasses.
 
 ## Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for registering free functions as reflection static methods
 
@@ -186,6 +192,8 @@ Default RPC attributes such as `@rpc:Byval` / `@rpc:Byref` for collection argume
 ## Order generated RPC type checks with derived interfaces before bases
 
 When generated RPC test or wrapper code checks interface type ids, order derived/leaf interfaces before base interfaces. If a base type is checked first, derived objects can be treated as the base type. Use `PartialOrderPreprocessor` or equivalent inheritance ordering instead of relying on declaration order.
+
+Generated Workflow helpers such as `rpcwrapper_GetTypeId(object):int` should use the same leaf-first ordering, especially when replacing C++ test-only type-id lambdas.
 
 ## Check Workflow wrapper status through raw `object` when interface casts are illegal
 
@@ -299,6 +307,8 @@ Every dispatcher request and response envelope should carry `rpcRequestId: numbe
 
 Keep generated concrete schema declarations centralized in `DataSchema32` and `DataSchema64`. JSON value and request transcript folders should import `Serialization_*.d.ts` declarations from the matching `DataSchema*` folder instead of carrying their own copies.
 
+Use clear `rpcMethod` names in dispatcher envelopes, including `Request:` and `Response:` prefixes and shared bases such as `BroadcastRequest` and `DirectRequest` to avoid repeating common client-id/request-id fields.
+
 ## Prefix generated RPC C++ file names to avoid basename collisions
 
 Generated RPC C++ include, reflection, and default implementation file names should include the `Rpc` prefix from `TestRpcCompile.cpp` inputs. Once generated file basenames are unique, remove obsolete project `ObjectFileName` rename workarounds and stale Linux vmake exclusions for old collisions such as `Event.cpp` and `Overloading.cpp`.
@@ -314,6 +324,8 @@ Path helpers used by Workflow test components should live beside the other share
 ## Use request-envelope adapters for RPC JSON dispatcher paths
 
 `RpcJsonObjectOps` and `RpcJsonObjectEventOps` should adapt generated JSON ops to `IRpcJsonMessageDispatcher` request/response envelopes. Caller-side methods build `Rpc.d.ts` request objects, write or allocate `rpcRequestId`, call `OnJsonRequest`, and decode the response payload back into the `JsonNode`-boxed shape expected by generated wrappers. Static `Translate` methods perform the reverse: parse the request envelope, invoke the target ops interface, normalize exceptions or byval-return data as needed, and build a response envelope that reuses the request id.
+
+`RpcJsonDispatcher::Translate` should follow the same envelope-adapter pattern for dispatcher-level operations such as service declaration broadcasts, keeping the dispatcher boundary JSON-shaped while target lifecycles/controllers receive typed calls.
 
 ## Keep RPC array resizing separate from list-only mutations
 

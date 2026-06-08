@@ -2,12 +2,12 @@
 
 # Orders
 
-- Run TypeScript RPC schema verification after JSON or dispatcher-schema changes [9]
+- Run TypeScript RPC schema verification after JSON or dispatcher-schema changes [10]
 - Wire generated RPC C++ files into shared vcxitems after `CompilerTest_LoadAndCompile` [7]
 - Compare `RuntimeTest` and `CppTest*` failures before choosing an RPC root cause [6]
+- Run `CompilerTest_LoadAndCompile` at least once before downstream RPC generated-C++ tests [6]
 - Preserve RPC/Workflow sample intent; only adjust syntax or diagnostics [6]
 - Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder [5]
-- Run `CompilerTest_LoadAndCompile` at least once before downstream RPC generated-C++ tests [5]
 - RPC byref/byval container samples must verify wrapper/copy semantics at every level [5]
 - Commit direct edits and large generated outputs separately when requested [4]
 - Pure refactors should not touch generated RPC outputs [4]
@@ -88,6 +88,8 @@ Adding a sample to `IndexRpc.txt` is not enough for solution hygiene. Ensure eve
 ## Run `CompilerTest_LoadAndCompile` at least once before downstream RPC generated-C++ tests
 
 Some compiler generated binaries are not covered by git. Before relying on `RuntimeTest` or `CppTest*` results for RPC work, run `CompilerTest_LoadAndCompile` at least once so metadata, wrapper scripts, and generated C++ inputs are current.
+
+This is also required after changing RPC test harness signatures or generated wrapper helper contracts: stale generated C++ can keep calling the old harness until `CompilerTest_LoadAndCompile` refreshes `TestCasesRpc.cpp` and related generated files.
 
 ## Run TypeScript RPC schema verification after JSON or dispatcher-schema changes
 
