@@ -196,6 +196,24 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 		}
 
+		RpcObjectReference RpcLifecycleBase::CreateLocalObject(Ptr<IDescriptable> obj, RpcObjectReference ref)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::CreateLocalObject(Ptr<reflection::IDescriptable>, RpcObjectReference)#"
+			CHECK_ERROR(ref.clientId == clientId, ERROR_MESSAGE_PREFIX L"Ref is not local.");
+			CHECK_ERROR(!localObjectProperties.Keys().Contains(ref.objectId), ERROR_MESSAGE_PREFIX L"Object ID already registered.");
+			auto props = Ptr(new RpcLocalObjectProperties);
+			props->ref = ref;
+			props->ownedPtr = obj;
+			localObjectProperties.Set(ref.objectId, props);
+			TrackLocalObject(ref, obj.Obj());
+			if (nextObjectId < ref.objectId)
+			{
+				nextObjectId = ref.objectId;
+			}
+			return ref;
+#undef ERROR_MESSAGE_PREFIX
+		}
+
 		void RpcLifecycleBase::UntrackLocalObject(RpcObjectReference ref, bool clearInternalProperty)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::RpcLifecycleBase::UntrackLocalObject(RpcObjectReference, bool)#"
@@ -437,7 +455,7 @@ namespace vl
 				throw Exception(ERROR_MESSAGE_PREFIX L"Service is already registered.");
 			}
 
-			auto ref = PtrToRef(service);
+			auto ref = CreateLocalObject(service, RpcObjectReference{ clientId, typeId, typeId });
 			LocalObjectHold(ref, clientId);
 			registeredLocalServices.Set(typeId, service);
 			GetDispatcher()->DeclareLocalService(typeId, clientId);
@@ -463,10 +481,10 @@ namespace vl
 				return registeredLocalServices.Values()[index];
 			}
 
-			if (registeredRemoteServices.Keys().Contains(typeId))
+			if (auto index = registeredRemoteServices.Keys().IndexOf(typeId); index != -1)
 			{
-				auto ref = GetDispatcher()->RequestService(typeId);
-				return RefToPtr(ref);
+				auto remoteClientId = registeredRemoteServices.Values()[index];
+				return RefToPtr(RpcObjectReference{ remoteClientId, typeId, typeId });
 			}
 
 			return nullptr;
@@ -542,15 +560,7 @@ namespace vl
 
 			auto typeId = DecideTypeId(obj.Obj());
 			CHECK_ERROR(typeId != RpcTypeId_NotFound, ERROR_MESSAGE_PREFIX L"DecideTypeId returned RpcTypeId_NotFound (unknown type).");
-			auto ref = RpcObjectReference{ clientId, ++nextObjectId, typeId };
-			CHECK_ERROR(!localObjectProperties.Keys().Contains(ref.objectId), ERROR_MESSAGE_PREFIX L"Object ID already registered.");
-			auto props = Ptr(new RpcLocalObjectProperties);
-			props->ref = ref;
-			props->ownedPtr = obj;
-			localObjectProperties.Set(ref.objectId, props);
-
-			TrackLocalObject(ref, obj.Obj());
-			return ref;
+			return CreateLocalObject(obj, RpcObjectReference{ clientId, ++nextObjectId, typeId });
 #undef ERROR_MESSAGE_PREFIX
 		}
 	}

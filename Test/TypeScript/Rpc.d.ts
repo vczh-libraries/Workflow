@@ -65,79 +65,63 @@ export interface DirectRequest extends MessageBase {
   targetClientId: number;
 }
 
-export interface IObjectOps_InvokeMethod_Request<T>
+export interface IObjectOps_InvokeMethod_Request<T> extends DirectRequest
 {
-  rpcMethod: "IObjectOps_InvokeMethod";
-  rpcRequestId: number;
-  sourceClientId: number;
-  targetClientId: number;
+  rpcMethod: "Request:IObjectOps_InvokeMethod";
   ref: system_RpcObjectReference;
   methodId: number;
   arguments: T[];
 }
 
-export interface IObjectOps_InvokeMethod_Response<T>
+export interface IObjectOps_InvokeMethod_Response<T> extends DirectRequest
 {
-  rpcMethod: "IObjectOps_InvokeMethod";
-  rpcRequestId: number;
-  sourceClientId: number;
-  targetClientId: number;
+  rpcMethod: "Response:IObjectOps_InvokeMethod";
   response: T | system_RpcByvalReturnValue<T>;
 }
 
-export interface IObjectOps_EndInvokeMethod_Request
+export interface IObjectOps_EndInvokeMethod_Request extends DirectRequest
 {
-  rpcMethod: "IObjectOps_EndInvokeMethod";
-  rpcRequestId: number;
-  sourceClientId: number;
-  targetClientId: number;
+  rpcMethod: "Request:IObjectOps_EndInvokeMethod";
   slot: number;
 }
 
-export interface IObjectOps_EndInvokeMethod_Response
+export interface IObjectOps_EndInvokeMethod_Response extends DirectRequest
 {
-  rpcMethod: "IObjectOps_EndInvokeMethod";
-  rpcRequestId: number;
-  sourceClientId: number;
-  targetClientId: number;
+  rpcMethod: "Response:IObjectOps_EndInvokeMethod";
 }
 
-export interface IObjectOps_ObjectHold_Request
+export interface IObjectOps_ObjectHold_Request extends DirectRequest
 {
-  rpcMethod: "IObjectOps_ObjectHold";
-  rpcRequestId: number;
-  sourceClientId: number;
-  targetClientId: number;
+  rpcMethod: "Request:IObjectOps_ObjectHold";
   ref: system_RpcObjectReference;
   remoteClientId: number;
   hold: boolean;
 }
 
-export interface IObjectOps_ObjectHold_Response
+export interface IObjectOps_ObjectHold_Response extends DirectRequest
 {
-  rpcMethod: "IObjectOps_ObjectHold";
-  rpcRequestId: number;
-  sourceClientId: number;
-  targetClientId: number;
+  rpcMethod: "Response:IObjectOps_ObjectHold";
 }
 
-export interface IObjectEventOps_InvokeEvent_Request<T>
+export interface IObjectEventOps_InvokeEvent_Request<T> extends BroadcastRequest
 {
-  rpcMethod: "IObjectEventOps_InvokeEvent";
-  rpcRequestId: number;
-  sourceClientId: number;
+  rpcMethod: "Request:IObjectEventOps_InvokeEvent";
   ref: system_RpcObjectReference;
   eventId: number;
   arguments: T[];
 }
 
-export interface Broadcast_Response
+export interface IRpcDispatcher_DeclareLocalService_Request extends BroadcastRequest
 {
-  rpcMethod: "IObjectEventOps_InvokeEvent";
-  rpcRequestId: number;
-  sourceClientId: number;
-  targetClientId: number;
-  response: RpcEventExceptionMap;
+  rpcMethod: "Request:IRpcDispatcher_DeclareLocalService";
+  typeId: number;
+  clientId: number;
+}
+
+export interface Broadcast_Response extends DirectRequest
+{
+  rpcMethod: "Response:Broadcast_Response";
+  response?: RpcEventExceptionMap;
 }
 
 export type Request<T> =
@@ -145,6 +129,7 @@ export type Request<T> =
   | IObjectOps_EndInvokeMethod_Request
   | IObjectOps_ObjectHold_Request
   | IObjectEventOps_InvokeEvent_Request<T>
+  | IRpcDispatcher_DeclareLocalService_Request
   ;
 
 export type Response<T> =

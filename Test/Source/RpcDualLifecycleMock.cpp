@@ -85,29 +85,6 @@ namespace vl
 			GetOtherLifecycle(clientId)->DeclareRemoteService(typeId, clientId);
 		}
 
-		RpcObjectReference RpcDualDispatcherMockBase::RequestService(vint typeId)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualDispatcherMockBase::RequestService(vint)#"
-			auto findService = [typeId](RpcDualLifecycleMock* lifecycle, RpcObjectReference& ref)
-			{
-				auto&& services = lifecycle->GetRegisteredLocalServices();
-				auto index = services.Keys().IndexOf(typeId);
-				if (index != -1)
-				{
-					ref = lifecycle->PtrToRef(services.Values()[index]);
-					return true;
-				}
-				return false;
-			};
-
-			RpcObjectReference ref;
-			if (findService(lifecycle1, ref)) return ref;
-			if (findService(lifecycle2, ref)) return ref;
-			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Service is not registered.");
-			return {};
-#undef ERROR_MESSAGE_PREFIX
-		}
-
 		IRpcObjectEventOps* RpcDualDispatcherMockBase::BroadcastFromClient_ObjectEventOps(vint selfClientId)
 		{
 			return GetOtherLifecycle(selfClientId)->GetController()->GetObjectEventOps();

@@ -175,7 +175,6 @@ namespace vl
 			virtual void							Finalize() = 0;
 			virtual void							Initialize() = 0;
 			virtual void							DeclareLocalService(vint typeId, vint clientId) = 0;
-			virtual RpcObjectReference				RequestService(vint typeId) = 0;
 
 			virtual IRpcObjectEventOps*				BroadcastFromClient_ObjectEventOps(vint selfClientId) = 0;
 			virtual IRpcObjectOps*					SendToClient_ObjectOps(vint targetClientId) = 0;
@@ -196,12 +195,12 @@ namespace vl
 		/*
 		* [Configuration]
 		* 
-		* Calling IRpcLifecycle->GetController()->Register
+		* RunRpcTestCase_JsonRequest configures one RpcJsonDispatcher and one RpcJsonLifecycle for each client.
+		*   messageDispatcher = shared IRpcJsonMessageDispatcher
+		*   dispatcher = RpcJsonDispatcher(clientId, messageDispatcher)
+		*   lifecycle = RpcJsonLifecycle(clientId, dispatcher)
 		*   serializer = rpcops_IRpcSerializer()
-		*   Register(
-		*     objectOps: RpcCalleeObjectOpsForList(RpcCalleeListOps(lifecycle, serializer), rpcops_IRpcObjectOpsJson, serializer)
-		*     eventOps: RpcCalleeObjectEventOpsForList(RpcCalleeListEventOps(lifecycle, serializer), rpcops_IRpcObjectEventOpsJson, serializer)
-		*   );
+		*   lifecycle->Register(serializer, rpcops_IRpcObjectOpsJson(lifecycle), rpcops_IRpcObjectEventOpsJson(lifecycle), eventAttacher)
 		* 
 		* Triggering RpcLifecycleBase::AttachLocalObjectEvents
 		*   call rpclistener_Attach(ref.typeId, this, ref, obj, (cached)rpcops_IOps_CreateJson(this))

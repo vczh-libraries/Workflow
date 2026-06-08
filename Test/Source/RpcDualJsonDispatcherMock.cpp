@@ -44,6 +44,18 @@ namespace vl
 				return nullptr;
 			}
 
+			Ptr<JsonNode> FindJsonObjectField(Ptr<JsonObject> object, const WString& name)
+			{
+				for (auto field : object->fields)
+				{
+					if (field->name.value == name)
+					{
+						return field->value;
+					}
+				}
+				return nullptr;
+			}
+
 			WString GetJsonString(Ptr<JsonNode> node)
 			{
 				auto stringNode = node.Cast<JsonString>();
@@ -58,35 +70,7 @@ namespace vl
 				return wtoi(numberNode->content.value);
 			}
 
-			Ptr<JsonNumber> CreateJsonNumber(vint value)
-			{
-				auto node = Ptr(new JsonNumber);
-				node->content.value = itow(value);
-				return node;
-			}
-
-			void AddJsonObjectField(Ptr<JsonObject> object, const WString& name, Ptr<JsonNode> value)
-			{
-				auto field = Ptr(new JsonObjectField);
-				field->name.value = name;
-				field->value = value;
-				object->fields.Add(field);
-			}
-
-			void SetJsonObjectField(Ptr<JsonObject> object, const WString& name, Ptr<JsonNode> value)
-			{
-				for (auto field : object->fields)
-				{
-					if (field->name.value == name)
-					{
-						field->value = value;
-						return;
-					}
-				}
-				AddJsonObjectField(object, name, value);
-			}
-
-			bool IsRpcMethod(const WString& rpcMethod, const WString& prefix)
+			bool IsRpcMethodPrefix(const WString& rpcMethod, const WString& prefix)
 			{
 				return rpcMethod.Length() >= prefix.Length() && rpcMethod.Left(prefix.Length()) == prefix;
 			}
@@ -101,19 +85,6 @@ namespace vl
 			{
 				auto object = GetJsonObject(message);
 				return GetJsonInt(GetJsonObjectField(object, WString::Unmanaged(L"sourceClientId")));
-			}
-
-			vint ReadTargetClientId(Ptr<JsonNode> message)
-			{
-				auto object = GetJsonObject(message);
-				return GetJsonInt(GetJsonObjectField(object, WString::Unmanaged(L"targetClientId")));
-			}
-
-			void WriteRpcClientIds(Ptr<JsonNode> message, vint sourceClientId, vint targetClientId)
-			{
-				auto object = GetJsonObject(message);
-				SetJsonObjectField(object, WString::Unmanaged(L"sourceClientId"), CreateJsonNumber(sourceClientId));
-				SetJsonObjectField(object, WString::Unmanaged(L"targetClientId"), CreateJsonNumber(targetClientId));
 			}
 
 			class RpcJsonObjectEventOpsMock : public Object, public IRpcObjectEventOps
@@ -288,22 +259,12 @@ namespace vl
 		}
 
 /***********************************************************************
-* RpcDualJsonRequestDispatcherMock
+* RpcDualJsonRequestBridge
 ***********************************************************************/
 
-		RpcDualLifecycleMock* RpcDualJsonRequestDispatcherMock::GetJsonLifecycle(vint clientId)const
+		IRpcLifecycle* RpcDualJsonRequestBridge::GetOtherLifecycle(vint clientId)const
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestDispatcherMock::GetJsonLifecycle(vint)const#"
-			if (lifecycle1 && lifecycle1->GetClientId() == clientId) return lifecycle1;
-			if (lifecycle2 && lifecycle2->GetClientId() == clientId) return lifecycle2;
-			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unknown client id.");
-			return nullptr;
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		RpcDualLifecycleMock* RpcDualJsonRequestDispatcherMock::GetOtherJsonLifecycle(vint clientId)const
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestDispatcherMock::GetOtherJsonLifecycle(vint)const#"
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestBridge::GetOtherLifecycle(vint)const#"
 			if (lifecycle1 && lifecycle1->GetClientId() == clientId) return lifecycle2;
 			if (lifecycle2 && lifecycle2->GetClientId() == clientId) return lifecycle1;
 			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unknown client id.");
@@ -311,95 +272,61 @@ namespace vl
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		RpcDualJsonRequestDispatcherMock::RpcDualJsonRequestDispatcherMock(RpcDualLifecycleMock* lc1, RpcDualLifecycleMock* lc2)
-			: RpcDualDispatcherMockBase(lc1, lc2)
-			, lifecycle1(lc1)
-			, lifecycle2(lc2)
+		void RpcDualJsonRequestBridge::SetLifecycles(IRpcLifecycle* lc1, IRpcLifecycle* lc2)
 		{
-		}
-
-		RpcDualJsonRequestDispatcherMock::~RpcDualJsonRequestDispatcherMock()
-		{
-		}
-
-		void RpcDualJsonRequestDispatcherMock::Finalize()
-		{
-			objectEventOps2 = nullptr;
-			objectEventOps1 = nullptr;
-			objectOps2 = nullptr;
-			objectOps1 = nullptr;
-			RpcDualDispatcherMockBase::Finalize();
-		}
-
-		IRpcObjectEventOps* RpcDualJsonRequestDispatcherMock::BroadcastFromClient_ObjectEventOps(vint selfClientId)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestDispatcherMock::BroadcastFromClient_ObjectEventOps(vint)#"
-			Ptr<IRpcObjectEventOps>* opsPtr = nullptr;
-			if (lifecycle1 && lifecycle1->GetClientId() == selfClientId) opsPtr = &objectEventOps1;
-			if (lifecycle2 && lifecycle2->GetClientId() == selfClientId) opsPtr = &objectEventOps2;
-			CHECK_ERROR(opsPtr, ERROR_MESSAGE_PREFIX L"Unknown client id.");
-			if (!*opsPtr)
-			{
-				*opsPtr = Ptr(new RpcJsonObjectEventOps(selfClientId, this));
-			}
-			return opsPtr->Obj();
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestBridge::SetLifecycles(IRpcLifecycle*, IRpcLifecycle*)#"
+			CHECK_ERROR(lc1 && lc2, ERROR_MESSAGE_PREFIX L"Two lifecycles are required.");
+			lifecycle1 = lc1;
+			lifecycle2 = lc2;
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		IRpcObjectOps* RpcDualJsonRequestDispatcherMock::SendToClient_ObjectOps(vint targetClientId)
-		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestDispatcherMock::SendToClient_ObjectOps(vint)#"
-			Ptr<IRpcObjectOps>* opsPtr = nullptr;
-			if (lifecycle1 && lifecycle1->GetClientId() == targetClientId) opsPtr = &objectOps1;
-			if (lifecycle2 && lifecycle2->GetClientId() == targetClientId) opsPtr = &objectOps2;
-			CHECK_ERROR(opsPtr, ERROR_MESSAGE_PREFIX L"Unknown client id.");
-			if (!*opsPtr)
-			{
-				auto sourceLifecycle = GetOtherJsonLifecycle(targetClientId);
-				*opsPtr = Ptr(new RpcJsonObjectOps(sourceLifecycle->GetClientId(), targetClientId, this));
-			}
-			return opsPtr->Obj();
-#undef ERROR_MESSAGE_PREFIX
-		}
-
-		vint RpcDualJsonRequestDispatcherMock::AllocateRequestId()
+		vint RpcDualJsonRequestBridge::AllocateRequestId()
 		{
 			return ++nextRequestId;
 		}
 
-		Ptr<JsonNode> RpcDualJsonRequestDispatcherMock::OnJsonRequest(Ptr<JsonNode> message, bool broadcast)
+		Ptr<JsonNode> RpcDualJsonRequestBridge::OnJsonRequest(Ptr<JsonNode> message, bool broadcast)
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestDispatcherMock::OnJsonRequest(Ptr<JsonNode>, bool)#"
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestBridge::OnJsonRequest(Ptr<JsonNode>, bool)#"
 			auto rpcMethod = ReadRpcMethod(message);
+			auto object = GetJsonObject(message);
 			auto sourceClientId = ReadSourceClientId(message);
+			auto receiver = GetOtherLifecycle(sourceClientId);
+			if (auto targetClientIdNode = FindJsonObjectField(object, WString::Unmanaged(L"targetClientId")))
+			{
+				auto targetClientId = GetJsonInt(targetClientIdNode);
+				CHECK_ERROR(targetClientId != sourceClientId, ERROR_MESSAGE_PREFIX L"Target client id should be different from source client id.");
+				CHECK_ERROR(targetClientId == receiver->GetClientId(), ERROR_MESSAGE_PREFIX L"Target client id should be the other lifecycle.");
+			}
 			jsonRequests.Add(message);
 
 			Ptr<JsonNode> response;
-			RpcDualLifecycleMock* receiver = nullptr;
-			if (!broadcast && IsRpcMethod(rpcMethod, WString::Unmanaged(L"IObjectOps_")))
+			if (!broadcast && IsRpcMethodPrefix(rpcMethod, WString::Unmanaged(L"Request:IObjectOps_")))
 			{
-				receiver = GetJsonLifecycle(ReadTargetClientId(message));
 				response = RpcJsonObjectOps::Translate(message, receiver->GetController()->GetObjectOps(), receiver);
 			}
-			else if (broadcast && IsRpcMethod(rpcMethod, WString::Unmanaged(L"IObjectEventOps_")))
+			else if (broadcast && IsRpcMethodPrefix(rpcMethod, WString::Unmanaged(L"Request:IObjectEventOps_")))
 			{
-				receiver = GetOtherJsonLifecycle(sourceClientId);
-				response = RpcJsonObjectEventOps::Translate(message, receiver->GetController()->GetObjectEventOps());
+				response = RpcJsonObjectEventOps::Translate(message, receiver->GetController()->GetObjectEventOps(), receiver);
+			}
+			else if (broadcast && rpcMethod == WString::Unmanaged(L"Request:IRpcDispatcher_DeclareLocalService"))
+			{
+				response = RpcJsonDispatcher::Translate(message, receiver->GetDispatcher(), receiver);
 			}
 			else
 			{
 				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unknown JSON RPC method.");
 			}
 
-			WriteRpcClientIds(response, receiver->GetClientId(), sourceClientId);
 			jsonRequests.Add(response);
 			return response;
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RpcDualJsonRequestDispatcherMock::DumpJsonRequests(const WString& itemName)
+		void RpcDualJsonRequestBridge::DumpJsonRequests(const WString& itemName)
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestDispatcherMock::DumpJsonRequests(const WString&)#"
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestBridge::DumpJsonRequests(const WString&)#"
 			auto folderPath = ::GetJsonRequestOutputPath();
 			filesystem::Folder folder(folderPath);
 			if (!folder.Exists())

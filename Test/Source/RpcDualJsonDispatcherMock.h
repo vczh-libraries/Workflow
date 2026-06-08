@@ -39,30 +39,18 @@ namespace vl
 * Json Request
 ***********************************************************************/
 
-		class RpcDualJsonRequestDispatcherMock
-			: public RpcDualDispatcherMockBase
-			, public rpc_controller::IRpcJsonMessageDispatcher
+		class RpcDualJsonRequestBridge : public Object, public rpc_controller::IRpcJsonMessageDispatcher
 		{
 		private:
-			RpcDualLifecycleMock*										lifecycle1 = nullptr;
-			RpcDualLifecycleMock*										lifecycle2 = nullptr;
+			rpc_controller::IRpcLifecycle*								lifecycle1 = nullptr;
+			rpc_controller::IRpcLifecycle*								lifecycle2 = nullptr;
 			collections::List<Ptr<glr::json::JsonNode>>					jsonRequests;
 			vint														nextRequestId = 0;
-			Ptr<rpc_controller::IRpcObjectEventOps>						objectEventOps1;
-			Ptr<rpc_controller::IRpcObjectEventOps>						objectEventOps2;
-			Ptr<rpc_controller::IRpcObjectOps>							objectOps1;
-			Ptr<rpc_controller::IRpcObjectOps>							objectOps2;
 
-			RpcDualLifecycleMock*										GetJsonLifecycle(vint clientId)const;
-			RpcDualLifecycleMock*										GetOtherJsonLifecycle(vint clientId)const;
+			rpc_controller::IRpcLifecycle*								GetOtherLifecycle(vint clientId)const;
 
 		public:
-			RpcDualJsonRequestDispatcherMock(RpcDualLifecycleMock* lc1, RpcDualLifecycleMock* lc2);
-			~RpcDualJsonRequestDispatcherMock();
-
-			void														Finalize()override;
-			rpc_controller::IRpcObjectEventOps*							BroadcastFromClient_ObjectEventOps(vint selfClientId)override;
-			rpc_controller::IRpcObjectOps*								SendToClient_ObjectOps(vint targetClientId)override;
+			void														SetLifecycles(rpc_controller::IRpcLifecycle* lc1, rpc_controller::IRpcLifecycle* lc2);
 
 			vint														AllocateRequestId()override;
 			Ptr<glr::json::JsonNode>									OnJsonRequest(Ptr<glr::json::JsonNode> message, bool broadcast)override;

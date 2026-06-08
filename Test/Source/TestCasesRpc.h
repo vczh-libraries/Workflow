@@ -38,6 +38,20 @@ namespace vl
 
 		};
 
+		class RpcCppJsonLifecycleMock : public RpcJsonLifecycle
+		{
+		public:
+			vint(*decideTypeIdCallback)(IDescriptable*) = nullptr;
+			using RpcJsonLifecycle::RpcJsonLifecycle;
+
+			vint DecideTypeId(IDescriptable* obj)const override
+			{
+				auto result = RpcJsonLifecycle::DecideTypeId(obj);
+				if (result != RpcTypeId_NotFound) return result;
+				return decideTypeIdCallback(obj);
+			}
+		};
+
 		template<typename TInstance, bool HasEvent>
 		void RunRpcTestCase_JsonValue(
 			const WString& itemName,
@@ -114,17 +128,21 @@ namespace vl
 		{
 			auto& instance = TInstance::Instance();
 
-			auto lc1 = Ptr(new RpcCppLifecycleMock(1));
-			auto lc2 = Ptr(new RpcCppLifecycleMock(2));
+			RpcDualJsonRequestBridge bridge;
+			RpcJsonDispatcher dispatcher1(1, &bridge);
+			RpcJsonDispatcher dispatcher2(2, &bridge);
+			auto lc1 = Ptr(new RpcCppJsonLifecycleMock(1, &dispatcher1));
+			auto lc2 = Ptr(new RpcCppJsonLifecycleMock(2, &dispatcher2));
+			bridge.SetLifecycles(lc1.Obj(), lc2.Obj());
+
 			auto idMap = UnboxParameter<Dictionary<WString, vint>>(BoxParameter(instance.rpc_GetIds()));
 			lc1->SetIdMap(idMap.Ref());
 			lc2->SetIdMap(idMap.Ref());
 			lc1->decideTypeIdCallback = decideTypeId;
 			lc2->decideTypeIdCallback = decideTypeId;
 
-			lc1->SetSerializer(instance.rpcops_IRpcSerializer());
-			lc2->SetSerializer(instance.rpcops_IRpcSerializer());
-
+			auto serializer1 = instance.rpcops_IRpcSerializer();
+			auto serializer2 = instance.rpcops_IRpcSerializer();
 			auto oo1 = instance.rpcops_IRpcObjectOpsJson(lc1.Obj());
 			auto oeo1 = instance.rpcops_IRpcObjectEventOpsJson(lc1.Obj());
 			auto oo2 = instance.rpcops_IRpcObjectOpsJson(lc2.Obj());
@@ -132,31 +150,26 @@ namespace vl
 			auto ops1 = instance.rpcops_IOps_CreateJson(lc1.Obj());
 			auto ops2 = instance.rpcops_IOps_CreateJson(lc2.Obj());
 
-			auto lo1 = Ptr(new RpcCalleeListOps(lc1.Obj(), lc1->GetSerializer()));
-			auto leo1 = Ptr(new RpcCalleeListEventOps(lc1.Obj(), lc1->GetSerializer()));
-			auto lo2 = Ptr(new RpcCalleeListOps(lc2.Obj(), lc2->GetSerializer()));
-			auto leo2 = Ptr(new RpcCalleeListEventOps(lc2.Obj(), lc2->GetSerializer()));
-			auto ooForList1 = Ptr(new RpcCalleeObjectOpsForList(lo1, oo1, lc1->GetSerializer()));
-			auto oeoForList1 = Ptr(new RpcCalleeObjectEventOpsForList(leo1, oeo1, lc1->GetSerializer()));
-			auto ooForList2 = Ptr(new RpcCalleeObjectOpsForList(lo2, oo2, lc2->GetSerializer()));
-			auto oeoForList2 = Ptr(new RpcCalleeObjectEventOpsForList(leo2, oeo2, lc2->GetSerializer()));
+			Func<void(RpcObjectReference, IDescriptable*)> eventAttacher1;
+			Func<void(RpcObjectReference, IDescriptable*)> eventAttacher2;
 
 			if constexpr (HasEvent)
 			{
-				lc1->attachLocalEventsCallback = Func<void(RpcDualLifecycleMock*, RpcObjectReference, IDescriptable*)>([&](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj)
+				eventAttacher1 = Func<void(RpcObjectReference, IDescriptable*)>([&](RpcObjectReference ref, IDescriptable* obj)
 				{
-					instance.rpclistener_Attach(ref.typeId, mock, ref, obj, ops1);
+					if (ref.typeId < 0) return;
+					instance.rpclistener_Attach(ref.typeId, lc1.Obj(), ref, obj, ops1);
 				});
-				lc2->attachLocalEventsCallback = Func<void(RpcDualLifecycleMock*, RpcObjectReference, IDescriptable*)>([&](RpcDualLifecycleMock* mock, RpcObjectReference ref, IDescriptable* obj)
+				eventAttacher2 = Func<void(RpcObjectReference, IDescriptable*)>([&](RpcObjectReference ref, IDescriptable* obj)
 				{
-					instance.rpclistener_Attach(ref.typeId, mock, ref, obj, ops2);
+					if (ref.typeId < 0) return;
+					instance.rpclistener_Attach(ref.typeId, lc2.Obj(), ref, obj, ops2);
 				});
 			}
 
-			lc1->GetController()->Register(ooForList1, oeoForList1);
-			lc2->GetController()->Register(ooForList2, oeoForList2);
+			lc1->Register(serializer1, oo1, oeo1, eventAttacher1);
+			lc2->Register(serializer2, oo2, oeo2, eventAttacher2);
 
-			RpcDualJsonRequestDispatcherMock dispatcher(lc1.Obj(), lc2.Obj());
 			lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops1); });
 			lc2->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops2); });
 
@@ -170,8 +183,9 @@ namespace vl
 			Console::WriteLine(L"    actual   : " + actual);
 			TEST_ASSERT(actual == expected);
 
-			dispatcher.Finalize();
-			dispatcher.DumpJsonRequests(itemName);
+			lc2->Finalize();
+			lc1->Finalize();
+			bridge.DumpJsonRequests(itemName);
 		}
 
 		template<typename TInstance, bool HasEvent>

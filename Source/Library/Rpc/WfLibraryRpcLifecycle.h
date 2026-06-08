@@ -90,6 +90,7 @@ namespace vl
 			bool											TryGetTrackedWrapperRef(reflection::DescriptableObject* obj, RpcObjectReference& ref)const;
 			IRpcWrapperBase*								GetTrackedWrapper(RpcObjectReference ref)const;
 			void											TrackLocalObject(RpcObjectReference ref, reflection::IDescriptable* obj);
+			RpcObjectReference								CreateLocalObject(Ptr<reflection::IDescriptable> obj, RpcObjectReference ref);
 			void											UntrackLocalObject(RpcObjectReference ref, bool clearInternalProperty);
 			void											RemoveLocalObject(RpcObjectReference ref, bool clearInternalProperty);
 			bool											IsTracked(vint objectId)const;

@@ -199,7 +199,6 @@ WfLoadLibraryTypes
 				CLASS_MEMBER_METHOD(Finalize, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(Initialize, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(DeclareLocalService, { L"typeId" _ L"clientId" })
-				CLASS_MEMBER_METHOD(RequestService, { L"typeId" })
 				CLASS_MEMBER_METHOD(BroadcastFromClient_ObjectEventOps, { L"selfClientId" })
 				CLASS_MEMBER_METHOD(SendToClient_ObjectOps, { L"targetClientId" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcDispatcher)
