@@ -183,3 +183,10 @@ func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecy
         raise "Unknown RPC type id for wrapper creation.";
     }
 }
+
+func rpcwrapper_GetTypeId(obj : object) : (int)
+{
+    if (obj is (RpcCollectionOblist::Default::IService*))
+    return rpctype_RpcCollectionOblist__Default__IService;
+    return -100;
+}

@@ -111,6 +111,7 @@ namespace vl_workflow_global
 		::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_PropByref> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::RpcCollectionDict::InByref::PropByref::IRpcWrapper_IService> rpcwrapper_RpcCollectionDict__InByref__PropByref__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_PropByref> ops);
 		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_PropByref> ops);
+		::vl::vint64_t rpcwrapper_GetTypeId(const ::vl::reflection::description::Value& obj);
 		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize(const ::vl::reflection::description::Value& value);
 		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::rpc_controller::IRpcSerializer> rpcops_IRpcSerializer();

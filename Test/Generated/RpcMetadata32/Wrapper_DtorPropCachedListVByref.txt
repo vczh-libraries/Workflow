@@ -367,3 +367,12 @@ func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecy
         raise "Unknown RPC type id for wrapper creation.";
     }
 }
+
+func rpcwrapper_GetTypeId(obj : object) : (int)
+{
+    if (obj is (RpcDtorPropCachedListVByref::IValue*))
+    return rpctype_RpcDtorPropCachedListVByref__IValue;
+    if (obj is (RpcDtorPropCachedListVByref::IService*))
+    return rpctype_RpcDtorPropCachedListVByref__IService;
+    return -100;
+}

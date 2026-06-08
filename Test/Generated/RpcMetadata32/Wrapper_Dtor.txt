@@ -220,3 +220,12 @@ func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecy
         raise "Unknown RPC type id for wrapper creation.";
     }
 }
+
+func rpcwrapper_GetTypeId(obj : object) : (int)
+{
+    if (obj is (RpcDtorTest::IValue*))
+    return rpctype_RpcDtorTest__IValue;
+    if (obj is (RpcDtorTest::IService*))
+    return rpctype_RpcDtorTest__IService;
+    return -100;
+}

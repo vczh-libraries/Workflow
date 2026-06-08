@@ -164,6 +164,13 @@ Global Functions
 		}
 	}
 
+	::vl::vint64_t Rpc_CollectionDict_PropDefault::rpcwrapper_GetTypeId(const ::vl::reflection::description::Value& obj)
+	{
+		if ([&](){ auto __vwsn_temp__ = obj; return !__vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::RpcCollectionDict::PropDefault::IService>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			return GLOBAL_NAME rpctype_RpcCollectionDict__PropDefault__IService;
+		return static_cast<::vl::vint64_t>(-100L);
+	}
+
 	::vl::Ptr<::vl::glr::json::JsonNode> Rpc_CollectionDict_PropDefault::rpcjson_Serialize(const ::vl::reflection::description::Value& value)
 	{
 		return ::vl::rpc_controller::JsonSerializePredefinedTypes(value, ::vl::Func<::vl::Ptr<::vl::glr::json::JsonNode>(const ::vl::reflection::description::Value&)>(GLOBAL_OBJ, &GLOBAL_SYMBOL rpcjson_Serialize));

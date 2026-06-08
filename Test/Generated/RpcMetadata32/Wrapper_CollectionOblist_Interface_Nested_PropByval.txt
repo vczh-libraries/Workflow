@@ -296,3 +296,12 @@ func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecy
         raise "Unknown RPC type id for wrapper creation.";
     }
 }
+
+func rpcwrapper_GetTypeId(obj : object) : (int)
+{
+    if (obj is (RpcCollectionOblist::Interface::Nested::InByval::PropByval::IValue*))
+    return rpctype_RpcCollectionOblist__Interface__Nested__InByval__PropByval__IValue;
+    if (obj is (RpcCollectionOblist::Interface::Nested::InByval::PropByval::IService*))
+    return rpctype_RpcCollectionOblist__Interface__Nested__InByval__PropByval__IService;
+    return -100;
+}

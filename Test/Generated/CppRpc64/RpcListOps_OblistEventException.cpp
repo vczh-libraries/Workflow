@@ -147,6 +147,13 @@ Global Functions
 		}
 	}
 
+	::vl::vint64_t Rpc_ListOps_OblistEventException::rpcwrapper_GetTypeId(const ::vl::reflection::description::Value& obj)
+	{
+		if ([&](){ auto __vwsn_temp__ = obj; return !__vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::RpcListOpsOblistEventException::IServer>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			return GLOBAL_NAME rpctype_RpcListOpsOblistEventException__IServer;
+		return static_cast<::vl::vint64_t>(-100L);
+	}
+
 	::vl::Ptr<::vl::glr::json::JsonNode> Rpc_ListOps_OblistEventException::rpcjson_Serialize(const ::vl::reflection::description::Value& value)
 	{
 		return ::vl::rpc_controller::JsonSerializePredefinedTypes(value, ::vl::Func<::vl::Ptr<::vl::glr::json::JsonNode>(const ::vl::reflection::description::Value&)>(GLOBAL_OBJ, &GLOBAL_SYMBOL rpcjson_Serialize));

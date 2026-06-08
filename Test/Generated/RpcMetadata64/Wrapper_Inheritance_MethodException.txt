@@ -409,3 +409,18 @@ func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecy
         raise "Unknown RPC type id for wrapper creation.";
     }
 }
+
+func rpcwrapper_GetTypeId(obj : object) : (int)
+{
+    if (obj is (RpcInheritanceMethodException::IDerived*))
+    return rpctype_RpcInheritanceMethodException__IDerived;
+    if (obj is (RpcInheritanceMethodException::IOne*))
+    return rpctype_RpcInheritanceMethodException__IOne;
+    if (obj is (RpcInheritanceMethodException::ITwo*))
+    return rpctype_RpcInheritanceMethodException__ITwo;
+    if (obj is (RpcInheritanceMethodException::IValue*))
+    return rpctype_RpcInheritanceMethodException__IValue;
+    if (obj is (RpcInheritanceMethodException::IService*))
+    return rpctype_RpcInheritanceMethodException__IService;
+    return -100;
+}
