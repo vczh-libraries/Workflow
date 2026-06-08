@@ -5,68 +5,6 @@ Follow `REPO-ROOT/.github/Rules/document-and-commit.md` to finish the work.
 
 ## Task 1
 
-You are going to add these classes in `WfLibraryRpcJson.(h|cpp)`.
-- `RpcJsonLifecycle`, implementing `RpcLifecycleBase`.
-- `RpcJsonDispatcher`, implementing `IRpcDispatcher`.
-It builds classes that `RunRpcTestCase_JsonRequest` need but keeps general so that it can be reused, with more enhancement.
-
-You will need to update the `[Configuration]` section of `IRpcLifecycle` comment because this task makes it easier.
-Just write how `RunRpcTestCase_JsonRequest` configurate `RpcJsonLifecycle` with simiar wording.
-
-You will also need to update `Rpc.d.ts` as new protocols are added, otherwise `Test/Typescript` won't build:
-- `Broadcast_Response::rpcMethod` will be `Broadcast_Response` instead of the current value, it becomes a response of all broadcast requests.
-- Update all `rpcMethod` to add `Request:` or `Response:` at the beginning to make it clear.
-- I have prepared a `BroadcastRequest` and `DirectRequest`, all requests and responses should inherit from these interfaces and remove duplicated members.
-
-### RpcJsonDispatcher
-
-Just like `RpcJsonObjectOps` and `RpcJsonObjectEventOps`, `RpcJsonDispatcher` translates everything to `IRpcJsonMessageDispatcher` along with a `Translate(message, dispatcher, lifecycle)` function:
-- `Initialize` and `Finalize` keeps empty.
-- `DeclareLocalService` becomes a broadcast request, when `Translate` receives it, it calls `IRpcLifecycle::DeclareRemoteService`.
-- `BroadcastFromClient_ObjectEventOps` returns `RpcJsonObjectEventOps`.
-- `SendToClient_ObjectOps` returns `RpcJsonObjectOps`.
-- Delete `IRpcDispatcher::RequestService`:
-  - Currently only `RpcLifecycleBase::RequestService` is calling this function.
-  - Now when requesting for a remote service, it is going to just constructor a `RpcObjectReference` and let `RefToPtr` does the job.
-  - You will find that those information are just enough, it should be no need to call `IRpcDispatcher::RequestService` from the beginning.
-
-### RpcJsonLifecycle
-
-- `Register` function:
-  - parameters:
-    - `Ptr<IRpcSerializer> _serializer`
-    - `Ptr<IRpcObjectOps> _objectOps`
-    - `Ptr<IRpcObjectEventOps> _objectEventOps`
-    - `Func<void(RpcObjectReference, reflection::IDescriptable*)> _eventAttacher`
-  - calls `GetController()->Register` with arguments:
-    - `new RpcCalleeObjectOpsForList(new RpcCalleeListOps(this, _serializer), _objectOps, _serializer)`
-    - `new RpcCalleeObjectEventOpsForList(new RpcCalleeListEventOps(this, _serializer), _objectEventOps, _serializer)`.
-    - All objects that `new` here should be captured with `Ptr` in the class so that they will be automatically deleted.
-- `GetSerializer` returns `_serializer` from `Register`.
-- `GetDispatcher` returns the constructor parameter `RpcJsonDispatcher*`, but do not change the return type of `GetDispatcher`.
-- `AttachLocalObjectEvents` calls `_eventAttacher` when it is not null, otherwise it does nothing.
-- Othere 3 arguments from `Register` are assumed non null, no testing or assertion is required.
-
-### Refactoring RunRpcTestCase_JsonRequest
-
-- `RpcDualJsonLifecycleMock` inherits from `RpcJsonLifecycle`, or do not create this class if there is nothing more to add. My idea is that this class should not longer exist, but make your own judgement.
-- `RpcDualJsonRequestDispatcherMock` will inherit from `RpcJsonDispatcher`, or delete this class if there is nothing more to add. My idea is that this class should not longer exist, but make your own judgement.
-- `RpcDualJsonRequestBridge`inherits from `IRpcJsonMessageDispatcher`, which is pretty much a slice of the current `RpcDualJsonRequestDispatcherMock`:
-  - `RpcDualJsonRequestDispatcherMock` used to connect two `RpcDualJsonLifecycleMock`.
-  - But in the new design, each client will have its own lifecycle and dispatcher.
-  - Now `RpcDualJsonRequestBridge` is going to connect two lifecycles.
-  - After `RpcDualJsonRequestBridge` has the two pointer to lifecycles, it could easily read the `sourceClientId` from the message, and just call translate on objects from the other side. The reason is that, a dual version of mock only serve two clients.
-    - This is pretty much what has been done in `RpcDualJsonRequestDispatcherMock::OnJsonRequest` but needs some twists.
-    - When `targetClientId` exists, you are going to `CHECK_FAIL` that it is different from `sourceClientId`.
-
-### General Refactoring
-
-No need to reset any pointer or shared pointer member to null in the destructor.
-You written some destructors like this but it is totally unnecessary.
-Find out all code that doing this in `Source/Library/Rpc` and `Test/Source`, clean them.
-
-## Task 1
-
 ### ChatBotServer.vcxproj
 
 It hosts an `localhost:8888/WorkflowChatBot` using `vl::inter_process::HttpServer`.
