@@ -917,16 +917,25 @@ namespace vl
 			Ptr<IRpcSerializer> _serializer,
 			Ptr<IRpcObjectOps> _objectOps,
 			Ptr<IRpcObjectEventOps> _objectEventOps,
+			Func<vint(IDescriptable*)> _getTypeId,
 			Func<void(RpcObjectReference, IDescriptable*)> _eventAttacher
 			)
 		{
 			serializer = _serializer;
+			getTypeId = _getTypeId;
 			eventAttacher = _eventAttacher;
 			listOps = Ptr(new RpcCalleeListOps(this, serializer.Obj()));
 			listEventOps = Ptr(new RpcCalleeListEventOps(this, serializer.Obj()));
 			objectOpsForList = Ptr(new RpcCalleeObjectOpsForList(listOps, _objectOps, serializer.Obj()));
 			objectEventOpsForList = Ptr(new RpcCalleeObjectEventOpsForList(listEventOps, _objectEventOps, serializer.Obj()));
 			GetController()->Register(objectOpsForList, objectEventOpsForList);
+		}
+
+		vint RpcJsonLifecycle::DecideTypeId(IDescriptable* obj)const
+		{
+			auto result = RpcLifecycleBase::DecideTypeId(obj);
+			if (result != RpcTypeId_NotFound) return result;
+			return getTypeId ? getTypeId(obj) : RpcTypeId_NotFound;
 		}
 
 		IRpcSerializer* RpcJsonLifecycle::GetSerializer()

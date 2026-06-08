@@ -200,7 +200,8 @@ namespace vl
 		*   dispatcher = RpcJsonDispatcher(clientId, messageDispatcher)
 		*   lifecycle = RpcJsonLifecycle(clientId, dispatcher)
 		*   serializer = rpcops_IRpcSerializer()
-		*   lifecycle->Register(serializer, rpcops_IRpcObjectOpsJson(lifecycle), rpcops_IRpcObjectEventOpsJson(lifecycle), eventAttacher)
+		*   getTypeId = [rpcwrapper_GetTypeId(BoxValue<IDescriptable*>(obj))]
+		*   lifecycle->Register(serializer, rpcops_IRpcObjectOpsJson(lifecycle), rpcops_IRpcObjectEventOpsJson(lifecycle), getTypeId, eventAttacher)
 		* 
 		* Triggering RpcLifecycleBase::AttachLocalObjectEvents
 		*   call rpclistener_Attach(ref.typeId, this, ref, obj, (cached)rpcops_IOps_CreateJson(this))

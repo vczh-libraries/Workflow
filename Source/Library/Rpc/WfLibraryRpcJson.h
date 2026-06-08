@@ -95,6 +95,7 @@ namespace vl
 		{
 		private:
 			RpcJsonDispatcher*						dispatcher = nullptr;
+			Func<vint(reflection::IDescriptable*)>	getTypeId;
 			Func<void(RpcObjectReference, reflection::IDescriptable*)> eventAttacher;
 			Ptr<RpcCalleeListOps>					listOps;
 			Ptr<RpcCalleeListEventOps>				listEventOps;
@@ -102,6 +103,7 @@ namespace vl
 			Ptr<RpcCalleeObjectEventOpsForList>		objectEventOpsForList;
 
 		protected:
+			vint									DecideTypeId(reflection::IDescriptable* obj)const override;
 			void									AttachLocalObjectEvents(RpcObjectReference ref, reflection::IDescriptable* obj)override;
 
 		public:
@@ -111,6 +113,7 @@ namespace vl
 														Ptr<IRpcSerializer> _serializer,
 														Ptr<IRpcObjectOps> _objectOps,
 														Ptr<IRpcObjectEventOps> _objectEventOps,
+														Func<vint(reflection::IDescriptable*)> _getTypeId,
 														Func<void(RpcObjectReference, reflection::IDescriptable*)> _eventAttacher
 														);
 			IRpcSerializer*							GetSerializer()override;

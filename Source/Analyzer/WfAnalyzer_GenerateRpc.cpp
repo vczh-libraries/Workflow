@@ -484,6 +484,15 @@ namespace vl
 					return testing;
 				}
 
+				Ptr<WfExpression> CreateIsType(Ptr<WfExpression> expression, Ptr<WfType> type)
+				{
+					auto testing = Ptr(new WfTypeTestingExpression);
+					testing->test = WfTypeTesting::IsType;
+					testing->expression = expression;
+					testing->type = type;
+					return testing;
+				}
+
 				Ptr<WfExpression> CreateBool(bool value)
 				{
 					auto expression = Ptr(new WfLiteralExpression);
@@ -1556,6 +1565,42 @@ namespace vl
 					return nullptr;
 				}
 
+				void SortInterfaceModelsLeafFirst(const List<RpcInterfaceModel>& interfaces, List<const RpcInterfaceModel*>& sortedInterfaces)
+				{
+					sortedInterfaces.Clear();
+
+					List<WString> typeFullNames;
+					Group<WString, WString> dependencyGroup;
+					for (auto&& interfaceModel : interfaces)
+					{
+						typeFullNames.Add(interfaceModel.fullName);
+					}
+					for (auto&& interfaceModel : interfaces)
+					{
+						for (auto&& baseFullName : interfaceModel.baseFullNames)
+						{
+							if (typeFullNames.Contains(baseFullName))
+							{
+								dependencyGroup.Add(baseFullName, interfaceModel.fullName);
+							}
+						}
+					}
+
+					PartialOrderingProcessor pop;
+					pop.InitWithGroup(typeFullNames, dependencyGroup);
+					pop.Sort();
+
+					for (auto&& component : pop.components)
+					{
+						for (vint i = 0; i < component.nodeCount; i++)
+						{
+							auto interfaceModel = FindInterfaceModel(interfaces, typeFullNames[component.firstNode[i]]);
+							CHECK_ERROR(interfaceModel, L"SortInterfaceModelsLeafFirst: Invalid RPC interface name.");
+							sortedInterfaces.Add(interfaceModel);
+						}
+					}
+				}
+
 				bool ContainsEventModel(const List<const RpcEventModel*>& events, const WString& fullName)
 				{
 					for (auto eventModel : events)
@@ -2238,6 +2283,28 @@ namespace vl
 					AddStatement(block, switchStat);
 					return functionDecl;
 				}
+
+				Ptr<WfDeclaration> GenerateWrapperGetTypeId(const List<RpcInterfaceModel>& interfaces)
+				{
+					auto functionDecl = CreateFunctionDeclaration(L"rpcwrapper_GetTypeId", CreatePredefinedType(WfPredefinedTypeName::Int), WfFunctionKind::Normal);
+					functionDecl->arguments.Add(CreateFunctionArgument(L"obj", CreatePredefinedType(WfPredefinedTypeName::Object)));
+					auto block = functionDecl->statement.Cast<WfBlockStatement>();
+
+					List<const RpcInterfaceModel*> sortedInterfaces;
+					SortInterfaceModelsLeafFirst(interfaces, sortedInterfaces);
+					for (auto interfaceModel : sortedInterfaces)
+					{
+						AddStatement(
+							block,
+							CreateIf(
+								CreateIsType(CreateReference(L"obj"), CreateRawType(interfaceModel->fullName)),
+								CreateReturn(CreateRpcConstantReference(L"rpctype_", interfaceModel->fullName))
+								));
+					}
+
+					AddStatement(block, CreateReturn(CreateInt(rpc_controller::RpcTypeId_NotFound)));
+					return functionDecl;
+				}
 			}
 
 			Ptr<WfModule> GenerateModuleRpc(WfLexicalScopeManager* manager, WString assemblyName)
@@ -2326,6 +2393,7 @@ namespace vl
 				}
 
 				module->declarations.Add(GenerateWrapperDispatcher(interfaces, opsInterfaceName));
+				module->declarations.Add(GenerateWrapperGetTypeId(interfaces));
 
 				return module;
 			}

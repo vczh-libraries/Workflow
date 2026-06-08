@@ -70,48 +70,6 @@ static Ptr<List<Ptr<RpcEventBridgeInfo>>> CollectRpcEventBridgeInfos(WfLexicalSc
 	return eventInfos;
 }
 
-static void SortRpcTypeFullNamesLeafFirst(WfLexicalScopeManager& manager, const List<WString>& typeFullNames, List<WString>& sortedTypeFullNames)
-{
-	sortedTypeFullNames.Clear();
-
-	Group<WString, WString> dependencyGroup;
-	for (auto typeFullName : typeFullNames)
-	{
-		auto td = rpc_generating::FindRpcTypeDescriptor(&manager, typeFullName);
-		if (!td)
-		{
-			continue;
-		}
-
-		for (vint i = 0; i < td->GetBaseTypeDescriptorCount(); i++)
-		{
-			auto baseTd = td->GetBaseTypeDescriptor(i);
-			if (!baseTd)
-			{
-				continue;
-			}
-
-			auto baseFullName = baseTd->GetTypeName();
-			if (typeFullNames.Contains(baseFullName))
-			{
-				dependencyGroup.Add(baseFullName, typeFullName);
-			}
-		}
-	}
-
-	PartialOrderingProcessor pop;
-	pop.InitWithGroup(typeFullNames, dependencyGroup);
-	pop.Sort();
-
-	for (auto&& component : pop.components)
-	{
-		for (vint i = 0; i < component.nodeCount; i++)
-		{
-			sortedTypeFullNames.Add(typeFullNames[component.firstNode[i]]);
-		}
-	}
-}
-
 static void CompileRpcSample(WfLexicalScopeManager& manager, const WString& itemName, const WString& sample, Ptr<WfModule>& wrapperModule, Ptr<WfModule>& wrapperJsonModule)
 {
 	manager.Clear(true, true);
@@ -214,7 +172,6 @@ TEST_FILE
 		List<WString> rpcNames, reflectableAssemblies;
 		Dictionary<WString, WString> assemblyNames;
 		Dictionary<WString, WString> assemblyEntries;
-		Dictionary<WString, Ptr<List<WString>>> rpcTypeFullNamesPerItem;
 		Dictionary<WString, Ptr<List<Ptr<RpcEventBridgeInfo>>>> rpcEventBridgeInfosPerItem;
 		LoadSampleIndex(L"Rpc", rpcNames);
 
@@ -234,12 +191,6 @@ TEST_FILE
 				CompileRpcSample(manager, itemName, definitionSample, wrapperModule, wrapperJsonModule);
 				VerifyRpcMetadata(manager);
 				{
-					auto typeFullNames = Ptr(new List<WString>());
-					SortRpcTypeFullNamesLeafFirst(
-						manager,
-						manager.rpcMetadata->typeFullNames,
-						*typeFullNames.Obj());
-					rpcTypeFullNamesPerItem.Add(itemName, typeFullNames);
 					rpcEventBridgeInfosPerItem.Add(itemName, CollectRpcEventBridgeInfos(manager, itemName));
 
 					auto wrapperString = GenerateToStream([&](StreamWriter& writer)
@@ -408,28 +359,7 @@ TEST_FILE
 				writer.WriteString(itemName);
 				writer.WriteString(L"\", L\"");
 				writer.WriteString(itemResult);
-				writer.WriteLine(L"\",");
-
-				writer.WriteLine(L"\t\t[](IDescriptable* obj) -> vint");
-				writer.WriteLine(L"\t\t{");
-				writer.WriteString(L"\t\t\tauto& instance = ::vl_workflow_global::");
-				writer.WriteString(assemblyNames[itemName]);
-				writer.WriteLine(L"::Instance();");
-				if (rpcTypeFullNamesPerItem.Keys().Contains(itemName))
-				{
-					auto&& typeFullNames = *rpcTypeFullNamesPerItem.Get(itemName).Obj();
-					for (auto&& fullName : typeFullNames)
-					{
-						writer.WriteString(L"\t\t\tif (dynamic_cast<::");
-						writer.WriteString(fullName);
-						writer.WriteString(L"*>(obj)) return instance.rpctype_");
-						writer.WriteString(rpc_generating::MangleRpcFullName(fullName));
-						writer.WriteLine(L";");
-					}
-				}
-				writer.WriteLine(L"\t\t\treturn RpcTypeId_NotFound;");
-				writer.WriteLine(L"\t\t}");
-				writer.WriteLine(L"\t\t);");
+				writer.WriteLine(L"\");");
 
 				writer.WriteLine(L"});");
 			}

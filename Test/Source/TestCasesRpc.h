@@ -18,7 +18,7 @@ namespace vl
 		class RpcCppLifecycleMock : public RpcDualLifecycleMock
 		{
 		public:
-			vint(*decideTypeIdCallback)(IDescriptable*) = nullptr;
+			Func<vint(IDescriptable*)> decideTypeIdCallback;
 			Func<void(RpcDualLifecycleMock*, RpcObjectReference, IDescriptable*)> attachLocalEventsCallback;
 			using RpcDualLifecycleMock::RpcDualLifecycleMock;
 
@@ -38,35 +38,24 @@ namespace vl
 
 		};
 
-		class RpcCppJsonLifecycleMock : public RpcJsonLifecycle
-		{
-		public:
-			vint(*decideTypeIdCallback)(IDescriptable*) = nullptr;
-			using RpcJsonLifecycle::RpcJsonLifecycle;
-
-			vint DecideTypeId(IDescriptable* obj)const override
-			{
-				auto result = RpcJsonLifecycle::DecideTypeId(obj);
-				if (result != RpcTypeId_NotFound) return result;
-				return decideTypeIdCallback(obj);
-			}
-		};
-
 		template<typename TInstance, bool HasEvent>
 		void RunRpcTestCase_JsonValue(
 			const WString& itemName,
-			const WString& expected,
-			vint(*decideTypeId)(IDescriptable*))
+			const WString& expected)
 		{
 			auto& instance = TInstance::Instance();
+			auto getTypeId = Func<vint(IDescriptable*)>([&](IDescriptable* obj)
+			{
+				return instance.rpcwrapper_GetTypeId(BoxValue<IDescriptable*>(obj));
+			});
 
 			auto lc1 = Ptr(new RpcCppLifecycleMock(1));
 			auto lc2 = Ptr(new RpcCppLifecycleMock(2));
 			auto idMap = UnboxParameter<Dictionary<WString, vint>>(BoxParameter(instance.rpc_GetIds()));
 			lc1->SetIdMap(idMap.Ref());
 			lc2->SetIdMap(idMap.Ref());
-			lc1->decideTypeIdCallback = decideTypeId;
-			lc2->decideTypeIdCallback = decideTypeId;
+			lc1->decideTypeIdCallback = getTypeId;
+			lc2->decideTypeIdCallback = getTypeId;
 
 			lc1->SetSerializer(instance.rpcops_IRpcSerializer());
 			lc2->SetSerializer(instance.rpcops_IRpcSerializer());
@@ -123,23 +112,24 @@ namespace vl
 		template<typename TInstance, bool HasEvent>
 		void RunRpcTestCase_JsonRequest(
 			const WString& itemName,
-			const WString& expected,
-			vint(*decideTypeId)(IDescriptable*))
+			const WString& expected)
 		{
 			auto& instance = TInstance::Instance();
+			auto getTypeId = Func<vint(IDescriptable*)>([&](IDescriptable* obj)
+			{
+				return instance.rpcwrapper_GetTypeId(BoxValue<IDescriptable*>(obj));
+			});
 
 			RpcDualJsonRequestBridge bridge;
 			RpcJsonDispatcher dispatcher1(1, &bridge);
 			RpcJsonDispatcher dispatcher2(2, &bridge);
-			auto lc1 = Ptr(new RpcCppJsonLifecycleMock(1, &dispatcher1));
-			auto lc2 = Ptr(new RpcCppJsonLifecycleMock(2, &dispatcher2));
+			auto lc1 = Ptr(new RpcJsonLifecycle(1, &dispatcher1));
+			auto lc2 = Ptr(new RpcJsonLifecycle(2, &dispatcher2));
 			bridge.SetLifecycles(lc1.Obj(), lc2.Obj());
 
 			auto idMap = UnboxParameter<Dictionary<WString, vint>>(BoxParameter(instance.rpc_GetIds()));
 			lc1->SetIdMap(idMap.Ref());
 			lc2->SetIdMap(idMap.Ref());
-			lc1->decideTypeIdCallback = decideTypeId;
-			lc2->decideTypeIdCallback = decideTypeId;
 
 			auto serializer1 = instance.rpcops_IRpcSerializer();
 			auto serializer2 = instance.rpcops_IRpcSerializer();
@@ -167,8 +157,8 @@ namespace vl
 				});
 			}
 
-			lc1->Register(serializer1, oo1, oeo1, eventAttacher1);
-			lc2->Register(serializer2, oo2, oeo2, eventAttacher2);
+			lc1->Register(serializer1, oo1, oeo1, getTypeId, eventAttacher1);
+			lc2->Register(serializer2, oo2, oeo2, getTypeId, eventAttacher2);
 
 			lc1->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops1); });
 			lc2->RegisterWrapperFactory([&](RpcObjectReference ref, IRpcLifecycle* lc) { return instance.rpcwrapper_Create(ref, lc, ops2); });
@@ -191,18 +181,21 @@ namespace vl
 		template<typename TInstance, bool HasEvent>
 		void RunRpcTestCase_Flat(
 			const WString& itemName,
-			const WString& expected,
-			vint(*decideTypeId)(IDescriptable*))
+			const WString& expected)
 		{
 			auto& instance = TInstance::Instance();
+			auto getTypeId = Func<vint(IDescriptable*)>([&](IDescriptable* obj)
+			{
+				return instance.rpcwrapper_GetTypeId(BoxValue<IDescriptable*>(obj));
+			});
 
 			auto lc1 = Ptr(new RpcCppLifecycleMock(1));
 			auto lc2 = Ptr(new RpcCppLifecycleMock(2));
 			auto idMap = UnboxParameter<Dictionary<WString, vint>>(BoxParameter(instance.rpc_GetIds()));
 			lc1->SetIdMap(idMap.Ref());
 			lc2->SetIdMap(idMap.Ref());
-			lc1->decideTypeIdCallback = decideTypeId;
-			lc2->decideTypeIdCallback = decideTypeId;
+			lc1->decideTypeIdCallback = getTypeId;
+			lc2->decideTypeIdCallback = getTypeId;
 
 			auto oo1 = instance.rpcops_IRpcObjectOps(lc1.Obj());
 			auto oeo1 = instance.rpcops_IRpcObjectEventOps(lc1.Obj());
