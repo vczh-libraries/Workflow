@@ -223,6 +223,21 @@ Global Functions
 		}
 	}
 
+	::vl::vint Rpc_Inheritance_MethodException::rpcwrapper_GetTypeId(const ::vl::reflection::description::Value& obj)
+	{
+		if ([&](){ auto __vwsn_temp__ = obj; return !__vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::RpcInheritanceMethodException::IDerived>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			return GLOBAL_NAME rpctype_RpcInheritanceMethodException__IDerived;
+		if ([&](){ auto __vwsn_temp__ = obj; return !__vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::RpcInheritanceMethodException::IOne>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			return GLOBAL_NAME rpctype_RpcInheritanceMethodException__IOne;
+		if ([&](){ auto __vwsn_temp__ = obj; return !__vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::RpcInheritanceMethodException::ITwo>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			return GLOBAL_NAME rpctype_RpcInheritanceMethodException__ITwo;
+		if ([&](){ auto __vwsn_temp__ = obj; return !__vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::RpcInheritanceMethodException::IValue>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			return GLOBAL_NAME rpctype_RpcInheritanceMethodException__IValue;
+		if ([&](){ auto __vwsn_temp__ = obj; return !__vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::RpcInheritanceMethodException::IService>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			return GLOBAL_NAME rpctype_RpcInheritanceMethodException__IService;
+		return static_cast<::vl::vint>(-100);
+	}
+
 	::vl::Ptr<::vl::glr::json::JsonNode> Rpc_Inheritance_MethodException::rpcjson_Serialize(const ::vl::reflection::description::Value& value)
 	{
 		return ::vl::rpc_controller::JsonSerializePredefinedTypes(value, ::vl::Func<::vl::Ptr<::vl::glr::json::JsonNode>(const ::vl::reflection::description::Value&)>(GLOBAL_OBJ, &GLOBAL_SYMBOL rpcjson_Serialize));

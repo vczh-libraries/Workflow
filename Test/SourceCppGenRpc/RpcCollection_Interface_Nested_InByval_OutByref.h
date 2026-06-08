@@ -148,6 +148,7 @@ namespace vl_workflow_global
 		::vl::Ptr<::RpcCollection::Interface::Nested::InByval::OutByref::IRpcWrapper_IValue> rpcwrapper_RpcCollection__Interface__Nested__InByval__OutByref__IValue(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Collection_Interface_Nested_InByval_OutByref> ops);
 		::vl::Ptr<::RpcCollection::Interface::Nested::InByval::OutByref::IRpcWrapper_IService> rpcwrapper_RpcCollection__Interface__Nested__InByval__OutByref__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_Collection_Interface_Nested_InByval_OutByref> ops);
 		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_Collection_Interface_Nested_InByval_OutByref> ops);
+		::vl::vint rpcwrapper_GetTypeId(const ::vl::reflection::description::Value& obj);
 		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize(const ::vl::reflection::description::Value& value);
 		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::rpc_controller::IRpcSerializer> rpcops_IRpcSerializer();

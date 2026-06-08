@@ -130,6 +130,7 @@ namespace vl_workflow_global
 		::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::RpcPrimitiveTest::IRpcWrapper_IService> rpcwrapper_RpcPrimitiveTest__IService(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes> ops);
 		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_PrimitiveTypes> ops);
+		::vl::vint rpcwrapper_GetTypeId(const ::vl::reflection::description::Value& obj);
 		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(::RpcPrimitiveTest::Season value);
 		::RpcPrimitiveTest::Season rpcjson_Deserialize_Enum_RpcPrimitiveTest__Season(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize_Struct_test__Point(::test::Point value);

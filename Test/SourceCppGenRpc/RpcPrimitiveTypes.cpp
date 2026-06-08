@@ -154,6 +154,13 @@ Global Functions
 		}
 	}
 
+	::vl::vint Rpc_PrimitiveTypes::rpcwrapper_GetTypeId(const ::vl::reflection::description::Value& obj)
+	{
+		if ([&](){ auto __vwsn_temp__ = obj; return !__vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::RpcPrimitiveTest::IService>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			return GLOBAL_NAME rpctype_RpcPrimitiveTest__IService;
+		return static_cast<::vl::vint>(-100);
+	}
+
 	::vl::Ptr<::vl::glr::json::JsonNode> Rpc_PrimitiveTypes::rpcjson_Serialize_Enum_RpcPrimitiveTest__Season(::RpcPrimitiveTest::Season value)
 	{
 		auto jsonNumber0 = ::vl::Ptr<::vl::glr::json::JsonNumber>(new ::vl::glr::json::JsonNumber());

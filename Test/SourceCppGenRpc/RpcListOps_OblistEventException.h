@@ -95,6 +95,7 @@ namespace vl_workflow_global
 		::vl::Ptr<::rpcops_IOps_Rpc_ListOps_OblistEventException> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::RpcListOpsOblistEventException::IRpcWrapper_IServer> rpcwrapper_RpcListOpsOblistEventException__IServer(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_Rpc_ListOps_OblistEventException> ops);
 		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_Rpc_ListOps_OblistEventException> ops);
+		::vl::vint rpcwrapper_GetTypeId(const ::vl::reflection::description::Value& obj);
 		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize(const ::vl::reflection::description::Value& value);
 		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
 		::vl::Ptr<::vl::rpc_controller::IRpcSerializer> rpcops_IRpcSerializer();
