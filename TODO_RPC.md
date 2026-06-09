@@ -23,6 +23,7 @@
     - A new method will be added to `RpcJsonDispatcherChannel` to wait for this message, declare all required services, and wait for another message to unblock.
   - Broadcasting requests:
     - All broadcast requests are sent to this local client, which will be redirected to all client.
+      - Pay attention to potential race condition when broadcasting and accepting new clients at the same time.
     - After all clients response, the local client will response the consolidated result.
   - Update `UnitTest/README.md` and `Project.md`.
 
