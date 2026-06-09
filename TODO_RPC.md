@@ -14,10 +14,16 @@
 
 ## ToDo
 
+- `IChannel::(SendTo|BroadcastFrom)Client` should remove the `senderClientId` argument because they should know.
+  - `BroadcastFromClient` add a blocked client id list argument.
 - `ChatBotServer` and `ChatBotClient` project.
   - Declaration of service registration from every client connection.
-  - How does `InvokeEvent` collect results from all client? Might need to update `IChannel::BroadcastFromClient` and enable a return value.
-    - Or just ask the server local channel to dispatch and consolidate.
+    - A dedicated server is used.
+    - When a client is connected to the server, a message containing the local client id of the server is sent.
+    - A new method will be added to `RpcJsonDispatcherChannel` to wait for this message, declare all required services, and wait for another message to unblock.
+  - Broadcasting requests:
+    - All broadcast requests are sent to this local client, which will be redirected to all client.
+    - After all clients response, the local client will response the consolidated result.
   - Update `UnitTest/README.md` and `Project.md`.
 
 ## Knowledge Base
