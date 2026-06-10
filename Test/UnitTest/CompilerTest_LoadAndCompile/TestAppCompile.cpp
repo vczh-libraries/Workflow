@@ -28,6 +28,17 @@ TEST_FILE
 			manager.AddModule(module);
 			manager.Rebuild(true);
 			TEST_ASSERT(manager.errors.Count() == 0);
+			TEST_ASSERT(manager.rpcMetadata);
+
+			auto wrapperModule = GenerateModuleRpc(&manager, L"ChatBotApp");
+			auto wrapperJsonModule = GenerateModuleRpcJson(&manager, L"ChatBotApp");
+
+			manager.Clear(true, true);
+			manager.AddModule(module);
+			manager.AddModule(wrapperModule);
+			manager.AddModule(wrapperJsonModule);
+			manager.Rebuild(true);
+			TEST_ASSERT(manager.errors.Count() == 0);
 
 #ifdef VCZH_MSVC
 			auto input = Ptr(new WfCppInput(L"ChatBotApp"));
@@ -35,6 +46,8 @@ TEST_FILE
 			input->reflection = WfCppFileSwitch::OnDemand;
 			input->comment = L"Source: ../Apps/ChatBot/ChatAPI.txt";
 			input->normalIncludes.Add(L"../../../../../Source/Library/WfLibraryReflection.h");
+			input->normalIncludes.Add(L"../../../../../Source/Library/WfLibraryCppHelper.h");
+			input->normalIncludes.Add(L"../../../../../Import/VlppGlrParser.h");
 
 			auto output = GenerateCppFiles(input, &manager);
 			TEST_ASSERT(manager.errors.Count() == 0);
