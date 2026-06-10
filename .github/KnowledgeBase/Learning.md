@@ -4,8 +4,8 @@
 
 - Process staged tasks one by one with verification [15]
 - Port fixes from imports to source repositories [7]
+- Verify generated artifacts with downstream consumer checks [7]
 - Crash early instead of adding error-tolerance fallbacks [6]
-- Verify generated artifacts with downstream consumer checks [6]
 - Make `Stop()` drain asynchronous work before returning [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
@@ -193,6 +193,8 @@ When writing XML or JSON inside a C++ string literal (e.g. `LR"GacUISrc(... )Gac
 When a generator produces artifacts for another language or toolchain, validate the generated output with that downstream consumer instead of only checking that the generator runs. For example, generated TypeScript declarations for JSON output should be type-checked against real generated JSON examples with `tsc --noEmit`.
 
 When generated RPC JSON values or request/response transcripts are part of the contract, run the preparation step that copies/regenerates them, include the new folders in the downstream project configuration, type-check them, and sample or audit the generated files for protocol invariants such as request/response id pairing.
+
+When a generator produces runnable sample applications, verify the generated output through the actual app workflow too. For example, generated ChatBot RPC code should be checked by running the server and multiple clients through joins, chat messages, client exit, and server shutdown, not only by confirming generation succeeds.
 
 ## `vl::regex` separator regex: `L"[\\/\\\\]+"`
 

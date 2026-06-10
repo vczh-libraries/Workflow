@@ -9,6 +9,7 @@
 - Read and aggregate RPC event exception maps through `IRpcLifecycle::ReadEventException` [3]
 - Keep RPC service state in `RpcLifecycleBase`, not dispatchers [3]
 - Move reusable RPC controller/lifecycle code into `Source/Library/Rpc` with strict dependencies [3]
+- Use request-envelope adapters for RPC JSON dispatcher paths [3]
 - Generated RPC test id maps must come from `rpc_GetIds()` / `SetIdMap` [2]
 - Interpret `IRpcWrapperBase` as remote-wrapper identity [2]
 - Use internal properties defensively in `RpcDualLifecycleMock` [2]
@@ -25,8 +26,8 @@
 - RPC event workarounds should match the actual `Event<T>` behavior [2]
 - Apply `RunRpcTestCase` changes to every harness variant [2]
 - Order generated RPC type checks with derived interfaces before bases [2]
-- Use request-envelope adapters for RPC JSON dispatcher paths [2]
 - Keep RPC JSON test harness setup under `VCZH_DEBUG_NO_REFLECTION` [1]
+- Run channel-backed RPC dispatchers through one task queue [1]
 - Use generated strong typed RPC ops for event listeners [1]
 - Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for registering free functions as reflection static methods [1]
 - Workflow interface event declarations use type-only payloads [1]
@@ -60,6 +61,7 @@
 - Prefer generic `BoxValue`/`UnboxValue` over specialized RPC box/unbox helpers [1]
 - Keep shared Workflow test output path helpers in `Helper.h` / `Helper.cpp` [1]
 - Keep RPC array resizing separate from list-only mutations [1]
+- Mirror ChatBot service event output on server and clients [1]
 
 # Refinements
 
@@ -327,6 +329,16 @@ Path helpers used by Workflow test components should live beside the other share
 
 `RpcJsonDispatcher::Translate` should follow the same envelope-adapter pattern for dispatcher-level operations such as service declaration broadcasts, keeping the dispatcher boundary JSON-shaped while target lifecycles/controllers receive typed calls.
 
+For channel-backed app dispatchers, keep the dispatcher independent of the concrete HTTP transport. Let clients send broadcast-intent requests directly to the server's local channel client, then let the server fan them out with blocked receivers and consolidate `Broadcast_Response` payloads by original client id plus request id before replying to the sender.
+
+## Run channel-backed RPC dispatchers through one task queue
+
+When `IRpcJsonMessageDispatcher::OnJsonRequest` is synchronous but the underlying `IChannel` read/write path is asynchronous, route request processing through one dispatcher task queue. Incoming channel messages can wake a semaphore-backed queue; `OnJsonRequest` should process nested requests while waiting for its matching response and requeue unrelated responses. Keeping request processing and channel callback work on the same queue avoids cross-thread RPC reentrancy bugs.
+
 ## Keep RPC array resizing separate from list-only mutations
 
 `RpcByrefArray::Resize` should call a dedicated `IRpcListOps::ArrayResize`-style operation. Do not implement array resize by disguising it as `ListClear`, `ListRemoveAt`, or another list-only mutation. List-only operations against arrays should report RPC exceptions instead of silently resizing or removing array elements.
+
+## Mirror ChatBot service event output on server and clients
+
+For the ChatBot CLI apps, attach server-side handlers to the same service events that client wrappers observe, and print the same formats: `speakerName joined`, `speakerName left`, and `speakerName> message`. This keeps local server output aligned with client-visible behavior without changing generated RPC routing.
