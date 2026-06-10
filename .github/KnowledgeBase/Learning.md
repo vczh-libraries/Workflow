@@ -7,9 +7,9 @@
 - Verify generated artifacts with downstream consumer checks [7]
 - Crash early instead of adding error-tolerance fallbacks [6]
 - Make `Stop()` drain asynchronous work before returning [5]
+- Proactively remove code made redundant by refactoring [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
-- Proactively remove code made redundant by refactoring [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
 - Capture dependent lambdas explicitly [2]
 - Don't assume observable changes are batched [2]
@@ -229,6 +229,8 @@ Remove unused dependency parameters and fields as part of the refactor too. If e
 Preserve helper layers that still own observable behavior. For example, flat RPC dispatcher wrappers that only forward can be removed, but JSON wrappers that record generated TypeScript artifacts should stay until their recording responsibility is moved elsewhere.
 
 When a destructor only resets `Ptr`, shared-pointer, or similar owning members to null, remove that destructor/reset code and let member destruction release resources naturally.
+
+When splitting a monolithic implementation into focused files, delete empty source stubs and duplicate state fields in the same cleanup. Update project metadata and includes immediately so the old file names do not remain as stale references.
 
 ## Keep design documentation aligned with code after refactoring
 
