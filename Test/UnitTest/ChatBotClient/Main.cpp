@@ -122,11 +122,13 @@ int main()
 		dispatcher->QueueExitTask();
 	}));
 
+	Console::Write(L"Enter your name: ");
 	WString userName;
 	if (!TryReadLine(userName))
 	{
 		return 0;
 	}
+	Console::SetTitle(L"ChatBotClient: " + userName);
 	auto taskThread = Ptr(new ChatBotTaskThread(Ptr<ChatBotJsonDispatcherBase>(dispatcher)));
 	taskThread->Start();
 	dispatcher->QueueTask(Func<void()>([server = chatServer, name = userName]()

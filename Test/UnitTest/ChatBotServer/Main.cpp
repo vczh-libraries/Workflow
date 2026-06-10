@@ -139,6 +139,7 @@ int main()
 	auto taskThread = Ptr(new ChatBotTaskThread(Ptr<ChatBotJsonDispatcherBase>(dispatcher)));
 	taskThread->Start();
 
+	Console::SetTitle(L"ChatBotServer (localhost:" + itow(ChatBotHttpPort) + ChatBotHttpBaseUrl + L")");
 	WString line;
 	while (TryReadLine(line) && line != WString::Unmanaged(L"exit"))
 	{
