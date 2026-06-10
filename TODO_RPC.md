@@ -14,11 +14,9 @@
 
 ## ToDo
 
-- `IChannel::(SendTo|BroadcastFrom)Client` should remove the `senderClientId` argument because they should know.
-  - `BroadcastFromClient` add a blocked client id list argument.
 - `ChatBotServer` and `ChatBotClient` project.
+  - Review.
   - Declaration of service registration from every client connection.
-  - Update `UnitTest/README.md` and `Project.md`.
 
 ## Knowledge Base
 
