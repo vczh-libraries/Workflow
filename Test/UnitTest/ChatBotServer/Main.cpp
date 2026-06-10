@@ -140,6 +140,7 @@ int main()
 	taskThread->Start();
 
 	Console::SetTitle(L"ChatBotServer (localhost:" + itow(ChatBotHttpPort) + ChatBotHttpBaseUrl + L")");
+	Console::WriteLine(L"Ready to start ChatBotClient.");
 	WString line;
 	while (TryReadLine(line) && line != WString::Unmanaged(L"exit"))
 	{
