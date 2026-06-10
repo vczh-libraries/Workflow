@@ -131,6 +131,7 @@ If `CompilerTest_LoadAndCompiler` succeeded but subsequent test projects fail:
 
 `ChatBotServer` and `ChatBotClient` are test projects based on Workflow RPC with `vl::inter_process::HttpServer`:
 - Start `ChatBotServer`, wait for a message to print.
+  - It listens to `http://localhost:8888/WorkflowChatBot` with using `RpcChannel` as the name for `vl::inter_process::IChannel`.
   - Type `exit` to exit the server, which should cause all clients to exit automatically.
 - Start multiple `ChatBotClient`, enter the user name.
   - Type `exit` to exit the client.
