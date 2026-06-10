@@ -127,9 +127,34 @@ If `CompilerTest_LoadAndCompiler` succeeded but subsequent test projects fail:
 - You could continue to run until you collect results from all `RuntimeTest` and `CppTest*`. By seeing if a failure exists in all projects or only some projects, you will have a better guess of the root cause.
 - Pass all unit test, fix any test failure including pre-existings.
 
-### Code Generation Tools
+## CLI Test Projects
 
-#### REPO-ROOT/../Tools/Tools/GlrParserGen.exe
+`ChatBotServer` and `ChatBotClient` are test projects based on Workflow RPC with `vl::inter_process::HttpServer`:
+- Start `ChatBotServer`, wait for a message to print.
+  - Type `exit` to exit the server, which should cause all clients to exit automatically.
+- Start multiple `ChatBotClient`, enter the user name.
+  - Type `exit` to exit the client.
+  - Type anything to chat.
+These CLI projects are interactive, they won't exit until all client typed `exit` or the server typed `exit`.
+
+### When to Test
+
+`ChatBotServedr` and `ChatBotClient` are strongly recommended to run when Workflow RPC is changed or new release from `VlppOS` comes.
+
+### Recommended Test Process
+
+To make sure related code works, you are going to run the below complete process and ensure a complete success:
+- Start `ChatBotServer` with three `ChatBotClient`, using user names `Tom`, `Jerry`, and `Spike`.
+- Only after when a client joined with a name you can start the next client.
+- When the second client joined, the first client should be notified.
+- When the third client joined, the first two clients should be notified.
+- Chat on each client as a round, do 3 round.
+- `exit` on one client, the others should be notified.
+- Exit the server, the rest of the clients should also exit.
+
+## Code Generation Tools
+
+### REPO-ROOT/../Tools/Tools/GlrParserGen.exe
 
 This executable needs to run if any file in the following folders are changed:
 - `REPO-ROOT/Source/Parser/Syntax`
