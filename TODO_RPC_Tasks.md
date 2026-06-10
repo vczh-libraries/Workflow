@@ -77,40 +77,28 @@ Then we get one problem, processing messages and `OnJsonRequest` should only hap
 
 Host a `vl::inter_process::HttpServer` with `ChatBotJsonDispatcherServer`.
 `main` function:
-- Starts all initialization.
-- User type the name, this will be the first message of all clients, the server will then remember the name of a client id.
-- When user input `exit`, call `QueueExitTask` followed by `IChatServer::OnServerShutdown`, stop the server and exit.
+- Starts all initialization and host the `IChatServer` instance.
+- Run `RunTaskQueue` in a new sub class of `Thread`.
+- When user input `exit`, call `QueueExitTask`, wait for the thread to exit, call `IChatServer::OnServerShutdown`, stop the server and exit.
+
+`AddUser` triggers `OnUserAdded`.
+`RemoveUser` triggers `OnUserRemoved`.
+`Speak` triggers `OnSpoken`.
+Typing exit triggers `OnServerShutdown`.
+If `ChatBotJsonDispatcherBase` is implemented correctly, calling of these functions resulting in the task queue, so no `QueueTask` is required.
 
 ### ChatBotClient.vcxproj
 
 Host a `vl::inter_process::HttpClient` with `ChatBotJsonDispatcherClient`.
+- Starts all initialization and request the `IChatServer` service.
+- User type the name, whatever it reads it becomes the user name, `QueueTask` with `IChatServer::AddUser`.
+- Run `RunTaskQueue` in a new sub class of `Thread`. `AddUser` will be actually executed here.
+- When user input `exit`, `QueueTask` with `IChatServer::RemoveUser`, call `QueueExitTask`, wait for the thread to exit, stop the server and exit.
 
-Start a manual signal event.
-Start a `HttpClient` with `RpcChat` channel.
-After connecting to the server, wait for the first message from the channel, it should be the client id representing the server, we calls it `server id`. Signal the manual signal event.
-Request `IChatServer` and hook all events.
-When the application starts, `Console::Read` a user name and call `IChatServer::AddUser`.
-When `exit` is entered, call `IChatServer::RemoveUser` and exit.
 When `OnUserAdded` is triggered, print a line `speakerName joined`.
 When `OnUserRemoved` is triggered, print a line `speakerName left`.
 When `OnSpoken` is triggered, print a line `speakerName> message`.
-When `OnServerShutdown` is triggered, stop the `HttpClient` and exit, no `IChatServer` call is needed, including `RemoveUser`.
-
-`main` function:
-- Starts all initialization, wait for the manual signal event to signal.
-- When `OnServerShutdown`, print "Server shutdown, press ENTER to exit.".
-- Wait for the first input and call `IChatServer::AddUser`. Even when the first input is `exit`, `exit` becomes the user name.
-- When user input `exit`, call `IChatServer::RemoveUser`, stop the client and exit.
-- When user input others, call `IChatServer::Speak`.
-- From the second input, if `OnServerShutdown` has triggered, stop the client and exit.
-
-### Thread Safety
-
-- A global spin lock should be held to run:
-  - `Console::Write`.
-  - `IChatServer` in two `main` function.
-  - Consecutive calls could be called in one single `SPIN_LOCK`.
-- Such spin lock will be a variable in two `main` function.
+When `OnServerShutdown` is triggered, call `QueueExitTask`, wait for the thread to exit, stop the server and exit.
 
 ### Testing
 
