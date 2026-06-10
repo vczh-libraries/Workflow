@@ -11,6 +11,8 @@ https://github.com/vczh-libraries
 #define VCZH_WORKFLOW_COMPILER_GENERATED_CHATBOTAPP
 
 #include "../../../../../Source/Library/WfLibraryReflection.h"
+#include "../../../../../Source/Library/WfLibraryCppHelper.h"
+#include "../../../../../Import/VlppGlrParser.h"
 
 #if defined( _MSC_VER)
 #pragma warning(push)
@@ -22,10 +24,31 @@ https://github.com/vczh-libraries
 #pragma GCC diagnostic push
 #endif
 
+namespace vl_workflow_global
+{
+	struct __vwsnf1_ChatBotApp_rpclistener_chatapi__IChatServer_;
+	struct __vwsnf2_ChatBotApp_rpclistener_chatapi__IChatServer_;
+	struct __vwsnf3_ChatBotApp_rpclistener_chatapi__IChatServer_;
+	struct __vwsnf4_ChatBotApp_rpclistener_chatapi__IChatServer_;
+	class __vwsnc1_ChatBotApp_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
+	class __vwsnc2_ChatBotApp_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
+	class __vwsnc3_ChatBotApp_rpcops_IOps_Create__rpcops_IOps_ChatBotApp;
+	class __vwsnc4_ChatBotApp_rpcwrapper_chatapi__IChatServer__chatapi_IRpcWrapper_IChatServer;
+	class __vwsnc5_ChatBotApp_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer;
+	class __vwsnc6_ChatBotApp_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps;
+	class __vwsnc7_ChatBotApp_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps;
+	class __vwsnc8_ChatBotApp_rpcops_IOps_CreateJson__rpcops_IOps_ChatBotApp;
+}
+
 namespace chatapi
 {
 	class IChatServer;
+	class IRpcWrapper_IChatServer;
+}
+class rpcops_IOps_ChatBotApp;
 
+namespace chatapi
+{
 	class IChatServer : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<IChatServer>
 	{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -41,7 +64,29 @@ namespace chatapi
 		virtual void Speak(const ::vl::WString& speakerName, const ::vl::WString& message) = 0;
 	};
 
+	class IRpcWrapper_IChatServer : public virtual ::chatapi::IChatServer, public virtual ::vl::rpc_controller::IRpcWrapperBase, public ::vl::reflection::Description<IRpcWrapper_IChatServer>
+	{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IRpcWrapper_IChatServer>;
+#endif
+	};
+
 }
+class rpcops_IOps_ChatBotApp : public virtual ::vl::reflection::IDescriptable, public ::vl::reflection::Description<rpcops_IOps_ChatBotApp>
+{
+#ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
+	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_ChatBotApp>;
+#endif
+public:
+	virtual bool InvokeMethod_chatapi__IChatServer_AddUser(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_name) = 0;
+	virtual bool InvokeMethod_chatapi__IChatServer_RemoveUser(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_name) = 0;
+	virtual void InvokeMethod_chatapi__IChatServer_Speak(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_speakerName, const ::vl::WString& arg_message) = 0;
+	virtual void InvokeEvent_chatapi__IChatServer_OnServerShutdown(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual void InvokeEvent_chatapi__IChatServer_OnSpoken(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0, const ::vl::WString& arg_arg1) = 0;
+	virtual void InvokeEvent_chatapi__IChatServer_OnUserAdded(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0) = 0;
+	virtual void InvokeEvent_chatapi__IChatServer_OnUserRemoved(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0) = 0;
+};
+
 /***********************************************************************
 Global Variables and Functions
 ***********************************************************************/
@@ -52,7 +97,180 @@ namespace vl_workflow_global
 	{
 	public:
 
+		::vl::vint rpctype_chatapi__IChatServer = 0;
+		::vl::vint rpcmethod_chatapi__IChatServer_AddUser = 0;
+		::vl::vint rpcevent_chatapi__IChatServer_OnServerShutdown = 0;
+		::vl::vint rpcevent_chatapi__IChatServer_OnSpoken = 0;
+		::vl::vint rpcevent_chatapi__IChatServer_OnUserAdded = 0;
+		::vl::vint rpcevent_chatapi__IChatServer_OnUserRemoved = 0;
+		::vl::vint rpcmethod_chatapi__IChatServer_RemoveUser = 0;
+		::vl::vint rpcmethod_chatapi__IChatServer_Speak = 0;
+
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
+		bool rpcwrapper_IsInterfaceTypeId(::vl::vint typeId);
+		bool rpcwrapper_IsCtorInterfaceTypeId(::vl::vint typeId);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpcops_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpcops_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_ChatBotApp> rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc);
+		void rpclistener_chatapi__IChatServer(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::chatapi::IChatServer* target, ::vl::Ptr<::rpcops_IOps_ChatBotApp> ops);
+		void rpclistener_Attach(::vl::vint typeId, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::reflection::IDescriptable* obj, ::vl::Ptr<::rpcops_IOps_ChatBotApp> ops);
+		::vl::Ptr<::chatapi::IRpcWrapper_IChatServer> rpcwrapper_chatapi__IChatServer(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_ChatBotApp> ops);
+		::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_ChatBotApp> ops);
+		::vl::vint rpcwrapper_GetTypeId(const ::vl::reflection::description::Value& obj);
+		::vl::Ptr<::vl::glr::json::JsonNode> rpcjson_Serialize(const ::vl::reflection::description::Value& value);
+		::vl::reflection::description::Value rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node);
+		::vl::Ptr<::vl::rpc_controller::IRpcSerializer> rpcops_IRpcSerializer();
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> rpcops_IRpcObjectOpsJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> rpcops_IRpcObjectEventOpsJson(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::rpcops_IOps_ChatBotApp> rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc);
+
 		static ChatBotApp& Instance();
+	};
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	struct __vwsnf1_ChatBotApp_rpclistener_chatapi__IChatServer_
+	{
+		::vl::rpc_controller::IRpcLifecycle* lc;
+		::vl::Ptr<::rpcops_IOps_ChatBotApp> ops;
+		::vl::rpc_controller::RpcObjectReference ref;
+
+		__vwsnf1_ChatBotApp_rpclistener_chatapi__IChatServer_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_ChatBotApp> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
+
+		void operator()() const;
+	};
+
+	struct __vwsnf2_ChatBotApp_rpclistener_chatapi__IChatServer_
+	{
+		::vl::rpc_controller::IRpcLifecycle* lc;
+		::vl::Ptr<::rpcops_IOps_ChatBotApp> ops;
+		::vl::rpc_controller::RpcObjectReference ref;
+
+		__vwsnf2_ChatBotApp_rpclistener_chatapi__IChatServer_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_ChatBotApp> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
+
+		void operator()(const ::vl::WString& arg0, const ::vl::WString& arg1) const;
+	};
+
+	struct __vwsnf3_ChatBotApp_rpclistener_chatapi__IChatServer_
+	{
+		::vl::rpc_controller::IRpcLifecycle* lc;
+		::vl::Ptr<::rpcops_IOps_ChatBotApp> ops;
+		::vl::rpc_controller::RpcObjectReference ref;
+
+		__vwsnf3_ChatBotApp_rpclistener_chatapi__IChatServer_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_ChatBotApp> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
+
+		void operator()(const ::vl::WString& arg0) const;
+	};
+
+	struct __vwsnf4_ChatBotApp_rpclistener_chatapi__IChatServer_
+	{
+		::vl::rpc_controller::IRpcLifecycle* lc;
+		::vl::Ptr<::rpcops_IOps_ChatBotApp> ops;
+		::vl::rpc_controller::RpcObjectReference ref;
+
+		__vwsnf4_ChatBotApp_rpclistener_chatapi__IChatServer_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_ChatBotApp> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref);
+
+		void operator()(const ::vl::WString& arg0) const;
+	};
+
+	class __vwsnc1_ChatBotApp_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
+	{
+	public:
+		__vwsnc1_ChatBotApp_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::vint _slot = 0;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> _byvalReturnValues;
+		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		void EndInvokeMethod(::vl::vint slot) override;
+		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold) override;
+	};
+
+	class __vwsnc2_ChatBotApp_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
+	{
+	public:
+		__vwsnc2_ChatBotApp_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::reflection::description::Value InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+	};
+
+	class __vwsnc3_ChatBotApp_rpcops_IOps_Create__rpcops_IOps_ChatBotApp : public ::vl::Object, public virtual ::rpcops_IOps_ChatBotApp
+	{
+	public:
+		__vwsnc3_ChatBotApp_rpcops_IOps_Create__rpcops_IOps_ChatBotApp(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		bool InvokeMethod_chatapi__IChatServer_AddUser(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_name) override;
+		bool InvokeMethod_chatapi__IChatServer_RemoveUser(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_name) override;
+		void InvokeMethod_chatapi__IChatServer_Speak(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_speakerName, const ::vl::WString& arg_message) override;
+		void InvokeEvent_chatapi__IChatServer_OnServerShutdown(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeEvent_chatapi__IChatServer_OnSpoken(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0, const ::vl::WString& arg_arg1) override;
+		void InvokeEvent_chatapi__IChatServer_OnUserAdded(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0) override;
+		void InvokeEvent_chatapi__IChatServer_OnUserRemoved(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0) override;
+	};
+
+	class __vwsnc4_ChatBotApp_rpcwrapper_chatapi__IChatServer__chatapi_IRpcWrapper_IChatServer : public ::vl::Object, public virtual ::chatapi::IRpcWrapper_IChatServer
+	{
+	public:
+		__vwsnc4_ChatBotApp_rpcwrapper_chatapi__IChatServer__chatapi_IRpcWrapper_IChatServer(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_ChatBotApp> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::rpc_controller::RpcObjectReference _ref;
+		::vl::Ptr<::rpcops_IOps_ChatBotApp> _ops;
+		void DisconnectFromLifecycle() override;
+		~__vwsnc4_ChatBotApp_rpcwrapper_chatapi__IChatServer__chatapi_IRpcWrapper_IChatServer();
+		bool AddUser(const ::vl::WString& name) override;
+		bool RemoveUser(const ::vl::WString& name) override;
+		void Speak(const ::vl::WString& speakerName, const ::vl::WString& message) override;
+	};
+
+	class __vwsnc5_ChatBotApp_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcSerializer
+	{
+	public:
+		__vwsnc5_ChatBotApp_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer();
+
+		::vl::reflection::description::Value Serialize(const ::vl::reflection::description::Value& value) override;
+		::vl::reflection::description::Value Deserialize(const ::vl::reflection::description::Value& value) override;
+	};
+
+	class __vwsnc6_ChatBotApp_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
+	{
+	public:
+		__vwsnc6_ChatBotApp_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::vint _slot = 0;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> _byvalReturnValues;
+		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		void EndInvokeMethod(::vl::vint slot) override;
+		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold) override;
+	};
+
+	class __vwsnc7_ChatBotApp_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
+	{
+	public:
+		__vwsnc7_ChatBotApp_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::reflection::description::Value InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+	};
+
+	class __vwsnc8_ChatBotApp_rpcops_IOps_CreateJson__rpcops_IOps_ChatBotApp : public ::vl::Object, public virtual ::rpcops_IOps_ChatBotApp
+	{
+	public:
+		__vwsnc8_ChatBotApp_rpcops_IOps_CreateJson__rpcops_IOps_ChatBotApp(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		bool InvokeMethod_chatapi__IChatServer_AddUser(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_name) override;
+		bool InvokeMethod_chatapi__IChatServer_RemoveUser(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_name) override;
+		void InvokeMethod_chatapi__IChatServer_Speak(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_speakerName, const ::vl::WString& arg_message) override;
+		void InvokeEvent_chatapi__IChatServer_OnServerShutdown(::vl::rpc_controller::RpcObjectReference ref) override;
+		void InvokeEvent_chatapi__IChatServer_OnSpoken(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0, const ::vl::WString& arg_arg1) override;
+		void InvokeEvent_chatapi__IChatServer_OnUserAdded(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0) override;
+		void InvokeEvent_chatapi__IChatServer_OnUserRemoved(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0) override;
 	};
 }
 

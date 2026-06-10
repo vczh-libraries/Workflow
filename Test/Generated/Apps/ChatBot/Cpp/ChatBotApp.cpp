@@ -36,7 +36,17 @@ Global Variables
 BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_ChatBotApp)
 	vl_workflow_global::ChatBotApp instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
+
+		instance.rpctype_chatapi__IChatServer = static_cast<::vl::vint>(0);
+		instance.rpcmethod_chatapi__IChatServer_AddUser = static_cast<::vl::vint>(1);
+		instance.rpcevent_chatapi__IChatServer_OnServerShutdown = static_cast<::vl::vint>(2);
+		instance.rpcevent_chatapi__IChatServer_OnSpoken = static_cast<::vl::vint>(3);
+		instance.rpcevent_chatapi__IChatServer_OnUserAdded = static_cast<::vl::vint>(4);
+		instance.rpcevent_chatapi__IChatServer_OnUserRemoved = static_cast<::vl::vint>(5);
+		instance.rpcmethod_chatapi__IChatServer_RemoveUser = static_cast<::vl::vint>(6);
+		instance.rpcmethod_chatapi__IChatServer_Speak = static_cast<::vl::vint>(7);
 	FINALIZE_GLOBAL_STORAGE_CLASS
+
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_ChatBotApp)
 
 namespace vl_workflow_global
@@ -45,10 +55,760 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
+	::vl::Ptr<::vl::reflection::description::IValueDictionary> ChatBotApp::rpc_GetIds()
+	{
+		auto result = ::vl::reflection::description::IValueDictionary::Create();
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"chatapi::IChatServer")), ::vl::__vwsn::Box(static_cast<::vl::vint>(0)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"chatapi::IChatServer.AddUser")), ::vl::__vwsn::Box(static_cast<::vl::vint>(1)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"chatapi::IChatServer.OnServerShutdown")), ::vl::__vwsn::Box(static_cast<::vl::vint>(2)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"chatapi::IChatServer.OnSpoken")), ::vl::__vwsn::Box(static_cast<::vl::vint>(3)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"chatapi::IChatServer.OnUserAdded")), ::vl::__vwsn::Box(static_cast<::vl::vint>(4)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"chatapi::IChatServer.OnUserRemoved")), ::vl::__vwsn::Box(static_cast<::vl::vint>(5)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"chatapi::IChatServer.RemoveUser")), ::vl::__vwsn::Box(static_cast<::vl::vint>(6)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"chatapi::IChatServer.Speak")), ::vl::__vwsn::Box(static_cast<::vl::vint>(7)));
+		return result;
+	}
+
+	bool ChatBotApp::rpcwrapper_IsInterfaceTypeId(::vl::vint typeId)
+	{
+		if (((typeId >= static_cast<::vl::vint>(-7)) && (typeId <= static_cast<::vl::vint>(-1))))
+			return true;
+		{
+			auto __vwsn_switch_0 = typeId;
+			if ((__vwsn_switch_0 == GLOBAL_NAME rpctype_chatapi__IChatServer))
+				return true;
+			else
+				return false;
+		}
+	}
+
+	bool ChatBotApp::rpcwrapper_IsCtorInterfaceTypeId(::vl::vint typeId)
+	{
+		{
+			auto __vwsn_switch_1 = typeId;
+			return false;
+		}
+	}
+
+	::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> ChatBotApp::rpcops_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* lc)
+	{
+		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectOps>(new ::vl_workflow_global::__vwsnc1_ChatBotApp_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(lc));
+	}
+
+	::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> ChatBotApp::rpcops_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* lc)
+	{
+		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc2_ChatBotApp_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(lc));
+	}
+
+	::vl::Ptr<::rpcops_IOps_ChatBotApp> ChatBotApp::rpcops_IOps_Create(::vl::rpc_controller::IRpcLifecycle* lc)
+	{
+		return ::vl::Ptr<::rpcops_IOps_ChatBotApp>(new ::vl_workflow_global::__vwsnc3_ChatBotApp_rpcops_IOps_Create__rpcops_IOps_ChatBotApp(lc));
+	}
+
+	void ChatBotApp::rpclistener_chatapi__IChatServer(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::chatapi::IChatServer* target, ::vl::Ptr<::rpcops_IOps_ChatBotApp> ops)
+	{
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(target)->OnServerShutdown, vl::Func(::vl_workflow_global::__vwsnf1_ChatBotApp_rpclistener_chatapi__IChatServer_(lc, ops, ref)));
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(target)->OnSpoken, vl::Func(::vl_workflow_global::__vwsnf2_ChatBotApp_rpclistener_chatapi__IChatServer_(lc, ops, ref)));
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(target)->OnUserAdded, vl::Func(::vl_workflow_global::__vwsnf3_ChatBotApp_rpclistener_chatapi__IChatServer_(lc, ops, ref)));
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(target)->OnUserRemoved, vl::Func(::vl_workflow_global::__vwsnf4_ChatBotApp_rpclistener_chatapi__IChatServer_(lc, ops, ref)));
+	}
+
+	void ChatBotApp::rpclistener_Attach(::vl::vint typeId, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference ref, ::vl::reflection::IDescriptable* obj, ::vl::Ptr<::rpcops_IOps_ChatBotApp> ops)
+	{
+		{
+			auto __vwsn_switch_4 = typeId;
+			if ((__vwsn_switch_4 == GLOBAL_NAME rpctype_chatapi__IChatServer))
+			{
+				GLOBAL_NAME rpclistener_chatapi__IChatServer(lc, ref, ::vl::__vwsn::Ensure(::vl::__vwsn::RawPtrCast<::chatapi::IChatServer>(obj)), ops);
+				return;
+			}
+			else
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for listener attachment."));
+		}
+	}
+
+	::vl::Ptr<::chatapi::IRpcWrapper_IChatServer> ChatBotApp::rpcwrapper_chatapi__IChatServer(::vl::rpc_controller::IRpcLifecycle* lc, ::vl::rpc_controller::RpcObjectReference proxyRef, ::vl::Ptr<::rpcops_IOps_ChatBotApp> ops)
+	{
+		auto proxy = ::vl::Ptr<::chatapi::IRpcWrapper_IChatServer>(new ::vl_workflow_global::__vwsnc4_ChatBotApp_rpcwrapper_chatapi__IChatServer__chatapi_IRpcWrapper_IChatServer(lc, ops, proxyRef));
+		::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetDispatcher())->SendToClient_ObjectOps(proxyRef.clientId))->ObjectHold(proxyRef, ::vl::__vwsn::This(lc)->GetClientId(), true);
+		GLOBAL_NAME rpclistener_chatapi__IChatServer(lc, proxyRef, ::vl::__vwsn::Ensure(static_cast<::chatapi::IChatServer*>(proxy.Obj())), ops);
+		return proxy;
+	}
+
+	::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase> ChatBotApp::rpcwrapper_Create(::vl::rpc_controller::RpcObjectReference ref, ::vl::rpc_controller::IRpcLifecycle* lc, ::vl::Ptr<::rpcops_IOps_ChatBotApp> ops)
+	{
+		{
+			auto __vwsn_switch_5 = ref.typeId;
+			if ((__vwsn_switch_5 == GLOBAL_NAME rpctype_chatapi__IChatServer))
+			{
+				return ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>(GLOBAL_NAME rpcwrapper_chatapi__IChatServer(lc, ref, ops));
+			}
+			else
+				throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC type id for wrapper creation."));
+		}
+	}
+
+	::vl::vint ChatBotApp::rpcwrapper_GetTypeId(const ::vl::reflection::description::Value& obj)
+	{
+		if ([&](){ auto __vwsn_temp__ = obj; return !__vwsn_temp__.GetSharedPtr() && ::vl::__vwsn::RawPtrCast<::chatapi::IChatServer>(__vwsn_temp__.GetRawPtr()) != nullptr; }())
+			return GLOBAL_NAME rpctype_chatapi__IChatServer;
+		return static_cast<::vl::vint>(-100);
+	}
+
+	::vl::Ptr<::vl::glr::json::JsonNode> ChatBotApp::rpcjson_Serialize(const ::vl::reflection::description::Value& value)
+	{
+		return ::vl::rpc_controller::JsonSerializePredefinedTypes(value, ::vl::Func<::vl::Ptr<::vl::glr::json::JsonNode>(const ::vl::reflection::description::Value&)>(GLOBAL_OBJ, &GLOBAL_SYMBOL rpcjson_Serialize));
+	}
+
+	::vl::reflection::description::Value ChatBotApp::rpcjson_Deserialize(::vl::Ptr<::vl::glr::json::JsonNode> node)
+	{
+		auto object = ::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonObject>(node.Obj());
+		if (static_cast<bool>(object))
+		{
+			auto jsonFieldValue0 = ::vl::Ptr<::vl::glr::json::JsonNode>();
+			{
+				auto __vwsn_for_enumerable_jsonField1 = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(::vl::__vwsn::UnboxCollection<::vl::reflection::description::IValueList>(::vl::__vwsn::This(object.Obj())->fields));
+				auto __vwsn_for_enumerator_jsonField1 = ::vl::__vwsn::This(__vwsn_for_enumerable_jsonField1.Obj())->CreateEnumerator();
+				while (::vl::__vwsn::This(__vwsn_for_enumerator_jsonField1.Obj())->Next())
+				{
+					auto jsonField1 = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonObjectField>>(::vl::__vwsn::This(__vwsn_for_enumerator_jsonField1.Obj())->GetCurrent());
+					{
+						if ((::vl::__vwsn::This(jsonField1.Obj())->name.value == ::vl::WString::Unmanaged(L"$")))
+							(jsonFieldValue0 = ::vl::__vwsn::This(jsonField1.Obj())->value);
+					}
+				}
+			}
+			if (static_cast<bool>(jsonFieldValue0))
+			{
+				auto keyword = ::vl::__vwsn::This(::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::vl::glr::json::JsonString>(jsonFieldValue0.Obj())).Obj())->content.value;
+				{
+					auto __vwsn_switch_6 = keyword;
+				}
+			}
+		}
+		return ::vl::rpc_controller::JsonDeserializePredefinedTypes(::vl::__vwsn::Box(node), ::vl::Func<::vl::reflection::description::Value(::vl::Ptr<::vl::glr::json::JsonNode>)>(GLOBAL_OBJ, &GLOBAL_SYMBOL rpcjson_Deserialize));
+	}
+
+	::vl::Ptr<::vl::rpc_controller::IRpcSerializer> ChatBotApp::rpcops_IRpcSerializer()
+	{
+		return ::vl::Ptr<::vl::rpc_controller::IRpcSerializer>(new ::vl_workflow_global::__vwsnc5_ChatBotApp_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer());
+	}
+
+	::vl::Ptr<::vl::rpc_controller::IRpcObjectOps> ChatBotApp::rpcops_IRpcObjectOpsJson(::vl::rpc_controller::IRpcLifecycle* lc)
+	{
+		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectOps>(new ::vl_workflow_global::__vwsnc6_ChatBotApp_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(lc));
+	}
+
+	::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps> ChatBotApp::rpcops_IRpcObjectEventOpsJson(::vl::rpc_controller::IRpcLifecycle* lc)
+	{
+		return ::vl::Ptr<::vl::rpc_controller::IRpcObjectEventOps>(new ::vl_workflow_global::__vwsnc7_ChatBotApp_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(lc));
+	}
+
+	::vl::Ptr<::rpcops_IOps_ChatBotApp> ChatBotApp::rpcops_IOps_CreateJson(::vl::rpc_controller::IRpcLifecycle* lc)
+	{
+		return ::vl::Ptr<::rpcops_IOps_ChatBotApp>(new ::vl_workflow_global::__vwsnc8_ChatBotApp_rpcops_IOps_CreateJson__rpcops_IOps_ChatBotApp(lc));
+	}
+
 	ChatBotApp& ChatBotApp::Instance()
 	{
 		return Getvl_workflow_global_ChatBotApp().instance;
 	}
+
+/***********************************************************************
+Closures
+***********************************************************************/
+
+	//-------------------------------------------------------------------
+
+	__vwsnf1_ChatBotApp_rpclistener_chatapi__IChatServer_::__vwsnf1_ChatBotApp_rpclistener_chatapi__IChatServer_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_ChatBotApp> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref)
+		:lc(__vwsnctor_lc)
+		, ops(__vwsnctor_ops)
+		, ref(__vwsnctor_ref)
+	{
+	}
+
+	void __vwsnf1_ChatBotApp_rpclistener_chatapi__IChatServer_::operator()() const
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->GetEventSuppressedFlag(ref, GLOBAL_NAME rpcevent_chatapi__IChatServer_OnServerShutdown))
+			return;
+		::vl::__vwsn::This(ops.Obj())->InvokeEvent_chatapi__IChatServer_OnServerShutdown(ref);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf2_ChatBotApp_rpclistener_chatapi__IChatServer_::__vwsnf2_ChatBotApp_rpclistener_chatapi__IChatServer_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_ChatBotApp> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref)
+		:lc(__vwsnctor_lc)
+		, ops(__vwsnctor_ops)
+		, ref(__vwsnctor_ref)
+	{
+	}
+
+	void __vwsnf2_ChatBotApp_rpclistener_chatapi__IChatServer_::operator()(const ::vl::WString& arg0, const ::vl::WString& arg1) const
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->GetEventSuppressedFlag(ref, GLOBAL_NAME rpcevent_chatapi__IChatServer_OnSpoken))
+			return;
+		::vl::__vwsn::This(ops.Obj())->InvokeEvent_chatapi__IChatServer_OnSpoken(ref, arg0, arg1);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf3_ChatBotApp_rpclistener_chatapi__IChatServer_::__vwsnf3_ChatBotApp_rpclistener_chatapi__IChatServer_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_ChatBotApp> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref)
+		:lc(__vwsnctor_lc)
+		, ops(__vwsnctor_ops)
+		, ref(__vwsnctor_ref)
+	{
+	}
+
+	void __vwsnf3_ChatBotApp_rpclistener_chatapi__IChatServer_::operator()(const ::vl::WString& arg0) const
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->GetEventSuppressedFlag(ref, GLOBAL_NAME rpcevent_chatapi__IChatServer_OnUserAdded))
+			return;
+		::vl::__vwsn::This(ops.Obj())->InvokeEvent_chatapi__IChatServer_OnUserAdded(ref, arg0);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnf4_ChatBotApp_rpclistener_chatapi__IChatServer_::__vwsnf4_ChatBotApp_rpclistener_chatapi__IChatServer_(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_ChatBotApp> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_ref)
+		:lc(__vwsnctor_lc)
+		, ops(__vwsnctor_ops)
+		, ref(__vwsnctor_ref)
+	{
+	}
+
+	void __vwsnf4_ChatBotApp_rpclistener_chatapi__IChatServer_::operator()(const ::vl::WString& arg0) const
+	{
+		if (::vl::__vwsn::This(::vl::__vwsn::This(lc)->GetController())->GetEventSuppressedFlag(ref, GLOBAL_NAME rpcevent_chatapi__IChatServer_OnUserRemoved))
+			return;
+		::vl::__vwsn::This(ops.Obj())->InvokeEvent_chatapi__IChatServer_OnUserRemoved(ref, arg0);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc1_ChatBotApp_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::__vwsnc1_ChatBotApp_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+		this->_slot = static_cast<::vl::vint>(0);
+		this->_byvalReturnValues = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	::vl::reflection::description::Value __vwsnc1_ChatBotApp_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	{
+		auto unknownId = false;
+		try
+		{
+			{
+				auto __vwsn_switch_2 = methodId;
+				if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_chatapi__IChatServer_AddUser))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::chatapi::IChatServer>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->AddUser(::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0))))));
+				}
+				else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_chatapi__IChatServer_RemoveUser))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::chatapi::IChatServer>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->RemoveUser(::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0))))));
+				}
+				else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_chatapi__IChatServer_Speak))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::chatapi::IChatServer>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					::vl::__vwsn::This(target.Obj())->Speak(::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0)))), ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(1)))));
+					return ::vl::reflection::description::Value();
+				}
+				else
+					(unknownId = true);
+			}
+		}
+		catch(const ::vl::Exception& __vwsne_0)
+		{
+			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
+			{
+				return ::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }());
+			}
+		}
+		if (unknownId)
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
+		}
+		return ::vl::reflection::description::Value();
+	}
+
+	void __vwsnc1_ChatBotApp_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::EndInvokeMethod(::vl::vint slot)
+	{
+		::vl::__vwsn::This(_byvalReturnValues.Obj())->Remove(::vl::__vwsn::Box(slot));
+	}
+
+	void __vwsnc1_ChatBotApp_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps::ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold)
+	{
+		if (hold)
+		{
+			::vl::__vwsn::This(_lc)->LocalObjectHold(ref, remoteClientId);
+		}
+		else
+		{
+			::vl::__vwsn::This(_lc)->LocalObjectUnhold(ref, remoteClientId);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc2_ChatBotApp_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::__vwsnc2_ChatBotApp_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	::vl::reflection::description::Value __vwsnc2_ChatBotApp_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	{
+		auto unknownId = false;
+		auto rpcEventExceptions = ::vl::reflection::description::IValueDictionary::Create();
+		::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->SetEventSuppressedFlag(ref, eventId, true);
+		{
+			auto __vwsnb_0 = [&]()
+			{
+				::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->SetEventSuppressedFlag(ref, eventId, false);
+			}
+			;
+			::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
+			try
+			{
+				{
+					auto __vwsn_switch_3 = eventId;
+					if ((__vwsn_switch_3 == GLOBAL_NAME rpcevent_chatapi__IChatServer_OnServerShutdown))
+					{
+						auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::chatapi::IChatServer>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+						::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->OnServerShutdown)();
+					}
+					else if ((__vwsn_switch_3 == GLOBAL_NAME rpcevent_chatapi__IChatServer_OnSpoken))
+					{
+						auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::chatapi::IChatServer>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+						::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->OnSpoken)(::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0)))), ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(1)))));
+					}
+					else if ((__vwsn_switch_3 == GLOBAL_NAME rpcevent_chatapi__IChatServer_OnUserAdded))
+					{
+						auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::chatapi::IChatServer>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+						::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->OnUserAdded)(::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0)))));
+					}
+					else if ((__vwsn_switch_3 == GLOBAL_NAME rpcevent_chatapi__IChatServer_OnUserRemoved))
+					{
+						auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::chatapi::IChatServer>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+						::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->OnUserRemoved)(::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0)))));
+					}
+					else
+						(unknownId = true);
+				}
+			}
+			catch(const ::vl::Exception& __vwsne_0)
+			{
+				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
+				{
+					::vl::__vwsn::This(rpcEventExceptions.Obj())->Set(::vl::__vwsn::Box(::vl::__vwsn::This(_lc)->GetClientId()), ::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }()));
+				}
+			}
+		}
+		if (unknownId)
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
+		}
+		if ((::vl::__vwsn::This(rpcEventExceptions.Obj())->GetCount() > static_cast<::vl::vint>(0)))
+		{
+			return ::vl::__vwsn::Box(rpcEventExceptions);
+		}
+		else
+		{
+			return ::vl::reflection::description::Value();
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc3_ChatBotApp_rpcops_IOps_Create__rpcops_IOps_ChatBotApp::__vwsnc3_ChatBotApp_rpcops_IOps_Create__rpcops_IOps_ChatBotApp(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	bool __vwsnc3_ChatBotApp_rpcops_IOps_Create__rpcops_IOps_ChatBotApp::InvokeMethod_chatapi__IChatServer_AddUser(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_name)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg_name));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_chatapi__IChatServer_AddUser, arguments);
+		::vl::rpc_controller::ReadMethodException(invokeResult);
+		return ::vl::__vwsn::Unbox<bool>(invokeResult);
+	}
+
+	bool __vwsnc3_ChatBotApp_rpcops_IOps_Create__rpcops_IOps_ChatBotApp::InvokeMethod_chatapi__IChatServer_RemoveUser(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_name)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg_name));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_chatapi__IChatServer_RemoveUser, arguments);
+		::vl::rpc_controller::ReadMethodException(invokeResult);
+		return ::vl::__vwsn::Unbox<bool>(invokeResult);
+	}
+
+	void __vwsnc3_ChatBotApp_rpcops_IOps_Create__rpcops_IOps_ChatBotApp::InvokeMethod_chatapi__IChatServer_Speak(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_speakerName, const ::vl::WString& arg_message)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(2));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg_speakerName));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(1), ::vl::__vwsn::Box(arg_message));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_chatapi__IChatServer_Speak, arguments);
+		::vl::rpc_controller::ReadMethodException(invokeResult);
+	}
+
+	void __vwsnc3_ChatBotApp_rpcops_IOps_Create__rpcops_IOps_ChatBotApp::InvokeEvent_chatapi__IChatServer_OnServerShutdown(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(0));
+		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_chatapi__IChatServer_OnServerShutdown, arguments))));
+	}
+
+	void __vwsnc3_ChatBotApp_rpcops_IOps_Create__rpcops_IOps_ChatBotApp::InvokeEvent_chatapi__IChatServer_OnSpoken(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0, const ::vl::WString& arg_arg1)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(2));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg_arg0));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(1), ::vl::__vwsn::Box(arg_arg1));
+		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_chatapi__IChatServer_OnSpoken, arguments))));
+	}
+
+	void __vwsnc3_ChatBotApp_rpcops_IOps_Create__rpcops_IOps_ChatBotApp::InvokeEvent_chatapi__IChatServer_OnUserAdded(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg_arg0));
+		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_chatapi__IChatServer_OnUserAdded, arguments))));
+	}
+
+	void __vwsnc3_ChatBotApp_rpcops_IOps_Create__rpcops_IOps_ChatBotApp::InvokeEvent_chatapi__IChatServer_OnUserRemoved(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(arg_arg0));
+		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_chatapi__IChatServer_OnUserRemoved, arguments))));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc4_ChatBotApp_rpcwrapper_chatapi__IChatServer__chatapi_IRpcWrapper_IChatServer::__vwsnc4_ChatBotApp_rpcwrapper_chatapi__IChatServer__chatapi_IRpcWrapper_IChatServer(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_ChatBotApp> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
+	{
+		this->_lc = __vwsnctor_lc;
+		this->_ref = __vwsnctor_proxyRef;
+		this->_ops = __vwsnctor_ops;
+	}
+
+	void __vwsnc4_ChatBotApp_rpcwrapper_chatapi__IChatServer__chatapi_IRpcWrapper_IChatServer::DisconnectFromLifecycle()
+	{
+		(_lc = static_cast<::vl::rpc_controller::IRpcLifecycle*>(nullptr));
+		(_ops = ::vl::Ptr<::rpcops_IOps_ChatBotApp>());
+	}
+
+	__vwsnc4_ChatBotApp_rpcwrapper_chatapi__IChatServer__chatapi_IRpcWrapper_IChatServer::~__vwsnc4_ChatBotApp_rpcwrapper_chatapi__IChatServer__chatapi_IRpcWrapper_IChatServer()
+	{
+		if ((_lc != nullptr))
+		{
+			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->ObjectHold(_ref, ::vl::__vwsn::This(_lc)->GetClientId(), false);
+		}
+	}
+
+	bool __vwsnc4_ChatBotApp_rpcwrapper_chatapi__IChatServer__chatapi_IRpcWrapper_IChatServer::AddUser(const ::vl::WString& name)
+	{
+		if ((_lc == nullptr))
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_chatapi__IChatServer_AddUser(_ref, name);
+	}
+
+	bool __vwsnc4_ChatBotApp_rpcwrapper_chatapi__IChatServer__chatapi_IRpcWrapper_IChatServer::RemoveUser(const ::vl::WString& name)
+	{
+		if ((_lc == nullptr))
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_chatapi__IChatServer_RemoveUser(_ref, name);
+	}
+
+	void __vwsnc4_ChatBotApp_rpcwrapper_chatapi__IChatServer__chatapi_IRpcWrapper_IChatServer::Speak(const ::vl::WString& speakerName, const ::vl::WString& message)
+	{
+		if ((_lc == nullptr))
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
+		::vl::__vwsn::This(_ops.Obj())->InvokeMethod_chatapi__IChatServer_Speak(_ref, speakerName, message);
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc5_ChatBotApp_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::__vwsnc5_ChatBotApp_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer()
+	{
+	}
+
+	::vl::reflection::description::Value __vwsnc5_ChatBotApp_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::Serialize(const ::vl::reflection::description::Value& value)
+	{
+		auto result = GLOBAL_NAME rpcjson_Serialize(value);
+		return ::vl::__vwsn::Box(result);
+	}
+
+	::vl::reflection::description::Value __vwsnc5_ChatBotApp_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::Deserialize(const ::vl::reflection::description::Value& value)
+	{
+		return GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(value));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc6_ChatBotApp_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::__vwsnc6_ChatBotApp_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+		this->_slot = static_cast<::vl::vint>(0);
+		this->_byvalReturnValues = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	::vl::reflection::description::Value __vwsnc6_ChatBotApp_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	{
+		auto unknownId = false;
+		try
+		{
+			{
+				auto __vwsn_switch_7 = methodId;
+				if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_chatapi__IChatServer_AddUser))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::chatapi::IChatServer>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					auto jsonValue0 = ::vl::__vwsn::Unbox<::vl::WString>(GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0))))));
+					auto jsonLiteral1 = ::vl::Ptr<::vl::glr::json::JsonLiteral>(new ::vl::glr::json::JsonLiteral());
+					if (::vl::__vwsn::This(target.Obj())->AddUser(jsonValue0))
+						(::vl::__vwsn::This(jsonLiteral1.Obj())->value = ::vl::glr::json::JsonLiteralValue::True);
+					else
+						(::vl::__vwsn::This(jsonLiteral1.Obj())->value = ::vl::glr::json::JsonLiteralValue::False);
+					return ::vl::__vwsn::Box(jsonLiteral1);
+				}
+				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_chatapi__IChatServer_RemoveUser))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::chatapi::IChatServer>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					auto jsonValue0 = ::vl::__vwsn::Unbox<::vl::WString>(GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0))))));
+					auto jsonLiteral1 = ::vl::Ptr<::vl::glr::json::JsonLiteral>(new ::vl::glr::json::JsonLiteral());
+					if (::vl::__vwsn::This(target.Obj())->RemoveUser(jsonValue0))
+						(::vl::__vwsn::This(jsonLiteral1.Obj())->value = ::vl::glr::json::JsonLiteralValue::True);
+					else
+						(::vl::__vwsn::This(jsonLiteral1.Obj())->value = ::vl::glr::json::JsonLiteralValue::False);
+					return ::vl::__vwsn::Box(jsonLiteral1);
+				}
+				else if ((__vwsn_switch_7 == GLOBAL_NAME rpcmethod_chatapi__IChatServer_Speak))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::chatapi::IChatServer>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					auto jsonValue0 = ::vl::__vwsn::Unbox<::vl::WString>(GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0))))));
+					auto jsonValue1 = ::vl::__vwsn::Unbox<::vl::WString>(GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(1))))));
+					::vl::__vwsn::This(target.Obj())->Speak(jsonValue0, jsonValue1);
+					auto jsonLiteral2 = ::vl::Ptr<::vl::glr::json::JsonLiteral>(new ::vl::glr::json::JsonLiteral());
+					(::vl::__vwsn::This(jsonLiteral2.Obj())->value = ::vl::glr::json::JsonLiteralValue::Null);
+					return ::vl::__vwsn::Box(jsonLiteral2);
+				}
+				else
+					(unknownId = true);
+			}
+		}
+		catch(const ::vl::Exception& __vwsne_0)
+		{
+			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
+			{
+				return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }())));
+			}
+		}
+		if (unknownId)
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC method id."));
+		}
+		return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(::vl::reflection::description::Value()));
+	}
+
+	void __vwsnc6_ChatBotApp_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::EndInvokeMethod(::vl::vint slot)
+	{
+		::vl::__vwsn::This(_byvalReturnValues.Obj())->Remove(::vl::__vwsn::Box(slot));
+	}
+
+	void __vwsnc6_ChatBotApp_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps::ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint remoteClientId, bool hold)
+	{
+		if (hold)
+		{
+			::vl::__vwsn::This(_lc)->LocalObjectHold(ref, remoteClientId);
+		}
+		else
+		{
+			::vl::__vwsn::This(_lc)->LocalObjectUnhold(ref, remoteClientId);
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc7_ChatBotApp_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps::__vwsnc7_ChatBotApp_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	::vl::reflection::description::Value __vwsnc7_ChatBotApp_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps::InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments)
+	{
+		auto unknownId = false;
+		auto rpcEventExceptions = ::vl::reflection::description::IValueDictionary::Create();
+		::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->SetEventSuppressedFlag(ref, eventId, true);
+		{
+			auto __vwsnb_0 = [&]()
+			{
+				::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetController())->SetEventSuppressedFlag(ref, eventId, false);
+			}
+			;
+			::vl::__vwsn::RunOnExit<::std::remove_cvref_t<decltype(__vwsnb_0)>> __vwsnb_0_dtor(&__vwsnb_0);
+			try
+			{
+				{
+					auto __vwsn_switch_8 = eventId;
+					if ((__vwsn_switch_8 == GLOBAL_NAME rpcevent_chatapi__IChatServer_OnServerShutdown))
+					{
+						auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::chatapi::IChatServer>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+						::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->OnServerShutdown)();
+					}
+					else if ((__vwsn_switch_8 == GLOBAL_NAME rpcevent_chatapi__IChatServer_OnSpoken))
+					{
+						auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::chatapi::IChatServer>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+						auto jsonValue0 = ::vl::__vwsn::Unbox<::vl::WString>(GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0))))));
+						auto jsonValue1 = ::vl::__vwsn::Unbox<::vl::WString>(GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(1))))));
+						::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->OnSpoken)(jsonValue0, jsonValue1);
+					}
+					else if ((__vwsn_switch_8 == GLOBAL_NAME rpcevent_chatapi__IChatServer_OnUserAdded))
+					{
+						auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::chatapi::IChatServer>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+						auto jsonValue0 = ::vl::__vwsn::Unbox<::vl::WString>(GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0))))));
+						::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->OnUserAdded)(jsonValue0);
+					}
+					else if ((__vwsn_switch_8 == GLOBAL_NAME rpcevent_chatapi__IChatServer_OnUserRemoved))
+					{
+						auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::chatapi::IChatServer>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+						auto jsonValue0 = ::vl::__vwsn::Unbox<::vl::WString>(GLOBAL_NAME rpcjson_Deserialize(::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(::vl::__vwsn::Unbox<::vl::reflection::description::Value>(::vl::__vwsn::This(arguments.Obj())->Get(static_cast<::vl::vint>(0))))));
+						::vl::__vwsn::EventInvoke(::vl::__vwsn::This(target.Obj())->OnUserRemoved)(jsonValue0);
+					}
+					else
+						(unknownId = true);
+				}
+			}
+			catch(const ::vl::Exception& __vwsne_0)
+			{
+				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
+				{
+					::vl::__vwsn::This(rpcEventExceptions.Obj())->Set(::vl::__vwsn::Box(::vl::__vwsn::This(_lc)->GetClientId()), ::vl::__vwsn::Box([&](){ ::vl::rpc_controller::RpcException __vwsn_temp__; __vwsn_temp__.message = ::vl::__vwsn::This(ex.Obj())->GetMessage(); return __vwsn_temp__; }()));
+				}
+			}
+		}
+		if (unknownId)
+		{
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"Unknown RPC event id."));
+		}
+		if ((::vl::__vwsn::This(rpcEventExceptions.Obj())->GetCount() > static_cast<::vl::vint>(0)))
+		{
+			return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(::vl::__vwsn::Box(rpcEventExceptions)));
+		}
+		else
+		{
+			return ::vl::__vwsn::Box(GLOBAL_NAME rpcjson_Serialize(::vl::reflection::description::Value()));
+		}
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc8_ChatBotApp_rpcops_IOps_CreateJson__rpcops_IOps_ChatBotApp::__vwsnc8_ChatBotApp_rpcops_IOps_CreateJson__rpcops_IOps_ChatBotApp(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
+	{
+		this->_lc = __vwsnctor_lc;
+	}
+
+	bool __vwsnc8_ChatBotApp_rpcops_IOps_CreateJson__rpcops_IOps_ChatBotApp::InvokeMethod_chatapi__IChatServer_AddUser(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_name)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		auto jsonString0 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+		(::vl::__vwsn::This(jsonString0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = arg_name; return __vwsn_temp__; }());
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonString0));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_chatapi__IChatServer_AddUser, arguments);
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		auto methodResult = GLOBAL_NAME rpcjson_Deserialize(jsonResult);
+		::vl::rpc_controller::ReadMethodException(methodResult);
+		auto jsonValue1 = ::vl::__vwsn::Unbox<bool>(GLOBAL_NAME rpcjson_Deserialize(jsonResult));
+		return jsonValue1;
+	}
+
+	bool __vwsnc8_ChatBotApp_rpcops_IOps_CreateJson__rpcops_IOps_ChatBotApp::InvokeMethod_chatapi__IChatServer_RemoveUser(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_name)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		auto jsonString0 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+		(::vl::__vwsn::This(jsonString0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = arg_name; return __vwsn_temp__; }());
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonString0));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_chatapi__IChatServer_RemoveUser, arguments);
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		auto methodResult = GLOBAL_NAME rpcjson_Deserialize(jsonResult);
+		::vl::rpc_controller::ReadMethodException(methodResult);
+		auto jsonValue1 = ::vl::__vwsn::Unbox<bool>(GLOBAL_NAME rpcjson_Deserialize(jsonResult));
+		return jsonValue1;
+	}
+
+	void __vwsnc8_ChatBotApp_rpcops_IOps_CreateJson__rpcops_IOps_ChatBotApp::InvokeMethod_chatapi__IChatServer_Speak(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_speakerName, const ::vl::WString& arg_message)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(2));
+		auto jsonString0 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+		(::vl::__vwsn::This(jsonString0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = arg_speakerName; return __vwsn_temp__; }());
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonString0));
+		auto jsonString1 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+		(::vl::__vwsn::This(jsonString1.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = arg_message; return __vwsn_temp__; }());
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(1), ::vl::__vwsn::Box(jsonString1));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_chatapi__IChatServer_Speak, arguments);
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		auto methodResult = GLOBAL_NAME rpcjson_Deserialize(jsonResult);
+		::vl::rpc_controller::ReadMethodException(methodResult);
+	}
+
+	void __vwsnc8_ChatBotApp_rpcops_IOps_CreateJson__rpcops_IOps_ChatBotApp::InvokeEvent_chatapi__IChatServer_OnServerShutdown(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(0));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_chatapi__IChatServer_OnServerShutdown, arguments);
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		auto eventResult = GLOBAL_NAME rpcjson_Deserialize(jsonResult);
+		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(eventResult)));
+	}
+
+	void __vwsnc8_ChatBotApp_rpcops_IOps_CreateJson__rpcops_IOps_ChatBotApp::InvokeEvent_chatapi__IChatServer_OnSpoken(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0, const ::vl::WString& arg_arg1)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(2));
+		auto jsonString0 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+		(::vl::__vwsn::This(jsonString0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = arg_arg0; return __vwsn_temp__; }());
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonString0));
+		auto jsonString1 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+		(::vl::__vwsn::This(jsonString1.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = arg_arg1; return __vwsn_temp__; }());
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(1), ::vl::__vwsn::Box(jsonString1));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_chatapi__IChatServer_OnSpoken, arguments);
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		auto eventResult = GLOBAL_NAME rpcjson_Deserialize(jsonResult);
+		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(eventResult)));
+	}
+
+	void __vwsnc8_ChatBotApp_rpcops_IOps_CreateJson__rpcops_IOps_ChatBotApp::InvokeEvent_chatapi__IChatServer_OnUserAdded(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		auto jsonString0 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+		(::vl::__vwsn::This(jsonString0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = arg_arg0; return __vwsn_temp__; }());
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonString0));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_chatapi__IChatServer_OnUserAdded, arguments);
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		auto eventResult = GLOBAL_NAME rpcjson_Deserialize(jsonResult);
+		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(eventResult)));
+	}
+
+	void __vwsnc8_ChatBotApp_rpcops_IOps_CreateJson__rpcops_IOps_ChatBotApp::InvokeEvent_chatapi__IChatServer_OnUserRemoved(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint>(1));
+		auto jsonString0 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+		(::vl::__vwsn::This(jsonString0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = arg_arg0; return __vwsn_temp__; }());
+		::vl::__vwsn::This(arguments.Obj())->Set(static_cast<::vl::vint>(0), ::vl::__vwsn::Box(jsonString0));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->BroadcastFromClient_ObjectEventOps(::vl::__vwsn::This(_lc)->GetClientId()))->InvokeEvent(ref, GLOBAL_NAME rpcevent_chatapi__IChatServer_OnUserRemoved, arguments);
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		auto eventResult = GLOBAL_NAME rpcjson_Deserialize(jsonResult);
+		::vl::rpc_controller::ReadEventException(::vl::Ptr<::vl::reflection::description::IValueDictionary>(::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(eventResult)));
+	}
+
 }
 
 /***********************************************************************
@@ -57,6 +817,14 @@ Class (::chatapi::IChatServer)
 
 namespace chatapi
 {
+/***********************************************************************
+Class (::chatapi::IRpcWrapper_IChatServer)
+***********************************************************************/
+
+/***********************************************************************
+Class (::rpcops_IOps_ChatBotApp)
+***********************************************************************/
+
 }
 #undef GLOBAL_SYMBOL
 #undef GLOBAL_NAME

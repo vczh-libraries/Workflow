@@ -34,6 +34,8 @@ namespace vl
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			DECL_TYPE_INFO(::chatapi::IChatServer)
+			DECL_TYPE_INFO(::chatapi::IRpcWrapper_IChatServer)
+			DECL_TYPE_INFO(::rpcops_IOps_ChatBotApp)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
@@ -51,6 +53,40 @@ namespace vl
 					INVOKE_INTERFACE_PROXY(Speak, speakerName, message);
 				}
 			END_INTERFACE_PROXY(::chatapi::IChatServer)
+
+			BEGIN_INTERFACE_PROXY_SHAREDPTR(::chatapi::IRpcWrapper_IChatServer, ::chatapi::IChatServer, ::vl::rpc_controller::IRpcWrapperBase)
+			END_INTERFACE_PROXY(::chatapi::IRpcWrapper_IChatServer)
+
+			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_ChatBotApp)
+				void InvokeEvent_chatapi__IChatServer_OnServerShutdown(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeEvent_chatapi__IChatServer_OnServerShutdown, ref);
+				}
+				void InvokeEvent_chatapi__IChatServer_OnSpoken(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0, const ::vl::WString& arg_arg1) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeEvent_chatapi__IChatServer_OnSpoken, ref, arg_arg0, arg_arg1);
+				}
+				void InvokeEvent_chatapi__IChatServer_OnUserAdded(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeEvent_chatapi__IChatServer_OnUserAdded, ref, arg_arg0);
+				}
+				void InvokeEvent_chatapi__IChatServer_OnUserRemoved(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeEvent_chatapi__IChatServer_OnUserRemoved, ref, arg_arg0);
+				}
+				bool InvokeMethod_chatapi__IChatServer_AddUser(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_name) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_chatapi__IChatServer_AddUser, ref, arg_name);
+				}
+				bool InvokeMethod_chatapi__IChatServer_RemoveUser(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_name) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_chatapi__IChatServer_RemoveUser, ref, arg_name);
+				}
+				void InvokeMethod_chatapi__IChatServer_Speak(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_speakerName, const ::vl::WString& arg_message) override
+				{
+					INVOKE_INTERFACE_PROXY(InvokeMethod_chatapi__IChatServer_Speak, ref, arg_speakerName, arg_message);
+				}
+			END_INTERFACE_PROXY(::rpcops_IOps_ChatBotApp)
 #endif
 #endif
 

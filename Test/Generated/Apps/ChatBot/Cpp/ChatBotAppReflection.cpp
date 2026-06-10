@@ -31,6 +31,8 @@ namespace vl
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
 			IMPL_CPP_TYPE_INFO(chatapi::IChatServer)
+			IMPL_CPP_TYPE_INFO(chatapi::IRpcWrapper_IChatServer)
+			IMPL_CPP_TYPE_INFO(rpcops_IOps_ChatBotApp)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
@@ -46,6 +48,22 @@ namespace vl
 				CLASS_MEMBER_EVENT(OnUserRemoved)
 			END_INTERFACE_MEMBER(::chatapi::IChatServer)
 
+			BEGIN_INTERFACE_MEMBER(::chatapi::IRpcWrapper_IChatServer)
+				CLASS_MEMBER_BASE(::chatapi::IChatServer)
+				CLASS_MEMBER_BASE(::vl::rpc_controller::IRpcWrapperBase)
+			END_INTERFACE_MEMBER(::chatapi::IRpcWrapper_IChatServer)
+
+			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_ChatBotApp)
+				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeEvent_chatapi__IChatServer_OnServerShutdown, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeEvent_chatapi__IChatServer_OnSpoken, { L"ref" _ L"arg_arg0" _ L"arg_arg1" })
+				CLASS_MEMBER_METHOD(InvokeEvent_chatapi__IChatServer_OnUserAdded, { L"ref" _ L"arg_arg0" })
+				CLASS_MEMBER_METHOD(InvokeEvent_chatapi__IChatServer_OnUserRemoved, { L"ref" _ L"arg_arg0" })
+				CLASS_MEMBER_METHOD(InvokeMethod_chatapi__IChatServer_AddUser, { L"ref" _ L"arg_name" })
+				CLASS_MEMBER_METHOD(InvokeMethod_chatapi__IChatServer_RemoveUser, { L"ref" _ L"arg_name" })
+				CLASS_MEMBER_METHOD(InvokeMethod_chatapi__IChatServer_Speak, { L"ref" _ L"arg_speakerName" _ L"arg_message" })
+			END_INTERFACE_MEMBER(::rpcops_IOps_ChatBotApp)
+
 #undef _
 			class ChatBotAppTypeLoader : public Object, public ITypeLoader
 			{
@@ -53,6 +71,8 @@ namespace vl
 				void Load(ITypeManager* manager)
 				{
 					ADD_TYPE_INFO(::chatapi::IChatServer)
+					ADD_TYPE_INFO(::chatapi::IRpcWrapper_IChatServer)
+					ADD_TYPE_INFO(::rpcops_IOps_ChatBotApp)
 				}
 
 				void Unload(ITypeManager* manager)
