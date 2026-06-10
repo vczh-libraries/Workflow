@@ -115,6 +115,12 @@ To make sure the code works, you are going to run the below complete process and
 
 I am going to run this testing process after you claiming to finish the work, you'd better run this testing process carefully to make sure your claim is true.
 
+# UPDATES
+
+## UPDATE
+
+The work is good, I have applied a very little changes to the code, and please update `ChatBotServer` so that it also prints what is printing on `ChatBotClient`, that is, xxx joined, xxx left, xxx> yyy.
+
 # TEST
 
 The issue is a missing end-to-end real transport implementation for the generated ChatBot RPC application. The confirmation test is:
@@ -132,6 +138,7 @@ Success requires the build and generated app compiler step to pass, the interact
 # PROPOSALS
 
 - No.1 Add a shared channel-backed ChatBot JSON dispatcher and wire both apps to it [CONFIRMED]
+- No.2 Mirror ChatBot event output on the server [CONFIRMED]
 
 ## No.1 Add a shared channel-backed ChatBot JSON dispatcher
 
@@ -161,3 +168,23 @@ Implement `ChatBotJsonDispatcherBase`, `ChatBotJsonDispatcherClient`, and `ChatB
   - Bob exited and Alice/Carol saw `Bob left`.
   - Server exited and the remaining Alice/Carol client processes exited cleanly.
   - Final exit codes: server 0, Alice 0, Bob 0, Carol 0.
+
+## No.2 Mirror ChatBot event output on the server
+
+Attach the same console output handlers to the server-owned `IChatServer` service events that `ChatBotClient` attaches to its remote wrapper events. Because `ChatServerService::AddUser`, `ChatServerService::RemoveUser`, and `ChatServerService::Speak` already raise `OnUserAdded`, `OnUserRemoved`, and `OnSpoken`, printing from these server-side events keeps local server output consistent with client output without changing RPC routing or generated code.
+
+### CODE CHANGE
+
+- Add server-side handlers for `ChatServerService::OnUserAdded`, `ChatServerService::OnUserRemoved`, and `ChatServerService::OnSpoken` in `Test/UnitTest/ChatBotServer/Main.cpp`.
+- The handlers print exactly the client-visible event formats: `speakerName joined`, `speakerName left`, and `speakerName> message`.
+
+### CONFIRMED
+
+- `Debug|x64` build passed.
+- Multi-process x64 scenario passed with one `ChatBotServer` and three `ChatBotClient` processes.
+- The server stdout now contained:
+  - `Alice joined`, `Bob joined`, and `Carol joined`.
+  - `Alice> alice-N`, `Bob> bob-N`, and `Carol> carol-N` for three chat rounds.
+  - `Bob left` after Bob exited.
+- The same scenario still completed cleanly: server 0, Alice 0, Bob 0, Carol 0.
+- `Debug|Win32` build passed.

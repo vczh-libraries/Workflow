@@ -132,6 +132,19 @@ int main()
 	auto parser = CreateChatBotJsonParser();
 	auto channelServer = Ptr(new ChatBotHttpChannelServer(parser));
 	auto service = Ptr(new ChatServerService);
+	service->OnUserAdded.Add(Func<void(WString)>([](WString speakerName)
+	{
+		Console::WriteLine(speakerName + WString::Unmanaged(L" joined"));
+	}));
+	service->OnUserRemoved.Add(Func<void(WString)>([](WString speakerName)
+	{
+		Console::WriteLine(speakerName + WString::Unmanaged(L" left"));
+	}));
+	service->OnSpoken.Add(Func<void(WString, WString)>([](WString speakerName, WString message)
+	{
+		Console::WriteLine(speakerName + WString::Unmanaged(L"> ") + message);
+	}));
+
 	auto dispatcher = Ptr(new ChatBotJsonDispatcherServer(Ptr<JsonChannelServer>(channelServer), Ptr<chatapi::IChatServer>(service)));
 	channelServer->SetDispatcher(dispatcher.Obj());
 	dispatcher->Start();
