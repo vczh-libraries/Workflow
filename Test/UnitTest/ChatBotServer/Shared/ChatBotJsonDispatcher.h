@@ -45,71 +45,71 @@ namespace chatbot
 	protected:
 		struct ReceivedJsonMessage
 		{
-			vl::vint senderClientId = -1;
-			JsonPackage message;
+			vl::vint									senderClientId = -1;
+			JsonPackage									message;
 		};
 
 	private:
-		JsonChannel* rpcChannel = nullptr;
-		vl::atomic_vint nextRequestId = 0;
-		vl::atomic_vint activeJsonRequests = 0;
+		JsonChannel*									rpcChannel = nullptr;
+		vl::atomic_vint									nextRequestId = 0;
+		vl::atomic_vint									activeJsonRequests = 0;
 
-		vl::SpinLock lockMessages;
-		vl::Semaphore semaphoreMessages;
-		vl::collections::List<ReceivedJsonMessage> messages;
-		vl::collections::List<ReceivedJsonMessage> bufferedResponses;
+		vl::SpinLock									lockMessages;
+		vl::Semaphore									semaphoreMessages;
+		vl::collections::List<ReceivedJsonMessage>		messages;
+		vl::collections::List<ReceivedJsonMessage>		bufferedResponses;
 
 	protected:
-		vl::Ptr<vl::rpc_controller::RpcJsonDispatcher> rpcDispatcher;
-		vl::Ptr<vl::rpc_controller::RpcJsonLifecycle> lifecycle;
-		vl::Ptr<::rpcops_IOps_ChatBotApp> ops;
+		vl::Ptr<vl::rpc_controller::RpcJsonDispatcher>	rpcDispatcher;
+		vl::Ptr<vl::rpc_controller::RpcJsonLifecycle>	lifecycle;
+		vl::Ptr<::rpcops_IOps_ChatBotApp>				ops;
 
-		static vl::vint GetChatServerTypeId();
+		static vl::vint									GetChatServerTypeId();
 
-		JsonChannel* GetRpcChannel();
-		vl::vint GetLocalClientId();
+		JsonChannel*									GetRpcChannel();
+		vl::vint										GetLocalClientId();
 
-		void InitializeRpc(vl::vint clientId);
-		void PushReceivedMessage(vl::vint senderClientId, JsonPackage message);
-		ReceivedJsonMessage PopReceivedMessage();
-		bool TryPopBufferedResponse(vl::vint requestId, ReceivedJsonMessage& message);
-		void PushBufferedResponse(ReceivedJsonMessage message);
-		void SendJsonResponse(vl::vint receiverClientId, JsonPackage response);
-		void FlushChannel();
+		void											InitializeRpc(vl::vint clientId);
+		void											PushReceivedMessage(vl::vint senderClientId, JsonPackage message);
+		ReceivedJsonMessage								PopReceivedMessage();
+		bool											TryPopBufferedResponse(vl::vint requestId, ReceivedJsonMessage& message);
+		void											PushBufferedResponse(ReceivedJsonMessage message);
+		void											SendJsonResponse(vl::vint receiverClientId, JsonPackage response);
+		void											FlushChannel();
 
-		virtual void SchedulaTask(vl::Func<void()> task) = 0;
-		virtual void SendJsonRequest(JsonPackage message, bool broadcast) = 0;
-		virtual bool HandleIncomingRequest(vl::vint senderClientId, JsonPackage request);
-		virtual bool HandleUnmatchedResponse(vl::vint senderClientId, JsonPackage response);
-		virtual void AfterRequestResponse(vl::vint senderClientId, JsonPackage request);
+		virtual void									SchedulaTask(vl::Func<void()> task) = 0;
+		virtual void									SendJsonRequest(JsonPackage message, bool broadcast) = 0;
+		virtual bool									HandleIncomingRequest(vl::vint senderClientId, JsonPackage request);
+		virtual bool									HandleUnmatchedResponse(vl::vint senderClientId, JsonPackage response);
+		virtual void									AfterRequestResponse(vl::vint senderClientId, JsonPackage request);
 
-		void ProcessRequestAndSendResponse(vl::vint senderClientId, JsonPackage request);
-		JsonPackage TranslateRequest(JsonPackage request);
+		void											ProcessRequestAndSendResponse(vl::vint senderClientId, JsonPackage request);
+		JsonPackage										TranslateRequest(JsonPackage request);
 
 	public:
 		ChatBotJsonDispatcherBase(JsonChannel* channel);
 
-		vl::vint AllocateRequestId() override;
-		JsonPackage OnJsonRequest(JsonPackage message, bool broadcast) override;
-		void OnRead(vl::vint senderClientId, const JsonPackage& package) override;
+		vl::vint										AllocateRequestId() override;
+		JsonPackage										OnJsonRequest(JsonPackage message, bool broadcast) override;
+		void											OnRead(vl::vint senderClientId, const JsonPackage& package) override;
 
-		void FinalizeRpc();
+		void											FinalizeRpc();
 	};
 
 	class ChatBotJsonDispatcherClient : public ChatBotJsonDispatcherBase
 	{
 	private:
-		vl::vint serverLocalClientId = -1;
-		vl::Ptr<chatapi::IChatServer> chatServer;
+		vl::vint										serverLocalClientId = -1;
+		vl::Ptr<chatapi::IChatServer>					chatServer;
 
 	protected:
-		void SendJsonRequest(JsonPackage message, bool broadcast) override;
+		void											SendJsonRequest(JsonPackage message, bool broadcast) override;
 
 	public:
 		ChatBotJsonDispatcherClient(JsonChannel* channel);
 
-		void LoginClient(vl::vint clientId);
-		vl::Ptr<chatapi::IChatServer> GetChatServer();
+		void											LoginClient(vl::vint clientId);
+		vl::Ptr<chatapi::IChatServer>					GetChatServer();
 	};
 
 	class ChatBotJsonDispatcherServer : public ChatBotJsonDispatcherBase
@@ -117,54 +117,54 @@ namespace chatbot
 	public:
 		struct PendingBroadcast : public vl::Object
 		{
-			vl::vint originalClientId = -1;
-			vl::vint originalRequestId = -1;
-			vl::vint redirectedRequestId = -1;
-			bool hasNonNullResponse = false;
-			vl::collections::List<vl::vint> expectedClientIds;
-			vl::collections::Dictionary<vl::vint, JsonPackage> responses;
+			vl::vint											originalClientId = -1;
+			vl::vint											originalRequestId = -1;
+			vl::vint											redirectedRequestId = -1;
+			bool												hasNonNullResponse = false;
+			vl::collections::List<vl::vint>						expectedClientIds;
+			vl::collections::Dictionary<vl::vint, JsonPackage>	responses;
 		};
 
 		struct CompletedBroadcast
 		{
-			vl::vint originalClientId = -1;
-			JsonPackage response;
+			vl::vint											originalClientId = -1;
+			JsonPackage											response;
 		};
 
 	private:
-		vl::Ptr<chatapi::IChatServer> service;
-		vl::vint localClientId = -1;
+		vl::Ptr<chatapi::IChatServer>										service;
+		vl::vint															localClientId = -1;
 
 		// covers localClientId and pendingLoginClientIds
-		vl::SpinLock lockClients;
-		vl::collections::List<vl::vint> pendingLoginClientIds;
+		vl::SpinLock														lockClients;
+		vl::collections::List<vl::vint>										pendingLoginClientIds;
 
-		vl::SpinLock lockBroadcasts;
-		vl::collections::SortedList<vl::vint> connectedClientIds;
-		vl::collections::Dictionary<vl::WString, vl::Ptr<PendingBroadcast>> pendingBroadcasts;
-		vl::collections::Dictionary<vl::vint, vl::WString> redirectedBroadcasts;
+		vl::SpinLock														lockBroadcasts;
+		vl::collections::SortedList<vl::vint>								connectedClientIds;
+		vl::collections::Dictionary<vl::WString, vl::Ptr<PendingBroadcast>>	pendingBroadcasts;
+		vl::collections::Dictionary<vl::vint, vl::WString>					redirectedBroadcasts;
 
-		vl::WString MakeBroadcastKey(vl::vint clientId, vl::vint requestId);
-		JsonPackage CreateBroadcastResponse(vl::vint sourceClientId, vl::vint targetClientId, vl::vint requestId, vl::Ptr<PendingBroadcast> pending);
-		CompletedBroadcast CompleteBroadcastLocked(const vl::WString& key);
-		void DeliverCompletedBroadcast(const CompletedBroadcast& completed);
-		JsonPackage StartBroadcast(vl::vint originalClientId, vl::vint originalRequestId, JsonPackage message);
-		bool TryHandleBroadcastResponse(vl::vint senderClientId, JsonPackage response);
-		void SendLoginMessage(vl::vint clientId);
+		vl::WString										MakeBroadcastKey(vl::vint clientId, vl::vint requestId);
+		JsonPackage										CreateBroadcastResponse(vl::vint sourceClientId, vl::vint targetClientId, vl::vint requestId, vl::Ptr<PendingBroadcast> pending);
+		CompletedBroadcast								CompleteBroadcastLocked(const vl::WString& key);
+		void											DeliverCompletedBroadcast(const CompletedBroadcast& completed);
+		JsonPackage										StartBroadcast(vl::vint originalClientId, vl::vint originalRequestId, JsonPackage message);
+		bool											TryHandleBroadcastResponse(vl::vint senderClientId, JsonPackage response);
+		void											SendLoginMessage(vl::vint clientId);
 
 	protected:
-		void SendJsonRequest(JsonPackage message, bool broadcast) override;
-		bool HandleIncomingRequest(vl::vint senderClientId, JsonPackage request) override;
-		bool HandleUnmatchedResponse(vl::vint senderClientId, JsonPackage response) override;
-		void AfterRequestResponse(vl::vint senderClientId, JsonPackage request) override;
+		void											SendJsonRequest(JsonPackage message, bool broadcast) override;
+		bool											HandleIncomingRequest(vl::vint senderClientId, JsonPackage request) override;
+		bool											HandleUnmatchedResponse(vl::vint senderClientId, JsonPackage response) override;
+		void											AfterRequestResponse(vl::vint senderClientId, JsonPackage request) override;
 
 	public:
 		ChatBotJsonDispatcherServer(JsonChannel* channel, vl::Ptr<chatapi::IChatServer> chatServerService);
 
-		void RegisterLocalClient(vl::vint clientId);
-		void RegisterClient(vl::vint clientId);
-		void DisconnectClient(vl::vint clientId);
-		vl::vint GetServerClientId();
+		void											RegisterLocalClient(vl::vint clientId);
+		void											RegisterClient(vl::vint clientId);
+		void											DisconnectClient(vl::vint clientId);
+		vl::vint										GetServerClientId();
 	};
 }
 
