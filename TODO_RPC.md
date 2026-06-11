@@ -16,15 +16,9 @@
 
 - `ChatBotServer` and `ChatBotClient` project.
   - Review.
-  - `IRpcJsonMessageDispatcher::DefaultDispatch` so that the parsing part of each `JsonRequest` implementation could be shared.
-  - `ChatBotJsonDispatcherBase` implementa `IChannelReader` and only accept an `IChannel` in the constructor.
-  - `Http(Server|Client)` should be created in each `Main.cpp`.
-  - `ChatBotJsonDispatcherServer` exposes functions for all kinds of registration, no longer handling connection verification.
-  - Extract task queue to a class, `ChatBotJsonDispatcherBase` no longer use the task queue directly.
-    - In each `Main.cpp` a task queue is created, `ChatBotJsonDispatcherBase` will call back `Main.cpp` handles the actual thread dispatching work.
-    - Move the task queue to `VlppOS`.
   - Declaration of service registration from every client connection.
-  - Extract from the shared code as many as possible into the library.
+  - Extract from the `ChatBotJsonDispatcher*` as many as possible into the library.
+- Move the `TaskQueue` to `VlppOS`.
 
 ## Knowledge Base
 
