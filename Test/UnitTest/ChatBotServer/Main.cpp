@@ -285,10 +285,9 @@ int main()
 
 	Console::SetTitle(L"ChatBotServer (localhost:" + itow(ChatBotHttpPort) + ChatBotHttpBaseUrl + L")");
 	Console::WriteLine(L"Ready to start ChatBotClient.");
+	Console::WriteLine(L"Press ENTER to exit.");
 	WString line;
-	while (TryReadLine(line) && line != WString::Unmanaged(L"exit"))
-	{
-	}
+	TryReadLine(line);
 
 	taskQueue->QueueExitTask();
 	taskThread->Wait();
