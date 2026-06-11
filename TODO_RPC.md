@@ -18,13 +18,11 @@
   - Review.
   - Declaration of service registration from every client connection.
   - Extract from the `ChatBotJsonDispatcher*` as many as possible into the library.
-- Move the `TaskQueue` to `VlppOS`.
 
 ## Knowledge Base
 
-- New task queue in VlppOS
-  - A dedicated guidelines for VlppOS oriented synchronization best practice.
-  - A dedicated guidelines for codegen tools, including input output format and .d.ts
+- A dedicated guidelines for VlppOS oriented synchronization best practice.
+- A dedicated guidelines for codegen tools, including input output format and .d.ts
 - RPC
   - use `TODO_RPC_(Definition|Json|GeneratedWrappers).md`
   - how to start up
