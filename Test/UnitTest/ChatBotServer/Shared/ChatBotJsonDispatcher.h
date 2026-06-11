@@ -6,34 +6,35 @@
 
 namespace chatbot
 {
-	using JsonPackage = vl::Ptr<vl::glr::json::JsonNode>;
-	using JsonChannel = vl::inter_process::IChannel<JsonPackage>;
-	using JsonChannelClient = vl::inter_process::IChannelClient<JsonPackage>;
-	using JsonChannelServer = vl::inter_process::IChannelServer<JsonPackage>;
-	using JsonNetworkChannelClient = vl::inter_process::NetworkProtocolChannelClient<JsonPackage, vl::glr::json::JsonNodeListSerializer>;
-	using JsonLocalChannelClient = vl::inter_process::NetworkProtocolLocalChannelClient<JsonPackage, vl::glr::json::JsonNodeListSerializer>;
-	using JsonNetworkChannelServer = vl::inter_process::NetworkProtocolChannelServer<JsonPackage, vl::glr::json::JsonNodeListSerializer>;
+	using JsonPackage				= vl::Ptr<vl::glr::json::JsonNode>;
+	using JsonChannel				= vl::inter_process::IChannel<JsonPackage>;
+	using JsonChannelClient			= vl::inter_process::IChannelClient<JsonPackage>;
+	using JsonChannelServer			= vl::inter_process::IChannelServer<JsonPackage>;
+	using JsonNetworkChannelClient	= vl::inter_process::NetworkProtocolChannelClient<JsonPackage, vl::glr::json::JsonNodeListSerializer>;
+	using JsonLocalChannelClient	= vl::inter_process::NetworkProtocolLocalChannelClient<JsonPackage, vl::glr::json::JsonNodeListSerializer>;
+	using JsonNetworkChannelServer	= vl::inter_process::NetworkProtocolChannelServer<JsonPackage, vl::glr::json::JsonNodeListSerializer>;
 
-	constexpr const wchar_t* RpcChannel = L"RpcChannel";
-	constexpr const wchar_t* ChatBotHttpBaseUrl = L"/WorkflowChatBot";
-	constexpr vl::vint ChatBotHttpPort = 28763;
+	constexpr const wchar_t* RpcChannel			= L"RpcChannel";
+	constexpr const wchar_t* ChatBotHttpBaseUrl	= L"/WorkflowChatBot";
+	constexpr vl::vint ChatBotHttpPort			= 28763;
 
 	vl::Ptr<vl::glr::json::Parser> CreateChatBotJsonParser();
 
 	class TaskQueue : public vl::Object
 	{
 	private:
-		vl::SpinLock lockTasks;
-		vl::Semaphore semaphoreTasks;
-		vl::collections::List<vl::Func<void()>> tasks;
-		bool exitTaskQueued = false;
+		vl::SpinLock							lockTasks;
+		vl::Semaphore							semaphoreTasks;
+		vl::collections::List<vl::Func<void()>>	tasks;
+		bool									exitTaskQueued = false;
 
 	public:
 		TaskQueue();
+		~TaskQueue();
 
-		void QueueTask(vl::Func<void()> task);
-		void QueueExitTask();
-		void RunTaskQueue();
+		void									QueueTask(vl::Func<void()> task);
+		void									QueueExitTask();
+		void									RunTaskQueue();
 	};
 
 	class ChatBotJsonDispatcherBase

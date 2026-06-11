@@ -241,6 +241,10 @@ TaskQueue
 		CHECK_ERROR(semaphoreTasks.Create(0, 65536), L"TaskQueue failed to create the task semaphore.");
 	}
 
+	TaskQueue::~TaskQueue()
+	{
+	}
+
 	void TaskQueue::QueueTask(Func<void()> task)
 	{
 		SPIN_LOCK(lockTasks)
