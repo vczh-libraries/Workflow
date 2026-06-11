@@ -1,41 +1,12 @@
 #include "ChatBotApp.h"
 #include "..\ChatBotServer\Shared\ChatBotJsonDispatcher.h"
 #include <VlppOS.Windows.h>
-#include <stdio.h>
 
 using namespace vl;
 using namespace vl::console;
 using namespace vl::glr::json;
 using namespace vl::inter_process;
 using namespace chatbot;
-
-bool TryReadLine(WString& line)
-{
-	DWORD mode = 0;
-	if (GetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), &mode))
-	{
-		line = Console::Read();
-		return true;
-	}
-
-	wchar_t buffer[4096] = { 0 };
-	if (!fgetws(buffer, sizeof(buffer) / sizeof(*buffer), stdin))
-	{
-		return false;
-	}
-
-	line = buffer;
-	while (line.Length() > 0)
-	{
-		auto c = line[line.Length() - 1];
-		if (c != L'\r' && c != L'\n')
-		{
-			break;
-		}
-		line = line.Left(line.Length() - 1);
-	}
-	return true;
-}
 
 class ChatBotTaskThread : public Thread
 {
@@ -129,10 +100,10 @@ private:
 protected:
 	void Run() override
 	{
-		WString line;
-		while (TryReadLine(line))
+		auto line = Console::TryRead();
+		while (line)
 		{
-			if (line == WString::Unmanaged(L"exit"))
+			if (line.Value() == WString::Unmanaged(L"exit"))
 			{
 				taskQueue->QueueTask(Func<void()>([server = chatServer, name = userName]()
 				{
@@ -143,11 +114,12 @@ protected:
 			}
 			else
 			{
-				taskQueue->QueueTask(Func<void()>([server = chatServer, name = userName, message = line]()
+				taskQueue->QueueTask(Func<void()>([server = chatServer, name = userName, message = line.Value()]()
 				{
 					server->Speak(name, message);
 				}));
 			}
+			line = Console::TryRead();
 		}
 	}
 
@@ -191,11 +163,12 @@ int main()
 	}));
 
 	Console::Write(L"Enter your name: ");
-	WString userName;
-	if (!TryReadLine(userName))
+	auto inputUserName = Console::TryRead();
+	if (!inputUserName)
 	{
 		return 0;
 	}
+	auto userName = inputUserName.Value();
 	Console::SetTitle(L"ChatBotClient: " + userName);
 	auto taskThread = Ptr(new ChatBotTaskThread(taskQueue));
 	taskThread->Start();

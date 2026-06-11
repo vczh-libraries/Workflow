@@ -1,7 +1,6 @@
 #include "ChatBotApp.h"
 #include "Shared/ChatBotJsonDispatcher.h"
 #include <VlppOS.Windows.h>
-#include <stdio.h>
 
 using namespace vl;
 using namespace vl::collections;
@@ -9,34 +8,6 @@ using namespace vl::console;
 using namespace vl::glr::json;
 using namespace vl::inter_process;
 using namespace chatbot;
-
-bool TryReadLine(WString& line)
-{
-	DWORD mode = 0;
-	if (GetConsoleMode(GetStdHandle(STD_INPUT_HANDLE), &mode))
-	{
-		line = Console::Read();
-		return true;
-	}
-
-	wchar_t buffer[4096] = { 0 };
-	if (!fgetws(buffer, sizeof(buffer) / sizeof(*buffer), stdin))
-	{
-		return false;
-	}
-
-	line = buffer;
-	while (line.Length() > 0)
-	{
-		auto c = line[line.Length() - 1];
-		if (c != L'\r' && c != L'\n')
-		{
-			break;
-		}
-		line = line.Left(line.Length() - 1);
-	}
-	return true;
-}
 
 class ChatServerService : public Object, public virtual chatapi::IChatServer
 {
@@ -286,8 +257,7 @@ int main()
 	Console::SetTitle(L"ChatBotServer (localhost:" + itow(ChatBotHttpPort) + ChatBotHttpBaseUrl + L")");
 	Console::WriteLine(L"Ready to start ChatBotClient.");
 	Console::WriteLine(L"Press ENTER to exit.");
-	WString line;
-	TryReadLine(line);
+	Console::TryRead();
 
 	taskQueue->QueueExitTask();
 	taskThread->Wait();
