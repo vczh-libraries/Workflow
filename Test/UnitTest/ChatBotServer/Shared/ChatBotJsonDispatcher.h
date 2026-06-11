@@ -13,29 +13,13 @@ namespace chatbot
 	using JsonNetworkChannelClient	= vl::inter_process::NetworkProtocolChannelClient<JsonPackage, vl::glr::json::JsonNodeListSerializer>;
 	using JsonLocalChannelClient	= vl::inter_process::NetworkProtocolLocalChannelClient<JsonPackage, vl::glr::json::JsonNodeListSerializer>;
 	using JsonNetworkChannelServer	= vl::inter_process::NetworkProtocolChannelServer<JsonPackage, vl::glr::json::JsonNodeListSerializer>;
+	using TaskQueue					= vl::TaskQueue;
 
 	constexpr const wchar_t* RpcChannel			= L"RpcChannel";
 	constexpr const wchar_t* ChatBotHttpBaseUrl	= L"/WorkflowChatBot";
 	constexpr vl::vint ChatBotHttpPort			= 28763;
 
 	vl::Ptr<vl::glr::json::Parser> CreateChatBotJsonParser();
-
-	class TaskQueue : public vl::Object
-	{
-	private:
-		vl::SpinLock							lockTasks;
-		vl::Semaphore							semaphoreTasks;
-		vl::collections::List<vl::Func<void()>>	tasks;
-		bool									exitTaskQueued = false;
-
-	public:
-		TaskQueue();
-		~TaskQueue();
-
-		void									QueueTask(vl::Func<void()> task);
-		void									QueueExitTask();
-		void									RunTaskQueue();
-	};
 
 	class ChatBotJsonDispatcherBase
 		: public vl::Object

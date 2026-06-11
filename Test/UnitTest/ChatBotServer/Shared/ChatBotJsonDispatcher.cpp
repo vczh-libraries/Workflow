@@ -228,73 +228,12 @@ namespace chatbot
 	}
 
 /***********************************************************************
-TaskQueue
+Parser
 ***********************************************************************/
 
 	Ptr<Parser> CreateChatBotJsonParser()
 	{
 		return Ptr(new Parser);
-	}
-
-	TaskQueue::TaskQueue()
-	{
-		CHECK_ERROR(semaphoreTasks.Create(0, 65536), L"TaskQueue failed to create the task semaphore.");
-	}
-
-	TaskQueue::~TaskQueue()
-	{
-	}
-
-	void TaskQueue::QueueTask(Func<void()> task)
-	{
-		SPIN_LOCK(lockTasks)
-		{
-			tasks.Add(task);
-		}
-		semaphoreTasks.Release();
-	}
-
-	void TaskQueue::QueueExitTask()
-	{
-		SPIN_LOCK(lockTasks)
-		{
-			exitTaskQueued = true;
-		}
-		semaphoreTasks.Release();
-	}
-
-	void TaskQueue::RunTaskQueue()
-	{
-		while (true)
-		{
-			Func<void()> task;
-			bool hasTask = false;
-			bool shouldExit = false;
-			SPIN_LOCK(lockTasks)
-			{
-				if (tasks.Count() > 0)
-				{
-					task = tasks[0];
-					tasks.RemoveAt(0);
-					hasTask = true;
-				}
-				else
-				{
-					shouldExit = exitTaskQueued;
-				}
-			}
-
-			if (shouldExit)
-			{
-				break;
-			}
-			if (!hasTask)
-			{
-				semaphoreTasks.Wait();
-				continue;
-			}
-			task();
-		}
 	}
 
 /***********************************************************************
