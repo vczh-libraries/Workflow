@@ -70,17 +70,6 @@ namespace vl
 				return wtoi(numberNode->content.value);
 			}
 
-			bool IsRpcMethodPrefix(const WString& rpcMethod, const WString& prefix)
-			{
-				return rpcMethod.Length() >= prefix.Length() && rpcMethod.Left(prefix.Length()) == prefix;
-			}
-
-			WString ReadRpcMethod(Ptr<JsonNode> message)
-			{
-				auto object = GetJsonObject(message);
-				return GetJsonString(GetJsonObjectField(object, WString::Unmanaged(L"rpcMethod")));
-			}
-
 			vint ReadSourceClientId(Ptr<JsonNode> message)
 			{
 				auto object = GetJsonObject(message);
@@ -289,7 +278,6 @@ namespace vl
 		Ptr<JsonNode> RpcDualJsonRequestBridge::OnJsonRequest(Ptr<JsonNode> message, bool broadcast)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestBridge::OnJsonRequest(Ptr<JsonNode>, bool)#"
-			auto rpcMethod = ReadRpcMethod(message);
 			auto object = GetJsonObject(message);
 			auto sourceClientId = ReadSourceClientId(message);
 			auto receiver = GetOtherLifecycle(sourceClientId);
@@ -301,23 +289,14 @@ namespace vl
 			}
 			jsonRequests.Add(message);
 
-			Ptr<JsonNode> response;
-			if (!broadcast && IsRpcMethodPrefix(rpcMethod, WString::Unmanaged(L"Request:IObjectOps_")))
-			{
-				response = RpcJsonObjectOps::Translate(message, receiver->GetController()->GetObjectOps(), receiver);
-			}
-			else if (broadcast && IsRpcMethodPrefix(rpcMethod, WString::Unmanaged(L"Request:IObjectEventOps_")))
-			{
-				response = RpcJsonObjectEventOps::Translate(message, receiver->GetController()->GetObjectEventOps(), receiver);
-			}
-			else if (broadcast && rpcMethod == WString::Unmanaged(L"Request:IRpcDispatcher_DeclareLocalService"))
-			{
-				response = RpcJsonDispatcher::Translate(message, receiver->GetDispatcher(), receiver);
-			}
-			else
-			{
-				CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unknown JSON RPC method.");
-			}
+			auto response = IRpcJsonMessageDispatcher::DefaultDispatch(
+				message,
+				broadcast,
+				receiver->GetController()->GetObjectOps(),
+				receiver->GetController()->GetObjectEventOps(),
+				receiver->GetDispatcher(),
+				receiver
+				);
 
 			jsonRequests.Add(response);
 			return response;

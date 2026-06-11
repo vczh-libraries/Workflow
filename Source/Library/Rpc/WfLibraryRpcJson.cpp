@@ -388,6 +388,11 @@ namespace vl
 				return GetJsonInt(GetJsonObjectField(object, WString::Unmanaged(L"targetClientId")));
 			}
 
+			bool IsRpcMethodPrefix(const WString& rpcMethod, const WString& prefix)
+			{
+				return rpcMethod.Length() >= prefix.Length() && rpcMethod.Left(prefix.Length()) == prefix;
+			}
+
 			Ptr<JsonNode> MethodResultToJsonResponse(const Value& result)
 			{
 				if (result.GetValueType() == Value::SharedPtr)
@@ -631,6 +636,41 @@ namespace vl
 			}
 
 			CHECK_FAIL(L"Unsupported RPC JSON node.");
+		}
+
+/***********************************************************************
+* IRpcJsonMessageDispatcher
+***********************************************************************/
+
+		Ptr<JsonNode> IRpcJsonMessageDispatcher::DefaultDispatch(
+			Ptr<JsonNode> message,
+			bool broadcast,
+			IRpcObjectOps* objectOps,
+			IRpcObjectEventOps* objectEventOps,
+			IRpcDispatcher* dispatcher,
+			IRpcLifecycle* lifecycle
+			)
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller::IRpcJsonMessageDispatcher::DefaultDispatch(Ptr<JsonNode>, bool, IRpcObjectOps*, IRpcObjectEventOps*, IRpcDispatcher*, IRpcLifecycle*)#"
+			auto request = GetJsonObject(message);
+			auto rpcMethod = GetJsonString(GetJsonObjectField(request, WString::Unmanaged(L"rpcMethod")));
+
+			if (!broadcast && IsRpcMethodPrefix(rpcMethod, WString::Unmanaged(L"Request:IObjectOps_")))
+			{
+				return RpcJsonObjectOps::Translate(message, objectOps, lifecycle);
+			}
+			else if (broadcast && IsRpcMethodPrefix(rpcMethod, WString::Unmanaged(L"Request:IObjectEventOps_")))
+			{
+				return RpcJsonObjectEventOps::Translate(message, objectEventOps, lifecycle);
+			}
+			else if (broadcast && rpcMethod == WString::Unmanaged(L"Request:IRpcDispatcher_DeclareLocalService"))
+			{
+				return RpcJsonDispatcher::Translate(message, dispatcher, lifecycle);
+			}
+
+			CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Unknown JSON RPC method.");
+			return nullptr;
+#undef ERROR_MESSAGE_PREFIX
 		}
 
 /***********************************************************************

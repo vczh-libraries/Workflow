@@ -34,6 +34,15 @@ namespace vl
 		public:
 			virtual vint							AllocateRequestId() = 0;
 			virtual Ptr<glr::json::JsonNode>		OnJsonRequest(Ptr<glr::json::JsonNode> message, bool broadcast) = 0;
+
+			static Ptr<glr::json::JsonNode>			DefaultDispatch(
+														Ptr<glr::json::JsonNode> message,
+														bool broadcast,
+														IRpcObjectOps* objectOps,
+														IRpcObjectEventOps* objectEventOps,
+														IRpcDispatcher* dispatcher,
+														IRpcLifecycle* lifecycle
+														);
 		};
 
 		class RpcJsonObjectOps : public Object, public IRpcObjectOps

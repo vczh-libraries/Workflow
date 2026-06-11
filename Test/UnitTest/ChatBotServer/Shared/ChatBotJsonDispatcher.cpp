@@ -228,7 +228,7 @@ namespace chatbot
 	}
 
 /***********************************************************************
-Channel clients and server
+TaskQueue
 ***********************************************************************/
 
 	Ptr<Parser> CreateChatBotJsonParser()
@@ -236,80 +236,60 @@ Channel clients and server
 		return Ptr(new Parser);
 	}
 
-	ChatBotChannelClient::ChatBotChannelClient(Ptr<INetworkProtocolClient> client, Ptr<Parser> parser)
-		: JsonNetworkChannelClient(client, parser)
+	TaskQueue::TaskQueue()
 	{
-		channelNames.Add(WString::Unmanaged(RpcChannel), nullptr);
+		CHECK_ERROR(semaphoreTasks.Create(0, 65536), L"TaskQueue failed to create the task semaphore.");
 	}
 
-	const JsonChannelClient::ChannelNameList& ChatBotChannelClient::OnGetChannelNames()
+	void TaskQueue::QueueTask(Func<void()> task)
 	{
-		return channelNames.Keys();
-	}
-
-	void ChatBotChannelClient::OnConnected(vint)
-	{
-	}
-
-	void ChatBotChannelClient::OnDisconnected()
-	{
-	}
-
-	void ChatBotChannelClient::OnReadError(const WString&)
-	{
-	}
-
-	void ChatBotChannelClient::OnLocalError(const WString&, bool)
-	{
-	}
-
-	ChatBotLocalChannelClient::ChatBotLocalChannelClient(Ptr<Parser> parser)
-		: JsonLocalChannelClient(parser)
-	{
-		channelNames.Add(WString::Unmanaged(RpcChannel), nullptr);
-	}
-
-	const JsonChannelClient::ChannelNameList& ChatBotLocalChannelClient::OnGetChannelNames()
-	{
-		return channelNames.Keys();
-	}
-
-	void ChatBotLocalChannelClient::OnConnected(vint)
-	{
-	}
-
-	void ChatBotLocalChannelClient::OnDisconnected()
-	{
-	}
-
-	void ChatBotLocalChannelClient::OnReadError(const WString&)
-	{
-	}
-
-	void ChatBotLocalChannelClient::OnLocalError(const WString&, bool)
-	{
-	}
-
-	ChatBotChannelServer::ChatBotChannelServer(Ptr<Parser> parser)
-		: JsonNetworkChannelServer(parser)
-	{
-	}
-
-	void ChatBotChannelServer::SetDispatcher(ChatBotJsonDispatcherServer* value)
-	{
-		dispatcher = value;
-	}
-
-	WaitForClientResult ChatBotChannelServer::OnClientConnected(vint clientId, const JsonChannelClient::ChannelNameList& availableChannels)
-	{
-		return dispatcher ? dispatcher->AcceptClient(clientId, availableChannels) : WaitForClientResult::Accept;
-	}
-
-	void ChatBotChannelServer::OnClientDisconnected(vint clientId)
-	{
-		if (dispatcher)
+		SPIN_LOCK(lockTasks)
 		{
-			dispatcher->DisconnectClient(clientId);
+			tasks.Add(task);
+		}
+		semaphoreTasks.Release();
+	}
+
+	void TaskQueue::QueueExitTask()
+	{
+		SPIN_LOCK(lockTasks)
+		{
+			exitTaskQueued = true;
+		}
+		semaphoreTasks.Release();
+	}
+
+	void TaskQueue::RunTaskQueue()
+	{
+		while (true)
+		{
+			Func<void()> task;
+			bool hasTask = false;
+			bool shouldExit = false;
+			SPIN_LOCK(lockTasks)
+			{
+				if (tasks.Count() > 0)
+				{
+					task = tasks[0];
+					tasks.RemoveAt(0);
+					hasTask = true;
+				}
+				else
+				{
+					shouldExit = exitTaskQueued;
+				}
+			}
+
+			if (shouldExit)
+			{
+				break;
+			}
+			if (!hasTask)
+			{
+				semaphoreTasks.Wait();
+				continue;
+			}
+			task();
 		}
 	}
 
@@ -317,31 +297,17 @@ Channel clients and server
 ChatBotJsonDispatcherBase
 ***********************************************************************/
 
-	ChatBotJsonDispatcherBase::ChatBotJsonDispatcherBase()
-		: parser(CreateChatBotJsonParser())
+	ChatBotJsonDispatcherBase::ChatBotJsonDispatcherBase(JsonChannel* channel)
 	{
 		CHECK_ERROR(semaphoreMessages.Create(0, 65536), L"ChatBotJsonDispatcherBase failed to create the message semaphore.");
-		CHECK_ERROR(semaphoreTasks.Create(0, 65536), L"ChatBotJsonDispatcherBase failed to create the task semaphore.");
+		CHECK_ERROR(channel, L"ChatBotJsonDispatcherBase needs an RPC channel.");
+		rpcChannel = channel;
+		rpcChannel->Initialize(this);
 	}
 
 	vint ChatBotJsonDispatcherBase::GetChatServerTypeId()
 	{
 		return vl_workflow_global::ChatBotApp::Instance().rpctype_chatapi__IChatServer;
-	}
-
-	JsonChannel* ChatBotJsonDispatcherBase::GetRpcChannel(Ptr<JsonChannelClient> client)
-	{
-		auto&& channels = client->GetChannels();
-		auto index = channels.Keys().IndexOf(WString::Unmanaged(RpcChannel));
-		CHECK_ERROR(index != -1, L"RpcChannel is missing.");
-		auto channel = channels.Values()[index];
-		CHECK_ERROR(channel, L"RpcChannel is null.");
-		return channel;
-	}
-
-	Ptr<Parser> ChatBotJsonDispatcherBase::GetParser()
-	{
-		return parser;
 	}
 
 	JsonChannel* ChatBotJsonDispatcherBase::GetRpcChannel()
@@ -354,13 +320,6 @@ ChatBotJsonDispatcherBase
 	{
 		CHECK_ERROR(lifecycle, L"RPC lifecycle has not been initialized.");
 		return lifecycle->GetClientId();
-	}
-
-	void ChatBotJsonDispatcherBase::InitializeChannel(JsonChannel* channel)
-	{
-		CHECK_ERROR(channel, L"RpcChannel is required.");
-		rpcChannel = channel;
-		rpcChannel->Initialize(this);
 	}
 
 	void ChatBotJsonDispatcherBase::InitializeRpc(vint clientId)
@@ -420,6 +379,32 @@ ChatBotJsonDispatcherBase
 		return result;
 	}
 
+	bool ChatBotJsonDispatcherBase::TryPopBufferedResponse(vint requestId, ReceivedJsonMessage& message)
+	{
+		SPIN_LOCK(lockMessages)
+		{
+			for (vint i = 0; i < bufferedResponses.Count(); i++)
+			{
+				auto item = bufferedResponses[i];
+				if (ReadRequestId(item.message) == requestId)
+				{
+					message = item;
+					bufferedResponses.RemoveAt(i);
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	void ChatBotJsonDispatcherBase::PushBufferedResponse(ReceivedJsonMessage message)
+	{
+		SPIN_LOCK(lockMessages)
+		{
+			bufferedResponses.Add(message);
+		}
+	}
+
 	void ChatBotJsonDispatcherBase::SendJsonResponse(vint receiverClientId, JsonPackage response)
 	{
 		GetRpcChannel()->SendToClient(receiverClientId, response);
@@ -462,20 +447,14 @@ ChatBotJsonDispatcherBase
 		auto rpcMethod = TryReadRpcMethod(request);
 		CHECK_ERROR(IsRpcRequest(rpcMethod), L"ChatBotJsonDispatcherBase expects an RPC request.");
 
-		if (StartsWith(rpcMethod, L"Request:IObjectOps_"))
-		{
-			return RpcJsonObjectOps::Translate(request, lifecycle->GetController()->GetObjectOps(), lifecycle.Obj());
-		}
-		else if (StartsWith(rpcMethod, L"Request:IObjectEventOps_"))
-		{
-			return RpcJsonObjectEventOps::Translate(request, lifecycle->GetController()->GetObjectEventOps(), lifecycle.Obj());
-		}
-		else if (rpcMethod == WString::Unmanaged(L"Request:IRpcDispatcher_DeclareLocalService"))
-		{
-			return RpcJsonDispatcher::Translate(request, lifecycle->GetDispatcher(), lifecycle.Obj());
-		}
-
-		CHECK_FAIL(L"ChatBotJsonDispatcherBase received an unsupported RPC request.");
+		return IRpcJsonMessageDispatcher::DefaultDispatch(
+			request,
+			IsBroadcastRequest(rpcMethod),
+			lifecycle->GetController()->GetObjectOps(),
+			lifecycle->GetController()->GetObjectEventOps(),
+			lifecycle->GetDispatcher(),
+			lifecycle.Obj()
+			);
 	}
 
 	vint ChatBotJsonDispatcherBase::AllocateRequestId()
@@ -507,7 +486,11 @@ ChatBotJsonDispatcherBase
 
 		while (true)
 		{
-			auto item = PopReceivedMessage();
+			ReceivedJsonMessage item;
+			if (!TryPopBufferedResponse(requestId, item))
+			{
+				item = PopReceivedMessage();
+			}
 			auto rpcMethod = TryReadRpcMethod(item.message);
 			CHECK_ERROR(rpcMethod != WString::Empty, L"ChatBotJsonDispatcherBase expects an RPC message.");
 
@@ -525,8 +508,7 @@ ChatBotJsonDispatcherBase
 
 			if (!HandleUnmatchedResponse(item.senderClientId, item.message))
 			{
-				PushReceivedMessage(item.senderClientId, item.message);
-				Thread::Sleep(1);
+				PushBufferedResponse(item);
 			}
 		}
 	}
@@ -551,7 +533,7 @@ ChatBotJsonDispatcherBase
 
 		if (IsRpcRequest(rpcMethod))
 		{
-			QueueTask(Func<void()>([this, senderClientId, package]()
+			SchedulaTask(Func<void()>([this, senderClientId, package]()
 			{
 				ProcessRequestAndSendResponse(senderClientId, package);
 			}));
@@ -563,58 +545,6 @@ ChatBotJsonDispatcherBase
 			{
 				CHECK_FAIL(L"ChatBotJsonDispatcherBase received an RPC response while no request is waiting.");
 			}
-		}
-	}
-
-	void ChatBotJsonDispatcherBase::QueueTask(Func<void()> task)
-	{
-		SPIN_LOCK(lockTasks)
-		{
-			tasks.Add(task);
-		}
-		semaphoreTasks.Release();
-	}
-
-	void ChatBotJsonDispatcherBase::QueueExitTask()
-	{
-		SPIN_LOCK(lockTasks)
-		{
-			exitTaskQueued = true;
-		}
-		semaphoreTasks.Release();
-	}
-
-	void ChatBotJsonDispatcherBase::RunTaskQueue()
-	{
-		while (true)
-		{
-			Func<void()> task;
-			bool hasTask = false;
-			bool shouldExit = false;
-			SPIN_LOCK(lockTasks)
-			{
-				if (tasks.Count() > 0)
-				{
-					task = tasks[0];
-					tasks.RemoveAt(0);
-					hasTask = true;
-				}
-				else
-				{
-					shouldExit = exitTaskQueued;
-				}
-			}
-
-			if (shouldExit)
-			{
-				break;
-			}
-			if (!hasTask)
-			{
-				semaphoreTasks.Wait();
-				continue;
-			}
-			task();
 		}
 	}
 
@@ -633,6 +563,11 @@ ChatBotJsonDispatcherBase
 ChatBotJsonDispatcherClient
 ***********************************************************************/
 
+	ChatBotJsonDispatcherClient::ChatBotJsonDispatcherClient(JsonChannel* channel)
+		: ChatBotJsonDispatcherBase(channel)
+	{
+	}
+
 	void ChatBotJsonDispatcherClient::SendJsonRequest(JsonPackage message, bool broadcast)
 	{
 		if (broadcast)
@@ -647,20 +582,13 @@ ChatBotJsonDispatcherClient
 		FlushChannel();
 	}
 
-	void ChatBotJsonDispatcherClient::LoginClient(Ptr<JsonChannelClient> client)
+	void ChatBotJsonDispatcherClient::LoginClient(vint clientId)
 	{
-		CHECK_ERROR(client, L"ChatBotJsonDispatcherClient needs a channel client.");
-		channelClient = client;
-		channelClient->WaitForServer();
-		CHECK_ERROR(channelClient->GetStatus() == ClientStatus::Connected, L"ChatBotJsonDispatcherClient failed to connect to the server.");
-
-		InitializeChannel(GetRpcChannel(channelClient));
-
 		auto loginMessage = PopReceivedMessage();
 		CHECK_ERROR(TryReadLoginMessage(loginMessage.message, serverLocalClientId), L"ChatBotJsonDispatcherClient expects a login message.");
 		CHECK_ERROR(loginMessage.senderClientId == serverLocalClientId, L"ChatBotJsonDispatcherClient login message should be sent by the server local client.");
 
-		InitializeRpc(channelClient->GetClientId());
+		InitializeRpc(clientId);
 		lifecycle->DeclareRemoteService(GetChatServerTypeId(), serverLocalClientId);
 		lifecycle->Initialize();
 
@@ -677,11 +605,10 @@ ChatBotJsonDispatcherClient
 ChatBotJsonDispatcherServer
 ***********************************************************************/
 
-	ChatBotJsonDispatcherServer::ChatBotJsonDispatcherServer(Ptr<JsonChannelServer> server, Ptr<chatapi::IChatServer> chatServerService)
-		: channelServer(server)
+	ChatBotJsonDispatcherServer::ChatBotJsonDispatcherServer(JsonChannel* channel, Ptr<chatapi::IChatServer> chatServerService)
+		: ChatBotJsonDispatcherBase(channel)
 		, service(chatServerService)
 	{
-		CHECK_ERROR(channelServer, L"ChatBotJsonDispatcherServer needs a channel server.");
 		CHECK_ERROR(service, L"ChatBotJsonDispatcherServer needs an IChatServer service.");
 	}
 
@@ -727,9 +654,10 @@ ChatBotJsonDispatcherServer
 	ChatBotJsonDispatcherServer::CompletedBroadcast ChatBotJsonDispatcherServer::CompleteBroadcastLocked(const WString& key)
 	{
 		auto pending = pendingBroadcasts[key];
+		auto serverClientId = GetServerClientId();
 		CompletedBroadcast completed;
 		completed.originalClientId = pending->originalClientId;
-		completed.response = CreateBroadcastResponse(localClientId, pending->originalClientId, pending->originalRequestId, pending);
+		completed.response = CreateBroadcastResponse(serverClientId, pending->originalClientId, pending->originalRequestId, pending);
 
 		redirectedBroadcasts.Remove(pending->redirectedRequestId);
 		pendingBroadcasts.Remove(key);
@@ -743,9 +671,10 @@ ChatBotJsonDispatcherServer
 			return;
 		}
 
-		if (completed.originalClientId == localClientId)
+		auto serverClientId = GetServerClientId();
+		if (completed.originalClientId == serverClientId)
 		{
-			PushReceivedMessage(localClientId, completed.response);
+			PushReceivedMessage(serverClientId, completed.response);
 		}
 		else
 		{
@@ -755,11 +684,12 @@ ChatBotJsonDispatcherServer
 
 	JsonPackage ChatBotJsonDispatcherServer::StartBroadcast(vint originalClientId, vint originalRequestId, JsonPackage message)
 	{
+		auto serverClientId = GetServerClientId();
 		auto redirectedRequestId = AllocateRequestId();
 		copy_visitor::AstVisitor copier;
 		auto redirectedMessage = copier.CopyNode(message.Obj());
 		WriteRequestId(redirectedMessage, redirectedRequestId);
-		WriteSourceClientId(redirectedMessage, localClientId);
+		WriteSourceClientId(redirectedMessage, serverClientId);
 
 		JsonPackage immediateResponse;
 		bool shouldFlush = false;
@@ -781,7 +711,7 @@ ChatBotJsonDispatcherServer
 
 			if (pending->expectedClientIds.Count() == 0)
 			{
-				immediateResponse = CreateBroadcastResponse(localClientId, originalClientId, originalRequestId, nullptr);
+				immediateResponse = CreateBroadcastResponse(serverClientId, originalClientId, originalRequestId, nullptr);
 			}
 			else
 			{
@@ -849,12 +779,7 @@ ChatBotJsonDispatcherServer
 
 	void ChatBotJsonDispatcherServer::SendLoginMessage(vint clientId)
 	{
-		CHECK_ERROR(localClientId != -1, L"ChatBotJsonDispatcherServer local client has not been initialized.");
-		while (!channelServer->GetClientChannels().Contains(clientId, WString::Unmanaged(RpcChannel)))
-		{
-			Thread::Sleep(1);
-		}
-		GetRpcChannel()->SendToClient(clientId, CreateLoginMessage(localClientId));
+		GetRpcChannel()->SendToClient(clientId, CreateLoginMessage(GetServerClientId()));
 		FlushChannel();
 	}
 
@@ -865,7 +790,7 @@ ChatBotJsonDispatcherServer
 			auto immediateResponse = StartBroadcast(ReadSourceClientId(message), ReadRequestId(message), message);
 			if (immediateResponse)
 			{
-				PushReceivedMessage(localClientId, immediateResponse);
+				PushReceivedMessage(GetServerClientId(), immediateResponse);
 			}
 		}
 		else
@@ -878,7 +803,7 @@ ChatBotJsonDispatcherServer
 	bool ChatBotJsonDispatcherServer::HandleIncomingRequest(vint senderClientId, JsonPackage request)
 	{
 		auto rpcMethod = TryReadRpcMethod(request);
-		if (!IsBroadcastRequest(rpcMethod) || senderClientId == localClientId)
+		if (!IsBroadcastRequest(rpcMethod) || senderClientId == GetServerClientId())
 		{
 			return false;
 		}
@@ -900,42 +825,69 @@ ChatBotJsonDispatcherServer
 
 	void ChatBotJsonDispatcherServer::AfterRequestResponse(vint senderClientId, JsonPackage request)
 	{
-		if (senderClientId != localClientId && IsRemoveUserRequest(request))
+		if (senderClientId != GetServerClientId() && IsRemoveUserRequest(request))
 		{
 			DisconnectClient(senderClientId);
 		}
 	}
 
-	void ChatBotJsonDispatcherServer::Start()
+	void ChatBotJsonDispatcherServer::RegisterLocalClient(vint clientId)
 	{
-		channelServer->Start();
+		CHECK_ERROR(clientId != -1, L"ChatBotJsonDispatcherServer needs a valid local client id.");
 
-		localClient = Ptr(new ChatBotLocalChannelClient(GetParser()));
-		acceptingLocalClient = true;
-		localClientId = channelServer->ConnectLocalClient(localClient);
-		acceptingLocalClient = false;
-		CHECK_ERROR(localClientId != -1, L"ChatBotJsonDispatcherServer failed to connect its local client.");
+		List<vint> pendingClientIds;
+		SPIN_LOCK(lockClients)
+		{
+			CHECK_ERROR(localClientId == -1, L"ChatBotJsonDispatcherServer local client has already been registered.");
+			localClientId = clientId;
+			for (auto pendingClientId : pendingLoginClientIds)
+			{
+				pendingClientIds.Add(pendingClientId);
+			}
+			pendingLoginClientIds.Clear();
+		}
 
-		InitializeChannel(GetRpcChannel(Ptr<JsonChannelClient>(localClient)));
-		InitializeRpc(localClientId);
-		lifecycle->RegisterLocalService(GetChatServerTypeId(), Ptr<IDescriptable>(service));
+		InitializeRpc(clientId);
+		lifecycle->RegisterLocalService(GetChatServerTypeId(), service);
 		lifecycle->Initialize();
+
+		SPIN_LOCK(lockBroadcasts)
+		{
+			for (auto pendingClientId : pendingClientIds)
+			{
+				if (!connectedClientIds.Contains(pendingClientId))
+				{
+					connectedClientIds.Add(pendingClientId);
+				}
+			}
+		}
+
+		for (auto pendingClientId : pendingClientIds)
+		{
+			SchedulaTask(Func<void()>([this, pendingClientId]()
+			{
+				SendLoginMessage(pendingClientId);
+			}));
+		}
 	}
 
-	WaitForClientResult ChatBotJsonDispatcherServer::AcceptClient(vint clientId, const JsonChannelClient::ChannelNameList& availableChannels)
+	void ChatBotJsonDispatcherServer::RegisterClient(vint clientId)
 	{
-		if (!availableChannels.Contains(WString::Unmanaged(RpcChannel)))
+		CHECK_ERROR(clientId != -1, L"ChatBotJsonDispatcherServer needs a valid client id.");
+
+		bool localClientReady = false;
+		SPIN_LOCK(lockClients)
 		{
-			return WaitForClientResult::Reject;
+			localClientReady = localClientId != -1;
+			if (!localClientReady && !pendingLoginClientIds.Contains(clientId))
+			{
+				pendingLoginClientIds.Add(clientId);
+			}
 		}
 
-		if (acceptingLocalClient)
+		if (!localClientReady)
 		{
-			return WaitForClientResult::Accept;
-		}
-		if (localClientId == -1)
-		{
-			return WaitForClientResult::Reject;
+			return;
 		}
 
 		SPIN_LOCK(lockBroadcasts)
@@ -946,16 +898,26 @@ ChatBotJsonDispatcherServer
 			}
 		}
 
-		QueueTask(Func<void()>([this, clientId]()
+		SchedulaTask(Func<void()>([this, clientId]()
 		{
 			SendLoginMessage(clientId);
 		}));
-		return WaitForClientResult::Accept;
 	}
 
 	void ChatBotJsonDispatcherServer::DisconnectClient(vint clientId)
 	{
-		if (clientId == localClientId)
+		bool isLocalClient = false;
+		SPIN_LOCK(lockClients)
+		{
+			isLocalClient = clientId == localClientId;
+			auto pendingIndex = pendingLoginClientIds.IndexOf(clientId);
+			if (pendingIndex != -1)
+			{
+				pendingLoginClientIds.RemoveAt(pendingIndex);
+			}
+		}
+
+		if (isLocalClient)
 		{
 			return;
 		}
@@ -993,6 +955,12 @@ ChatBotJsonDispatcherServer
 
 	vint ChatBotJsonDispatcherServer::GetServerClientId()
 	{
-		return localClientId;
+		vint result = -1;
+		SPIN_LOCK(lockClients)
+		{
+			result = localClientId;
+		}
+		CHECK_ERROR(result != -1, L"ChatBotJsonDispatcherServer local client has not been registered.");
+		return result;
 	}
 }

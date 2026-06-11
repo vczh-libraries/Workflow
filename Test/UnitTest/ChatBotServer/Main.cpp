@@ -80,26 +80,74 @@ public:
 class ChatBotTaskThread : public Thread
 {
 private:
-	Ptr<ChatBotJsonDispatcherBase> dispatcher;
+	Ptr<TaskQueue> taskQueue;
 
 protected:
 	void Run() override
 	{
-		dispatcher->RunTaskQueue();
+		taskQueue->RunTaskQueue();
 	}
 
 public:
-	ChatBotTaskThread(Ptr<ChatBotJsonDispatcherBase> _dispatcher)
-		: dispatcher(_dispatcher)
+	ChatBotTaskThread(Ptr<TaskQueue> _taskQueue)
+		: taskQueue(_taskQueue)
 	{
 	}
 };
 
-class ChatBotHttpChannelServer : public ChatBotChannelServer, public HttpServer
+JsonChannel* GetRpcChannel(JsonChannelClient* client)
 {
+	auto&& channels = client->GetChannels();
+	auto index = channels.Keys().IndexOf(WString::Unmanaged(RpcChannel));
+	CHECK_ERROR(index != -1, L"RpcChannel is missing.");
+	auto channel = channels.Values()[index];
+	CHECK_ERROR(channel, L"RpcChannel is null.");
+	return channel;
+}
+
+class ChatBotLocalChannelClient : public JsonLocalChannelClient
+{
+private:
+	JsonChannelClient::ChannelMap channelNames;
+
+public:
+	ChatBotLocalChannelClient(Ptr<Parser> parser)
+		: JsonLocalChannelClient(parser)
+	{
+		channelNames.Add(WString::Unmanaged(RpcChannel), nullptr);
+	}
+
+	const JsonChannelClient::ChannelNameList& OnGetChannelNames() override
+	{
+		return channelNames.Keys();
+	}
+
+	void OnConnected(vint) override
+	{
+	}
+
+	void OnDisconnected() override
+	{
+	}
+
+	void OnReadError(const WString&) override
+	{
+	}
+
+	void OnLocalError(const WString&, bool) override
+	{
+	}
+};
+
+class ChatBotHttpChannelServer : public JsonNetworkChannelServer, public HttpServer
+{
+private:
+	ChatBotJsonDispatcherServer* dispatcher = nullptr;
+	bool acceptingLocalClient = false;
+
 public:
 	ChatBotHttpChannelServer(Ptr<Parser> parser)
-		: ChatBotChannelServer(parser)
+		: JsonNetworkChannelServer(parser)
 		, HttpServer(WString::Unmanaged(ChatBotHttpBaseUrl), ChatBotHttpPort)
 	{
 	}
@@ -109,21 +157,95 @@ public:
 		return JsonNetworkChannelServer::OnClientConnected(connection);
 	}
 
+	WaitForClientResult OnClientConnected(vint clientId, const JsonChannelClient::ChannelNameList& availableChannels) override
+	{
+		if (!availableChannels.Contains(WString::Unmanaged(RpcChannel)))
+		{
+			return WaitForClientResult::Reject;
+		}
+
+		if (acceptingLocalClient)
+		{
+			return WaitForClientResult::Accept;
+		}
+
+		if (!dispatcher)
+		{
+			return WaitForClientResult::Reject;
+		}
+
+		dispatcher->RegisterClient(clientId);
+		return WaitForClientResult::Accept;
+	}
+
+	void OnClientDisconnected(vint clientId) override
+	{
+		if (dispatcher)
+		{
+			dispatcher->DisconnectClient(clientId);
+		}
+	}
+
+	void SetDispatcher(ChatBotJsonDispatcherServer* value)
+	{
+		dispatcher = value;
+	}
+
+	void BeginAcceptingLocalClient()
+	{
+		acceptingLocalClient = true;
+	}
+
+	void EndAcceptingLocalClient()
+	{
+		acceptingLocalClient = false;
+	}
+
+	void StartChannelServer()
+	{
+		JsonNetworkChannelServer::Start();
+	}
+
+	void StartHttpServer()
+	{
+		HttpServer::Start();
+	}
+
 	void Start() override
 	{
-		ChatBotChannelServer::Start();
-		HttpServer::Start();
+		StartChannelServer();
+		StartHttpServer();
 	}
 
 	void Stop() override
 	{
 		HttpServer::Stop();
-		ChatBotChannelServer::Stop();
+		JsonNetworkChannelServer::Stop();
 	}
 
 	bool IsStopped() override
 	{
-		return HttpServer::IsStopped() || ChatBotChannelServer::IsStopped();
+		return HttpServer::IsStopped() || JsonNetworkChannelServer::IsStopped();
+	}
+};
+
+class ChatBotJsonDispatcherServerImpl : public ChatBotJsonDispatcherServer
+{
+private:
+	Ptr<TaskQueue> taskQueue;
+
+protected:
+	void SchedulaTask(Func<void()> task) override
+	{
+		taskQueue->QueueTask(task);
+	}
+
+public:
+	ChatBotJsonDispatcherServerImpl(JsonChannel* channel, Ptr<chatapi::IChatServer> service, Ptr<TaskQueue> _taskQueue)
+		: ChatBotJsonDispatcherServer(channel, service)
+		, taskQueue(_taskQueue)
+	{
+		CHECK_ERROR(taskQueue, L"ChatBotJsonDispatcherServerImpl needs a task queue.");
 	}
 };
 
@@ -145,12 +267,21 @@ int main()
 		Console::WriteLine(speakerName + WString::Unmanaged(L"> ") + message);
 	}));
 
-	auto dispatcher = Ptr(new ChatBotJsonDispatcherServer(Ptr<JsonChannelServer>(channelServer), Ptr<chatapi::IChatServer>(service)));
-	channelServer->SetDispatcher(dispatcher.Obj());
-	dispatcher->Start();
+	channelServer->StartChannelServer();
+	auto localClient = Ptr(new ChatBotLocalChannelClient(parser));
+	channelServer->BeginAcceptingLocalClient();
+	auto localClientId = channelServer->ConnectLocalClient(localClient);
+	channelServer->EndAcceptingLocalClient();
+	CHECK_ERROR(localClientId != -1, L"ChatBotServer failed to connect its local client.");
 
-	auto taskThread = Ptr(new ChatBotTaskThread(Ptr<ChatBotJsonDispatcherBase>(dispatcher)));
+	auto taskQueue = Ptr(new TaskQueue);
+	auto dispatcher = Ptr(new ChatBotJsonDispatcherServerImpl(GetRpcChannel(localClient.Obj()), service, taskQueue));
+	dispatcher->RegisterLocalClient(localClientId);
+	channelServer->SetDispatcher(dispatcher.Obj());
+
+	auto taskThread = Ptr(new ChatBotTaskThread(taskQueue));
 	taskThread->Start();
+	channelServer->StartHttpServer();
 
 	Console::SetTitle(L"ChatBotServer (localhost:" + itow(ChatBotHttpPort) + ChatBotHttpBaseUrl + L")");
 	Console::WriteLine(L"Ready to start ChatBotClient.");
@@ -159,7 +290,7 @@ int main()
 	{
 	}
 
-	dispatcher->QueueExitTask();
+	taskQueue->QueueExitTask();
 	taskThread->Wait();
 	service->OnServerShutdown();
 	dispatcher->FinalizeRpc();

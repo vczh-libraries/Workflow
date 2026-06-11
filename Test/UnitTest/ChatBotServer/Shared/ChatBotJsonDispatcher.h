@@ -20,49 +20,20 @@ namespace chatbot
 
 	vl::Ptr<vl::glr::json::Parser> CreateChatBotJsonParser();
 
-	class ChatBotJsonDispatcherServer;
-
-	class ChatBotChannelClient : public JsonNetworkChannelClient
+	class TaskQueue : public vl::Object
 	{
 	private:
-		JsonChannelClient::ChannelMap channelNames;
+		vl::SpinLock lockTasks;
+		vl::Semaphore semaphoreTasks;
+		vl::collections::List<vl::Func<void()>> tasks;
+		bool exitTaskQueued = false;
 
 	public:
-		ChatBotChannelClient(vl::Ptr<vl::inter_process::INetworkProtocolClient> client, vl::Ptr<vl::glr::json::Parser> parser);
+		TaskQueue();
 
-		const JsonChannelClient::ChannelNameList& OnGetChannelNames() override;
-		void OnConnected(vl::vint clientId) override;
-		void OnDisconnected() override;
-		void OnReadError(const vl::WString& errorMessage) override;
-		void OnLocalError(const vl::WString& errorMessage, bool fatal) override;
-	};
-
-	class ChatBotLocalChannelClient : public JsonLocalChannelClient
-	{
-	private:
-		JsonChannelClient::ChannelMap channelNames;
-
-	public:
-		ChatBotLocalChannelClient(vl::Ptr<vl::glr::json::Parser> parser);
-
-		const JsonChannelClient::ChannelNameList& OnGetChannelNames() override;
-		void OnConnected(vl::vint clientId) override;
-		void OnDisconnected() override;
-		void OnReadError(const vl::WString& errorMessage) override;
-		void OnLocalError(const vl::WString& errorMessage, bool fatal) override;
-	};
-
-	class ChatBotChannelServer : public JsonNetworkChannelServer
-	{
-	private:
-		ChatBotJsonDispatcherServer* dispatcher = nullptr;
-
-	public:
-		ChatBotChannelServer(vl::Ptr<vl::glr::json::Parser> parser);
-
-		void SetDispatcher(ChatBotJsonDispatcherServer* value);
-		vl::inter_process::WaitForClientResult OnClientConnected(vl::vint clientId, const JsonChannelClient::ChannelNameList& availableChannels) override;
-		void OnClientDisconnected(vl::vint clientId) override;
+		void QueueTask(vl::Func<void()> task);
+		void QueueExitTask();
+		void RunTaskQueue();
 	};
 
 	class ChatBotJsonDispatcherBase
@@ -78,7 +49,6 @@ namespace chatbot
 		};
 
 	private:
-		vl::Ptr<vl::glr::json::Parser> parser;
 		JsonChannel* rpcChannel = nullptr;
 		vl::atomic_vint nextRequestId = 0;
 		vl::atomic_vint activeJsonRequests = 0;
@@ -86,11 +56,7 @@ namespace chatbot
 		vl::SpinLock lockMessages;
 		vl::Semaphore semaphoreMessages;
 		vl::collections::List<ReceivedJsonMessage> messages;
-
-		vl::SpinLock lockTasks;
-		vl::Semaphore semaphoreTasks;
-		vl::collections::List<vl::Func<void()>> tasks;
-		bool exitTaskQueued = false;
+		vl::collections::List<ReceivedJsonMessage> bufferedResponses;
 
 	protected:
 		vl::Ptr<vl::rpc_controller::RpcJsonDispatcher> rpcDispatcher;
@@ -98,19 +64,19 @@ namespace chatbot
 		vl::Ptr<::rpcops_IOps_ChatBotApp> ops;
 
 		static vl::vint GetChatServerTypeId();
-		static JsonChannel* GetRpcChannel(vl::Ptr<JsonChannelClient> client);
 
-		vl::Ptr<vl::glr::json::Parser> GetParser();
 		JsonChannel* GetRpcChannel();
 		vl::vint GetLocalClientId();
 
-		void InitializeChannel(JsonChannel* channel);
 		void InitializeRpc(vl::vint clientId);
 		void PushReceivedMessage(vl::vint senderClientId, JsonPackage message);
 		ReceivedJsonMessage PopReceivedMessage();
+		bool TryPopBufferedResponse(vl::vint requestId, ReceivedJsonMessage& message);
+		void PushBufferedResponse(ReceivedJsonMessage message);
 		void SendJsonResponse(vl::vint receiverClientId, JsonPackage response);
 		void FlushChannel();
 
+		virtual void SchedulaTask(vl::Func<void()> task) = 0;
 		virtual void SendJsonRequest(JsonPackage message, bool broadcast) = 0;
 		virtual bool HandleIncomingRequest(vl::vint senderClientId, JsonPackage request);
 		virtual bool HandleUnmatchedResponse(vl::vint senderClientId, JsonPackage response);
@@ -120,22 +86,18 @@ namespace chatbot
 		JsonPackage TranslateRequest(JsonPackage request);
 
 	public:
-		ChatBotJsonDispatcherBase();
+		ChatBotJsonDispatcherBase(JsonChannel* channel);
 
 		vl::vint AllocateRequestId() override;
 		JsonPackage OnJsonRequest(JsonPackage message, bool broadcast) override;
 		void OnRead(vl::vint senderClientId, const JsonPackage& package) override;
 
-		void QueueTask(vl::Func<void()> task);
-		void QueueExitTask();
-		void RunTaskQueue();
 		void FinalizeRpc();
 	};
 
 	class ChatBotJsonDispatcherClient : public ChatBotJsonDispatcherBase
 	{
 	private:
-		vl::Ptr<JsonChannelClient> channelClient;
 		vl::vint serverLocalClientId = -1;
 		vl::Ptr<chatapi::IChatServer> chatServer;
 
@@ -143,7 +105,9 @@ namespace chatbot
 		void SendJsonRequest(JsonPackage message, bool broadcast) override;
 
 	public:
-		void LoginClient(vl::Ptr<JsonChannelClient> client);
+		ChatBotJsonDispatcherClient(JsonChannel* channel);
+
+		void LoginClient(vl::vint clientId);
 		vl::Ptr<chatapi::IChatServer> GetChatServer();
 	};
 
@@ -167,11 +131,12 @@ namespace chatbot
 		};
 
 	private:
-		vl::Ptr<JsonChannelServer> channelServer;
-		vl::Ptr<ChatBotLocalChannelClient> localClient;
 		vl::Ptr<chatapi::IChatServer> service;
 		vl::vint localClientId = -1;
-		bool acceptingLocalClient = false;
+
+		// covers localClientId and pendingLoginClientIds
+		vl::SpinLock lockClients;
+		vl::collections::List<vl::vint> pendingLoginClientIds;
 
 		vl::SpinLock lockBroadcasts;
 		vl::collections::SortedList<vl::vint> connectedClientIds;
@@ -193,10 +158,10 @@ namespace chatbot
 		void AfterRequestResponse(vl::vint senderClientId, JsonPackage request) override;
 
 	public:
-		ChatBotJsonDispatcherServer(vl::Ptr<JsonChannelServer> server, vl::Ptr<chatapi::IChatServer> chatServerService);
+		ChatBotJsonDispatcherServer(JsonChannel* channel, vl::Ptr<chatapi::IChatServer> chatServerService);
 
-		void Start();
-		vl::inter_process::WaitForClientResult AcceptClient(vl::vint clientId, const JsonChannelClient::ChannelNameList& availableChannels);
+		void RegisterLocalClient(vl::vint clientId);
+		void RegisterClient(vl::vint clientId);
 		void DisconnectClient(vl::vint clientId);
 		vl::vint GetServerClientId();
 	};
