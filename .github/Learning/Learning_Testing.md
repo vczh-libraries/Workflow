@@ -12,6 +12,7 @@
 - RPC byref/byval container samples must verify wrapper/copy semantics at every level [5]
 - Pure refactors should not touch generated RPC outputs [4]
 - Split RPC sample definitions and tests consistently [4]
+- Validate ChatBot RPC apps with a real multi-process scenario [2]
 - Workflow analyzer error tests may change values when preserving the error code [1]
 - Workflow samples use `raise`, not `throw` [1]
 - Workflow range syntax for inclusive generated loops is `range [1, xs.Count]` [1]
@@ -26,7 +27,6 @@
 - Audit RPC JSON request transcripts for request id pairing [1]
 - Track generated TypeScript RPC fixtures in git [1]
 - Use 2-space indentation in Workflow sample files [1]
-- Validate ChatBot RPC apps with a real multi-process scenario [1]
 
 # Refinements
 
@@ -141,3 +141,5 @@ Generated TypeScript RPC fixture files under `Test/TypeScript` should be checked
 ## Validate ChatBot RPC apps with a real multi-process scenario
 
 For ChatBot RPC app changes, run one `ChatBotServer` and three `ChatBotClient` processes against the real transport. Join clients one at a time, verify prior clients see join messages, send multiple chat rounds from every client, verify client exit notifications, then exit the server and confirm remaining clients shut down cleanly. Include server stdout expectations when the server mirrors client-visible service events.
+
+For ChatBot dispatcher refactors, also use static scans under `Test/UnitTest/ChatBot*` to confirm no `Thread::Sleep`, dispatcher-owned task queue methods, or unnecessary explicit `Ptr<T>` conversion constructors remain in the touched source.

@@ -26,8 +26,9 @@
 - RPC event workarounds should match the actual `Event<T>` behavior [2]
 - Apply `RunRpcTestCase` changes to every harness variant [2]
 - Order generated RPC type checks with derived interfaces before bases [2]
+- Run channel-backed RPC dispatchers through one task queue [2]
 - Keep RPC JSON test harness setup under `VCZH_DEBUG_NO_REFLECTION` [1]
-- Run channel-backed RPC dispatchers through one task queue [1]
+- Keep reusable RPC JSON dispatch free of synchronization [1]
 - Use generated strong typed RPC ops for event listeners [1]
 - Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for registering free functions as reflection static methods [1]
 - Workflow interface event declarations use type-only payloads [1]
@@ -334,6 +335,12 @@ For channel-backed app dispatchers, keep the dispatcher independent of the concr
 ## Run channel-backed RPC dispatchers through one task queue
 
 When `IRpcJsonMessageDispatcher::OnJsonRequest` is synchronous but the underlying `IChannel` read/write path is asynchronous, route request processing through one dispatcher task queue. Incoming channel messages can wake a semaphore-backed queue; `OnJsonRequest` should process nested requests while waiting for its matching response and requeue unrelated responses. Keeping request processing and channel callback work on the same queue avoids cross-thread RPC reentrancy bugs.
+
+Prefer explicit async scheduling over polling or `Thread::Sleep` in ChatBot-style dispatchers. Keep the default queue as an application-level option (for example created from `Main.cpp`) and let dispatcher bases call a scheduling hook instead of owning the queue, so users can provide their own scheduling mechanism.
+
+## Keep reusable RPC JSON dispatch free of synchronization
+
+Reusable JSON dispatch helpers such as `IRpcJsonMessageDispatcher::DefaultDispatch` should own only request parsing, translation to object/list ops, and response construction. Keep waits, locks, task queues, channel reads/writes, and response matching in the caller that owns the transport state. Prefer raw pointer arguments for dispatcher/channel collaborators unless the helper needs shared ownership.
 
 ## Keep RPC array resizing separate from list-only mutations
 
