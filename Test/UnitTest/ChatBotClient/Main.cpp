@@ -1,8 +1,10 @@
 #include "ChatBotApp.h"
-#include "..\ChatBotServer\Shared\ChatBotJsonDispatcher.h"
+#include "..\ChatBotServer\Shared\ChatBotHttp.h"
+#include "..\ChatBotServer\Shared\ChatBotJsonDispatcherClient.h"
 #include <VlppOS.Windows.h>
 
 using namespace vl;
+using namespace vl::collections;
 using namespace vl::console;
 using namespace vl::glr::json;
 using namespace vl::inter_process;
@@ -82,9 +84,8 @@ protected:
 	}
 
 public:
-	ChatBotJsonDispatcherClientImpl(JsonChannel* channel, Ptr<TaskQueue> _taskQueue)
-		: ChatBotJsonDispatcherClient(channel)
-		, taskQueue(_taskQueue)
+	ChatBotJsonDispatcherClientImpl(Ptr<TaskQueue> _taskQueue)
+		: taskQueue(_taskQueue)
 	{
 		CHECK_ERROR(taskQueue, L"ChatBotJsonDispatcherClientImpl needs a task queue.");
 	}
@@ -137,12 +138,12 @@ int main()
 	auto parser = CreateChatBotJsonParser();
 	auto httpClient = Ptr(new HttpClient(WString::Unmanaged(ChatBotHttpBaseUrl), ChatBotHttpPort));
 	auto channelClient = Ptr(new ChatBotChannelClient(httpClient, parser));
-	channelClient->WaitForServer();
-	CHECK_ERROR(channelClient->GetStatus() == ClientStatus::Connected, L"ChatBotClient failed to connect to the server.");
 
 	auto taskQueue = Ptr(new TaskQueue);
-	auto dispatcher = Ptr(new ChatBotJsonDispatcherClientImpl(GetRpcChannel(channelClient.Obj()), taskQueue));
-	dispatcher->LoginClient(channelClient->GetClientId());
+	auto dispatcher = Ptr(new ChatBotJsonDispatcherClientImpl(taskQueue));
+	List<WString> waitingForServices;
+	waitingForServices.Add(WString::Unmanaged(L"chatapi::IChatServer"));
+	dispatcher->WaitForServer(channelClient.Obj(), GetRpcChannel(channelClient.Obj()), waitingForServices);
 
 	auto chatServer = dispatcher->GetChatServer();
 	chatServer->OnUserAdded.Add(Func<void(WString)>([](WString speakerName)

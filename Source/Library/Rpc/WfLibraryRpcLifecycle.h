@@ -79,7 +79,7 @@ namespace vl
 			bool											initialized = false;
 			LocalProperties									localObjectProperties;
 			RpcLocalServiceMap								registeredLocalServices;
-			collections::Dictionary<vint, vint>				registeredRemoteServices;
+			collections::Dictionary<vint, RpcObjectReference>	registeredRemoteServices;
 			static WString									InternalProperty_LocalObjectTracker;
 			static WString									InternalProperty_WrapperTracker;
 			UniversalWrapperFactory							universalWrapperFactory;
@@ -121,7 +121,8 @@ namespace vl
 			void											LocalObjectHold(RpcObjectReference ref, vint remoteClientId)override;
 			void											LocalObjectUnhold(RpcObjectReference ref, vint remoteClientId)override;
 			void											RegisterLocalService(vint typeId, Ptr<reflection::IDescriptable> service)override;
-			void											DeclareRemoteService(vint typeId, vint clientId)override;
+			void											DeclareRemoteService(RpcObjectReference ref)override;
+			vint											GetTypeIdFromName(WString typeName)override;
 			Ptr<reflection::IDescriptable>					RequestService(WString typeName)override;
 			Ptr<reflection::IDescriptable>					RefToPtr(RpcObjectReference ref)override;
 			Ptr<reflection::IDescriptable>					RefToPtr(RpcObjectReference ref, IRpcSerializer* serializer);

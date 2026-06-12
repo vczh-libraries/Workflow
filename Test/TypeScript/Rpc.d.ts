@@ -111,11 +111,10 @@ export interface IObjectEventOps_InvokeEvent_Request<T> extends BroadcastRequest
   arguments: T[];
 }
 
-export interface IRpcDispatcher_DeclareLocalService_Request extends BroadcastRequest
+export interface IRpcDispatcher_DeclareRemoteService_Request extends BroadcastRequest
 {
-  rpcMethod: "Request:IRpcDispatcher_DeclareLocalService";
-  typeId: number;
-  clientId: number;
+  rpcMethod: "Request:IRpcDispatcher_DeclareRemoteService";
+  ref: system_RpcObjectReference;
 }
 
 export interface Broadcast_Response extends DirectRequest
@@ -129,7 +128,7 @@ export type Request<T> =
   | IObjectOps_EndInvokeMethod_Request
   | IObjectOps_ObjectHold_Request
   | IObjectEventOps_InvokeEvent_Request<T>
-  | IRpcDispatcher_DeclareLocalService_Request
+  | IRpcDispatcher_DeclareRemoteService_Request
   ;
 
 export type Response<T> =

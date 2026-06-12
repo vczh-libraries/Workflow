@@ -32,4 +32,5 @@ Usually, git commit and push are required after finishing, but there is one exce
     - If the only code change is this comment after a successful testing process, extra building is required but testing rerun not required.
   - `TODO_RPC_Definition.md`
   - `TODO_RPC_Json.md`
+  - `TODO_RPC_JsonRequest.md`
   - `TODO_RPC_GeneratedWrappers.md`

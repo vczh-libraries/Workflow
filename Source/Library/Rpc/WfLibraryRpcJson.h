@@ -32,12 +32,19 @@ namespace vl
 			, public reflection::Description<IRpcJsonMessageDispatcher>
 		{
 		public:
-			virtual vint							AllocateRequestId() = 0;
-			virtual Ptr<glr::json::JsonNode>		OnJsonRequest(Ptr<glr::json::JsonNode> message, bool broadcast) = 0;
+			enum class RequestType
+			{
+				Direct,
+				Broadcast,
+				BroadcastAndDrop,
+			};
 
-			static Ptr<glr::json::JsonNode>			DefaultDispatch(
+			virtual vint							AllocateRequestId() = 0;
+			virtual Ptr<glr::json::JsonNode>		OnJsonRequest(Ptr<glr::json::JsonNode> message, RequestType requestType) = 0;
+
+			static Ptr<glr::json::JsonNode>			DefaultTranslate(
 														Ptr<glr::json::JsonNode> message,
-														bool broadcast,
+														RequestType requestType,
 														IRpcObjectOps* objectOps,
 														IRpcObjectEventOps* objectEventOps,
 														IRpcDispatcher* dispatcher,
@@ -93,7 +100,7 @@ namespace vl
 
 			void									Finalize()override;
 			void									Initialize()override;
-			void									DeclareLocalService(vint typeId, vint clientId)override;
+			void									DeclareLocalService(RpcObjectReference ref)override;
 			IRpcObjectEventOps*						BroadcastFromClient_ObjectEventOps(vint selfClientId)override;
 			IRpcObjectOps*							SendToClient_ObjectOps(vint targetClientId)override;
 

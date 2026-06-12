@@ -172,13 +172,13 @@ Lifecycle and controller implementations should not use another lifecycle's obje
 
 ### Service Registration and Lookup
 
-`IRpcLifecycle` owns service lookup state. A local service is stored in the service-owning lifecycle as a map from RPC type id to the local service object. A remote service is stored in each receiving lifecycle as a map from RPC type id to the client id that declared the service.
+`IRpcLifecycle` owns service lookup state. A local service is stored in the service-owning lifecycle as a map from RPC type id to the local service object. A remote service is stored in each receiving lifecycle as a map from RPC type id to the full `RpcObjectReference` declared by the service owner.
 
-`IRpcLifecycle::RegisterLocalService(typeId, service)` records a local service before lifecycle initialization. It converts the service object to a local reference, adds the owner hold, stores the local service object, and calls `IRpcDispatcher::DeclareLocalService(typeId, clientId)` so the dispatcher implementation can transmit the declaration. Registering the same local type id twice is a recoverable service-registration error, and registering after `IRpcLifecycle::Initialize()` is also an error.
+`IRpcLifecycle::RegisterLocalService(typeId, service)` records a local service before lifecycle initialization. It converts the service object to a local `RpcObjectReference`, adds the owner hold, stores the local service object, and calls `IRpcDispatcher::DeclareLocalService(ref)` so the dispatcher implementation can transmit the declaration. Registering the same local type id twice is a recoverable service-registration error, and registering after `IRpcLifecycle::Initialize()` is also an error.
 
-`IRpcDispatcher::DeclareLocalService(typeId, clientId)` is a data-transmission hook, not service storage. The receiving lifecycle handles the declaration through `IRpcLifecycle::DeclareRemoteService(typeId, clientId)`. Declaring a remote service with the same type id overwrites the earlier remote declaration.
+`IRpcDispatcher::DeclareLocalService(ref)` is a data-transmission hook, not service storage. The receiving lifecycle handles the declaration through `IRpcLifecycle::DeclareRemoteService(ref)`. Declaring a remote service with the same type id overwrites the earlier remote declaration and stores the full reference, including `objectId`.
 
-`IRpcObjectOps::RequestService` should not exist. `IRpcLifecycle::RequestService(typeName)` first resolves the type name through the lifecycle RPC id map, then returns the local registered service when that type id exists locally. Otherwise it checks whether the type id has been declared remotely, asks `IRpcDispatcher::RequestService(typeId)` for the remote `RpcObjectReference`, and then calls `RefToPtr(ref)`.
+`IRpcObjectOps::RequestService` should not exist. `IRpcLifecycle::GetTypeIdFromName(typeName)` resolves the type name through the lifecycle RPC id map and returns `RpcTypeId_NotFound` when the name is unknown. `IRpcLifecycle::RequestService(typeName)` uses this function, returns the local registered service when that type id exists locally, or finds the stored remote `RpcObjectReference` and calls `RefToPtr(ref)`.
 
 `RefToPtr(ref)` uses `ref.clientId` to decide whether the ref belongs to the current client:
 

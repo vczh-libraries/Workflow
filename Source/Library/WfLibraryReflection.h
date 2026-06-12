@@ -65,6 +65,7 @@ Predefined Types
 			F(vl::rpc_controller::RpcException)\
 			F(vl::rpc_controller::RpcByvalReturnValue)\
 			F(vl::rpc_controller::IRpcSerializer)\
+			F(vl::rpc_controller::IRpcJsonMessageDispatcher::RequestType)\
 			F(vl::rpc_controller::IRpcJsonMessageDispatcher)\
 			F(vl::rpc_controller::IRpcListOps)\
 			F(vl::rpc_controller::IRpcListEventOps)\
@@ -115,9 +116,9 @@ Interface Implementation Proxy (Implement)
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(AllocateRequestId);
 				}
 
-				vl::Ptr<vl::glr::json::JsonNode> OnJsonRequest(vl::Ptr<vl::glr::json::JsonNode> message, bool broadcast)override
+				vl::Ptr<vl::glr::json::JsonNode> OnJsonRequest(vl::Ptr<vl::glr::json::JsonNode> message, vl::rpc_controller::IRpcJsonMessageDispatcher::RequestType requestType)override
 				{
-					INVOKEGET_INTERFACE_PROXY(OnJsonRequest, message, broadcast);
+					INVOKEGET_INTERFACE_PROXY(OnJsonRequest, message, requestType);
 				}
 			END_INTERFACE_PROXY(vl::rpc_controller::IRpcJsonMessageDispatcher)
 

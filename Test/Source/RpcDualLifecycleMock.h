@@ -25,7 +25,7 @@ namespace vl
 
 			void																	Finalize()override;
 			void																	Initialize()override;
-			void																	DeclareLocalService(vint typeId, vint clientId)override;
+			void																	DeclareLocalService(rpc_controller::RpcObjectReference ref)override;
 			rpc_controller::IRpcObjectEventOps*										BroadcastFromClient_ObjectEventOps(vint selfClientId)override;
 			rpc_controller::IRpcObjectOps*											SendToClient_ObjectOps(vint targetClientId)override;
 		};

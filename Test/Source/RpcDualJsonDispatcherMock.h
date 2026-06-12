@@ -53,7 +53,7 @@ namespace vl
 			void														SetLifecycles(rpc_controller::IRpcLifecycle* lc1, rpc_controller::IRpcLifecycle* lc2);
 
 			vint														AllocateRequestId()override;
-			Ptr<glr::json::JsonNode>									OnJsonRequest(Ptr<glr::json::JsonNode> message, bool broadcast)override;
+			Ptr<glr::json::JsonNode>									OnJsonRequest(Ptr<glr::json::JsonNode> message, rpc_controller::IRpcJsonMessageDispatcher::RequestType requestType)override;
 			void														DumpJsonRequests(const WString& itemName);
 		};
 	}

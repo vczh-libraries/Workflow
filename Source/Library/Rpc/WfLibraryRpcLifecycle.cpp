@@ -458,23 +458,32 @@ namespace vl
 			auto ref = CreateLocalObject(service, RpcObjectReference{ clientId, typeId, typeId });
 			LocalObjectHold(ref, clientId);
 			registeredLocalServices.Set(typeId, service);
-			GetDispatcher()->DeclareLocalService(typeId, clientId);
+			GetDispatcher()->DeclareLocalService(ref);
 #undef ERROR_MESSAGE_PREFIX
 		}
 
-		void RpcLifecycleBase::DeclareRemoteService(vint typeId, vint remoteClientId)
+		void RpcLifecycleBase::DeclareRemoteService(RpcObjectReference ref)
 		{
-			registeredRemoteServices.Set(typeId, remoteClientId);
+			registeredRemoteServices.Set(ref.typeId, ref);
 		}
 
-		Ptr<IDescriptable> RpcLifecycleBase::RequestService(WString typeName)
+		vint RpcLifecycleBase::GetTypeIdFromName(WString typeName)
 		{
 			auto typeIndex = idMap.Keys().IndexOf(typeName);
 			if (typeIndex == -1)
 			{
+				return RpcTypeId_NotFound;
+			}
+			return idMap.Values()[typeIndex];
+		}
+
+		Ptr<IDescriptable> RpcLifecycleBase::RequestService(WString typeName)
+		{
+			auto typeId = GetTypeIdFromName(typeName);
+			if (typeId == RpcTypeId_NotFound)
+			{
 				return nullptr;
 			}
-			auto typeId = idMap.Values()[typeIndex];
 
 			if (auto index = registeredLocalServices.Keys().IndexOf(typeId); index != -1)
 			{
@@ -483,8 +492,7 @@ namespace vl
 
 			if (auto index = registeredRemoteServices.Keys().IndexOf(typeId); index != -1)
 			{
-				auto remoteClientId = registeredRemoteServices.Values()[index];
-				return RefToPtr(RpcObjectReference{ remoteClientId, typeId, typeId });
+				return RefToPtr(registeredRemoteServices.Values()[index]);
 			}
 
 			return nullptr;

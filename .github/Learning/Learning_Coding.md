@@ -108,7 +108,7 @@ For JSON request dispatch, once `RpcJsonDispatcher` and `RpcJsonLifecycle` own t
 
 RPC dispatchers should be pure transmission/relay layers and should not maintain service-registration state. Store local service objects and remote service declarations in `RpcLifecycleBase`; let dispatcher mocks relay local declarations to the other lifecycle instead of keeping their own service dictionaries.
 
-The reflected lifecycle surface should distinguish local registration from remote declaration: `RegisterLocalService(typeId, service)` rejects duplicate local type ids and rejects calls after `Initialize()`, while `DeclareRemoteService(typeId, clientId)` may overwrite an earlier remote declaration. `IRpcLifecycle::RequestService` should take a type-name string, resolve the lifecycle id map, return a matching local service first, and only then ask `IRpcDispatcher::RequestService(typeId)` for a declared remote service.
+The reflected lifecycle surface should distinguish local registration from remote declaration: `RegisterLocalService(typeId, service)` rejects duplicate local type ids and rejects calls after `Initialize()`, while `DeclareRemoteService(ref)` may overwrite an earlier remote declaration by storing the full `RpcObjectReference` by `ref.typeId`. `IRpcLifecycle::RequestService` should take a type-name string, resolve it through `GetTypeIdFromName`, return a matching local service first, and only then call `RefToPtr(ref)` on a stored remote service reference.
 
 For JSON request transport, declaring a local service can be a broadcast request that causes the receiving lifecycle to call `DeclareRemoteService`; the dispatcher still only carries the message while lifecycle state remains authoritative.
 
@@ -340,7 +340,7 @@ Prefer explicit async scheduling over polling or `Thread::Sleep` in ChatBot-styl
 
 ## Keep reusable RPC JSON dispatch free of synchronization
 
-Reusable JSON dispatch helpers such as `IRpcJsonMessageDispatcher::DefaultDispatch` should own only request parsing, translation to object/list ops, and response construction. Keep waits, locks, task queues, channel reads/writes, and response matching in the caller that owns the transport state. Prefer raw pointer arguments for dispatcher/channel collaborators unless the helper needs shared ownership.
+Reusable JSON dispatch helpers such as `IRpcJsonMessageDispatcher::DefaultTranslate` should own only request parsing, translation to object/list ops, and response construction. Keep waits, locks, task queues, channel reads/writes, and response matching in the caller that owns the transport state. Prefer raw pointer arguments for dispatcher/channel collaborators unless the helper needs shared ownership.
 
 ## Keep RPC array resizing separate from list-only mutations
 

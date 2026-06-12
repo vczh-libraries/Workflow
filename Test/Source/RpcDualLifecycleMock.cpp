@@ -80,9 +80,9 @@ namespace vl
 		{
 		}
 
-		void RpcDualDispatcherMockBase::DeclareLocalService(vint typeId, vint clientId)
+		void RpcDualDispatcherMockBase::DeclareLocalService(RpcObjectReference ref)
 		{
-			GetOtherLifecycle(clientId)->DeclareRemoteService(typeId, clientId);
+			GetOtherLifecycle(ref.clientId)->DeclareRemoteService(ref);
 		}
 
 		IRpcObjectEventOps* RpcDualDispatcherMockBase::BroadcastFromClient_ObjectEventOps(vint selfClientId)

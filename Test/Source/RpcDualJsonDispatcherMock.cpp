@@ -275,9 +275,9 @@ namespace vl
 			return ++nextRequestId;
 		}
 
-		Ptr<JsonNode> RpcDualJsonRequestBridge::OnJsonRequest(Ptr<JsonNode> message, bool broadcast)
+		Ptr<JsonNode> RpcDualJsonRequestBridge::OnJsonRequest(Ptr<JsonNode> message, IRpcJsonMessageDispatcher::RequestType requestType)
 		{
-#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestBridge::OnJsonRequest(Ptr<JsonNode>, bool)#"
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestBridge::OnJsonRequest(Ptr<JsonNode>, RequestType)#"
 			auto object = GetJsonObject(message);
 			auto sourceClientId = ReadSourceClientId(message);
 			auto receiver = GetOtherLifecycle(sourceClientId);
@@ -289,16 +289,19 @@ namespace vl
 			}
 			jsonRequests.Add(message);
 
-			auto response = IRpcJsonMessageDispatcher::DefaultDispatch(
+			auto response = IRpcJsonMessageDispatcher::DefaultTranslate(
 				message,
-				broadcast,
+				requestType,
 				receiver->GetController()->GetObjectOps(),
 				receiver->GetController()->GetObjectEventOps(),
 				receiver->GetDispatcher(),
 				receiver
 				);
 
-			jsonRequests.Add(response);
+			if (response)
+			{
+				jsonRequests.Add(response);
+			}
 			return response;
 #undef ERROR_MESSAGE_PREFIX
 		}

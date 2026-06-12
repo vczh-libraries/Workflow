@@ -1,5 +1,7 @@
 #include "ChatBotApp.h"
-#include "Shared/ChatBotJsonDispatcher.h"
+#include "Shared/ChatBotHttp.h"
+#include "Shared/ChatBotJsonDispatcherClient.h"
+#include "Shared/ChatBotJsonDispatcherServer.h"
 #include <VlppOS.Windows.h>
 
 using namespace vl;
@@ -212,11 +214,30 @@ protected:
 	}
 
 public:
-	ChatBotJsonDispatcherServerImpl(JsonChannel* channel, Ptr<chatapi::IChatServer> service, Ptr<TaskQueue> _taskQueue)
-		: ChatBotJsonDispatcherServer(channel, service)
+	ChatBotJsonDispatcherServerImpl(JsonChannel* channel, Ptr<TaskQueue> _taskQueue)
+		: ChatBotJsonDispatcherServer(channel)
 		, taskQueue(_taskQueue)
 	{
 		CHECK_ERROR(taskQueue, L"ChatBotJsonDispatcherServerImpl needs a task queue.");
+	}
+};
+
+class ChatBotJsonDispatcherClientImpl : public ChatBotJsonDispatcherClient
+{
+private:
+	Ptr<TaskQueue> taskQueue;
+
+protected:
+	void SchedulaTask(Func<void()> task) override
+	{
+		taskQueue->QueueTask(task);
+	}
+
+public:
+	ChatBotJsonDispatcherClientImpl(Ptr<TaskQueue> _taskQueue)
+		: taskQueue(_taskQueue)
+	{
+		CHECK_ERROR(taskQueue, L"ChatBotJsonDispatcherClientImpl needs a task queue.");
 	}
 };
 
@@ -238,20 +259,31 @@ int main()
 		Console::WriteLine(speakerName + WString::Unmanaged(L"> ") + message);
 	}));
 
-	channelServer->StartChannelServer();
-	auto localClient = Ptr(new ChatBotLocalChannelClient(parser));
-	channelServer->BeginAcceptingLocalClient();
-	auto localClientId = channelServer->ConnectLocalClient(localClient);
-	channelServer->EndAcceptingLocalClient();
-	CHECK_ERROR(localClientId != -1, L"ChatBotServer failed to connect its local client.");
-
 	auto taskQueue = Ptr(new TaskQueue);
-	auto dispatcher = Ptr(new ChatBotJsonDispatcherServerImpl(GetRpcChannel(localClient.Obj()), service, taskQueue));
-	dispatcher->RegisterLocalClient(localClientId);
-	channelServer->SetDispatcher(dispatcher.Obj());
-
 	auto taskThread = Ptr(new ChatBotTaskThread(taskQueue));
 	taskThread->Start();
+
+	channelServer->StartChannelServer();
+	auto serverLocalClient = Ptr(new ChatBotLocalChannelClient(parser));
+	channelServer->BeginAcceptingLocalClient();
+	auto serverLocalClientId = channelServer->ConnectLocalClient(serverLocalClient);
+	channelServer->EndAcceptingLocalClient();
+	CHECK_ERROR(serverLocalClientId != -1, L"ChatBotServer failed to connect its server dispatcher local client.");
+
+	auto dispatcher = Ptr(new ChatBotJsonDispatcherServerImpl(GetRpcChannel(serverLocalClient.Obj()), taskQueue));
+	dispatcher->RegisterLocalClient(serverLocalClientId);
+	channelServer->SetDispatcher(dispatcher.Obj());
+
+	auto serviceLocalClient = Ptr(new ChatBotLocalChannelClient(parser));
+	auto serviceDispatcher = Ptr(new ChatBotJsonDispatcherClientImpl(taskQueue));
+	List<WString> waitingForServices;
+	channelServer->BeginAcceptingLocalClient();
+	auto serviceLocalClientId = serviceDispatcher->ConnectLocalClient(channelServer.Obj(), serviceLocalClient, GetRpcChannel(serviceLocalClient.Obj()), waitingForServices);
+	channelServer->EndAcceptingLocalClient();
+	dispatcher->RegisterClient(serviceLocalClientId);
+	serviceDispatcher->RegisterLocalService(service);
+	serviceDispatcher->Initialize();
+
 	channelServer->StartHttpServer();
 
 	Console::SetTitle(L"ChatBotServer (localhost:" + itow(ChatBotHttpPort) + ChatBotHttpBaseUrl + L")");
@@ -262,7 +294,7 @@ int main()
 	taskQueue->QueueExitTask();
 	taskThread->Wait();
 	service->OnServerShutdown();
-	dispatcher->FinalizeRpc();
+	serviceDispatcher->FinalizeRpc();
 	channelServer->Stop();
 	return 0;
 }

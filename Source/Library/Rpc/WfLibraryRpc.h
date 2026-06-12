@@ -174,7 +174,7 @@ namespace vl
 		public:
 			virtual void							Finalize() = 0;
 			virtual void							Initialize() = 0;
-			virtual void							DeclareLocalService(vint typeId, vint clientId) = 0;
+			virtual void							DeclareLocalService(RpcObjectReference ref) = 0;
 
 			virtual IRpcObjectEventOps*				BroadcastFromClient_ObjectEventOps(vint selfClientId) = 0;
 			virtual IRpcObjectOps*					SendToClient_ObjectOps(vint targetClientId) = 0;
@@ -247,9 +247,9 @@ namespace vl
 		* Registering Service:
 		*   -> IRpcLifecycle->RegisterLocalService
 		*   {
-		*     -> IRpcLifecycle->GetDispatcher()->DeclareLocalService(typeId, clientId)
+		*     -> IRpcLifecycle->GetDispatcher()->DeclareLocalService(ref)
 		*     ---- NETWORK PROTOCOL (broadcast) ----
-		*     -> IRpcLifecycle::DeclareRemoteService(typeId, clientId)
+		*     -> IRpcLifecycle::DeclareRemoteService(ref)
 		*   }
 		*/
 		class IRpcLifecycle
@@ -269,7 +269,8 @@ namespace vl
 			virtual void							LocalObjectHold(RpcObjectReference ref, vint remoteClientId) = 0;
 			virtual void							LocalObjectUnhold(RpcObjectReference ref, vint remoteClientId) = 0;
 			virtual void							RegisterLocalService(vint typeId, Ptr<reflection::IDescriptable> service) = 0;
-			virtual void							DeclareRemoteService(vint typeId, vint clientId) = 0;
+			virtual void							DeclareRemoteService(RpcObjectReference ref) = 0;
+			virtual vint							GetTypeIdFromName(WString typeName) = 0;
 			virtual Ptr<reflection::IDescriptable>	RequestService(WString typeName) = 0;
 		};
 
