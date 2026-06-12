@@ -253,7 +253,7 @@ interface system::IRpcController : system::IRpcOperations {
 @FullName:vl::rpc_controller::IRpcDispatcher
 interface system::IRpcDispatcher : system::Interface {
     function BroadcastFromClient_ObjectEventOps(selfClientId : system::Int32) : system::IRpcObjectEventOps*;
-    function DeclareLocalService(typeId : system::Int32, clientId : system::Int32) : system::Void;
+    function DeclareLocalService(ref : system::RpcObjectReference) : system::Void;
     function Finalize() : system::Void;
     function Initialize() : system::Void;
     function SendToClient_ObjectOps(targetClientId : system::Int32) : system::IRpcObjectOps*;
@@ -263,11 +263,19 @@ interface system::IRpcDispatcher : system::Interface {
 @FullName:vl::rpc_controller::IRpcJsonMessageDispatcher
 interface system::IRpcJsonMessageDispatcher : system::Interface {
     function AllocateRequestId() : system::Int32;
-    function OnJsonRequest(message : system::JsonNode^, broadcast : system::Boolean) : system::JsonNode^;
+    function OnJsonRequest(message : system::JsonNode^, requestType : system::IRpcJsonMessageDispatcher::RequestType) : system::JsonNode^;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcJsonMessageDispatcher>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcJsonMessageDispatcher>::Create)
     constructor (proxy : system::InterfaceProxy^) : system::IRpcJsonMessageDispatcher^;
+}
+
+@FullName:vl::rpc_controller::IRpcJsonMessageDispatcher::RequestType
+@ValueType
+enum system::IRpcJsonMessageDispatcher::RequestType {
+    Broadcast = 1,
+    BroadcastAndDrop = 2,
+    Direct = 0,
 }
 
 @FullName:vl::rpc_controller::IRpcLifecycle
@@ -277,12 +285,13 @@ interface system::IRpcLifecycle : system::Interface {
     property Dispatcher : system::IRpcDispatcher* { get:GetDispatcher }
     property Serializer : system::IRpcSerializer* { get:GetSerializer }
 
-    function DeclareRemoteService(typeId : system::Int32, clientId : system::Int32) : system::Void;
+    function DeclareRemoteService(ref : system::RpcObjectReference) : system::Void;
     function Finalize() : system::Void;
     function GetClientId() : system::Int32;
     function GetController() : system::IRpcController*;
     function GetDispatcher() : system::IRpcDispatcher*;
     function GetSerializer() : system::IRpcSerializer*;
+    function GetTypeIdFromName(typeName : system::String) : system::Int32;
     function Initialize() : system::Void;
     @InvokeTemplate:::vl::rpc_controller::JsonDeserializePredefinedTypes($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::JsonDeserializePredefinedTypes)
