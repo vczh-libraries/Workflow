@@ -23,7 +23,7 @@
 - A dedicated guidelines for VlppOS oriented synchronization best practice.
 - A dedicated guidelines for codegen tools, including input output format and .d.ts
 - RPC
-  - use `TODO_RPC_(Definition|Json|GeneratedWrappers).md`
+  - use `TODO_RPC_(Definition|GeneratedWrappers|Json|JsonRequest).md`
   - how to start up
   - Update `document-and-commit.md` to maintain those KB files instead.
 - Compiler processing and passes.
