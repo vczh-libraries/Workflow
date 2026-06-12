@@ -17,6 +17,14 @@
 - `ChatBotServer` and `ChatBotClient` project.
   - Review.
   - Declaration of service registration from every client connection.
+    - `ChatBotJsonDispatcherClient`, give a channel and it registers itself as a reader, initiating the registration process:
+      - When receiving `DeclareLocalService` it is written down, unless the registered service list is sent, it throws.
+      - A new method `DeclareLocalService` is created for this, no more passing `DeclareRemoteService` directly.
+      - Send required service list and registered service list.
+      - Block until receiving enough `DeclareRemoteService`.
+    - `ChatBotJsonDispatcherServer`, only offer central controlling and broadcast message redirecting, must be the first registered client:
+      - Exposed a method so that the server could notice a connected client.
+      - When a client is connected with registered services, `DeclareRemoteService` will be broadcasted. Synchronization required.
   - Extract from the `ChatBotJsonDispatcher*` as many as possible into the library.
 
 ## Knowledge Base
