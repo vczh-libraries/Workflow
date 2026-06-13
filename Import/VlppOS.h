@@ -2472,7 +2472,7 @@ NetworkProtocolChannelClient
 
 		~NetworkProtocolChannelClient()
 		{
-			if (npClient)
+			if (npClient && this->GetStatus() != ClientStatus::Disconnected)
 			{
 				npClient->GetConnection()->Stop();
 			}
