@@ -12,7 +12,8 @@ namespace vl::rpc_controller::channeling
 	using JsonChannelServer			= vl::inter_process::IChannelServer<JsonPackage>;
 	using JsonNetworkChannelClient	= vl::inter_process::NetworkProtocolChannelClient<JsonPackage, vl::glr::json::JsonNodeListSerializer>;
 	using JsonLocalChannelClient	= vl::inter_process::NetworkProtocolLocalChannelClient<JsonPackage, vl::glr::json::JsonNodeListSerializer>;
-	using JsonNetworkChannelServer	= vl::inter_process::NetworkProtocolChannelServer<JsonPackage, vl::glr::json::JsonNodeListSerializer>;
+	template<typename TServerBase>
+	using JsonNetworkChannelServer	= vl::inter_process::NetworkProtocolChannelServer<JsonPackage, vl::glr::json::JsonNodeListSerializer, TServerBase>;
 	using TaskQueue					= vl::TaskQueue;
 }
 

@@ -111,6 +111,7 @@ The refactor will be confirmed task-by-task:
 # PROPOSALS
 
 - No.1 Split generic RPC JSON dispatching from ChatBot-specific setup
+- No.2 Release VlppOS channel-server changes into Workflow
 
 ## No.1 Split generic RPC JSON dispatching from ChatBot-specific setup
 
@@ -137,3 +138,30 @@ Introduce reusable `vl::rpc_controller::channeling` dispatcher classes for chann
 - Ran the ChatBot interactive procedure through `copilotExecute.ps1`: server plus clients `Tom`, `Jerry`, and `Spike`; verified join notifications, three chat rounds from each client, one client exit notification, and server shutdown ending the remaining clients.
 - Static scan confirmed `RpcJsonDispatcherShared.h`, `RpcJsonDispatcherClient.(h|cpp)`, and `RpcJsonDispatcherServer.(h|cpp)` do not include or reference `ChatBotApp`; `ChatBotJsonDispatcherClient.h` includes only `RpcJsonDispatcherClient.h` and `ChatBotApp.h`.
 - Attempted `..\Tools\Tools\Build.ps1 Workflow`; it reached the release rebuild phase but timed out after 30 minutes without diagnostic output. The orphaned Release x64 build process was stopped. This aggregate pass is recorded as inconclusive; the targeted test matrix above passed.
+
+## No.2 Release VlppOS channel-server changes into Workflow
+
+Import the regenerated VlppOS channel-server API and adapt the ChatBot server sample to the new transport-base template. Collapse the custom HTTP forwarding server into the channel server itself, and use the new `localClient` argument to recognize the embedded `ChatBotServerChannelClient` directly.
+
+### CODE CHANGE
+
+[CONFIRMED]
+
+- Imported regenerated `VlppOS.h` from VlppOS release commit `c93cf95`.
+- Changed the shared JSON channel-server alias to `JsonNetworkChannelServer<TServerBase>`.
+- Renamed `ChatServerService` to `ChatServerImpl`.
+- Changed `ChatBotChannelServer` to derive from `JsonNetworkChannelServer<HttpServer>` and removed the separate `ChatBotHttpServer` adapter.
+- Updated `ChatBotChannelServer::OnClientConnected` to accept the new `localClient` argument, `dynamic_cast` the server-side local client, and register only ordinary RPC clients once the dispatcher is ready.
+
+### TEST
+
+[CONFIRMED]
+
+- Built `Workflow/Test/UnitTest/UnitTest.sln` Debug Win32 and Debug x64 with `copilotBuild.ps1`: both passed with 0 warnings and 0 errors.
+- Ran `LibraryTest` Debug Win32/x64: both passed 2/2 files and 15/15 cases.
+- Ran `CompilerTest_GenerateMetadata` Debug Win32/x64: both passed 1/1 files and 2/2 cases.
+- Ran `CompilerTest_LoadAndCompile` Debug x64: passed and produced no tracked generated-file changes.
+- Ran `RuntimeTest` Debug Win32/x64: both passed 4/4 files and 261/261 cases.
+- Ran `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` Debug Win32/x64: all six runs passed 2/2 files and 229/229 cases.
+- Ran `Test/TypeScript/prepare.ps1` followed by `npm run build`: passed.
+- Ran the ChatBot standard procedure through `copilotExecute.ps1 -Mode CLI`: server plus `Tom`, `Jerry`, and `Spike`; verified ordered joins, join notifications to existing clients, three chat rounds from each client propagated to server and all clients, one client exit notification, and server shutdown ending remaining clients.
