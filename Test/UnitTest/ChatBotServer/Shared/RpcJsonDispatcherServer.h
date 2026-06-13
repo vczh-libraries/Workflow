@@ -5,6 +5,9 @@
 
 namespace vl::rpc_controller::channeling
 {
+	/// <summary>
+	/// A IChannelReader for RPC service delivering and request broadcasting
+	/// </summary>
 	class RpcJsonDispatcherServer
 		: public vl::Object
 		, public virtual vl::inter_process::IChannelReader<JsonPackage>

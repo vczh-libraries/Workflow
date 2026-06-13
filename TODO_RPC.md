@@ -17,7 +17,6 @@
 - `ChatBotServer` and `ChatBotClient` project.
   - Review `VlppOS`.
   - Review `GacUI`.
-  - Review `ChatBot(Server|Client)`'s `Main.cpp`.
   - Review `Test/UnitTest/ChatBotServer/Shared`.
   - Extract from the `ChatBotJsonDispatcher*` as many as possible into the library.
 

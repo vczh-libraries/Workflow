@@ -11,14 +11,20 @@ using namespace vl::inter_process;
 using namespace vl::rpc_controller::channeling;
 using namespace chatbot;
 
-class ChatBotChannelClient : public JsonNetworkChannelClient
+/***********************************************************************
+* ChatBotRpcHostingClient
+*   communicate with the server through JSON-RPC
+*   to support RPC based Workflow interfaces
+***********************************************************************/
+
+class ChatBotRpcHostingClient : public JsonNetworkChannelClient
 {
 private:
-	JsonChannelClient::ChannelMap channelNames;
-	Ptr<ChatBotJsonDispatcherClient> dispatcher;
+	JsonChannelClient::ChannelMap		channelNames;
+	Ptr<ChatBotJsonDispatcherClient>	dispatcher;
 
 public:
-	ChatBotChannelClient(Ptr<INetworkProtocolClient> client, Ptr<Parser> parser)
+	ChatBotRpcHostingClient(Ptr<INetworkProtocolClient> client, Ptr<Parser> parser)
 		: JsonNetworkChannelClient(client, parser)
 	{
 		channelNames.Add(WString::Unmanaged(RpcChannel), nullptr);
@@ -31,7 +37,7 @@ public:
 
 	void OnConnected(vint clientId) override
 	{
-		CHECK_ERROR(dispatcher, L"ChatBotChannelClient needs a dispatcher.");
+		CHECK_ERROR(dispatcher, L"ChatBotRpcHostingClient needs a dispatcher.");
 		dispatcher->InitializeRpc(clientId);
 	}
 
@@ -44,18 +50,24 @@ public:
 
 	ChatBotJsonDispatcherClient* GetDispatcher()
 	{
-		CHECK_ERROR(dispatcher, L"ChatBotChannelClient has not been connected.");
+		CHECK_ERROR(dispatcher, L"ChatBotRpcHostingClient has not been connected.");
 		return dispatcher.Obj();
 	}
 };
 
+/***********************************************************************
+* ChatBotInputThread
+*   accepting user console input
+*   when the application exits, the thread is abandoned
+***********************************************************************/
+
 class ChatBotInputThread : public Thread
 {
 private:
-	Ptr<TaskQueue> taskQueue;
-	Ptr<chatapi::IChatServer> chatServer;
-	ChatBotJsonDispatcherClient* dispatcher = nullptr;
-	WString userName;
+	Ptr<TaskQueue>						taskQueue;
+	Ptr<chatapi::IChatServer>			chatServer;
+	ChatBotJsonDispatcherClient*		dispatcher = nullptr;
+	WString								userName;
 
 protected:
 	void Run() override
@@ -100,6 +112,10 @@ public:
 	}
 };
 
+/***********************************************************************
+* main
+***********************************************************************/
+
 int main()
 {
 	mainThreadId = Thread::GetCurrentThreadId();
@@ -108,7 +124,7 @@ int main()
 	auto parser = Ptr(new Parser);
 	auto taskQueue = Ptr(new TaskQueue);
 	auto httpClient = Ptr(new HttpClient(WString::Unmanaged(ChatBotHttpBaseUrl), ChatBotHttpPort));
-	auto channelClient = Ptr(new ChatBotChannelClient(httpClient, parser));
+	auto channelClient = Ptr(new ChatBotRpcHostingClient(httpClient, parser));
 
 	// ---- RPC Connection ----
 	List<WString> waitingForServices;
