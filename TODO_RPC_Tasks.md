@@ -2,64 +2,93 @@ investigate repro
 
 DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
 Follow `REPO-ROOT/.github/Rules/document-and-commit.md` to finish the work.
+This is a multi-task request, follow the investigation instructions precisely.
+
+## Task 1
+
+This task is on `Workflow` repo.
 
 Refactor related code affecting `ChatBot(Server|Client)` projects.
 To ensure the refactoring works, all test cases should pass, and the standard procedure of testing `ChatBot(Server|Client)` is also required.
 
-The `GetRpcChannel` function is not necessary, by just using `client->GetChannels()[WString::Unmanaged(RpcChannel)]` it has the same behavior, aka crash when not found.
-Find out similar thing and simplify the source code.
+We got 3 `Dispatcher` classes for `ChatBotChannelClient`, `ChatBotServiceChannelClient` and `ChatBotServerChannelClient`.
+- These 3 classes are pretty similar.
+- We should add `RpcJsonDispatcher(Server|Client)ForTaskQueue` inheriting `ChatBotJsonDispatcher(Server|Client)` putting under them.
+  - Be awared that `ChatBotJsonDispatcher(Server|Client)` will be renamed and splitted, so these `*ForTaskQueue` would be in `RpcJsonDispatcher(Server|Client).(h|cpp)`.
+- We can just delete these 3 `Dispatcher` classes.
 
-`ChatBotTaskThread` is also not necessary. There is two reason:
-- It doesn't need to `Start()` when queued tasks don't really need to run at that moment.
-- Calling `QueueExitTask` should just let `RunTaskQueue` stops.
-So try to remove this class, and instead setup everything and then call `RunTaskQueue` in the `main` function directly, which will just behave like `Thread::Wait`.
+`ChatBotJsonDispatcherClient` should not contain `ops` and `chatServer`:
+- Instead it should expose `IRpcLifecycle` and `IRpcDispatcher` via public `GetRpcLifecycle` and `GetRpcDispatcher`.
+- `chatServer` is not used in `ChatBotJsonDispatcherClient` at all.
+  - In `ChatBotServer` project, it should limit `chatServer` in `Main.cpp`, store it only in who needing it, therefore `ChatBotJsonDispatcherClient::RegisterLocalService` could be deleted.
+  - In `ChatBotClient` project, `lifecycle->RequestService` could be called in `Main.cpp`, and `ChatBotJsonDispatcherClient::GetChatServer` could be deleted.
+  - `ChatBotJsonDispatcherClient::Initialize` no need to handle this.
 
-Inside all `ChatServerService` methods, and all event handlers to `IChatServer`'s events:
-- At the beginning of `main`, `Thread::GetCurrentThreadId`'s result will be stored to a global variable `mainThreadId`.
-- All these places are going to `CHECK_ERROR(mainThreadId == Thread::GetCurrentThreadid(), ERROR_MESSAGE_PREFIX L"...")`.
-To make sure that everything is actually called in the same thread.
-By letting `main` call `RunTaskQueue`, all service accessing should be in the same thread, which is the thread calling `main` function. These two works are related.
+Rename `ChatBotJsonDispatcherServer` class and files to `RpcJsonDispatcherServer`, using namespace `vl::rpc_controller::channeling` instead of `chatbot`:
+- It looks like to have nothing to do with chatbot.
 
-I don't like how `ChatBotHttpChannelServer` inheriting from `HttpServer`:
-- `HttpServer`'s sub class should be a concrete class which talking to `JsonNetworkChannelServer`.
-- I believe there is no need to override `OnClientConnected(INetworkProtocolConnection*)` to do only redirection to the base implementation, try to delete it.
-- `main` is going to start `HttpServer` and `JsonNetworkChannelServer` separately.
-- I guess a `JsonNetworkChannelServer` subclass may also be not needed by doing this.
+Split `ChatBotJsonDispatcherClient` class and files to `RpcJsonDispatcherClient` and `ChatBotJsonDispatcherClient`:
+- `RpcJsonDispatcherClient` uses namespace `vl::rpc_controller::channeling`.
+- `ChatBotJsonDispatcherClient` still uses namespace `chatbot`.
+- The goal is to keep `RpcJsonDispatcherClient` not knowing anything about `chatbot`.
+- Therefore `ChatBotJsonDispatcherClient::InitializeRpc` and any functions that depending on the knowledge of `chatbot` should be in `ChatBotJsonDispatcherClient`.
+  - I suspect `InitializeRpc` is the only function that needs to move.
+  - `InitializeRpc` could be called in `IChannelClient::OnConnected`.
+  - `ChatBotJsonDispatcherClient::(WaitForServer|ConnectLocalClient)` will no need to call `InitializeRpc` anymore.
 
-Both `main` functions listen to `IChatService`'s events, but the code is the same, I would like a function in `ChatBotHttp.h` handling this.
-And create a `ChatBotHttp.cpp` to pair with it to avoid inline functions.
+`RpcJsonDispatcher(Client|Server)` should make all protected fields and methods private, as your best effort. If anything needs to be used in sub classes, add a protected or public getter.
 
-In `ChatBotServer`'s `main` function `(Begin|End)AcceptingLocalClient` is called twice.
-According to the document `TODO_RPC_JsonRequest.md` and how `ChatBotJsonDispatcherServer` handles connection:
-- It is easy to find that, there is no matter the client is connecting first or `IChatServer` implemention is connecting first.
-- If `IChatServer` is registered before any client connection, the client should just unblock immediately.
-- If a client is connecting too fast, the client will wait for `IChatServer` to connect.
-- Being able to request for the `IChatServer` service is the timing to start `ChatBotInputThread`, therefore it is easy to handle user inputed names after `IChatServer` is available.
-Therefore in `ChatBotServer`'s `main` function you can do the setup in this order:
-- Setup dispatcher and everything RPC related.
-- Connect a `JsonLocalChannelClient` to handle broadcasted request redirection (using `ChatBotJsonDispatcherServer`), let's call it `1st server client`.
-- Connect a `JsonLocalChannelClient` to handle `IChatServer` (using `ChatBotJsonDispatcherClient`), let's call it `2nd server client`.
-- These two clients should be two different sub class, so they to make the responsibility clear.
-You don't need to set `RegisterLocalClient`, instead let the dispatcher knows pointers to the two clients:
-- When a client id of `1st server client` is needed, it reads `IChannelClient::GetClientId` directly, and `CHECK_ERROR` to make sure it is not `-1`.
-`(Begin|End)AcceptingLocalClient` and the flag will be not necessary at all:
-- `main` is a local function, informations about if registering a local client is good, can be inferred. No need to do guarding like that.
-- By doing the setup like this, `dispatcher` will always be non-null and `RpcChannel` is always there anyway.
-- you can just keep the `RpcChannel` guard and drop the other two.
-- If you need to know if a `clientId` is a local client, you could just call `IChannelServer::IsLocalClient` function.
-- By starting the server after registering the first `ChatBotJsonDispatcherClient`, you can ensure the first `OnClientConnected` call will be the `1st server client`.
+The goal is to create a more general implementation, so that it could be reused with other RPC definitions. To make sure that the refactoring works:
+- `CreateChatBotJsonParser` could be removed, just call `Ptr(new glr::json::Parser)` in all places using this function.
+- A `RpcJsonDispatcherShared.h` for all `using` statements.
+- Leaving 3 constexpr, `mainThreadId` and `AttachChatServerEventHandlers` still in `ChatBotHttp.(h|cpp)`.
+- `RpcJsonDiaptcher(Server|Client).(h|cpp)` should use `RpcJsonDispatcherShared.h`, making sure that these 5 files do not include `ChatBotApp.h`, that's how we know they don't depend on `ChatBotApp` generated code.
+- `ChatBotJsonDispatcherClient.(h|cpp)` only uses `RpcJsonDiaptcherClient.h` and `ChatBotApp.h`.
+- `Main.cpp` could use all files.
 
-In `ChatBotJsonDispatcher(Server|Client).h` all locks are missing the `// covers ...` comments required by the coding guidelines.
+## Task 2
 
-Currently there are one `JsonNetworkChannelClient` sub class, one `JsonLocalChannelClient` sub class, one `ChatBotJsonDispatcherServer` sub class, two `ChatBotJsonDispatcherClient` sub class:
-- In the new design, there will be one `JsonNetworkChannelClient` sub class and two `JsonLocalChannelClient` sub class.
-- Sub classes of `ChatBotJsonDispatcher(Server|Client)` becomes a internal class called `Dispatcher` in sub classes of `Json(Network|Local)ChannelClient`.
-- Client will handle the initialization of dispatcher as many as it can:
-  - Try to expose a function on each 3 client class, that could initialize the dispatcher, connect to the server, and do whatever is needed after that.
-  - Client will expose the dispatcher as a field from a getter, so that `main` function could use it.
-- `main` functions are too messy, use `// ---- DESCRIPTION ----` to group initializations of different group of source code by its semantic.
+This task is on `VlppOS` repo.
+`NetworkProtocolChannelServer` has a serious design problem. It should use a `INetworkProtocolServer` insteads of implementing one.
+But there are many other `INetworkProtocolServer` implementations, like `HttpServer` or `NamedPipeServer`, these should be `NetworkProtocolChannelServer`'s base class.
+So you could declare the class like this:
 
-To avoid overriding functions just for `IChannel(Server|Client)` with empty implementation:
-- `NetworkProtocolChannelClientBase` and `NetworkProtocolChannelServer` should override them with empty implemention, for functions that they do not implement.
-- Delete unnecessary empty implementations in `VlppOS`'s `TestInterProcess.cpp`, to make sure the change is working.
-- Release `VlppOS` to `Workflow` to clean up two `main.cpp`.
+```C++
+template<typename TPackage, typename TSerialization, typename TServerBase>
+class NetworkProtocolChannelServer : public TServerBase, public virtual IChannelServer<TPackage>
+{
+...
+public:
+  typename<typename ...TArgs>
+  NetworkProtocolChannelServer(TArgs&& ...args)
+    : TServerBase(std::forward<TArgs&&>(args)...)
+    , ...
+  {
+    ...
+  }
+
+  ...
+}
+```
+
+Add a `IChannelClient* localClient` to `IChannelServer::OnClientConnected` as the last argument.
+It will not non-null when the client is a local client.
+It will be null otherwise.
+
+## Task 3
+
+This task is on `Workflow` repo.
+Release `VlppOS` to `Workflow`.
+`Workflow` will be affected by `Task 2`, you need to refactor the code.
+
+Rename `ChatServerService` to `ChatServerImpl`:
+- `OnClientConnected` now will be able to know if it is `ChatBotServerChannelClient` by doing `dynamic_cast`, no need to do complicated tests.
+- Since `HttpServer` being able to be a base class of `NetworkProtocolChannelServer`, `ChatBotChannelServer` and `ChatBotHttpServer` now merges into one.
+
+## Task 4
+
+This task is on `GacUI` and `GacJS` repo.
+Release `VlppOS` and `Workflow` to `GacUI`.
+
+Follow `Tools/DebugGacUIWithRemoteProtocol.md` to make sure `RemotingTest*` test projects are working.
+Follow `Tools/DebugGacUIWithBrowser.md` to make sure `GacJS` is working with `RemotingTest_Core`.
