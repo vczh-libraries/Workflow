@@ -1624,25 +1624,25 @@ INetworkProtocolServer
 		/// Called when an error message is received from the other side of the connection.
 		/// </summary>
 		/// <param name="error">The error message.</param>
-		virtual void							OnReadError(const WString& error) = 0;
+		virtual void							OnReadError(const WString&) {}
 
 		/// <summary>
 		/// Called when a local transport error occurs.
 		/// </summary>
 		/// <param name="error">The error message.</param>
 		/// <param name="fatal">Indicates whether the connection should be disconnected after this callback.</param>
-		virtual void							OnLocalError(const WString& error, bool fatal) = 0;
+		virtual void							OnLocalError(const WString&, bool) {}
 
 		/// <summary>
 		/// Called when the connection becomes available.
 		/// This function might not be called if <see cref="INetworkProtocolConnection::InstallCallback"/> is called after the connection is already established.
 		/// </summary>
-		virtual void							OnConnected() = 0;
+		virtual void							OnConnected() {}
 
 		/// <summary>
 		/// Called when the connection is lost.
 		/// </summary>
-		virtual void							OnDisconnected() = 0;
+		virtual void							OnDisconnected() {}
 
 		/// <summary>
 		/// Called when the callback is installed to a connection.

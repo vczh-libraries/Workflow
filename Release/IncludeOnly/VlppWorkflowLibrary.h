@@ -12,7 +12,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Library\WfLibraryCppHelper.h"
 #include "..\..\Source\Library\Rpc\WfLibraryRpc.h"
 #include "..\..\Source\Library\Rpc\WfLibraryRpcController.h"
-#include "..\..\Source\Library\Rpc\WfLibraryRpcJson.h"
 #include "..\..\Source\Library\Rpc\WfLibraryRpcLifecycle.h"
+#include "..\..\Source\Library\Rpc\WfLibraryRpcJson.h"
 #include "..\..\Source\Library\Rpc\WfLibraryRpcWrappers.h"
 #include "..\..\Source\Library\WfLibraryReflection.h"
