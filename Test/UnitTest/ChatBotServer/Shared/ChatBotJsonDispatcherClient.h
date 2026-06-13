@@ -26,15 +26,18 @@ namespace chatbot
 		vl::atomic_vint									initialized = 0;
 		vl::atomic_vint									serverLocalClientId = -1;
 
+		// covers messages and bufferedResponses
 		vl::SpinLock									lockMessages;
 		vl::Semaphore									semaphoreMessages;
 		vl::collections::List<ReceivedJsonMessage>		messages;
 		vl::collections::List<ReceivedJsonMessage>		bufferedResponses;
 
+		// covers cachedIncomingServiceDeclarations and cachedOutgoingServiceDeclarations
 		vl::SpinLock									lockServiceDeclarations;
 		vl::collections::List<JsonPackage>				cachedIncomingServiceDeclarations;
 		vl::collections::List<JsonPackage>				cachedOutgoingServiceDeclarations;
 
+		// covers waitingForServices
 		vl::SpinLock									lockWaitingForServices;
 		vl::collections::List<vl::WString>				waitingForServices;
 		vl::EventObject									eventWaitingForServices;
@@ -47,9 +50,8 @@ namespace chatbot
 		vl::Ptr<::rpcops_IOps_ChatBotApp>				ops;
 		vl::Ptr<chatapi::IChatServer>					chatServer;
 
-		virtual void									SchedulaTask(vl::Func<void()> task) = 0;
+		virtual void									ScheduleTask(vl::Func<void()> task) = 0;
 
-		JsonChannel*									GetRpcChannel();
 		void											PrepareConnection(JsonChannel* channel, const vl::collections::List<vl::WString>& _waitingForServices);
 		void											InitializeRpc(vl::vint clientId);
 		void											ProcessCachedIncomingServiceDeclarations();
@@ -76,6 +78,8 @@ namespace chatbot
 		void											RegisterLocalService(vl::Ptr<chatapi::IChatServer> service);
 		void											Initialize();
 		vl::Ptr<chatapi::IChatServer>					GetChatServer();
+		void											SetServerLocalClientId(vl::vint clientId);
+		void											NotifyServerClientDisconnected();
 
 		vl::vint										AllocateRequestId() override;
 		JsonPackage										OnJsonRequest(JsonPackage message, RequestType requestType) override;

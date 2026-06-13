@@ -5,127 +5,128 @@
 DO NOT ASK ME ANY QUESTION, I will not be watching you, you must make your best decision and run through the end.
 Follow `REPO-ROOT/.github/Rules/document-and-commit.md` to finish the work.
 
-## Task 1
-
-Overfile of refactoring of `ChatBot(Server|Client)` projects:
-- Three classes `ChatBotJsonDispatcher*` is going to be reorganize into only `ChatBotJsonDispatcherClient` and `ChatBotJsonDispatcherServer`.
-- One shared header `ChatBotHttp.h` to store `RpcChannel`, `ChatBotHttpBaseUrl` and `ChatBotHttpPort`.
-- Currently `ChatBotJsonDispatcherServer` hosts `IChatServer`:
-  - It no longer host any server, instead `RpcJsonDispatcher::DeclareLocalService` will do actual job for service declaring.
-  - The `ChatBotServer` project will need two local client now:
-    - The first one is `ChatBotJsonDispatcherServer`.
-    - The second one is a `ChatBotJsonDispatcherClient` which hosts `IChatServer`, nothing special to do, everything should be already handled by `IRpcLifecycle` and `IRpcDispatcher` implementations.
-    - `ChatBotServer` project will report the local client id of `ChatBotJsonDispatcherServer` as the client id:
-      - This should be the first `IChannelServer::ConnectLocalClient` call.
-      - And then report the client id so that it could be sent to all subsequent connecting `ChatBotJsonDispatcherClient`.
-      - And then register the local `ChatBotJsonDispatcherClient` for `IChatServer`.
-      - And then call `IChannelServer::Start`, since before calling this function all clients can't really try to connect, it ensures remote clients come after.
-- The overall message sequences is not affected, but now `Request:IRpcDispatcher_DeclareRemoteService` kicks in, which is the reason of the refactoring.
-
-`IRpcDispatcher::DeclareLocalService`:
-- The only argument of `IRpcDispatcher::DeclareLocalService` becomes `RpcObjectReference`.
-- The only argument of `IRpcLifecycle::DeclareRemoteService` becomes `RpcObjectReference`.
-  - I think the current `DeclareRemoteService` is not correct as it actually miss the most important data (objectId), I am really astonished that the implementation could handle that, but it is wrong.
-  - It should just stores the map `typeId->ref` and call `RefToPtr` on that stored ref directly.
-- `RpcJsonDispatcher::DeclareLocalService` generates `Request:IRpcDispatcher_DeclareRemoteService` instead.
-  - `Rpc.d.ts` needs to update, there is no more `Request:IRpcDispatcher_DeclareLocalService`.
-  - `ref` will be directed used in this TypeScript interface.
-  - `RpcJsonDispatcher::Translate` needs to update.
-
-`IRpcJsonMessageDispatcher::JsonRequest`:
-- The second argument become an enum class `RequestType` with `Direct, Broadcast, BroadcastAndDrop`:
-  - `Direct` sends the message to specific client.
-  - `Broadcast` notices everyone, it is sent to `ChatBotJsonDispatcherServer` which do the real broadcasting, consolidating all response and response.
-    - `Request:IObjectEventOps_InvokeEvent` becomes such request.
-  - `BroadcastAndDrop` notices everyone, it it sent to `ChatBotJsonDispatcherServer` which do the real broadcasting, but no consolidating responses, client will also not response to such request.
-    - `Request:IRpcDispatcher_DeclareRemoteService` becomes such request.
-    - `RpcDualJsonRequestBridge::JsonRequest` it returns nullptr on such request.
-      - I think a better way is to make `IRpcJsonMessageDispatcher::DefaultDispatch` (will be renamed to `DefaultTranslate`) returns nullptr, because this function already parses the request.
-    - `ChatBotJsonDispatcherClient::JsonRequest` will no longer do the loop until getting a response when handling `BroadcastAndDrop` requests, it should returns nullptr directly after sending out the request.
-
-`ChatBotJsonDispatcherClient`:
-- `ChatBotJsonDispatcherBase` merges into this class.
-- The synchronization of `JsonRequest` does not change.
-- Expose `WaitForServer` and `ConnectLocalClient` function, accepting an `IChannel`, which will register itself as a `IChannelReader`, doing the following works **in this order**
-  - This function can only be called once, otherwise `CHECK_FAIL`.
-  - It accepts a `const List<WString>& _waitingForServices`, copy to a field `waitingForServices`.
-  - For `WaitForServer`:
-    - It accepts extra `IChannelClient` as an argument, and call `WaitForServer` in this function.
-  - For `ConnectLocalClient`:
-    - It accepts extra `IChannelServer` as an argument, and call `RegiterLocalClient` in this function.
-  - This part is better to be in a function for sharing:
-    - When `waitingForServices` is not empty, `EventObject::CreateManualSignal` is called on field `eventWaitingForServices` and wait.
-    - Upon receiving `Request:IRpcDispatcher_DeclareRemoteService`, when any type id matches the type name, the type name is removed from `waitingForServices`.
-    - When `waitingForServices` becomes empty, the event is signaled.
-    - `IRpcLifecycle::GetTypeIdFromName` needs to be added:
-      - It returns `RpcTypeId_NotFound` for inexisting types.
-      - `RpcLifecycleBase` implements it, it uses the map from `SetIdMap`.
-      - `GetTypeIdFromName` will be useful here.
-      - Scan everywhere in `Source/Rpc` and files affected here, use `GetTypeIdFromName` as a standard way to translate from type name to type id:
-        - Especially checking all friended classes, and if type name translation is the only reason, you can remove the class from friend.
-- Processing `Request:IRpcDispatcher_DeclareRemoteService` in `JsonRequest`
-  - Before calling `Initialize`, `JsonRequest` will caches all `Request:IRpcDispatcher_DeclareRemoteService` messages, `CHECK_FAIL` on all other messages.
-  - When calling `Initialize`, all cached `Request:IRpcDispatcher_DeclareRemoteService` will be sent directly.
-  - After calling `Initialize`, all `Request:IRpcDispatcher_DeclareRemoteService` will be sent directly, no more caching is needed.
-  - **IMPORTANT** The above rule is for the message comming from the argument, `IRpcJsonMessageDispatcher::DefaultTranslate` is called on messages retrieved from the list, do not mix them up.
-    - It is currently named `DefaultDispatch` and for naming consistency you should rename it to `DefaultTranslate`.
-
-`ChatBotJsonDispatcherServer`:
-- It no longer share any code with `ChatBotJsonDispatcherClient`, and there is no more `ChatBotJsonDispatcherBase` anyway.
-- When `Request:IRpcDispatcher_DeclareRemoteService` is called, all such messages will be cached.
-- When a new client joined, the first message will still be the client id of `ChatBotJsonDispatcherServer`, followed by all cached `Request:IRpcDispatcher_DeclareRemoteService`.
-- The `ChatBotJsonDispatcherClient` running in the server, which is a local client of the server, also talks to `ChatBotJsonDispatcherServer`.
-
-`RpcDualJsonRequestBridge` would be affected.
-
-## Task 2
-
-- `ChatBotJsonDispatcher(Client|Server)` will be stored in `ChatBotJsonDispatcher(Client|Server).(h|cpp)`, remove the current file.
-
-`TODO_RPC_JsonRequest.md` is created, it describes how the server and the client should response to all requests in `Rpc.d.ts`:
-- Mention this file in `document-and-commit.md` as well as any other places that mentioning the `TODO_RPC_(Definition|GeneratedWrappers|Json).md` list.
-- No need to mention class names or project names of `ChatBot*`, the document is for developers who want to implement RPC in other languages.
-- No need to mention how Workflow interfaces map to responses, since explanation of `@rpc:` attributes are covered in other documents, but all concepts need precise and detailed explanation.
-- Need to mention handling of lifecycle.
-- Need to mention expected request sequences.
-- Need to mention three kinds of request.
-- Anything that you think is necessary.
-
+Refactor related code affecting `ChatBot(Server|Client)` projects.
 To ensure the refactoring works, all test cases should pass, and the standard procedure of testing `ChatBot(Server|Client)` is also required.
+
+The `GetRpcChannel` function is not necessary, by just using `client->GetChannels()[WString::Unmanaged(RpcChannel)]` it has the same behavior, aka crash when not found.
+Find out similar thing and simplify the source code.
+
+`ChatBotTaskThread` is also not necessary. There is two reason:
+- It doesn't need to `Start()` when queued tasks don't really need to run at that moment.
+- Calling `QueueExitTask` should just let `RunTaskQueue` stops.
+So try to remove this class, and instead setup everything and then call `RunTaskQueue` in the `main` function directly, which will just behave like `Thread::Wait`.
+
+Inside all `ChatServerService` methods, and all event handlers to `IChatServer`'s events:
+- At the beginning of `main`, `Thread::GetCurrentThreadId`'s result will be stored to a global variable `mainThreadId`.
+- All these places are going to `CHECK_ERROR(mainThreadId == Thread::GetCurrentThreadid(), ERROR_MESSAGE_PREFIX L"...")`.
+To make sure that everything is actually called in the same thread.
+By letting `main` call `RunTaskQueue`, all service accessing should be in the same thread, which is the thread calling `main` function. These two works are related.
+
+I don't like how `ChatBotHttpChannelServer` inheriting from `HttpServer`:
+- `HttpServer`'s sub class should be a concrete class which talking to `JsonNetworkChannelServer`.
+- I believe there is no need to override `OnClientConnected(INetworkProtocolConnection*)` to do only redirection to the base implementation, try to delete it.
+- `main` is going to start `HttpServer` and `JsonNetworkChannelServer` separately.
+- I guess a `JsonNetworkChannelServer` subclass may also be not needed by doing this.
+
+Both `main` functions listen to `IChatService`'s events, but the code is the same, I would like a function in `ChatBotHttp.h` handling this.
+And create a `ChatBotHttp.cpp` to pair with it to avoid inline functions.
+
+In `ChatBotServer`'s `main` function `(Begin|End)AcceptingLocalClient` is called twice.
+According to the document `TODO_RPC_JsonRequest.md` and how `ChatBotJsonDispatcherServer` handles connection:
+- It is easy to find that, there is no matter the client is connecting first or `IChatServer` implemention is connecting first.
+- If `IChatServer` is registered before any client connection, the client should just unblock immediately.
+- If a client is connecting too fast, the client will wait for `IChatServer` to connect.
+- Being able to request for the `IChatServer` service is the timing to start `ChatBotInputThread`, therefore it is easy to handle user inputed names after `IChatServer` is available.
+Therefore in `ChatBotServer`'s `main` function you can do the setup in this order:
+- Setup dispatcher and everything RPC related.
+- Connect a `JsonLocalChannelClient` to handle broadcasted request redirection (using `ChatBotJsonDispatcherServer`), let's call it `1st server client`.
+- Connect a `JsonLocalChannelClient` to handle `IChatServer` (using `ChatBotJsonDispatcherClient`), let's call it `2nd server client`.
+- These two clients should be two different sub class, so they to make the responsibility clear.
+You don't need to set `RegisterLocalClient`, instead let the dispatcher knows pointers to the two clients:
+- When a client id of `1st server client` is needed, it reads `IChannelClient::GetClientId` directly, and `CHECK_ERROR` to make sure it is not `-1`.
+`(Begin|End)AcceptingLocalClient` and the flag will be not necessary at all:
+- `main` is a local function, informations about if registering a local client is good, can be inferred. No need to do guarding like that.
+- By doing the setup like this, `dispatcher` will always be non-null and `RpcChannel` is always there anyway.
+- you can just keep the `RpcChannel` guard and drop the other two.
+- If you need to know if a `clientId` is a local client, you could just call `IChannelServer::IsLocalClient` function.
+- By starting the server after registering the first `ChatBotJsonDispatcherClient`, you can ensure the first `OnClientConnected` call will be the `1st server client`.
+
+In `ChatBotJsonDispatcher(Server|Client).h` all locks are missing the `// covers ...` comments required by the coding guidelines.
+
+Currently there are one `JsonNetworkChannelClient` sub class, one `JsonLocalChannelClient` sub class, one `ChatBotJsonDispatcherServer` sub class, two `ChatBotJsonDispatcherClient` sub class:
+- In the new design, there will be one `JsonNetworkChannelClient` sub class and two `JsonLocalChannelClient` sub class.
+- Sub classes of `ChatBotJsonDispatcher(Server|Client)` becomes a internal class called `Dispatcher` in sub classes of `Json(Network|Local)ChannelClient`.
+- Client will handle the initialization of dispatcher as many as it can:
+  - Try to expose a function on each 3 client class, that could initialize the dispatcher, connect to the server, and do whatever is needed after that.
+  - Client will expose the dispatcher as a field from a getter, so that `main` function could use it.
+- `main` functions are too messy, use `// ---- DESCRIPTION ----` to group initializations of different group of source code by its semantic.
+
+To avoid overriding functions just for `IChannel(Server|Client)` with empty implementation:
+- `NetworkProtocolChannelClientBase` and `NetworkProtocolChannelServer` should override them with empty implemention, for functions that they do not implement.
+- Delete unnecessary empty implementations in `VlppOS`'s `TestInterProcess.cpp`, to make sure the change is working.
+- Release `VlppOS` to `Workflow` to clean up two `main.cpp`.
 
 # UPDATES
 
-# TEST
+# TEST [CONFIRMED]
 
-The change is confirmed by:
-- Static inspection that RPC lifecycle service declarations store full `RpcObjectReference` values and that type-name-to-id translation goes through `IRpcLifecycle::GetTypeIdFromName`.
-- TypeScript schema verification that `Test/TypeScript/Rpc.d.ts` exposes `Request:IRpcDispatcher_DeclareRemoteService` and no longer exposes `Request:IRpcDispatcher_DeclareLocalService`.
-- Building the Workflow unit-test solution in `Debug|Win32` and `Debug|x64`.
-- Running `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` in the required configurations.
-- Running `Test/TypeScript/prepare.ps1` and `npm run build`, plus a standalone type check of `Rpc.d.ts`.
-- Running the ChatBot multi-process process through the standard executable wrapper with one server and two clients named Alice and Bob: join one at a time, send messages from both clients, verify both clients receive both joins and both messages, then exit the server and confirm both clients shut down.
-- Static scans under `Test/UnitTest/ChatBot*` to verify stale dispatcher class/file references are gone.
+The refactor will be confirmed by:
+- Static inspection that `ChatBotServer` and `ChatBotClient` no longer define `ChatBotTaskThread` or `GetRpcChannel`, and directly index `GetChannels()[WString::Unmanaged(RpcChannel)]`.
+- Static inspection that `ChatBotServer` no longer uses `(Begin|End)AcceptingLocalClient` or `RegisterLocalClient`, and that the server dispatcher reads the first local client id from `IChannelClient::GetClientId`.
+- Static inspection that ChatBot event output is shared from `ChatBotHttp.cpp`, lock fields in `ChatBotJsonDispatcher(Client|Server).h` have coverage comments, and no dispatcher implementation subclasses remain in `main.cpp`.
+- Static inspection that the HTTP transport object and `JsonNetworkChannelServer` are started/stopped separately instead of one `ChatBotHttpChannelServer` inheriting from both.
+- Static inspection that redundant empty `IChannelClient` / `IChannelServer` overrides are removed from ChatBot and `VlppOS` test code where the base classes already provide defaults.
+- Build `VlppOS` `Debug|Win32` and `Debug|x64`, then run the focused or full `UnitTest` including `TestInterProcess.cpp`.
+- Regenerate or release `VlppOS` into its `Release` output, copy the non-`IncludeOnly` release files into `Workflow/Import`, and build Workflow.
+- Build Workflow unit-test solution in `Debug|Win32` and `Debug|x64`.
+- Run `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` in the required configurations.
+- Run `Test/TypeScript/prepare.ps1` and `npm run build`.
+- Run the ChatBot multi-process procedure with one server and three clients named `Tom`, `Jerry`, and `Spike`: join one at a time, verify join notifications, send three chat rounds, exit one client, verify leave notifications, exit the server, and confirm the remaining clients exit.
 
 # PROPOSALS
 
-- No.1 Move JSON service declaration into lifecycle-owned remote references and split ChatBot dispatchers
+- No.1 Collapse redundant ChatBot transport wrappers and run RPC work on the main task queue [CONFIRMED]
 
-## No.1 Move JSON service declaration into lifecycle-owned remote references and split ChatBot dispatchers
+## No.1 Collapse redundant ChatBot transport wrappers and run RPC work on the main task queue
 
-Refactor the RPC service-declaration contract so `IRpcDispatcher::DeclareLocalService` and `IRpcLifecycle::DeclareRemoteService` pass a complete `RpcObjectReference`. `RpcLifecycleBase` will keep remote service references by type id and resolve type names through a new `GetTypeIdFromName` API.
+Move the remaining `ChatBotJsonDispatcher(Server|Client)` subclasses into concrete `Json(Network|Local)ChannelClient` subclasses so the clients own dispatcher initialization, channel binding, service registration, and server/local connection setup. Let `main` call `TaskQueue::RunTaskQueue()` after setup instead of starting a dedicated task thread, so RPC service methods and event handlers run on the main thread.
 
-Update JSON request dispatch so transport callers pass a `RequestType` that distinguishes direct, broadcast-with-response, and broadcast-and-drop requests. Rename `DefaultDispatch` to `DefaultTranslate`, have translation return no response for broadcast-and-drop service declarations, and let the ChatBot client/server dispatchers own only transport synchronization and fan-out behavior.
+Split reusable ChatBot helpers into `ChatBotHttp.h` / `ChatBotHttp.cpp`: JSON parser creation and common `IChatServer` event subscriptions live out of line, and both applications use the same event output helper. The server owns `HttpServer` and `JsonNetworkChannelServer` separately, connects its broadcast-redirect local client first, connects the service local client second, and starts HTTP after local RPC setup.
 
-Split ChatBot HTTP constants into a shared `ChatBotHttp.h`, collapse the old base into `ChatBotJsonDispatcherClient`, keep `ChatBotJsonDispatcherServer` independent, and adjust the server app so its first local client is the server dispatcher and the hosted `IChatServer` service is registered by a separate local client before the HTTP server starts.
-
-For documentation, add `TODO_RPC_JsonRequest.md` and link it wherever the RPC TODO document set is listed.
+Simplify channel access and connection validation by removing `GetRpcChannel`, `(Begin|End)AcceptingLocalClient`, and `RegisterLocalClient`. For dependency cleanup, rely on the already-defaulted channel callbacks in `NetworkProtocolChannelClientBase` / `NetworkProtocolChannelServer`, delete redundant empty overrides from `VlppOS` tests, release `VlppOS`, and import the regenerated files into Workflow.
 
 ### CODE CHANGE
 
-- Changed `IRpcDispatcher::DeclareLocalService` and `IRpcLifecycle::DeclareRemoteService` to pass a full `RpcObjectReference`, and added `IRpcLifecycle::GetTypeIdFromName`.
-- Updated `RpcLifecycleBase` to store remote service references by type id and request services through the stored reference.
-- Reworked JSON dispatch to use `IRpcJsonMessageDispatcher::RequestType` with direct, broadcast, and broadcast-and-drop modes, and renamed `DefaultDispatch` to `DefaultTranslate`.
-- Changed JSON service declaration to send `Request:IRpcDispatcher_DeclareRemoteService` with `ref`, and updated `Rpc.d.ts` plus generated reflection metadata.
-- Split the ChatBot dispatcher implementation into `ChatBotJsonDispatcherClient` and `ChatBotJsonDispatcherServer`, moved shared HTTP channel constants into `ChatBotHttp.h`, and removed the old combined dispatcher files.
-- Changed `ChatBotServer` startup to connect the server dispatcher first, report that local client id, register the hosted `IChatServer` through a second local client, and start the channel server after local declarations are ready.
-- Added `TODO_RPC_JsonRequest.md` and linked it from RPC documentation maintenance notes and related RPC TODO files.
+Implemented the ChatBot refactor in the server and client applications:
+- Removed `GetRpcChannel` helpers and now uses `GetChannels()[WString::Unmanaged(RpcChannel)]` at the call sites that need the RPC channel.
+- Removed `ChatBotTaskThread`; both applications set up RPC and console workers first, then call `TaskQueue::RunTaskQueue()` directly on the `main` thread.
+- Added `mainThreadId` in `ChatBotHttp.cpp` and checks in all `ChatServerService` methods, shared `IChatServer` event handlers, and the client `OnServerShutdown` event handler.
+- Moved common parser creation and `IChatServer` event handler wiring to the new out-of-line `ChatBotHttp.cpp`, shared by both ChatBot projects.
+- Replaced the old `ChatBotHttpChannelServer` multiple-inheritance shape with a `ChatBotHttpServer` adapter over a separate `JsonNetworkChannelServer`, and starts/stops the HTTP server and JSON channel server independently.
+- Reworked ChatBot dispatchers so the concrete channel clients own nested `Dispatcher` classes, expose dispatcher getters, and encapsulate local/network connection setup.
+- Replaced `RegisterLocalClient`, `(Begin|End)AcceptingLocalClient`, pending login buffering, and the old local-client flag with a first server local client whose id is read directly from `IChannelClient::GetClientId`.
+- Added explicit server-client-id propagation for the second local service client and an internal logout system message so a client that intentionally exits is removed from server broadcast bookkeeping immediately.
+- Added required `// covers ...` comments for all dispatcher locks.
+
+Implemented the VlppOS cleanup and release:
+- Added default empty implementations to `INetworkProtocolCallback` methods so test callback classes do not need boilerplate empty overrides.
+- Removed unnecessary empty callback overrides from `VlppOS/Test/Source/TestInterProcess.cpp`.
+- Regenerated `VlppOS/Release/VlppOS.h` and imported the updated release header into `Workflow/Import/VlppOS.h`.
+- Re-ran Workflow release generation, updating the generated `Release` files.
+
+### CONFIRMED
+
+Confirmed by static inspection:
+- No remaining `GetRpcChannel`, `ChatBotTaskThread`, `(Begin|End)AcceptingLocalClient`, `RegisterLocalClient`, old `ChatBotHttpChannelServer`, stale `SchedulaTask`, or temporary shutdown markers in the ChatBot sources.
+- No remaining redundant empty `OnReadError`, `OnLocalError`, `OnConnected`, or `OnDisconnected` overrides in the cleaned ChatBot and VlppOS test sources.
+- Dispatcher lock fields in `ChatBotJsonDispatcherClient.h` and `ChatBotJsonDispatcherServer.h` now have `// covers ...` comments.
+- `git diff --check` exits successfully in both Workflow and VlppOS.
+
+Confirmed by build and test:
+- `VlppOS` `Debug|Win32` and `Debug|x64` build passed.
+- `VlppOS` `UnitTest` `Debug|Win32` and `Debug|x64` passed: 12 files, 117 cases.
+- `Workflow` `Debug|Win32` and `Debug|x64` build passed after the final ChatBot changes.
+- `Workflow` unit tests passed in the earlier focused Debug sweep for `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection`.
+- `Test/TypeScript/prepare.ps1` and `npm run build` passed.
+- `C:\Code\VczhLibraries\Tools\Tools\Build.ps1 Workflow` passed after the final source changes, including Release Win32/x64 unit tests, TypeScript install/build, Workflow release, and CppMerge.
+- The standard ChatBot procedure passed in `Debug|x64` and again in `Release|x64`: one server plus clients `Tom`, `Jerry`, and `Spike`; clients joined one at a time; join notifications were delivered; three chat rounds from all clients were broadcast; `Jerry` exited and the others saw the leave notification; server exit shut down the remaining clients; all four processes exited with code 0.

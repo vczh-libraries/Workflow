@@ -10,38 +10,30 @@ using namespace vl::glr::json;
 using namespace vl::inter_process;
 using namespace chatbot;
 
-class ChatBotTaskThread : public Thread
-{
-private:
-	Ptr<TaskQueue> taskQueue;
-
-protected:
-	void Run() override
-	{
-		taskQueue->RunTaskQueue();
-	}
-
-public:
-	ChatBotTaskThread(Ptr<TaskQueue> _taskQueue)
-		: taskQueue(_taskQueue)
-	{
-	}
-};
-
-JsonChannel* GetRpcChannel(JsonChannelClient* client)
-{
-	auto&& channels = client->GetChannels();
-	auto index = channels.Keys().IndexOf(WString::Unmanaged(RpcChannel));
-	CHECK_ERROR(index != -1, L"RpcChannel is missing.");
-	auto channel = channels.Values()[index];
-	CHECK_ERROR(channel, L"RpcChannel is null.");
-	return channel;
-}
-
 class ChatBotChannelClient : public JsonNetworkChannelClient
 {
 private:
+	class Dispatcher : public ChatBotJsonDispatcherClient
+	{
+	private:
+		Ptr<TaskQueue> taskQueue;
+
+	protected:
+		void ScheduleTask(Func<void()> task) override
+		{
+			taskQueue->QueueTask(task);
+		}
+
+	public:
+		Dispatcher(Ptr<TaskQueue> _taskQueue)
+			: taskQueue(_taskQueue)
+		{
+			CHECK_ERROR(taskQueue, L"ChatBotChannelClient::Dispatcher needs a task queue.");
+		}
+	};
+
 	JsonChannelClient::ChannelMap channelNames;
+	Ptr<Dispatcher> dispatcher;
 
 public:
 	ChatBotChannelClient(Ptr<INetworkProtocolClient> client, Ptr<Parser> parser)
@@ -55,39 +47,16 @@ public:
 		return channelNames.Keys();
 	}
 
-	void OnConnected(vint) override
+	void Connect(Ptr<TaskQueue> taskQueue, const List<WString>& waitingForServices)
 	{
+		dispatcher = Ptr(new Dispatcher(taskQueue));
+		dispatcher->WaitForServer(this, GetChannels()[WString::Unmanaged(RpcChannel)], waitingForServices);
 	}
 
-	void OnDisconnected() override
+	ChatBotJsonDispatcherClient* GetDispatcher()
 	{
-	}
-
-	void OnReadError(const WString&) override
-	{
-	}
-
-	void OnLocalError(const WString&, bool) override
-	{
-	}
-};
-
-class ChatBotJsonDispatcherClientImpl : public ChatBotJsonDispatcherClient
-{
-private:
-	Ptr<TaskQueue> taskQueue;
-
-protected:
-	void SchedulaTask(Func<void()> task) override
-	{
-		taskQueue->QueueTask(task);
-	}
-
-public:
-	ChatBotJsonDispatcherClientImpl(Ptr<TaskQueue> _taskQueue)
-		: taskQueue(_taskQueue)
-	{
-		CHECK_ERROR(taskQueue, L"ChatBotJsonDispatcherClientImpl needs a task queue.");
+		CHECK_ERROR(dispatcher, L"ChatBotChannelClient has not been connected.");
+		return dispatcher.Obj();
 	}
 };
 
@@ -96,6 +65,7 @@ class ChatBotInputThread : public Thread
 private:
 	Ptr<TaskQueue> taskQueue;
 	Ptr<chatapi::IChatServer> chatServer;
+	ChatBotJsonDispatcherClient* dispatcher = nullptr;
 	WString userName;
 
 protected:
@@ -109,6 +79,10 @@ protected:
 				taskQueue->QueueTask(Func<void()>([server = chatServer, name = userName]()
 				{
 					server->RemoveUser(name);
+				}));
+				taskQueue->QueueTask(Func<void()>([dispatcher = dispatcher]()
+				{
+					dispatcher->NotifyServerClientDisconnected();
 				}));
 				taskQueue->QueueExitTask();
 				break;
@@ -125,44 +99,44 @@ protected:
 	}
 
 public:
-	ChatBotInputThread(Ptr<TaskQueue> _taskQueue, Ptr<chatapi::IChatServer> _chatServer, const WString& _userName)
+	ChatBotInputThread(Ptr<TaskQueue> _taskQueue, Ptr<chatapi::IChatServer> _chatServer, ChatBotJsonDispatcherClient* _dispatcher, const WString& _userName)
 		: taskQueue(_taskQueue)
 		, chatServer(_chatServer)
+		, dispatcher(_dispatcher)
 		, userName(_userName)
 	{
+		CHECK_ERROR(taskQueue, L"ChatBotInputThread needs a task queue.");
+		CHECK_ERROR(chatServer, L"ChatBotInputThread needs a chat server.");
+		CHECK_ERROR(dispatcher, L"ChatBotInputThread needs a dispatcher.");
 	}
 };
 
 int main()
 {
+	mainThreadId = Thread::GetCurrentThreadId();
+
+	// ---- Core Objects ----
 	auto parser = CreateChatBotJsonParser();
+	auto taskQueue = Ptr(new TaskQueue);
 	auto httpClient = Ptr(new HttpClient(WString::Unmanaged(ChatBotHttpBaseUrl), ChatBotHttpPort));
 	auto channelClient = Ptr(new ChatBotChannelClient(httpClient, parser));
 
-	auto taskQueue = Ptr(new TaskQueue);
-	auto dispatcher = Ptr(new ChatBotJsonDispatcherClientImpl(taskQueue));
+	// ---- RPC Connection ----
 	List<WString> waitingForServices;
 	waitingForServices.Add(WString::Unmanaged(L"chatapi::IChatServer"));
-	dispatcher->WaitForServer(channelClient.Obj(), GetRpcChannel(channelClient.Obj()), waitingForServices);
-
+	channelClient->Connect(taskQueue, waitingForServices);
+	auto dispatcher = channelClient->GetDispatcher();
 	auto chatServer = dispatcher->GetChatServer();
-	chatServer->OnUserAdded.Add(Func<void(WString)>([](WString speakerName)
-	{
-		Console::WriteLine(speakerName + WString::Unmanaged(L" joined"));
-	}));
-	chatServer->OnUserRemoved.Add(Func<void(WString)>([](WString speakerName)
-	{
-		Console::WriteLine(speakerName + WString::Unmanaged(L" left"));
-	}));
-	chatServer->OnSpoken.Add(Func<void(WString, WString)>([](WString speakerName, WString message)
-	{
-		Console::WriteLine(speakerName + WString::Unmanaged(L"> ") + message);
-	}));
+	AttachChatServerEventHandlers(chatServer.Obj());
 	chatServer->OnServerShutdown.Add(Func<void()>([taskQueue]()
 	{
+#define ERROR_MESSAGE_PREFIX L"ChatBotClient::main()#"
+		CHECK_ERROR(mainThreadId == Thread::GetCurrentThreadId(), ERROR_MESSAGE_PREFIX L"OnServerShutdown should be invoked on the main thread.");
+#undef ERROR_MESSAGE_PREFIX
 		taskQueue->QueueExitTask();
 	}));
 
+	// ---- Console ----
 	Console::Write(L"Enter your name: ");
 	auto inputUserName = Console::TryRead();
 	if (!inputUserName)
@@ -171,16 +145,15 @@ int main()
 	}
 	auto userName = inputUserName.Value();
 	Console::SetTitle(L"ChatBotClient: " + userName);
-	auto taskThread = Ptr(new ChatBotTaskThread(taskQueue));
-	taskThread->Start();
 	taskQueue->QueueTask(Func<void()>([server = chatServer, name = userName]()
 	{
 		server->AddUser(name);
 	}));
-
-	auto inputThread = Ptr(new ChatBotInputThread(taskQueue, chatServer, userName));
+	auto inputThread = Ptr(new ChatBotInputThread(taskQueue, chatServer, dispatcher, userName));
 	inputThread->Start();
-	taskThread->Wait();
+
+	// ---- Main Task Queue ----
+	taskQueue->RunTaskQueue();
 	dispatcher->FinalizeRpc();
 	httpClient->Stop();
 	return 0;

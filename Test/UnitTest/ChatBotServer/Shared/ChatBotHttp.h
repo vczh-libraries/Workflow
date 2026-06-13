@@ -19,10 +19,10 @@ namespace chatbot
 	constexpr const wchar_t* ChatBotHttpBaseUrl	= L"/WorkflowChatBot";
 	constexpr vl::vint ChatBotHttpPort			= 28763;
 
-	inline vl::Ptr<vl::glr::json::Parser> CreateChatBotJsonParser()
-	{
-		return vl::Ptr(new vl::glr::json::Parser);
-	}
+	extern vl::vint mainThreadId;
+
+	extern vl::Ptr<vl::glr::json::Parser>		CreateChatBotJsonParser();
+	extern void									AttachChatServerEventHandlers(chatapi::IChatServer* chatServer);
 }
 
 #endif

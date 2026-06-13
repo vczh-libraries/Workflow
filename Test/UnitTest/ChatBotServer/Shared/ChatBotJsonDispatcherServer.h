@@ -28,20 +28,16 @@ namespace chatbot
 
 	private:
 		JsonChannel*														rpcChannel = nullptr;
+		JsonChannelClient*													serverClient = nullptr;
 		vl::atomic_vint														nextRequestId = 0;
-		vl::atomic_vint														localClientId = -1;
 
-		// covers pendingLoginClientIds
-		vl::SpinLock														lockClients;
-		vl::collections::List<vl::vint>										pendingLoginClientIds;
-
+		// covers connectedClientIds, pendingBroadcasts, redirectedBroadcasts and cachedServiceDeclarations
 		vl::SpinLock														lockBroadcasts;
 		vl::collections::SortedList<vl::vint>								connectedClientIds;
 		vl::collections::Dictionary<vl::WString, vl::Ptr<PendingBroadcast>>	pendingBroadcasts;
 		vl::collections::Dictionary<vl::vint, vl::WString>					redirectedBroadcasts;
 		vl::collections::List<JsonPackage>									cachedServiceDeclarations;
 
-		JsonChannel*									GetRpcChannel();
 		vl::vint										AllocateRequestId();
 		vl::WString										MakeBroadcastKey(vl::vint clientId, vl::vint requestId);
 		JsonPackage										CreateBroadcastResponse(vl::vint sourceClientId, vl::vint targetClientId, vl::vint requestId, vl::Ptr<PendingBroadcast> pending);
@@ -56,12 +52,12 @@ namespace chatbot
 		void											FlushChannel();
 
 	protected:
-		virtual void									SchedulaTask(vl::Func<void()> task) = 0;
+		virtual void									ScheduleTask(vl::Func<void()> task) = 0;
 
 	public:
-		ChatBotJsonDispatcherServer(JsonChannel* channel);
+		ChatBotJsonDispatcherServer(JsonChannelClient* _serverClient, JsonChannel* channel);
 
-		void											RegisterLocalClient(vl::vint clientId);
+		bool											HasServerClientId();
 		void											RegisterClient(vl::vint clientId);
 		void											DisconnectClient(vl::vint clientId);
 		vl::vint										GetServerClientId();
