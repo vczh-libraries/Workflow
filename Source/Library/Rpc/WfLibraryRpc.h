@@ -194,7 +194,7 @@ namespace vl
 
 		/*
 		* [Configuration]
-		* 
+		*
 		* RunRpcTestCase_JsonRequest configures one RpcJsonDispatcher and one RpcJsonLifecycle for each client.
 		*   messageDispatcher = shared IRpcJsonMessageDispatcher
 		*   dispatcher = RpcJsonDispatcher(clientId, messageDispatcher)
@@ -202,12 +202,12 @@ namespace vl
 		*   serializer = rpcops_IRpcSerializer()
 		*   getTypeId = [rpcwrapper_GetTypeId(BoxValue<IDescriptable*>(obj))]
 		*   lifecycle->Register(serializer, rpcops_IRpcObjectOpsJson(lifecycle), rpcops_IRpcObjectEventOpsJson(lifecycle), getTypeId, eventAttacher)
-		* 
+		*
 		* Triggering RpcLifecycleBase::AttachLocalObjectEvents
 		*   call rpclistener_Attach(ref.typeId, this, ref, obj, (cached)rpcops_IOps_CreateJson(this))
-		* 
+		*
 		* [Call graph for JSON based RPC]
-		* 
+		*
 		* Calling Method of Remote Object:
 		*   -> IMyInterface::Method (generated Workflow code)
 		*   -> rpcops_IOps_<Application>::InvokeMethod_IMyInterface_Method (generated Workflow code)
@@ -224,7 +224,7 @@ namespace vl
 		*     ---- NETWORK PROTOCOL (response) ----
 		*   }
 		*   { optional EndInvokeMethod when @rpc:Byval on return value }
-		* 
+		*
 		* Triggering Event of Remote Object (events are automatically hooked when creating a wrapper for a remote object):
 		*   -> IMyInterface::SomethingHappened
 		*   -> rpcops_IOps_<Application>::InvokeMethod_IMyInterface_SomethingHappened (generated Workflow code)
@@ -240,10 +240,10 @@ namespace vl
 		*     -> IMyInterface::SomethingHappened
 		*     ---- NETWORK PROTOCOL (response) ----
 		*   }
-		* 
+		*
 		* Triggering Event of Local Object (when a local object is tracked, RpcLifecycleBase::AttachLocalObjectEvents will be called)
 		*   The same to remote object.
-		* 
+		*
 		* Registering Service:
 		*   -> IRpcLifecycle->RegisterLocalService
 		*   {
