@@ -1,11 +1,11 @@
-#ifndef VCZH_WORKFLOW_TEST_CHATBOTJSONDISPATCHERSERVER
-#define VCZH_WORKFLOW_TEST_CHATBOTJSONDISPATCHERSERVER
+#ifndef VCZH_WORKFLOW_TEST_RPCJSONDISPATCHERSERVER
+#define VCZH_WORKFLOW_TEST_RPCJSONDISPATCHERSERVER
 
-#include "ChatBotHttp.h"
+#include "RpcJsonDispatcherShared.h"
 
-namespace chatbot
+namespace vl::rpc_controller::channeling
 {
-	class ChatBotJsonDispatcherServer
+	class RpcJsonDispatcherServer
 		: public vl::Object
 		, public virtual vl::inter_process::IChannelReader<JsonPackage>
 	{
@@ -55,13 +55,25 @@ namespace chatbot
 		virtual void									ScheduleTask(vl::Func<void()> task) = 0;
 
 	public:
-		ChatBotJsonDispatcherServer(JsonChannelClient* _serverClient, JsonChannel* channel);
+		RpcJsonDispatcherServer(JsonChannelClient* _serverClient, JsonChannel* channel);
 
 		bool											HasServerClientId();
 		void											RegisterClient(vl::vint clientId);
 		void											DisconnectClient(vl::vint clientId);
 		vl::vint										GetServerClientId();
 		void											OnRead(vl::vint senderClientId, const JsonPackage& package) override;
+	};
+
+	class RpcJsonDispatcherServerForTaskQueue : public RpcJsonDispatcherServer
+	{
+	private:
+		vl::Ptr<TaskQueue>								taskQueue;
+
+	protected:
+		void											ScheduleTask(vl::Func<void()> task) override;
+
+	public:
+		RpcJsonDispatcherServerForTaskQueue(JsonChannelClient* _serverClient, JsonChannel* channel, vl::Ptr<TaskQueue> _taskQueue);
 	};
 }
 

@@ -1,7 +1,7 @@
 #include "ChatBotApp.h"
 #include "Shared/ChatBotHttp.h"
 #include "Shared/ChatBotJsonDispatcherClient.h"
-#include "Shared/ChatBotJsonDispatcherServer.h"
+#include "Shared/RpcJsonDispatcherServer.h"
 #include <VlppOS.Windows.h>
 
 using namespace vl;
@@ -9,6 +9,8 @@ using namespace vl::collections;
 using namespace vl::console;
 using namespace vl::glr::json;
 using namespace vl::inter_process;
+using namespace vl::rpc_controller;
+using namespace vl::rpc_controller::channeling;
 using namespace chatbot;
 
 class ChatServerService : public Object, public virtual chatapi::IChatServer
@@ -65,7 +67,7 @@ public:
 class ChatBotChannelServer : public JsonNetworkChannelServer
 {
 private:
-	ChatBotJsonDispatcherServer* dispatcher = nullptr;
+	RpcJsonDispatcherServer* dispatcher = nullptr;
 
 public:
 	ChatBotChannelServer(Ptr<Parser> parser)
@@ -96,7 +98,7 @@ public:
 		}
 	}
 
-	void SetDispatcher(ChatBotJsonDispatcherServer* value)
+	void SetDispatcher(RpcJsonDispatcherServer* value)
 	{
 		dispatcher = value;
 	}
@@ -124,29 +126,9 @@ public:
 class ChatBotServerChannelClient : public JsonLocalChannelClient
 {
 private:
-	class Dispatcher : public ChatBotJsonDispatcherServer
-	{
-	private:
-		Ptr<TaskQueue> taskQueue;
-
-	protected:
-		void ScheduleTask(Func<void()> task) override
-		{
-			taskQueue->QueueTask(task);
-		}
-
-	public:
-		Dispatcher(JsonChannelClient* serverClient, JsonChannel* channel, Ptr<TaskQueue> _taskQueue)
-			: ChatBotJsonDispatcherServer(serverClient, channel)
-			, taskQueue(_taskQueue)
-		{
-			CHECK_ERROR(taskQueue, L"ChatBotServerChannelClient::Dispatcher needs a task queue.");
-		}
-	};
-
 	JsonChannelClient::ChannelMap channelNames;
 	Ptr<TaskQueue> taskQueue;
-	Ptr<Dispatcher> dispatcher;
+	Ptr<RpcJsonDispatcherServerForTaskQueue> dispatcher;
 
 public:
 	ChatBotServerChannelClient(Ptr<Parser> parser)
@@ -168,10 +150,10 @@ public:
 
 		auto clientId = channelServer->ConnectLocalClient(self);
 		CHECK_ERROR(clientId != -1, L"ChatBotServerChannelClient failed to connect.");
-		dispatcher = Ptr(new Dispatcher(this, GetChannels()[WString::Unmanaged(RpcChannel)], taskQueue));
+		dispatcher = Ptr(new RpcJsonDispatcherServerForTaskQueue(this, GetChannels()[WString::Unmanaged(RpcChannel)], taskQueue));
 	}
 
-	ChatBotJsonDispatcherServer* GetDispatcher()
+	RpcJsonDispatcherServer* GetDispatcher()
 	{
 		CHECK_ERROR(dispatcher, L"ChatBotServerChannelClient has not been connected.");
 		return dispatcher.Obj();
@@ -181,28 +163,9 @@ public:
 class ChatBotServiceChannelClient : public JsonLocalChannelClient
 {
 private:
-	class Dispatcher : public ChatBotJsonDispatcherClient
-	{
-	private:
-		Ptr<TaskQueue> taskQueue;
-
-	protected:
-		void ScheduleTask(Func<void()> task) override
-		{
-			taskQueue->QueueTask(task);
-		}
-
-	public:
-		Dispatcher(Ptr<TaskQueue> _taskQueue)
-			: taskQueue(_taskQueue)
-		{
-			CHECK_ERROR(taskQueue, L"ChatBotServiceChannelClient::Dispatcher needs a task queue.");
-		}
-	};
-
 	JsonChannelClient::ChannelMap channelNames;
 	Ptr<TaskQueue> taskQueue;
-	Ptr<Dispatcher> dispatcher;
+	Ptr<ChatBotJsonDispatcherClient> dispatcher;
 
 public:
 	ChatBotServiceChannelClient(Ptr<Parser> parser)
@@ -216,12 +179,18 @@ public:
 		return channelNames.Keys();
 	}
 
+	void OnConnected(vint clientId) override
+	{
+		CHECK_ERROR(dispatcher, L"ChatBotServiceChannelClient needs a dispatcher.");
+		dispatcher->InitializeRpc(clientId);
+	}
+
 	vint Connect(JsonChannelServer* channelServer, Ptr<JsonChannelClient> self, Ptr<TaskQueue> _taskQueue, vint serverClientId, const List<WString>& waitingForServices)
 	{
 		CHECK_ERROR(channelServer, L"ChatBotServiceChannelClient needs a channel server.");
 		CHECK_ERROR(self, L"ChatBotServiceChannelClient needs itself as a shared pointer.");
 		taskQueue = _taskQueue;
-		dispatcher = Ptr(new Dispatcher(taskQueue));
+		dispatcher = Ptr(new ChatBotJsonDispatcherClient(taskQueue));
 		auto clientId = dispatcher->ConnectLocalClient(channelServer, self, GetChannels()[WString::Unmanaged(RpcChannel)], waitingForServices);
 		dispatcher->SetServerLocalClientId(serverClientId);
 		return clientId;
@@ -259,7 +228,7 @@ int main()
 	mainThreadId = Thread::GetCurrentThreadId();
 
 	// ---- Core Objects ----
-	auto parser = CreateChatBotJsonParser();
+	auto parser = Ptr(new Parser);
 	auto taskQueue = Ptr(new TaskQueue);
 	auto channelServer = Ptr(new ChatBotChannelServer(parser));
 	auto httpServer = Ptr(new ChatBotHttpServer(channelServer.Obj()));
@@ -276,7 +245,10 @@ int main()
 	List<WString> waitingForServices;
 	serviceLocalClient->Connect(channelServer.Obj(), serviceLocalClient, taskQueue, serverLocalClient->GetDispatcher()->GetServerClientId(), waitingForServices);
 	auto serviceDispatcher = serviceLocalClient->GetDispatcher();
-	serviceDispatcher->RegisterLocalService(service);
+	auto serviceLifecycle = serviceDispatcher->GetRpcLifecycle();
+	auto typeId = serviceLifecycle->GetTypeIdFromName(WString::Unmanaged(L"chatapi::IChatServer"));
+	CHECK_ERROR(typeId != RpcTypeId_NotFound, L"ChatBotServer failed to find IChatServer type id.");
+	serviceLifecycle->RegisterLocalService(typeId, service);
 	serviceDispatcher->Initialize();
 
 	// ---- HTTP Transport ----

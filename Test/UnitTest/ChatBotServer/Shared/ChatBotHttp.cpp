@@ -1,5 +1,7 @@
 #include "ChatBotHttp.h"
 
+#include <VlppOS.h>
+
 namespace chatbot
 {
 	using namespace vl;
@@ -7,11 +9,6 @@ namespace chatbot
 	using namespace vl::glr::json;
 
 	vint mainThreadId = -1;
-
-	Ptr<Parser> CreateChatBotJsonParser()
-	{
-		return Ptr(new Parser);
-	}
 
 	void AttachChatServerEventHandlers(chatapi::IChatServer* chatServer)
 	{

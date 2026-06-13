@@ -8,32 +8,14 @@ using namespace vl::collections;
 using namespace vl::console;
 using namespace vl::glr::json;
 using namespace vl::inter_process;
+using namespace vl::rpc_controller::channeling;
 using namespace chatbot;
 
 class ChatBotChannelClient : public JsonNetworkChannelClient
 {
 private:
-	class Dispatcher : public ChatBotJsonDispatcherClient
-	{
-	private:
-		Ptr<TaskQueue> taskQueue;
-
-	protected:
-		void ScheduleTask(Func<void()> task) override
-		{
-			taskQueue->QueueTask(task);
-		}
-
-	public:
-		Dispatcher(Ptr<TaskQueue> _taskQueue)
-			: taskQueue(_taskQueue)
-		{
-			CHECK_ERROR(taskQueue, L"ChatBotChannelClient::Dispatcher needs a task queue.");
-		}
-	};
-
 	JsonChannelClient::ChannelMap channelNames;
-	Ptr<Dispatcher> dispatcher;
+	Ptr<ChatBotJsonDispatcherClient> dispatcher;
 
 public:
 	ChatBotChannelClient(Ptr<INetworkProtocolClient> client, Ptr<Parser> parser)
@@ -47,10 +29,17 @@ public:
 		return channelNames.Keys();
 	}
 
+	void OnConnected(vint clientId) override
+	{
+		CHECK_ERROR(dispatcher, L"ChatBotChannelClient needs a dispatcher.");
+		dispatcher->InitializeRpc(clientId);
+	}
+
 	void Connect(Ptr<TaskQueue> taskQueue, const List<WString>& waitingForServices)
 	{
-		dispatcher = Ptr(new Dispatcher(taskQueue));
+		dispatcher = Ptr(new ChatBotJsonDispatcherClient(taskQueue));
 		dispatcher->WaitForServer(this, GetChannels()[WString::Unmanaged(RpcChannel)], waitingForServices);
+		dispatcher->Initialize();
 	}
 
 	ChatBotJsonDispatcherClient* GetDispatcher()
@@ -116,7 +105,7 @@ int main()
 	mainThreadId = Thread::GetCurrentThreadId();
 
 	// ---- Core Objects ----
-	auto parser = CreateChatBotJsonParser();
+	auto parser = Ptr(new Parser);
 	auto taskQueue = Ptr(new TaskQueue);
 	auto httpClient = Ptr(new HttpClient(WString::Unmanaged(ChatBotHttpBaseUrl), ChatBotHttpPort));
 	auto channelClient = Ptr(new ChatBotChannelClient(httpClient, parser));
@@ -126,7 +115,8 @@ int main()
 	waitingForServices.Add(WString::Unmanaged(L"chatapi::IChatServer"));
 	channelClient->Connect(taskQueue, waitingForServices);
 	auto dispatcher = channelClient->GetDispatcher();
-	auto chatServer = dispatcher->GetChatServer();
+	auto chatServer = dispatcher->GetRpcLifecycle()->RequestService(WString::Unmanaged(L"chatapi::IChatServer")).Cast<chatapi::IChatServer>();
+	CHECK_ERROR(chatServer, L"ChatBotClient failed to request IChatServer.");
 	AttachChatServerEventHandlers(chatServer.Obj());
 	chatServer->OnServerShutdown.Add(Func<void()>([taskQueue]()
 	{
