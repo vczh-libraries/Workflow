@@ -15,8 +15,6 @@
 ## ToDo
 
 - `ChatBotServer` and `ChatBotClient` project.
-  - Review `VlppOS`.
-  - Review `GacUI`.
   - Review `Test/UnitTest/ChatBotServer/Shared`.
   - Extract from the `ChatBotJsonDispatcher*` as many as possible into the library.
 
