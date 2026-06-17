@@ -75,7 +75,7 @@ namespace vl::rpc_controller::channeling
 		RpcJsonDispatcherClient();
 
 		void											WaitForServer(JsonChannelClient* channelClient, JsonChannel* channel, const vl::collections::List<vl::WString>& _waitingForServices);
-		vl::vint										ConnectLocalClient(JsonChannelServer* channelServer, vl::Ptr<JsonChannelClient> localClient, JsonChannel* channel, const vl::collections::List<vl::WString>& _waitingForServices);
+		vl::vint										ConnectLocalServer(JsonChannelServer* channelServer, vl::Ptr<JsonChannelClient> localClient, JsonChannel* channel, const vl::collections::List<vl::WString>& _waitingForServices);
 		void											Initialize();
 		vl::rpc_controller::IRpcLifecycle*				GetRpcLifecycle();
 		vl::rpc_controller::IRpcDispatcher*				GetRpcDispatcher();

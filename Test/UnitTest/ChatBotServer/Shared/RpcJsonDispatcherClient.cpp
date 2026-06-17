@@ -433,7 +433,7 @@ RpcJsonDispatcherClient
 		CHECK_ERROR(channelClient->GetStatus() == ClientStatus::Connected, L"RpcJsonDispatcherClient failed to connect to the server.");
 	}
 
-	vint RpcJsonDispatcherClient::ConnectLocalClient(JsonChannelServer* channelServer, Ptr<JsonChannelClient> localClient, JsonChannel* channel, const List<WString>& _waitingForServices)
+	vint RpcJsonDispatcherClient::ConnectLocalServer(JsonChannelServer* channelServer, Ptr<JsonChannelClient> localClient, JsonChannel* channel, const List<WString>& _waitingForServices)
 	{
 		CHECK_ERROR(channelServer, L"RpcJsonDispatcherClient needs a channel server.");
 		CHECK_ERROR(localClient, L"RpcJsonDispatcherClient needs a local client.");

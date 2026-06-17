@@ -148,7 +148,7 @@ public:
 		CHECK_ERROR(self, L"ChatBotRpcHostingLocalClient needs itself as a shared pointer.");
 		taskQueue = _taskQueue;
 		dispatcher = Ptr(new ChatBotJsonDispatcherClient(taskQueue));
-		auto clientId = dispatcher->ConnectLocalClient(channelServer, self, GetChannels()[WString::Unmanaged(RpcChannel)], waitingForServices);
+		auto clientId = dispatcher->ConnectLocalServer(channelServer, self, GetChannels()[WString::Unmanaged(RpcChannel)], waitingForServices);
 		dispatcher->SetServerLocalClientId(serverClientId);
 		return clientId;
 	}
