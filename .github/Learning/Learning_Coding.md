@@ -2,14 +2,15 @@
 
 # Orders
 
-- Remove pure RPC redirection layers once dispatcher/ops can own the call [6]
+- Remove pure RPC redirection layers once dispatcher/ops can own the call [7]
 - Avoid explicit Workflow types/casts when implicit typing works [5]
 - Keep TypeScript RPC dispatcher envelopes separate from value schemas [4]
+- Keep RPC service state in `RpcLifecycleBase`, not dispatchers [4]
+- Move reusable RPC controller/lifecycle code into `Source/Library/Rpc` with strict dependencies [4]
+- Use request-envelope adapters for RPC JSON dispatcher paths [4]
 - Keep RPC-specific fixes out of generic C++ / Workflow codegen surfaces [3]
 - Read and aggregate RPC event exception maps through `IRpcLifecycle::ReadEventException` [3]
-- Keep RPC service state in `RpcLifecycleBase`, not dispatchers [3]
-- Move reusable RPC controller/lifecycle code into `Source/Library/Rpc` with strict dependencies [3]
-- Use request-envelope adapters for RPC JSON dispatcher paths [3]
+- Run channel-backed RPC dispatchers through one task queue [3]
 - Generated RPC test id maps must come from `rpc_GetIds()` / `SetIdMap` [2]
 - Interpret `IRpcWrapperBase` as remote-wrapper identity [2]
 - Use internal properties defensively in `RpcDualLifecycleMock` [2]
@@ -26,9 +27,10 @@
 - RPC event workarounds should match the actual `Event<T>` behavior [2]
 - Apply `RunRpcTestCase` changes to every harness variant [2]
 - Order generated RPC type checks with derived interfaces before bases [2]
-- Run channel-backed RPC dispatchers through one task queue [2]
+- Keep reusable RPC JSON dispatch free of synchronization [2]
+- Mirror ChatBot service event output on server and clients [2]
+- Keep reusable RPC JSON dispatchers free of generated ChatBot dependencies [1]
 - Keep RPC JSON test harness setup under `VCZH_DEBUG_NO_REFLECTION` [1]
-- Keep reusable RPC JSON dispatch free of synchronization [1]
 - Use generated strong typed RPC ops for event listeners [1]
 - Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for registering free functions as reflection static methods [1]
 - Workflow interface event declarations use type-only payloads [1]
@@ -62,7 +64,6 @@
 - Prefer generic `BoxValue`/`UnboxValue` over specialized RPC box/unbox helpers [1]
 - Keep shared Workflow test output path helpers in `Helper.h` / `Helper.cpp` [1]
 - Keep RPC array resizing separate from list-only mutations [1]
-- Mirror ChatBot service event output on server and clients [1]
 
 # Refinements
 
@@ -104,6 +105,8 @@ For the dual-lifecycle RPC test dispatcher, the flat path has exactly two lifecy
 
 For JSON request dispatch, once `RpcJsonDispatcher` and `RpcJsonLifecycle` own the reusable behavior, remove test-only dual JSON lifecycle/dispatcher mocks that only route calls. If lifecycle-owned remote-service state is enough to build a `RpcObjectReference`, delete dispatcher-side `RequestService` contracts instead of preserving a compatibility call.
 
+In ChatBot samples, also remove app-local helpers and threads that no longer own behavior: direct RPC channel lookup can replace `GetRpcChannel`, and `main` can run `TaskQueue::RunTaskQueue()` directly once setup is complete instead of wrapping it in a dedicated `ChatBotTaskThread`.
+
 ## Keep RPC service state in `RpcLifecycleBase`, not dispatchers
 
 RPC dispatchers should be pure transmission/relay layers and should not maintain service-registration state. Store local service objects and remote service declarations in `RpcLifecycleBase`; let dispatcher mocks relay local declarations to the other lifecycle instead of keeping their own service dictionaries.
@@ -111,6 +114,8 @@ RPC dispatchers should be pure transmission/relay layers and should not maintain
 The reflected lifecycle surface should distinguish local registration from remote declaration: `RegisterLocalService(typeId, service)` rejects duplicate local type ids and rejects calls after `Initialize()`, while `DeclareRemoteService(ref)` may overwrite an earlier remote declaration by storing the full `RpcObjectReference` by `ref.typeId`. `IRpcLifecycle::RequestService` should take a type-name string, resolve it through `GetTypeIdFromName`, return a matching local service first, and only then call `RefToPtr(ref)` on a stored remote service reference.
 
 For JSON request transport, declaring a local service can be a broadcast request that causes the receiving lifecycle to call `DeclareRemoteService`; the dispatcher still only carries the message while lifecycle state remains authoritative.
+
+Service declaration transport should carry the full `RpcObjectReference`, including `objectId`, not just the service type id. `IRpcDispatcher::DeclareLocalService` and `IRpcLifecycle::DeclareRemoteService` should use that reference directly so `RequestService` can call `RefToPtr` on lifecycle-owned state.
 
 ## Keep RPC byref boxing/unboxing interface-only
 
@@ -125,6 +130,12 @@ Keep RPC JSON responsibilities separated from ordinary RPC wrapper generation. J
 Reusable RPC controller, lifecycle, and wrapper implementations belong under `Source/Library/Rpc` and library vcxitems, not copied through test projects. The base lifecycle layer must not depend on the dual-lifecycle test layer; the thin `RpcDualLifecycleMock` may depend on the base, but not the other way around.
 
 Reusable JSON RPC behavior also belongs in production classes such as `RpcJsonDispatcher` and `RpcJsonLifecycle`, with small callback hooks for generated behavior like event attachment or `DecideTypeId`. Prefer passing generated callbacks into the reusable lifecycle over creating test-only lifecycle subclasses.
+
+Channel-backed JSON RPC dispatchers should stay under reusable RPC namespaces such as `vl::rpc_controller::channeling`, with ChatBot-generated setup isolated in a thin `ChatBotJsonDispatcherClient` wrapper.
+
+## Keep reusable RPC JSON dispatchers free of generated ChatBot dependencies
+
+Reusable `RpcJsonDispatcher(Client|Server)` files should not include or reference generated `ChatBotApp` types. Put shared aliases in `RpcJsonDispatcherShared.h`, keep task-queue scheduling in reusable `*ForTaskQueue` classes, and let the ChatBot wrapper own generated service initialization such as `InitializeRpc`.
 
 ## Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for registering free functions as reflection static methods
 
@@ -332,15 +343,21 @@ Path helpers used by Workflow test components should live beside the other share
 
 For channel-backed app dispatchers, keep the dispatcher independent of the concrete HTTP transport. Let clients send broadcast-intent requests directly to the server's local channel client, then let the server fan them out with blocked receivers and consolidate `Broadcast_Response` payloads by original client id plus request id before replying to the sender.
 
+Model JSON request intent explicitly. Use a request type such as `Direct`, `Broadcast`, or `BroadcastAndDrop` so service-declaration broadcasts can fan out without waiting for per-client responses, while event broadcasts still consolidate responses by original client id and request id.
+
 ## Run channel-backed RPC dispatchers through one task queue
 
 When `IRpcJsonMessageDispatcher::OnJsonRequest` is synchronous but the underlying `IChannel` read/write path is asynchronous, route request processing through one dispatcher task queue. Incoming channel messages can wake a semaphore-backed queue; `OnJsonRequest` should process nested requests while waiting for its matching response and requeue unrelated responses. Keeping request processing and channel callback work on the same queue avoids cross-thread RPC reentrancy bugs.
 
 Prefer explicit async scheduling over polling or `Thread::Sleep` in ChatBot-style dispatchers. Keep the default queue as an application-level option (for example created from `Main.cpp`) and let dispatcher bases call a scheduling hook instead of owning the queue, so users can provide their own scheduling mechanism.
 
+For ChatBot CLI apps, setup RPC clients, services, and console workers first, then let `main` run the shared task queue. This keeps service methods and event handlers on the main thread and makes thread-affinity checks meaningful.
+
 ## Keep reusable RPC JSON dispatch free of synchronization
 
 Reusable JSON dispatch helpers such as `IRpcJsonMessageDispatcher::DefaultTranslate` should own only request parsing, translation to object/list ops, and response construction. Keep waits, locks, task queues, channel reads/writes, and response matching in the caller that owns the transport state. Prefer raw pointer arguments for dispatcher/channel collaborators unless the helper needs shared ownership.
+
+For broadcast-and-drop requests such as remote service declarations, make the translation layer return no response after parsing the request instead of making every transport caller special-case that request shape.
 
 ## Keep RPC array resizing separate from list-only mutations
 
@@ -349,3 +366,5 @@ Reusable JSON dispatch helpers such as `IRpcJsonMessageDispatcher::DefaultTransl
 ## Mirror ChatBot service event output on server and clients
 
 For the ChatBot CLI apps, attach server-side handlers to the same service events that client wrappers observe, and print the same formats: `speakerName joined`, `speakerName left`, and `speakerName> message`. This keeps local server output aligned with client-visible behavior without changing generated RPC routing.
+
+Keep the event-handler wiring in a shared out-of-line ChatBot helper so the server and clients print the same event text without duplicating handler bodies in each `Main.cpp`.

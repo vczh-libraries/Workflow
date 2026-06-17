@@ -2,7 +2,7 @@
 
 # Orders
 
-- Run TypeScript RPC schema verification after JSON or dispatcher-schema changes [10]
+- Run TypeScript RPC schema verification after JSON or dispatcher-schema changes [11]
 - Wire generated RPC C++ files into shared vcxitems after `CompilerTest_LoadAndCompile` [7]
 - Run `CompilerTest_LoadAndCompile` at least once before downstream RPC generated-C++ tests [7]
 - Compare `RuntimeTest` and `CppTest*` failures before choosing an RPC root cause [6]
@@ -10,16 +10,16 @@
 - Commit direct edits and large generated outputs separately when requested [5]
 - Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder [5]
 - RPC byref/byval container samples must verify wrapper/copy semantics at every level [5]
+- Validate ChatBot RPC apps with a real multi-process scenario [5]
 - Pure refactors should not touch generated RPC outputs [4]
 - Split RPC sample definitions and tests consistently [4]
-- Validate ChatBot RPC apps with a real multi-process scenario [2]
+- Type-check shared `Rpc.d.ts` standalone [2]
 - Workflow analyzer error tests may change values when preserving the error code [1]
 - Workflow samples use `raise`, not `throw` [1]
 - Workflow range syntax for inclusive generated loops is `range [1, xs.Count]` [1]
 - RPC destructor samples should track non-service objects when services never unregister [1]
 - Enumerate generated app vcxitems explicitly [1]
 - Use generated `Parsing.*.txt` logs for `CompilerTest_LoadAndCompile` Workflow compile errors [1]
-- Type-check shared `Rpc.d.ts` standalone [1]
 - Add analyzer-error samples for reserved RPC transport types [1]
 - Split broad RPC samples by focused behavior [1]
 - Use static scans for Workflow library declaration and inline-refactor checks [1]
@@ -114,6 +114,8 @@ When adding or updating Workflow samples, indent the sample body with 2 spaces e
 
 When `Test/TypeScript/Rpc.d.ts` changes, type-check it directly with strict TypeScript settings before relying on the full package build. This catches envelope-schema mistakes even when no generated `Serialization_*.d.ts` file happens to instantiate the affected shape.
 
+This is especially important when dispatcher request shapes are renamed or removed, such as replacing a local-service declaration request with a remote-service declaration request.
+
 ## Add analyzer-error samples for reserved RPC transport types
 
 When RPC validation rejects internal transport types such as `system::RpcObjectReference` or `system::RpcException`, add AnalyzerError samples for each forbidden signature position: return/property value, method argument, and event argument. Verify the expected H-series error prefixes rather than only relying on runtime samples.
@@ -143,3 +145,5 @@ Generated TypeScript RPC fixture files under `Test/TypeScript` should be checked
 For ChatBot RPC app changes, run one `ChatBotServer` and three `ChatBotClient` processes against the real transport. Join clients one at a time, verify prior clients see join messages, send multiple chat rounds from every client, verify client exit notifications, then exit the server and confirm remaining clients shut down cleanly. Include server stdout expectations when the server mirrors client-visible service events.
 
 For ChatBot dispatcher refactors, also use static scans under `Test/UnitTest/ChatBot*` to confirm no `Thread::Sleep`, dispatcher-owned task queue methods, or unnecessary explicit `Ptr<T>` conversion constructors remain in the touched source.
+
+Also scan for stale class and file names after dispatcher splits or renames, including old dispatcher subclasses, old channel server adapters, and temporary registration guards that should have disappeared.

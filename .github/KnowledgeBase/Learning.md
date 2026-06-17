@@ -3,11 +3,11 @@
 # Orders
 
 - Process staged tasks one by one with verification [15]
+- Verify generated artifacts with downstream consumer checks [8]
 - Port fixes from imports to source repositories [7]
-- Verify generated artifacts with downstream consumer checks [7]
 - Crash early instead of adding error-tolerance fallbacks [6]
+- Proactively remove code made redundant by refactoring [6]
 - Make `Stop()` drain asynchronous work before returning [5]
-- Proactively remove code made redundant by refactoring [5]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
@@ -201,6 +201,8 @@ When generated RPC JSON values or request/response transcripts are part of the c
 
 When a generator produces runnable sample applications, verify the generated output through the actual app workflow too. For example, generated ChatBot RPC code should be checked by running the server and multiple clients through joins, chat messages, client exit, and server shutdown, not only by confirming generation succeeds.
 
+When a shared dispatcher schema such as `Rpc.d.ts` changes, type-check the shared schema itself as well as generated fixtures so envelope changes are caught even before concrete generated values instantiate every request shape.
+
 ## `vl::regex` separator regex: `L"[\\/\\\\]+"`
 
 In `vl::regex::Regex`, both `/` and `\\` are escaping characters, and incorrect escaping inside `[]` can throw errors like `Illegal character set definition.`
@@ -236,6 +238,8 @@ Preserve helper layers that still own observable behavior. For example, flat RPC
 When a destructor only resets `Ptr`, shared-pointer, or similar owning members to null, remove that destructor/reset code and let member destruction release resources naturally.
 
 When splitting a monolithic implementation into focused files, delete empty source stubs and duplicate state fields in the same cleanup. Update project metadata and includes immediately so the old file names do not remain as stale references.
+
+For application refactors, remove helper wrappers that only duplicate an already-clear direct call. For example, direct `GetChannels()[WString::Unmanaged(RpcChannel)]` access is preferable to a `GetRpcChannel` helper when the intended behavior is still to fail if the channel is missing.
 
 ## Keep design documentation aligned with code after refactoring
 
