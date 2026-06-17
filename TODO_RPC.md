@@ -12,11 +12,6 @@
 - Can `WfInterfaceInstance` not inherit from `IDescriptable`?
 - Check error handling. Ensure crashing instead of covering.
 
-## ToDo
-
-- `ChatBotServer` and `ChatBotClient` project.
-  - Extract from the `ChatBotJsonDispatcher*` as many as possible into the library.
-
 ## Knowledge Base
 
 - A dedicated guidelines for VlppOS oriented synchronization best practice.
