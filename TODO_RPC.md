@@ -15,7 +15,6 @@
 ## ToDo
 
 - `ChatBotServer` and `ChatBotClient` project.
-  - Review `Test/UnitTest/ChatBotServer/Shared`.
   - Extract from the `ChatBotJsonDispatcher*` as many as possible into the library.
 
 ## Knowledge Base
