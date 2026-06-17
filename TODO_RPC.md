@@ -20,6 +20,7 @@
   - use `TODO_RPC_(Definition|GeneratedWrappers|Json|JsonRequest).md`
   - how to start up
   - Update `document-and-commit.md` to maintain those KB files instead.
+  - `BuildRelease.ps1` copy `Workflow/Release/Rpc.d.ts`.
 - Compiler processing and passes.
 - AST building helper functions.
   - Refactor is needed to scan if some functions in RPC code generation is duplicating those in `WfAnalyzer.h`.
