@@ -1,4 +1,4 @@
-﻿# Console Operations
+# Console Operations
 
 ## Overview
 

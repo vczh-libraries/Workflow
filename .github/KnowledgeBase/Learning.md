@@ -4,10 +4,10 @@
 
 - Process staged tasks one by one with verification [15]
 - Verify generated artifacts with downstream consumer checks [8]
-- Port fixes from imports to source repositories [7]
+- Port fixes from imports to source repositories [8]
 - Crash early instead of adding error-tolerance fallbacks [6]
 - Proactively remove code made redundant by refactoring [6]
-- Make `Stop()` drain asynchronous work before returning [5]
+- Make `Stop()` drain asynchronous work before returning [6]
 - Use `WString::IndexOf` with `wchar_t` (not `const wchar_t*`) [4]
 - Use `collections::BinarySearchLambda` on contiguous buffers (guard empty) [4]
 - Use `vl::Exception` for expected semantic failures and `CHECK_ERROR` for invariants [3]
@@ -95,6 +95,8 @@ Use the platform's final callback boundary when available. For WinHTTP async req
 
 Renderer clients should explicitly stop their network transport before stack-owned channel wrappers are destroyed, so callback shutdown completes before local wrapper storage goes out of scope.
 
+Named-pipe shutdown should cancel pending overlapped pipe I/O before waiting for read callbacks to drain, especially when the remote side closes the pipe first. Channel-client destruction should also avoid stopping an already-disconnected transport connection.
+
 ## Port fixes from imports to source repositories
 
 Do not treat files copied into `Import` or generated release files as the source of truth. When a fix affects imported `Vlpp` files, make the upstream change in `Vlpp`, regenerate its release output, and then copy the generated files downstream. When a `.github` instruction or script fix is needed, port it through `Tools/Copilot`.
@@ -104,6 +106,8 @@ When a downstream repo such as `GacUI` exposes a bug in imported `VlppOS` inter-
 When validating GacUI remoting reveals a transport issue, keep the same source-of-truth rule: fix `VlppOS`, regenerate its release, copy the generated output into `GacUI\Import`, then validate the downstream scenario again.
 
 For dependency release syncs, copy generated files from the upstream `Release` folder into the downstream `Import` folder and exclude `IncludeOnly` unless the task explicitly requires it. Do not hand-edit the downstream import copy.
+
+When importing multiple dependency releases into GacUI, keep the chain explicit: regenerate and import `VlppOS` and `Workflow` release artifacts, then validate the GacUI remoting scenarios that consume both imported APIs.
 
 If a Workflow task exposes a `VlppReflection` collection-wrapper issue, fix the wrapper behavior in `VlppReflection`, regenerate and verify its release output, then update the Workflow import from that release instead of patching Workflow's imported copy.
 
