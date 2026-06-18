@@ -1,4 +1,4 @@
-#include "WfAnalyzer.h"
+#include "../WfAnalyzer.h"
 
 namespace vl
 {

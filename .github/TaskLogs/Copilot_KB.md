@@ -68,31 +68,26 @@ Proof of intended sharing: `CreateDefaultValue` is used by bind cache reset in `
 
 `Source/Analyzer/WfAnalyzer.h` declares AST-producing RPC APIs:
 
-- `CopyAndClearRpcMetadata` clones a module with `CopyModule(module, false)` and removes declarations that already exist as reflected types. It is implemented in `Source/Analyzer/WfAnalyzer_ValidateRPC.cpp` by `ClearExistingTypesVisitor`.
-- `GenerateModuleRpc` creates a `WfModule` named `RpcMetadata` containing RPC ids, helper functions, generated ops interfaces, object ops, listeners, wrapper interfaces, wrapper factories, and type-id dispatch helpers. It is implemented in `Source/Analyzer/WfAnalyzer_GenerateRpc.cpp`.
-- `GenerateModuleRpcJson` creates the JSON-enabled RPC wrapper/serializer module. It is implemented in `Source/Analyzer/WfAnalyzer_GenerateRpc_JsonSerialization.cpp`.
+- `CopyAndClearRpcMetadata` clones a module with `CopyModule(module, false)` and removes declarations that already exist as reflected types. It is implemented in `Source/Analyzer/Rpc/WfAnalyzer_ValidateRPC.cpp` by `ClearExistingTypesVisitor`.
+- `GenerateModuleRpc` creates a `WfModule` named `RpcMetadata` containing RPC ids, helper functions, generated ops interfaces, object ops, listeners, wrapper interfaces, wrapper factories, and type-id dispatch helpers. It is implemented in `Source/Analyzer/Rpc/WfAnalyzer_GenerateRpc.cpp`.
+- `GenerateModuleRpcJson` creates the JSON-enabled RPC wrapper/serializer module. It is implemented in `Source/Analyzer/Rpc/WfAnalyzer_GenerateRpc_JsonSerialization.cpp`.
 
 These are high-level module generators, not general AST factory helpers. Callers should use them after RPC validation has populated `WfLexicalScopeManager::rpcMetadata`.
 
-### Public RPC AST Helper Header
+The RPC implementation files are grouped under `Source/Analyzer/Rpc`. `Source/Analyzer/Rpc/WfAnalyzer_RpcAstHelpers.h` and `Source/Analyzer/Rpc/WfAnalyzer_GenerateRpc.h` are private implementation headers shared by RPC generator `.cpp` files. They are not user-facing AST-building header APIs. In particular, `WfAnalyzer_RpcAstHelpers.h` should not be counted in this section's list of header-level AST-producing APIs; it exists only to de-duplicate RPC implementation helpers.
 
-`Source/Analyzer/WfAnalyzer_GenerateRpc.h` exposes only three lower-level helpers in `vl::workflow::analyzer::rpc_generating`:
+## Implementation-Only AST-Producing Helpers
 
-- `CreateIf` creates a `WfIfStatement` with condition, true branch, and optional false branch.
-- `CreateFunctionDeclaration` creates a `WfFunctionDeclaration`, fills name, return type, kind, anonymity, and initializes the body with `CreateBlock`.
-- `CreateCall` is a variadic template that creates `WfCallExpression`, sets the function expression, and appends all arguments.
+The following lists focus on functions that return `Ptr<Wf...>` and create or assemble AST nodes, excluding helpers that merely query metadata or return non-AST values. Private RPC helper declarations may live in headers under `Source/Analyzer/Rpc`, but they remain implementation helpers rather than public generator APIs.
 
-The implementation of `CreateIf` and `CreateFunctionDeclaration` is in `Source/Analyzer/WfAnalyzer_GenerateRpc.cpp`. `CreateCall` must stay in the header because it is a template. This header is currently inconsistent with the much larger internal helper set in the matching `.cpp` files.
+### `Source/Analyzer/Rpc/WfAnalyzer_RpcAstHelpers.(h|cpp)`
 
-## Implementation-Only AST-Producing Helpers Not Externed In Headers
-
-The following lists focus on functions that return `Ptr<Wf...>` and create or assemble AST nodes, excluding helpers that merely query metadata or return non-AST values.
-
-### `Source/Analyzer/WfAnalyzer_GenerateRpc.cpp`
+This private helper layer contains the shared AST factories used by flat RPC generation, JSON RPC generation, and RPC metadata validation. Non-template functions are declared with explicit `extern`; `CreateTypeFromCpp<T>` and `CreateCall` stay in the header because their template bodies must be visible.
 
 Basic type factories:
 
-- `CopyType(WfType*)`: local copy helper using generated `copy_visitor::AstVisitor`.
+- `SplitTypeFullName`: splits `A::B` names for type and expression factory helpers.
+- `CopyType(WfType*)`: RPC-local wrapper around the public `vl::workflow::analyzer::CopyType(type)` helper.
 - `CreatePredefinedType`: creates `WfPredefinedType`.
 - `CreateQualifiedType`: splits `A::B` and creates `WfReferenceType` plus `WfChildType`.
 - `CreateTopQualifiedType`: splits `A::B` and creates `WfTopQualifiedType` plus `WfChildType`.
@@ -128,17 +123,6 @@ Basic expression factories:
 - `CreateRpcEventExceptionMapType`: creates the Workflow type for `Dictionary<vint, RpcException>`.
 - `CreateNewClass`: creates `WfNewClassExpression`.
 - `CreateNewInterface`: creates `WfNewInterfaceExpression`.
-- `CreateLifecycleHelperCall`: creates a call to a static `system::IRpcLifecycle` helper.
-- `CreateRpcBoxExpression`: creates byref/byval boxing calls for shared interface values, otherwise returns the input expression.
-- `CreateRpcCachedPropertyInitialValue`: creates initial values for cached properties, using null for byref and copied default/constructor expressions for byval.
-- `CreateRpcUnboxExpression`: creates byref/byval unboxing/copy expressions and casts/inferences for RPC returns and parameters.
-- `CreateRpcCopyByvalExpression`: creates lifecycle copy-byval calls.
-- `CreateRpcConstantReference`: creates a reference to generated `rpctype_`, `rpcmethod_`, or `rpcevent_` constants.
-- `CreatePropertyCacheAvailableRead`: creates a reference to the generated cached-property availability field.
-- `CreatePropertyCacheValueRead`: creates a reference to the generated cached-property value field.
-- `CreateRpcOpsObjectOps`: creates the dispatcher call for object ops targeting `ref.clientId`.
-- `CreateRpcOpsObjectInvoke`: creates object-method invoke calls, with and without an explicit object-ops expression.
-- `CreateRpcOpsObjectEventInvoke`: creates object-event broadcast calls.
 
 Basic statement/declaration factories:
 
@@ -152,13 +136,39 @@ Basic statement/declaration factories:
 - `CreateTry`: creates `WfTryStatement`.
 - `CreateTryCatch`: creates a try/catch statement through `CreateTry`.
 - `CreateForEach`: creates normal-direction `WfForEachStatement`.
+- `CreateWhile`: creates `WfWhileStatement`.
 - `CreateBlock`: creates `WfBlockStatement`.
+- `AddStatement`: appends a statement to a block.
+- `AddRpcMethodExceptionRaise`: appends an RPC method exception check and raise.
+- `AddRpcEventExceptionMapSet`: appends a generated assignment into the RPC event exception map.
+- `AddRpcEventExceptionRaise`: appends an RPC event exception check and raise.
 - `CreateFunctionArgument`: creates `WfFunctionArgument`.
+- `CreateFunctionDeclaration`: creates `WfFunctionDeclaration`, fills name, return type, kind, anonymity, and initializes the body with `CreateBlock`.
 - `CreateFunctionExpression`: creates `WfFunctionExpression`.
 - `CreateClassDeclaration`: creates a class-shaped `WfClassDeclaration`.
 - `CreateConstructorDeclaration`: creates `WfConstructorDeclaration` with a block body.
+- `AddSwitchCase`: appends a case to an existing `WfSwitchStatement`.
+- `CreateCall`: variadic template that creates `WfCallExpression`, sets the function expression, and appends all arguments.
+
+### `Source/Analyzer/Rpc/WfAnalyzer_GenerateRpc.cpp`
+
+This file now keeps RPC-domain builders and larger generated-subtree builders. Common AST factories used across RPC files are supplied by `WfAnalyzer_RpcAstHelpers.(h|cpp)`.
+
+RPC-domain AST helpers:
+
+- `CreateLifecycleHelperCall`: creates a call to a static `system::IRpcLifecycle` helper.
+- `CreateRpcBoxExpression`: creates byref/byval boxing calls for shared interface values, otherwise returns the input expression.
+- `CreateRpcCachedPropertyInitialValue`: creates initial values for cached properties, using null for byref and copied default/constructor expressions for byval.
+- `CreateRpcUnboxExpression`: creates byref/byval unboxing/copy expressions and casts/inferences for RPC returns and parameters.
+- `CreateRpcCopyByvalExpression`: creates lifecycle copy-byval calls.
+- `CreateRpcConstantReference`: creates a reference to generated `rpctype_`, `rpcmethod_`, or `rpcevent_` constants.
+- `CreatePropertyCacheAvailableRead`: creates a reference to the generated cached-property availability field.
+- `CreatePropertyCacheValueRead`: creates a reference to the generated cached-property value field.
 - `CreateAnonymousLambda`: creates an anonymous void `WfFunctionDeclaration` with copied RPC parameter arguments and the supplied body.
-- `CreateRpcOpsFunctionDeclaration`: creates RPC ops method declarations, including standard `ref` and argument setup.
+- `CreateRpcOpsFunctionDeclaration`: creates RPC ops method declarations, including standard `ref` argument setup.
+- `CreateRpcOpsObjectOps`: creates the dispatcher call for object ops targeting `ref.clientId`.
+- `CreateRpcOpsObjectInvoke`: creates object-method invoke calls, with and without an explicit object-ops expression.
+- `CreateRpcOpsObjectEventInvoke`: creates object-event broadcast calls.
 
 Larger generated-subtree builders:
 
@@ -180,14 +190,12 @@ Larger generated-subtree builders:
 - `GenerateWrapperDispatcher`: creates generated wrapper dispatch by type id.
 - `GenerateWrapperGetTypeId`: creates generated object-to-RPC-type-id helper.
 
-### `Source/Analyzer/WfAnalyzer_GenerateRpc_JsonSerialization.cpp`
+### `Source/Analyzer/Rpc/WfAnalyzer_GenerateRpc_JsonSerialization.cpp`
 
-This file locally forward-declares many helpers from `WfAnalyzer_GenerateRpc.cpp` instead of including declarations from a shared private header. The new AST-producing helpers defined only in this file are:
+This file includes the shared RPC helper headers instead of locally forward-declaring helpers from the flat RPC generator. The AST-producing helpers defined only in this file are:
 
-- `CreateTypeFromCpp<T>`: duplicate template wrapper around `GetTypeFromTypeInfo` and `NormalizeRpcGeneratedType`.
 - `CreateJsonArrayItem`: creates an index expression for `array.items[index]`.
 - `CreateJsonArrayItemContent`: creates a casted JSON-array item content read.
-- `CreateWhile`: creates `WfWhileStatement`.
 - `CreateRpcJsonToken`: creates a JSON token constructor with a `value` field.
 - `CreateWritableRpcJsonCollectionType`: converts readonly/lazy collection syntax into writable collection syntax for deserialization targets.
 - `CreateRpcJsonSerializedArgument`: creates `arguments[index]`.
@@ -259,34 +267,34 @@ Private AST helper:
 
 - `GenerateForEachStepStatement`: creates the increment/decrement assignment for range-based `foreach` lowering.
 
-### `Source/Analyzer/WfAnalyzer_ValidateRPC.cpp`
+### `Source/Analyzer/Rpc/WfAnalyzer_ValidateRPC.cpp`
 
 Private AST helpers:
 
+- `FindFunctionArgument`: finds an argument declaration while validating or reconstructing reflected RPC declarations.
 - `CreateRpcAttribute`: creates `@rpc:*` attributes.
 - `CreateRpcAttribute` with value: creates `@rpc:*` attributes with expression values.
-- `CreateRpcStringLiteral`: creates `WfStringExpression`.
-- `CreateRpcIntegerLiteral`: creates `WfIntegerExpression`.
 - `GenerateEnumDecl`: creates Workflow enum declarations from reflected enum descriptors, sorting items by value and reconstructing flag intersections.
 - `GenerateStructDecl`: creates Workflow struct declarations from reflected serializable properties.
 - `GenerateInterfaceDecl`: creates Workflow interface declarations from reflected RPC interface descriptors, including constructor type, attributes, bases, methods, properties, and events.
 - `EnsureNamespace`: creates or returns nested `WfNamespaceDeclaration` nodes while assembling generated RPC metadata modules.
 
-These helpers generate RPC metadata modules from reflection. They are intentionally closer to metadata reconstruction than ordinary user code generation.
+These helpers generate RPC metadata modules from reflection. They are intentionally closer to metadata reconstruction than ordinary user code generation. Literal-valued RPC attributes now use the shared `CreateString` and `CreateInt` factories from `WfAnalyzer_RpcAstHelpers.h`.
 
 ## Duplicated Or Near-Duplicated Helpers
 
-Clear duplications:
+RPC duplications resolved by the RPC helper refactor:
 
-- `CreateReference` exists in both `Source/Analyzer/WfAnalyzer_ExpandBindExpression.cpp` and `Source/Analyzer/WfAnalyzer_GenerateRpc.cpp`, with the same purpose: allocate `WfReferenceExpression` and fill `name`.
+- The common RPC type/expression/statement factories are centralized in `Source/Analyzer/Rpc/WfAnalyzer_RpcAstHelpers.(h|cpp)`.
+- `Source/Analyzer/Rpc/WfAnalyzer_GenerateRpc_JsonSerialization.cpp` no longer locally forward-declares helpers from the flat RPC generator.
+- `CreateTypeFromCpp<T>`, `CreateWhile`, `CreateRpcExceptionExpression`, and `CreateRpcEventExceptionMapType` are shared by the RPC helper header/source instead of being duplicated or known only to one RPC `.cpp` file.
+- RPC metadata reconstruction no longer has local `CreateRpcStringLiteral` and `CreateRpcIntegerLiteral`; it uses the shared `CreateString` and `CreateInt` factories.
+- The RPC-local `CopyType(WfType*)` helper delegates to the public analyzer `CopyType(WfType*)` instead of using generated `copy_visitor::AstVisitor` directly.
+
+Remaining clear duplications outside the RPC-local cleanup:
+
+- `CreateReference` exists in both `Source/Analyzer/WfAnalyzer_ExpandBindExpression.cpp` and `Source/Analyzer/Rpc/WfAnalyzer_RpcAstHelpers.cpp`, with the same purpose: allocate `WfReferenceExpression` and fill `name`.
 - `GenerateCoroutineInvalidId` and `GenerateStateMachineInvalidId` build the same `-1` expression shape in two files.
-- `CreateRpcStringLiteral` and `CreateRpcIntegerLiteral` in `Source/Analyzer/WfAnalyzer_ValidateRPC.cpp` duplicate the simpler `CreateString` and `CreateInt` helpers in `Source/Analyzer/WfAnalyzer_GenerateRpc.cpp`.
-- `CopyType(WfType*)` in `Source/Analyzer/WfAnalyzer_GenerateRpc.cpp` duplicates the public `CopyType(WfType*)` implementation path closely enough for type AST, but it uses generated `copy_visitor::AstVisitor` directly instead of `CopyWithExpandVirtualVisitor(false)`.
-- `CreateTypeFromCpp<T>` is defined in both `Source/Analyzer/WfAnalyzer_GenerateRpc.cpp` and `Source/Analyzer/WfAnalyzer_GenerateRpc_JsonSerialization.cpp` behind the same macro guard because JSON generation needs the template body but no shared header exposes it.
-
-Declaration duplication:
-
-- `Source/Analyzer/WfAnalyzer_GenerateRpc_JsonSerialization.cpp` locally forward-declares a large subset of helpers implemented in `Source/Analyzer/WfAnalyzer_GenerateRpc.cpp`: type factories, expression factories, statement factories, block append helpers, RPC boxing/unboxing helpers, dispatch helpers, and ops helpers. This is not runtime duplication, but it repeats API knowledge in a `.cpp` file and bypasses the repo preference that namespace-level helper declarations live in headers with explicit `extern`.
 
 Near duplications:
 
@@ -297,24 +305,29 @@ Near duplications:
 
 ## Improvement Report
 
-The code could be improved, but the right refactor is not to expose every private generator helper as public API.
+The RPC-scoped low-risk cleanup has been executed:
+
+- RPC implementation files moved from `Source/Analyzer` to `Source/Analyzer/Rpc`.
+- `Source/Analyzer/Rpc/WfAnalyzer_RpcAstHelpers.(h|cpp)` now contains shared RPC AST factories and the RPC-only template helpers.
+- `Source/Analyzer/Rpc/WfAnalyzer_GenerateRpc.h` now declares RPC-domain helpers shared by the flat and JSON generators, and includes the shared AST helper header.
+- JSON RPC generation now relies on those headers instead of local forward declarations.
+- RPC metadata reconstruction now relies on shared literal factories for RPC attribute values.
+
+The broader recommendation remains not to expose every private generator helper as public API.
 
 Recommended direction:
 
 - Add a small shared AST builder layer, likely under analyzer or parser support, for common, domain-neutral factories: references, literals, qualified type/expression trees, member access, binary/unary expressions, casts, inference, constructors, calls, new class/interface expressions, expression/return/raise/variable/if/try/foreach/while/block/function/argument declarations, and switch-case append helpers.
 - Keep domain-specific builders private: RPC boxing/unboxing, RPC wrapper factories, JSON schema serialization trees, bind subscription generation, coroutine flow-chart generation, and state-machine lowering should not become generic user-facing API.
-- Move the shared RPC helper declarations currently repeated at the top of `WfAnalyzer_GenerateRpc_JsonSerialization.cpp` into a private header, or broaden `WfAnalyzer_GenerateRpc.h` intentionally. Non-template declarations should use explicit `extern`; template helpers such as `CreateCall` and `CreateTypeFromCpp<T>` need header definitions.
 - Replace `GenerateCoroutineInvalidId` and `GenerateStateMachineInvalidId` with a shared helper such as a negative-integer expression factory. It should preserve the current unary-negative AST shape instead of assuming a negative integer literal is accepted everywhere.
-- Replace `CreateRpcStringLiteral` and `CreateRpcIntegerLiteral` with shared string/integer literal factories if a shared builder exists.
-- Replace the local `CopyType(WfType*)` in `WfAnalyzer_GenerateRpc.cpp` with the public `CopyType(WfType*)` unless there is a hidden reason to avoid `CopyWithExpandVirtualVisitor`; type AST has no virtual expansion, so the public helper is the clearer source of truth.
 - Consider extracting a reusable skeleton for generated object ops factories only after comparing flat and JSON output carefully. The JSON path has real extra behavior, so a refactor should share only field/method shell construction and common `ObjectHold`/`EndInvokeMethod` pieces, not force serialization-specific branches into generic code.
 
 Risk assessment:
 
 - A broad public builder API would make user code easier to write and would directly support the recommendation to generate `WfModule` AST instead of text.
 - Over-exposing RPC-specific helpers would create an unstable API surface around implementation details and make future RPC refactors harder.
-- A private shared builder header would reduce immediate duplication without committing all helpers as public API.
-- The highest-value low-risk cleanup is moving the cross-file RPC helper declarations out of `WfAnalyzer_GenerateRpc_JsonSerialization.cpp`; it removes declaration duplication and aligns with the explicit-`extern` header style documented in the repo learning.
+- The new private RPC helper header reduced immediate duplication without committing RPC implementation helpers as public API.
+- Future shared-builder work should compare generated Workflow and C++ output carefully, as the RPC refactor did, because the generator tests can pass while still revealing unwanted codegen churn through git diff.
 
 # ASKS
 

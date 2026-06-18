@@ -1,4 +1,4 @@
-#include "WfAnalyzer.h"
+#include "WfAnalyzer_RpcAstHelpers.h"
 
 namespace vl
 {
@@ -335,20 +335,6 @@ ValidateModuleRPC_Ast
 					auto attribute = CreateRpcAttribute(name);
 					attribute->value = value;
 					return attribute;
-				}
-
-				Ptr<WfExpression> CreateRpcStringLiteral(const WString& value)
-				{
-					auto expression = Ptr(new WfStringExpression);
-					expression->value.value = value;
-					return expression;
-				}
-
-				Ptr<WfExpression> CreateRpcIntegerLiteral(vint value)
-				{
-					auto expression = Ptr(new WfIntegerExpression);
-					expression->value.value = itow(value);
-					return expression;
 				}
 
 				void EnsureRpcAttribute(List<Ptr<WfAttribute>>& attributes, const WString& name)
@@ -1064,8 +1050,8 @@ ValidateModuleRPC_GenerateMetadata
 				{
 					auto id = metadata->orderedIds.IndexOf(fullName);
 					CHECK_ERROR(id != -1, L"RPC metadata ID list does not contain a generated RPC full name.");
-					attributes.Add(CreateRpcAttribute(L"IdString", CreateRpcStringLiteral(fullName)));
-					attributes.Add(CreateRpcAttribute(L"IdNumber", CreateRpcIntegerLiteral(id)));
+					attributes.Add(CreateRpcAttribute(L"IdString", rpc_generating::CreateString(fullName)));
+					attributes.Add(CreateRpcAttribute(L"IdNumber", rpc_generating::CreateInt(id)));
 				}
 
 				void AddGeneratedRpcIdAttributes(WfRpcMetadata* metadata)

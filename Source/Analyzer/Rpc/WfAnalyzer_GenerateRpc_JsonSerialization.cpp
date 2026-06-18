@@ -1,4 +1,3 @@
-#include "WfAnalyzer.h"
 #include "WfAnalyzer_GenerateRpc.h"
 
 namespace vl
@@ -12,85 +11,6 @@ namespace vl
 			namespace rpc_generating
 			{
 				using namespace reflection::description;
-
-				WString MangleRpcFullName(const WString& fullName);
-				Ptr<WfType> CopyType(WfType* type);
-				Ptr<WfType> CreatePredefinedType(WfPredefinedTypeName name);
-				Ptr<WfType> CreateQualifiedType(const WString& fullName);
-				Ptr<WfType> CreateTopQualifiedType(const WString& fullName);
-				Ptr<WfType> CreateRawType(const WString& fullName);
-				Ptr<WfType> CreateSharedType(const WString& fullName);
-				Ptr<WfType> CreateNullableType(const WString& fullName);
-				Ptr<WfExpression> CreateNull();
-				Ptr<WfExpression> CreateIsNull(Ptr<WfExpression> expression);
-				Ptr<WfExpression> CreateIsNotNull(Ptr<WfExpression> expression);
-				Ptr<WfExpression> CreateBool(bool value);
-				Ptr<WfExpression> CreateInt(vint value);
-				Ptr<WfExpression> CreateString(const WString& value);
-				Ptr<WfExpression> CreateReference(const WString& name);
-				Ptr<WfExpression> CreateQualifiedExpression(const WString& fullName);
-				Ptr<WfExpression> CreateMember(Ptr<WfExpression> parent, const WString& name);
-				Ptr<WfExpression> CreateBinary(WfBinaryOperator op, Ptr<WfExpression> first, Ptr<WfExpression> second);
-				Ptr<WfExpression> CreateAssign(Ptr<WfExpression> left, Ptr<WfExpression> right);
-				Ptr<WfExpression> CreateIndex(Ptr<WfExpression> collection, Ptr<WfExpression> index);
-				Ptr<WfExpression> CreateCast(Ptr<WfType> type, Ptr<WfExpression> expression);
-				Ptr<WfExpression> CreateWeakCast(Ptr<WfType> type, Ptr<WfExpression> expression);
-				Ptr<WfExpression> CreateInfer(Ptr<WfExpression> expression, Ptr<WfType> type);
-
-				Ptr<WfConstructorArgument> CreateConstructorArgument(Ptr<WfExpression> key, Ptr<WfExpression> value);
-				Ptr<WfConstructorExpression> CreateConstructor();
-				Ptr<WfExpression> CreateRpcExceptionExpression(Ptr<WfExpression> message);
-				Ptr<WfType> CreateRpcEventExceptionMapType();
-				Ptr<WfExpression> CreateNewClass(Ptr<WfType> type);
-				Ptr<WfExpression> CreateNewInterface(Ptr<WfType> type);
-				Ptr<WfStatement> CreateExpressionStatement(Ptr<WfExpression> expression);
-				Ptr<WfStatement> CreateReturn(Ptr<WfExpression> expression);
-				Ptr<WfStatement> CreateRaise(const WString& message);
-				Ptr<WfStatement> CreateRaise(Ptr<WfExpression> expression);
-				Ptr<WfStatement> CreateTry(Ptr<WfStatement> protectedStatement, const WString& name, Ptr<WfStatement> catchStatement, Ptr<WfStatement> finallyStatement);
-				Ptr<WfStatement> CreateTryCatch(Ptr<WfStatement> protectedStatement, const WString& name, Ptr<WfStatement> catchStatement);
-				Ptr<WfVariableDeclaration> CreateVariableDeclaration(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression);
-				Ptr<WfStatement> CreateVariableStatement(const WString& name, Ptr<WfType> type, Ptr<WfExpression> expression);
-				Ptr<WfStatement> CreateInferredVariableStatement(const WString& name, Ptr<WfExpression> expression);
-				Ptr<WfForEachStatement> CreateForEach(const WString& name, Ptr<WfExpression> collection, Ptr<WfStatement> body);
-				Ptr<WfBlockStatement> CreateBlock();
-				void AddStatement(Ptr<WfBlockStatement> block, Ptr<WfStatement> statement);
-				void AddRpcMethodExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value);
-				void AddRpcEventExceptionMapSet(Ptr<WfBlockStatement> block, const WString& mapName, Ptr<WfExpression> clientId, Ptr<WfExpression> message);
-				void AddRpcEventExceptionRaise(Ptr<WfBlockStatement> block, Ptr<WfExpression> value);
-				Ptr<WfFunctionArgument> CreateFunctionArgument(const WString& name, Ptr<WfType> type);
-				void AddSwitchCase(Ptr<WfSwitchStatement> switchStat, Ptr<WfExpression> expression, Ptr<WfStatement> statement);
-				bool IsSharedInterfaceType(ITypeInfo* type);
-				bool IsVoidType(WfType* type);
-				bool IsRpcByvalReturn(const RpcMethodModel& methodModel);
-				Ptr<WfExpression> CreateRpcBoxExpression(ITypeInfo* typeInfo, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle);
-				Ptr<WfExpression> CreateRpcUnboxExpression(ITypeInfo* typeInfo, Ptr<WfType> type, bool byref, Ptr<WfExpression> value, Ptr<WfExpression> lifecycle);
-				Ptr<WfExpression> CreateRpcCopyByvalExpression(Ptr<WfExpression> value, Ptr<WfExpression> lifecycle);
-				void AddRpcByvalReturnValue(Ptr<WfBlockStatement> block, Ptr<WfExpression> value, Ptr<WfExpression> copiedValue);
-				Ptr<WfExpression> CreateRpcConstantReference(const wchar_t* prefix, const WString& fullName);
-				void CollectMangledNames(WfLexicalScopeManager* manager);
-				List<RpcInterfaceModel> BuildInterfaceModels(WfLexicalScopeManager* manager);
-				bool HasRpcEvents(const List<RpcInterfaceModel>& interfaces);
-				WString GetRpcOpsInterfaceName(const WString& assemblyName);
-				WString GetRpcOpsInvokeMethodName(const RpcMethodModel& methodModel);
-				WString GetRpcOpsInvokeEventName(const RpcEventModel& eventModel);
-				WString GetRpcOpsArgumentName(const RpcParamModel& paramModel);
-				Ptr<WfFunctionDeclaration> CreateRpcOpsFunctionDeclaration(const WString& name, Ptr<WfType> returnType, WfFunctionKind kind);
-				void AddRpcOpsFunctionArguments(Ptr<WfFunctionDeclaration> functionDecl, const List<RpcParamModel>& params);
-				Ptr<WfExpression> CreateRpcOpsObjectOps();
-				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel, Ptr<WfExpression> objectOps);
-				Ptr<WfExpression> CreateRpcOpsObjectInvoke(const RpcMethodModel& methodModel);
-				Ptr<WfExpression> CreateRpcOpsObjectEventInvoke(const RpcEventModel& eventModel);
-				Ptr<WfType> NormalizeRpcGeneratedType(Ptr<WfType> type);
-
-#ifndef VCZH_WORKFLOW_RPC_GENERATING_CREATE_TYPE_FROM_CPP
-#define VCZH_WORKFLOW_RPC_GENERATING_CREATE_TYPE_FROM_CPP
-				template<typename T>
-				Ptr<WfType> CreateTypeFromCpp()
-				{
-					return NormalizeRpcGeneratedType(GetTypeFromTypeInfo(TypeInfoRetriver<T>::CreateTypeInfo().Obj()));
-				}
-#endif
 
 				enum class RpcJsonPrimitiveKind
 				{
@@ -231,14 +151,6 @@ namespace vl
 					add(L"system::String", L"String", RpcJsonPrimitiveKind::String);
 					add(L"system::DateTime", L"DateTime", RpcJsonPrimitiveKind::String);
 					add(L"system::Locale", L"Locale", RpcJsonPrimitiveKind::String);
-				}
-
-				Ptr<WfStatement> CreateWhile(Ptr<WfExpression> condition, Ptr<WfStatement> body)
-				{
-					auto statement = Ptr(new WfWhileStatement);
-					statement->condition = condition;
-					statement->statement = body;
-					return statement;
 				}
 
 				WString GetRpcJsonSerializeEnumFunctionName(const WString& fullName)
