@@ -2,7 +2,7 @@
 
 # Orders
 
-- Run TypeScript RPC schema verification after JSON or dispatcher-schema changes [11]
+- Run TypeScript RPC schema verification after JSON or dispatcher-schema changes [12]
 - Wire generated RPC C++ files into shared vcxitems after `CompilerTest_LoadAndCompile` [7]
 - Run `CompilerTest_LoadAndCompile` at least once before downstream RPC generated-C++ tests [7]
 - Compare `RuntimeTest` and `CppTest*` failures before choosing an RPC root cause [6]
@@ -13,7 +13,7 @@
 - Validate ChatBot RPC apps with a real multi-process scenario [5]
 - Pure refactors should not touch generated RPC outputs [4]
 - Split RPC sample definitions and tests consistently [4]
-- Type-check shared `Rpc.d.ts` standalone [2]
+- Type-check shared `Rpc.d.ts` standalone [3]
 - Workflow analyzer error tests may change values when preserving the error code [1]
 - Workflow samples use `raise`, not `throw` [1]
 - Workflow range syntax for inclusive generated loops is `range [1, xs.Count]` [1]
@@ -27,6 +27,7 @@
 - Audit RPC JSON request transcripts for request id pairing [1]
 - Track generated TypeScript RPC fixtures in git [1]
 - Use 2-space indentation in Workflow sample files [1]
+- Verify Workflow library file moves with stale-reference scans [1]
 
 # Refinements
 
@@ -102,6 +103,8 @@ This also applies when adding JSON request/response transcript folders such as `
 
 When schema declarations are centralized in `DataSchema32` and `DataSchema64`, `prepare.ps1` should copy `Serialization_*.d.ts` only into those folders. `JsonValues*` and `JsonRequest*` fixtures should import the schemas from `../DataSchema*`, then the TypeScript package build verifies that the generated imports and values still match.
 
+When `Release/Rpc.d.ts` is the canonical shared dispatcher schema, `Test/TypeScript/prepare.ps1` should copy it into the package-local `Test/TypeScript/Rpc.d.ts` working file before verification. Keep the package-local copy generated/ignored instead of treating it as the source of truth.
+
 ## Split RPC sample definitions and tests consistently
 
 Split RPC samples into `Rpc/SAMPLE.txt` for RPC definitions only and `Rpc/SAMPLE_Test.txt` for executable test logic such as globals, helpers, `serviceMain`, and `clientMain`. Add only `SAMPLE=expected` to `IndexRpc.txt`, but include both files under `Resource Files/Rpc` in `CompilerTest_LoadAndCompile`.
@@ -127,6 +130,10 @@ When a single RPC sample grows to cover unrelated behavior, split it into focuse
 ## Use static scans for Workflow library declaration and inline-refactor checks
 
 For Workflow library header/source cleanup, use static scans alongside builds to verify mechanical invariants such as no non-`constexpr` inline function definitions remaining in `Source/Library/WfLibrary*.h`, `Source/Library/Rpc/WfLibrary*.h`, or `Source/Library/RpcJson/WfLibrary*.h`, and no namespace-level free-function forward declarations missing explicit `extern` in the matching library files.
+
+## Verify Workflow library file moves with stale-reference scans
+
+After moving Workflow library headers or source files, scan source includes, project files, filters, docs, and non-generated build metadata for old paths and class names. Also parse touched XML project files and check that every referenced moved file exists, because a successful source build can miss stale project/filter metadata.
 
 ## Verify generated RPC file renames with stale-reference scans
 

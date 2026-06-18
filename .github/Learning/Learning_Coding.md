@@ -29,7 +29,7 @@
 - Order generated RPC type checks with derived interfaces before bases [2]
 - Keep reusable RPC JSON dispatch free of synchronization [2]
 - Mirror ChatBot service event output on server and clients [2]
-- Keep reusable RPC JSON dispatchers free of generated ChatBot dependencies [1]
+- Keep reusable RPC JSON dispatchers free of generated ChatBot dependencies [2]
 - Keep RPC JSON test harness setup under `VCZH_DEBUG_NO_REFLECTION` [1]
 - Use generated strong typed RPC ops for event listeners [1]
 - Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for registering free functions as reflection static methods [1]
@@ -64,6 +64,7 @@
 - Prefer generic `BoxValue`/`UnboxValue` over specialized RPC box/unbox helpers [1]
 - Keep shared Workflow test output path helpers in `Helper.h` / `Helper.cpp` [1]
 - Keep RPC array resizing separate from list-only mutations [1]
+- Document RPC JSON setup in `TODO_RPC_JsonRequest.md` [1]
 
 # Refinements
 
@@ -136,6 +137,8 @@ Channel-backed JSON RPC dispatchers should stay under reusable RPC namespaces su
 ## Keep reusable RPC JSON dispatchers free of generated ChatBot dependencies
 
 Reusable `RpcJsonDispatcher(Client|Server)` files should not include or reference generated `ChatBotApp` types. Put shared aliases in `RpcJsonDispatcherShared.h`, keep task-queue scheduling in reusable `*ForTaskQueue` classes, and let the ChatBot wrapper own generated service initialization such as `InitializeRpc`.
+
+When ChatBot RPC JSON dispatcher helpers become the reusable/default setup for JSON request dispatch, promote them into `Source/Library/RpcJson` with `WfLibraryRpcJsonDispatcher*` names. Leave app-specific ChatBot service setup in the ChatBot shared folder and keep generated ChatBot dependencies in the thin app wrapper.
 
 ## Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for registering free functions as reflection static methods
 
@@ -362,6 +365,10 @@ For broadcast-and-drop requests such as remote service declarations, make the tr
 ## Keep RPC array resizing separate from list-only mutations
 
 `RpcByrefArray::Resize` should call a dedicated `IRpcListOps::ArrayResize`-style operation. Do not implement array resize by disguising it as `ListClear`, `ListRemoveAt`, or another list-only mutation. List-only operations against arrays should report RPC exceptions instead of silently resizing or removing array elements.
+
+## Document RPC JSON setup in `TODO_RPC_JsonRequest.md`
+
+Reusable RPC JSON setup guidance belongs in `TODO_RPC_JsonRequest.md`; do not create or reference a separate `TODO_RPC_JsonDispatch.md` for that setup. The `## Setup` section should focus on classes and functions users actually need to touch, while internal header details belong in an implementation/explanation subsection.
 
 ## Mirror ChatBot service event output on server and clients
 
