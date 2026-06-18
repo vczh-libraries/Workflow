@@ -11,7 +11,7 @@
 - Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder [5]
 - RPC byref/byval container samples must verify wrapper/copy semantics at every level [5]
 - Validate ChatBot RPC apps with a real multi-process scenario [5]
-- Pure refactors should not touch generated RPC outputs [4]
+- Pure refactors should not touch generated RPC outputs [5]
 - Split RPC sample definitions and tests consistently [4]
 - Type-check shared `Rpc.d.ts` standalone [3]
 - Workflow analyzer error tests may change values when preserving the error code [1]
@@ -80,6 +80,8 @@ When `CompilerTest_LoadAndCompile` runs stably and reports Workflow compile erro
 ## Pure refactors should not touch generated RPC outputs
 
 For refactors that only reorganize code or move helper functions, generated RPC files should remain unchanged. If `CompilerTest_LoadAndCompile` updates generated files after such a refactor, investigate the behavior change instead of accepting the diff blindly. Release amalgamation files may still change after the required `Build.ps1 Workflow` step when source files changed.
+
+This includes moving RPC analyzer files or extracting shared RPC AST helper functions: after `CompilerTest_LoadAndCompile` and the full required workflow, `Test/Generated` and generated Workflow/C++ test output folders should still have no diff.
 
 If `Tools/Tools/Build.ps1 Workflow` rewrites dependency files under `Import` during a pure Workflow refactor, do not keep those generated dependency changes unless the task is explicitly about dependency import syncing. `Project.md` treats `Import` as prepared foreign dependency output, so restore those script-produced `Import` changes after confirming they are unrelated to the requested Workflow change.
 

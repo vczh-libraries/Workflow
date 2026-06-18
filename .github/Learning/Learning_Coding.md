@@ -30,6 +30,7 @@
 - Keep reusable RPC JSON dispatch free of synchronization [2]
 - Mirror ChatBot service event output on server and clients [2]
 - Keep reusable RPC JSON dispatchers free of generated ChatBot dependencies [2]
+- Keep RPC analyzer source and shared AST helpers under `Source/Analyzer/Rpc` [1]
 - Keep RPC JSON test harness setup under `VCZH_DEBUG_NO_REFLECTION` [1]
 - Use generated strong typed RPC ops for event listeners [1]
 - Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for registering free functions as reflection static methods [1]
@@ -125,6 +126,10 @@ Service declaration transport should carry the full `RpcObjectReference`, includ
 ## Split RPC JSON generation into dedicated analyzer/module files
 
 Keep RPC JSON responsibilities separated from ordinary RPC wrapper generation. JSON d.ts generation belongs in the JSON d.ts analyzer file, JSON serialization helpers and JSON ops belong in the JSON serialization analyzer file, and generated JSON Workflow should live in separate `Wrapper_*_Json.txt` modules instead of being mixed into `Wrapper_*.txt`.
+
+## Keep RPC analyzer source and shared AST helpers under `Source/Analyzer/Rpc`
+
+RPC analyzer implementation files and private RPC generator headers belong under `Source/Analyzer/Rpc`. Shared Workflow AST factory helpers used by multiple RPC generator files should live in `WfAnalyzer_RpcAstHelpers.(h|cpp)`, with generator files including that header instead of repeating local declarations or duplicate helper definitions. Treat `WfAnalyzer_RpcAstHelpers.h` as a private RPC implementation helper, not a public header-level AST-building API in KB audits.
 
 ## Move reusable RPC controller/lifecycle code into `Source/Library/Rpc` with strict dependencies
 
