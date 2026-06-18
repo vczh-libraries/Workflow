@@ -43,6 +43,17 @@ Workflow compiler driver APIs let callers parse and analyze Workflow source modu
 
 ### Design Explanation
 
+#### Compiler Rebuild And Desugaring
+
+Workflow compiler analysis is organized around `WfLexicalScopeManager::Rebuild`, a barriered frontend pipeline that validates modules, builds names and scopes, resolves semantics, and rewrites high-level Workflow syntax into ordinary AST before bytecode or C++ generation.
+
+- `Rebuild` separates context-free rewrites, structure checks, global-name construction, scope construction, scope completion, semantic validation, and post-semantic metadata population.
+- Context-sensitive virtual AST nodes such as `bind`, `$coroutine`, co-provider statements, and state machines are expanded only after their original nodes have enough resolved type and scope information.
+- `bind` lowers to an anonymous `IValueSubscription` implementation; co-provider syntax first lowers to a generated raw `WfNewCoroutineExpression`, and that raw coroutine then lowers to a generated `ICoroutine` implementation; state machines lower to generated class members plus a generated coroutine.
+- Backends consume `expanded*` ordinary Workflow AST and treat raw high-level nodes as frontend-only constructs.
+
+[Design Explanation](./KB_Workflow_Design_CompilerRebuildAndDesugaring.md)
+
 #### Attribute System
 
 Workflow script attributes (`@category:name`) are translated to reflected struct types following the naming convention `system::workflow_attributes::att_category_name`. The compiler resolves, evaluates, and populates attributes onto type descriptors during assembly generation, and the binary serialization format preserves attribute metadata across assembly load/save cycles. Predefined `@cpp:*` attributes control C++ code generation behavior.
