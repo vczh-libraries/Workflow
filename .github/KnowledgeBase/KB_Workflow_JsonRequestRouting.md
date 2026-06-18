@@ -1,6 +1,6 @@
 # Workflow JSON Request Routing
 
-This document describes the runtime meaning of the generic JSON dispatcher envelopes declared in `Release/Rpc.d.ts`. It is independent of any particular sample or transport. Generated interface and serialization rules are covered by [Workflow Interface-Based RPC Definition](./KB_Workflow_InterfaceBasedRpcDefinition.md), [Workflow Generated RPC Wrappers](./KB_Workflow_Design_GeneratedRpcWrappers.md), and [Workflow JSON Serialization Schema](./KB_Workflow_Design_JsonSerializationSchema.md).
+This document describes the runtime meaning of the generic JSON dispatcher envelopes declared in `Release/Rpc.d.ts`. It is independent of any particular generated application or transport. Generated interface and serialization rules are covered by [Workflow Interface-Based RPC Definition](./KB_Workflow_InterfaceBasedRpcDefinition.md), [Workflow Generated RPC Wrappers](./KB_Workflow_Design_GeneratedRpcWrappers.md), and [Workflow JSON Serialization Schema](./KB_Workflow_Design_JsonSerializationSchema.md).
 
 ## Setup
 
@@ -16,13 +16,13 @@ The reusable JSON RPC setup lives in `Source/Library/RpcJson`. User code normall
 - Pass required remote service type names to `WaitForServer` or `ConnectLocalServer` so client initialization waits until those services have been declared.
 - Call `FinalizeRpc()` on endpoint dispatchers before shutting down the transport or unloading generated Workflow context.
 
-`Test/UnitTest/ChatBotServer/Shared/ChatBotJsonDispatcherClient.(h|cpp)` shows the intended generated-app wrapper shape. It creates the dispatcher/lifecycle pair, wires generated ChatBot JSON serializer and ops, registers the wrapper factory, and leaves transport behavior to `Source/Library/RpcJson`. `Test/UnitTest/ChatBotServer/Main.cpp` and `Test/UnitTest/ChatBotClient/Main.cpp` show the server coordinator, local service endpoint, remote client endpoint, required-service wait list, local service registration, and task queue lifetime.
+An application-specific dispatcher wrapper normally derives from `RpcJsonDispatcherClientForTaskQueue`, creates the dispatcher/lifecycle pair after the transport assigns a client id, wires generated JSON serializer and ops into the lifecycle, registers the generated wrapper factory, and leaves transport behavior to `Source/Library/RpcJson`.
 
 ### Setup from Workflow Generated Code
 
-The current ChatBot JSON unit test uses the generated application object as the only source of RPC-specific setup data. `Test/UnitTest/ChatBotServer/Shared/ChatBotJsonDispatcherClient.cpp` gets `vl_workflow_global::ChatBotApp::Instance()` in `ChatBotJsonDispatcherClient::InitializeRpc(clientId)`, creates `RpcJsonDispatcher(clientId, this)` and `RpcJsonLifecycle(clientId, rpcDispatcher.Obj())`, then stores them with `SetRpcObjects`.
+Generated Workflow code is the only source of RPC-specific setup data. After the transport assigns `clientId`, the application-specific dispatcher wrapper creates `RpcJsonDispatcher(clientId, messageDispatcher)` and `RpcJsonLifecycle(clientId, rpcDispatcher.Obj())`, then stores them with `SetRpcObjects`.
 
-The lifecycle id map comes from generated Workflow code. The setup calls `app.rpc_GetIds()`, converts it to `Dictionary<WString, vint>`, and passes it to `RpcJsonLifecycle::SetIdMap`. Service-owning code in `Test/UnitTest/ChatBotServer/Main.cpp` then resolves `chatapi::IChatServer` through `GetTypeIdFromName` and calls `RegisterLocalService(typeId, service)` before `Initialize()`. Workflow RPC sample scripts use the same generated id map directly through `rpc_GetIds()["Full::Name::IService"]` before calling `lc.RegisterLocalService(...)`.
+The lifecycle id map comes from generated Workflow code. Setup calls `rpc_GetIds()`, converts the result to `Dictionary<WString, vint>` when crossing the C++ reflection boundary, and passes it to `RpcJsonLifecycle::SetIdMap`. Service-owning code resolves a full RPC interface name through `GetTypeIdFromName(fullName)` or reads the same id from `rpc_GetIds()[fullName]`, then calls `RegisterLocalService(typeId, service)` before lifecycle initialization.
 
 Generated JSON operations are created once per lifecycle:
 
@@ -31,11 +31,11 @@ Generated JSON operations are created once per lifecycle:
 - `app.rpcops_IRpcObjectEventOpsJson(lifecycle.Obj())` creates the generated receive-side object-event ops.
 - `app.rpcops_IOps_CreateJson(lifecycle.Obj())` creates the generated caller-side ops that wrappers and listener attachers reuse.
 
-`RpcJsonLifecycle::Register` receives those generated ops plus two callbacks. The type-id callback calls `app.rpcwrapper_GetTypeId(BoxValue<IDescriptable*>(obj))`, so local object references can be assigned generated RPC type ids. The event-attacher callback calls `app.rpclistener_Attach(ref.typeId, GetRpcJsonLifecycle(), ref, obj, ops)`, so generated listeners attach to local object events and forward unsuppressed events through the generated caller-side ops.
+`RpcJsonLifecycle::Register` receives those generated ops plus two callbacks. The type-id callback calls generated `rpcwrapper_GetTypeId(BoxValue<IDescriptable*>(obj))`, so local object references can be assigned generated RPC type ids. The event-attacher callback calls generated `rpclistener_Attach(ref.typeId, lifecycle, ref, obj, ops)`, so generated listeners attach to local object events and forward unsuppressed events through the generated caller-side ops.
 
-The wrapper factory is also generated-code based. `RegisterWrapperFactory` installs a callback that calls `app.rpcwrapper_Create(ref, lc, ops)`. `rpcwrapper_Create` returns a generated wrapper for a remote `RpcObjectReference`, and the same generated wrapper class is used for JSON transport because the JSON caller-side ops object is the `ops` argument passed into the wrapper.
+The wrapper factory is also generated-code based. `RegisterWrapperFactory` installs a callback that calls generated `rpcwrapper_Create(ref, lc, ops)`. `rpcwrapper_Create` returns a generated wrapper for a remote `RpcObjectReference`, and the same generated wrapper class is used for JSON transport because the JSON caller-side ops object is the `ops` argument passed into the wrapper.
 
-Endpoint startup then happens through the reusable dispatcher client. `ChatBotRpcHostingClient::Connect` calls `WaitForServer(this, rpcChannel, waitingForServices)`, lets `OnConnected(clientId)` call `InitializeRpc(clientId)`, and finally calls `dispatcher->Initialize()`. Client code requests the service with `GetRpcLifecycle()->RequestService("chatapi::IChatServer")`; when the service is remote, the lifecycle returns the generated wrapper created by the registered factory, and ordinary interface method calls on that wrapper go through the generated JSON caller-side ops.
+Endpoint startup then happens through the reusable dispatcher client. A network endpoint calls `WaitForServer(channelClient, rpcChannel, waitingForServices)`, or a local endpoint calls `ConnectLocalServer(channelServer, localClient, rpcChannel, waitingForServices)`. When the channel reports `OnConnected(clientId)`, the application-specific wrapper performs the generated setup described above and then calls `Initialize()`. Client code requests a service with `GetRpcLifecycle()->RequestService(fullName)`; when the service is remote, the lifecycle returns the generated wrapper created by the registered factory, and ordinary interface method calls on that wrapper go through the generated JSON caller-side ops.
 
 ### Implementation
 
