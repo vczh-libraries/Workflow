@@ -41,6 +41,20 @@ Workflow compiler driver APIs let callers parse and analyze Workflow source modu
 
 [API Explanation](./KB_Workflow_CompilerDriverAndCppGeneration.md)
 
+#### AST Building Helper Functions
+
+Workflow AST building helper functions let code generators construct or reuse `WfModule` AST and child nodes instead of assembling Workflow source text, while still using compiler-owned helpers for reflected types, default-value expressions, complete RPC wrapper modules, and printed output.
+
+- Use direct `Wf*` node construction when generated code is already structured and no exported helper matches the needed node shape.
+- Use `ParseType`, `ParseExpression`, `ParseStatement`, `ParseCoProviderStatement`, `ParseDeclaration`, and `ParseModule` only when the input is already Workflow text.
+- Use `GetExpressionFromTypeDescriptor`, `GetTypeFromTypeDescriptor`, and `GetTypeFromTypeInfo` when generated AST should follow reflection metadata.
+- Use `CopyType`, `CopyExpression`, `CopyStatement`, `CopyDeclaration`, and `CopyModule` when reusing existing AST without sharing nodes.
+- Use `CreateDefaultValue` when a generated initializer should match Workflow compiler conventions for a reflected type.
+- Use `CopyAndClearRpcMetadata`, `GenerateModuleRpc`, and `GenerateModuleRpcJson` only for complete generated RPC support modules.
+- Use `WfPrint` to inspect or serialize generated AST after construction.
+
+[API Explanation](./KB_Workflow_AstBuildingHelperFunctions.md)
+
 ### Design Explanation
 
 #### Compiler Rebuild And Desugaring
