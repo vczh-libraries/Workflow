@@ -163,7 +163,7 @@ Generated RPC wrapper listeners should receive and call the generated strong typ
 
 ## Keep Workflow library helpers out-of-line with explicit `extern`
 
-For namespace-level helper functions in `Source/Library/WfLibrary*.(h|cpp)` and `Source/Library/Rpc/WfLibrary*.(h|cpp)`, keep non-constant implementations in `.cpp` files instead of `inline` header definitions. Put explicit `extern` on forward declarations, even when C++ would not require it, to match the Workflow library declaration style.
+For namespace-level helper functions in `Source/Library/WfLibrary*.(h|cpp)`, `Source/Library/Rpc/WfLibrary*.(h|cpp)`, and `Source/Library/RpcJson/WfLibrary*.(h|cpp)`, keep non-constant implementations in `.cpp` files instead of `inline` header definitions. Put explicit `extern` on forward declarations, even when C++ would not require it, to match the Workflow library declaration style.
 
 Implement helpers in the `.cpp` whose basename matches the declaring header. Functions declared in `WfLibraryRpc.h` belong in `WfLibraryRpc.cpp`, not in a sibling such as `WfLibraryRpcWrappers.cpp`.
 
@@ -315,7 +315,7 @@ Workflow `catch (ex)` variables are exception objects. When a script needs the t
 
 ## Keep TypeScript RPC dispatcher envelopes separate from value schemas
 
-`Test/TypeScript/Rpc.d.ts` owns the shared dispatcher envelope schema for `IRpcListOps`, `IRpcObjectOps`, `IRpcListEventOps`, and `IRpcObjectEventOps`. Generated `Serialization_*.d.ts` files own concrete value schemas; connect the two with a generic payload type such as `KnownTypeSchema | UnknownTypeSchema`, and only add `<T>` to envelope interfaces that actually carry serialized payloads. `SendToClient_*` requests include `targetClientId`, broadcast requests omit it, and all responses include both `sourceClientId` and `targetClientId`.
+`Release/Rpc.d.ts` owns the shared dispatcher envelope schema for `IRpcListOps`, `IRpcObjectOps`, `IRpcListEventOps`, and `IRpcObjectEventOps`. Generated `Serialization_*.d.ts` files own concrete value schemas; connect the two with a generic payload type such as `KnownTypeSchema | UnknownTypeSchema`, and only add `<T>` to envelope interfaces that actually carry serialized payloads. `SendToClient_*` requests include `targetClientId`, broadcast requests omit it, and all responses include both `sourceClientId` and `targetClientId`.
 
 Every dispatcher request and response envelope should carry `rpcRequestId: number`. Caller-side request construction should allocate/write a request id, callee-side translation should reuse that id in the response, and shared request/response transcript types should remain separate from concrete serialization schemas.
 

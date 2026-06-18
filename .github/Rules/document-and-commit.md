@@ -27,7 +27,7 @@ Usually, git commit and push are required after finishing, but there is one exce
 ## RPC Specific
 
 - If `IRpc` interfaces in `WfLibraryRpc.h` are changed, the following files may have to be updated accordingly:
-  - `Test/TypeScript/Rpc.d.ts`
+  - `Release/Rpc.d.ts`
   - Comment on `IRpcLifecycle`
     - If the only code change is this comment after a successful testing process, extra building is required but testing rerun not required.
   - `TODO_RPC_Definition.md`

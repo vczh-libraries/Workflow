@@ -2,7 +2,7 @@
 #define VCZH_WORKFLOW_TEST_RPC_DUAL_JSON_DISPATCHER_MOCK
 
 #include "RpcDualLifecycleMock.h"
-#include "../../Source/Library/Rpc/WfLibraryRpcJson.h"
+#include "../../Source/Library/RpcJson/WfLibraryRpcJson.h"
 
 namespace vl
 {

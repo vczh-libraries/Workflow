@@ -1,5 +1,5 @@
 #include "WfLibraryRpcJson.h"
-#include "WfLibraryRpcWrappers.h"
+#include "../Rpc/WfLibraryRpcWrappers.h"
 #include "../WfLibraryCppHelper.h"
 #include "../WfLibraryReflection.h"
 

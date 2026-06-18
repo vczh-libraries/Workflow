@@ -21,6 +21,8 @@ function CopySerializationFiles($metadataFolder, $schemaFolder) {
     Copy-Item (Join-Path $repoRoot "$metadataFolder\Serialization_*.d.ts") $targetDir
 }
 
+Copy-Item (Join-Path $repoRoot "Release\Rpc.d.ts") (Join-Path $scriptDir "Rpc.d.ts") -Force
+
 CopySerializationFiles "Test\Generated\RpcMetadata32" "DataSchema32"
 CopySerializationFiles "Test\Generated\RpcMetadata64" "DataSchema64"
 

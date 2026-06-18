@@ -1,7 +1,7 @@
-#ifndef VCZH_WORKFLOW_TEST_RPCJSONDISPATCHERSERVER
-#define VCZH_WORKFLOW_TEST_RPCJSONDISPATCHERSERVER
+#ifndef VCZH_WORKFLOW_LIBRARY_RPC_JSON_DISPATCHER_SERVER
+#define VCZH_WORKFLOW_LIBRARY_RPC_JSON_DISPATCHER_SERVER
 
-#include "RpcJsonDispatcherShared.h"
+#include "WfLibraryRpcJsonDispatcherShared.h"
 
 namespace vl::rpc_controller::channeling
 {

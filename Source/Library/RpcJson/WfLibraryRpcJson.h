@@ -9,7 +9,7 @@ JSON Helpers:
 #ifndef VCZH_WORKFLOW_LIBRARY_RPC_JSON
 #define VCZH_WORKFLOW_LIBRARY_RPC_JSON
 
-#include "WfLibraryRpcLifecycle.h"
+#include "../Rpc/WfLibraryRpcLifecycle.h"
 #include <VlppGlrParser.h>
 
 namespace vl

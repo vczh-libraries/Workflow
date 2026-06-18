@@ -1,7 +1,7 @@
 #include "ChatBotApp.h"
 #include "Shared/ChatBotHttp.h"
 #include "Shared/ChatBotJsonDispatcherClient.h"
-#include "Shared/RpcJsonDispatcherServer.h"
+#include "../../../Source/Library/RpcJson/WfLibraryRpcJsonDispatcherServer.h"
 #include <VlppOS.Windows.h>
 
 using namespace vl;

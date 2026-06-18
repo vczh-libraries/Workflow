@@ -112,7 +112,7 @@ When adding or updating Workflow samples, indent the sample body with 2 spaces e
 
 ## Type-check shared `Rpc.d.ts` standalone
 
-When `Test/TypeScript/Rpc.d.ts` changes, type-check it directly with strict TypeScript settings before relying on the full package build. This catches envelope-schema mistakes even when no generated `Serialization_*.d.ts` file happens to instantiate the affected shape.
+When `Release/Rpc.d.ts` changes, type-check it directly with strict TypeScript settings before relying on the full package build. Run `Test/TypeScript/prepare.ps1` to refresh the package-local copy before the full package build. This catches envelope-schema mistakes even when no generated `Serialization_*.d.ts` file happens to instantiate the affected shape.
 
 This is especially important when dispatcher request shapes are renamed or removed, such as replacing a local-service declaration request with a remote-service declaration request.
 
@@ -126,7 +126,7 @@ When a single RPC sample grows to cover unrelated behavior, split it into focuse
 
 ## Use static scans for Workflow library declaration and inline-refactor checks
 
-For Workflow library header/source cleanup, use static scans alongside builds to verify mechanical invariants such as no non-`constexpr` inline function definitions remaining in `Source/Library/WfLibrary*.h` or `Source/Library/Rpc/WfLibrary*.h`, and no namespace-level free-function forward declarations missing explicit `extern` in the matching library files.
+For Workflow library header/source cleanup, use static scans alongside builds to verify mechanical invariants such as no non-`constexpr` inline function definitions remaining in `Source/Library/WfLibrary*.h`, `Source/Library/Rpc/WfLibrary*.h`, or `Source/Library/RpcJson/WfLibrary*.h`, and no namespace-level free-function forward declarations missing explicit `extern` in the matching library files.
 
 ## Verify generated RPC file renames with stale-reference scans
 

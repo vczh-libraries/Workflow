@@ -1,7 +1,7 @@
 #ifndef VCZH_WORKFLOW_TEST_CHATBOTJSONDISPATCHERCLIENT
 #define VCZH_WORKFLOW_TEST_CHATBOTJSONDISPATCHERCLIENT
 
-#include "RpcJsonDispatcherClient.h"
+#include "../../../../Source/Library/RpcJson/WfLibraryRpcJsonDispatcherClient.h"
 #include "ChatBotApp.h"
 
 namespace chatbot

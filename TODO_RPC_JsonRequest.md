@@ -1,6 +1,36 @@
 # Workflow Interface Based RPC (JSON Request Routing)
 
-This document describes the runtime meaning of the generic JSON dispatcher envelopes declared in `Test/TypeScript/Rpc.d.ts`. It is independent of any particular sample or transport. Generated interface and serialization rules are covered by `TODO_RPC_Definition.md`, `TODO_RPC_GeneratedWrappers.md`, and `TODO_RPC_Json.md`.
+This document describes the runtime meaning of the generic JSON dispatcher envelopes declared in `Release/Rpc.d.ts`. It is independent of any particular sample or transport. Generated interface and serialization rules are covered by `TODO_RPC_Definition.md`, `TODO_RPC_GeneratedWrappers.md`, and `TODO_RPC_Json.md`.
+
+## Setup
+
+The reusable JSON RPC setup lives in `Source/Library/RpcJson`. User code normally touches only these pieces:
+
+- Include `WfLibraryRpcJson.h` when building a custom transport adapter around `vl::rpc_controller::IRpcJsonMessageDispatcher`, `vl::rpc_controller::RpcJsonDispatcher`, and `vl::rpc_controller::RpcJsonLifecycle`.
+- Include `WfLibraryRpcJsonDispatcherClient.h` and `WfLibraryRpcJsonDispatcherServer.h` when using the default channel-backed setup in `vl::rpc_controller::channeling`.
+- Create one `RpcJsonDispatcher(clientId, messageDispatcher)` and one `RpcJsonLifecycle(clientId, dispatcher)` per RPC endpoint. The `clientId` must be the endpoint id assigned by the transport.
+- Configure the lifecycle from generated RPC code before calling `Initialize()`: set the generated id map, pass the generated JSON serializer, JSON object ops, JSON object event ops, type-id callback, and event-attacher callback to `RpcJsonLifecycle::Register`, and register the generated wrapper factory.
+- Register local services with `IRpcLifecycle::RegisterLocalService(typeId, service)` before lifecycle initialization. Remote services are discovered through service declaration messages and can be requested by type name after initialization.
+- Use `RpcJsonDispatcherClientForTaskQueue` for endpoint-side channel IO when a single `TaskQueue` should process incoming RPC requests. A small generated-app wrapper should derive from it, call `SetRpcObjects`, and expose an app-specific `InitializeRpc(clientId)` function.
+- Use `RpcJsonDispatcherServerForTaskQueue` for the transport coordinator. It is not a service owner; it tracks connected client ids, forwards broadcast requests, caches service declarations, and consolidates broadcast responses.
+- Pass required remote service type names to `WaitForServer` or `ConnectLocalServer` so client initialization waits until those services have been declared.
+- Call `FinalizeRpc()` on endpoint dispatchers before shutting down the transport or unloading generated Workflow context.
+
+`Test/UnitTest/ChatBotServer/Shared/ChatBotJsonDispatcherClient.(h|cpp)` shows the intended generated-app wrapper shape. It creates the dispatcher/lifecycle pair, wires generated ChatBot JSON serializer and ops, registers the wrapper factory, and leaves transport behavior to `Source/Library/RpcJson`. `Test/UnitTest/ChatBotServer/Main.cpp` and `Test/UnitTest/ChatBotClient/Main.cpp` show the server coordinator, local service endpoint, remote client endpoint, required-service wait list, local service registration, and task queue lifetime.
+
+### Implementation
+
+`IRpcJsonMessageDispatcher` is the transport boundary. `AllocateRequestId()` provides request ids for JSON envelopes, and `OnJsonRequest(message, requestType)` sends a direct, broadcast, or broadcast-and-drop request through the transport. `IRpcJsonMessageDispatcher::DefaultTranslate` is the receiver-side helper that routes JSON envelopes to local object ops, object event ops, or lifecycle service declaration handling.
+
+`RpcJsonObjectOps` and `RpcJsonObjectEventOps` adapt generated JSON ops to the shared envelopes declared by `Release/Rpc.d.ts`. They build request objects on the caller side, validate matching responses, and translate received requests back to `IRpcObjectOps` or `IRpcObjectEventOps`.
+
+`RpcJsonDispatcher` is the `IRpcDispatcher` implementation for JSON transport. It creates per-target object ops, one broadcast object-event ops adapter, and sends local service declarations as broadcast-and-drop messages.
+
+`RpcJsonLifecycle` derives from `RpcLifecycleBase` and installs the generated JSON serializer, object ops, event ops, type-id callback, and event-attacher callback. It also wraps predefined byref collection operations through the reusable list/object ops adapters.
+
+`WfLibraryRpcJsonDispatcherClient` owns endpoint-side channel details that are not part of the generic RPC lifecycle: nested request processing while waiting for a response, response buffering by request id, pre-initialization service declaration caching, required-service waiting, and server-coordinator login/logout messages.
+
+`WfLibraryRpcJsonDispatcherServer` owns coordinator-side channel details: connected client tracking, broadcast request redirection, expected response tracking, response consolidation, service declaration replay to future clients, and client disconnect cleanup. The task-queue subclasses keep scheduling policy outside the core translation helpers.
 
 Every JSON RPC envelope has:
 

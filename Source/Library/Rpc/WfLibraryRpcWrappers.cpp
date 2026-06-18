@@ -1,6 +1,6 @@
 #include "WfLibraryRpcWrappers.h"
 #include "WfLibraryRpcLifecycle.h"
-#include "WfLibraryRpcJson.h"
+#include "../RpcJson/WfLibraryRpcJson.h"
 #include "../WfLibraryReflection.h"
 
 namespace vl

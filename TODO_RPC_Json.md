@@ -79,7 +79,7 @@ When an RPC method returns an `@rpc:Byval` collection, JSON serialization still 
 
 ## TypeScript Schema for Dispatcher Messages
 
-`Test/TypeScript/Rpc.d.ts` describes the JSON message envelopes for the generic RPC ops boundary represented by `IRpcDispatcher`. It does not know the generated RPC metadata for a sample, so every field that contains a serialized `JsonNode` uses a generic type parameter `T`. A concrete test should read `T` as `KnownTypeSchema | UnknownTypeSchema` from the generated `Serialization_*.d.ts` file for that sample.
+`Release/Rpc.d.ts` describes the JSON message envelopes for the generic RPC ops boundary represented by `IRpcDispatcher`. It does not know the generated RPC metadata for a sample, so every field that contains a serialized `JsonNode` uses a generic type parameter `T`. A concrete test should read `T` as `KnownTypeSchema | UnknownTypeSchema` from the generated `Serialization_*.d.ts` file for that sample.
 
 The declarations map directly to the C++ ops interfaces in `Source/Library/Rpc/WfLibraryRpc.h`:
 

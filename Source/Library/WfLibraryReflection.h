@@ -11,7 +11,7 @@ Interfaces:
 
 #include "WfLibraryPredefined.h"
 #include "Rpc/WfLibraryRpc.h"
-#include "Rpc/WfLibraryRpcJson.h"
+#include "RpcJson/WfLibraryRpcJson.h"
 #include "Rpc/WfLibraryRpcWrappers.h"
 
 namespace vl

@@ -1,4 +1,4 @@
-#include "RpcJsonDispatcherClient.h"
+#include "WfLibraryRpcJsonDispatcherClient.h"
 
 #include <cwchar>
 
