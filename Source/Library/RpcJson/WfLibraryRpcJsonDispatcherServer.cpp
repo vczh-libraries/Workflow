@@ -10,52 +10,52 @@ namespace vl::rpc_controller::channeling
 
 	namespace
 	{
-		Ptr<JsonLiteral> CreateJsonLiteral(JsonLiteralValue value)
+		Ptr<JsonLiteral> ServerCreateJsonLiteral(JsonLiteralValue value)
 		{
 			auto node = Ptr(new JsonLiteral);
 			node->value = value;
 			return node;
 		}
 
-		Ptr<JsonString> CreateJsonString(const WString& value)
+		Ptr<JsonString> ServerCreateJsonString(const WString& value)
 		{
 			auto node = Ptr(new JsonString);
 			node->content.value = value;
 			return node;
 		}
 
-		Ptr<JsonNumber> CreateJsonNumber(vint value)
+		Ptr<JsonNumber> ServerCreateJsonNumber(vint value)
 		{
 			auto node = Ptr(new JsonNumber);
 			node->content.value = itow(value);
 			return node;
 		}
 
-		Ptr<JsonArray> CreateJsonArray()
+		Ptr<JsonArray> ServerCreateJsonArray()
 		{
 			return Ptr(new JsonArray);
 		}
 
-		Ptr<JsonObject> CreateJsonObject()
+		Ptr<JsonObject> ServerCreateJsonObject()
 		{
 			return Ptr(new JsonObject);
 		}
 
-		Ptr<JsonObject> GetJsonObject(Ptr<JsonNode> node)
+		Ptr<JsonObject> ServerGetJsonObject(Ptr<JsonNode> node)
 		{
 			auto object = node.Cast<JsonObject>();
 			CHECK_ERROR(object, L"RpcJsonDispatcherServer expects a JSON object.");
 			return object;
 		}
 
-		Ptr<JsonArray> GetJsonArray(Ptr<JsonNode> node)
+		Ptr<JsonArray> ServerGetJsonArray(Ptr<JsonNode> node)
 		{
 			auto array = node.Cast<JsonArray>();
 			CHECK_ERROR(array, L"RpcJsonDispatcherServer expects a JSON array.");
 			return array;
 		}
 
-		void AddJsonObjectField(Ptr<JsonObject> object, const WString& name, Ptr<JsonNode> value)
+		void ServerAddJsonObjectField(Ptr<JsonObject> object, const WString& name, Ptr<JsonNode> value)
 		{
 			auto field = Ptr(new JsonObjectField);
 			field->name.value = name;
@@ -63,7 +63,7 @@ namespace vl::rpc_controller::channeling
 			object->fields.Add(field);
 		}
 
-		void SetJsonObjectField(Ptr<JsonObject> object, const WString& name, Ptr<JsonNode> value)
+		void ServerSetJsonObjectField(Ptr<JsonObject> object, const WString& name, Ptr<JsonNode> value)
 		{
 			for (auto field : object->fields)
 			{
@@ -73,10 +73,10 @@ namespace vl::rpc_controller::channeling
 					return;
 				}
 			}
-			AddJsonObjectField(object, name, value);
+			ServerAddJsonObjectField(object, name, value);
 		}
 
-		Ptr<JsonNode> FindJsonObjectField(Ptr<JsonObject> object, const WString& name)
+		Ptr<JsonNode> ServerFindJsonObjectField(Ptr<JsonObject> object, const WString& name)
 		{
 			for (auto field : object->fields)
 			{
@@ -88,44 +88,44 @@ namespace vl::rpc_controller::channeling
 			return nullptr;
 		}
 
-		Ptr<JsonNode> GetJsonObjectField(Ptr<JsonObject> object, const WString& name)
+		Ptr<JsonNode> ServerGetJsonObjectField(Ptr<JsonObject> object, const WString& name)
 		{
-			auto field = FindJsonObjectField(object, name);
+			auto field = ServerFindJsonObjectField(object, name);
 			CHECK_ERROR(field, L"RpcJsonDispatcherServer expects a JSON object field.");
 			return field;
 		}
 
-		WString GetJsonString(Ptr<JsonNode> node)
+		WString ServerGetJsonString(Ptr<JsonNode> node)
 		{
 			auto stringNode = node.Cast<JsonString>();
 			CHECK_ERROR(stringNode, L"RpcJsonDispatcherServer expects a JSON string.");
 			return stringNode->content.value;
 		}
 
-		vint GetJsonInt(Ptr<JsonNode> node)
+		vint ServerGetJsonInt(Ptr<JsonNode> node)
 		{
 			auto numberNode = node.Cast<JsonNumber>();
 			CHECK_ERROR(numberNode, L"RpcJsonDispatcherServer expects a JSON number.");
 			return wtoi(numberNode->content.value);
 		}
 
-		bool IsJsonNull(Ptr<JsonNode> node)
+		bool ServerIsJsonNull(Ptr<JsonNode> node)
 		{
 			auto literal = node.Cast<JsonLiteral>();
 			return literal && literal->value == JsonLiteralValue::Null;
 		}
 
-		bool StartsWith(const WString& value, const wchar_t* prefix)
+		bool ServerStartsWith(const WString& value, const wchar_t* prefix)
 		{
 			auto prefixLength = (vint)wcslen(prefix);
 			return value.Length() >= prefixLength && wcsncmp(value.Buffer(), prefix, prefixLength) == 0;
 		}
 
-		WString TryReadRpcMethod(Ptr<JsonNode> message)
+		WString ServerTryReadRpcMethod(Ptr<JsonNode> message)
 		{
 			if (auto object = message.Cast<JsonObject>())
 			{
-				if (auto field = FindJsonObjectField(object, WString::Unmanaged(L"rpcMethod")))
+				if (auto field = ServerFindJsonObjectField(object, WString::Unmanaged(L"rpcMethod")))
 				{
 					if (auto stringNode = field.Cast<JsonString>())
 					{
@@ -136,74 +136,74 @@ namespace vl::rpc_controller::channeling
 			return WString::Empty;
 		}
 
-		bool IsRpcRequest(const WString& rpcMethod)
+		bool ServerIsRpcRequest(const WString& rpcMethod)
 		{
-			return StartsWith(rpcMethod, L"Request:");
+			return ServerStartsWith(rpcMethod, L"Request:");
 		}
 
-		bool IsRpcResponse(const WString& rpcMethod)
+		bool ServerIsRpcResponse(const WString& rpcMethod)
 		{
-			return StartsWith(rpcMethod, L"Response:");
+			return ServerStartsWith(rpcMethod, L"Response:");
 		}
 
-		bool IsBroadcastRequest(const WString& rpcMethod)
+		bool ServerIsBroadcastRequest(const WString& rpcMethod)
 		{
 			return rpcMethod == WString::Unmanaged(L"Request:IObjectEventOps_InvokeEvent");
 		}
 
-		bool IsBroadcastAndDropRequest(const WString& rpcMethod)
+		bool ServerIsBroadcastAndDropRequest(const WString& rpcMethod)
 		{
 			return rpcMethod == WString::Unmanaged(L"Request:IRpcDispatcher_DeclareRemoteService");
 		}
 
-		vint ReadRequestId(Ptr<JsonNode> message)
+		vint ServerReadRequestId(Ptr<JsonNode> message)
 		{
-			return GetJsonInt(GetJsonObjectField(GetJsonObject(message), WString::Unmanaged(L"rpcRequestId")));
+			return ServerGetJsonInt(ServerGetJsonObjectField(ServerGetJsonObject(message), WString::Unmanaged(L"rpcRequestId")));
 		}
 
-		void WriteRequestId(Ptr<JsonNode> message, vint requestId)
+		void ServerWriteRequestId(Ptr<JsonNode> message, vint requestId)
 		{
-			SetJsonObjectField(GetJsonObject(message), WString::Unmanaged(L"rpcRequestId"), CreateJsonNumber(requestId));
+			ServerSetJsonObjectField(ServerGetJsonObject(message), WString::Unmanaged(L"rpcRequestId"), ServerCreateJsonNumber(requestId));
 		}
 
-		vint ReadSourceClientId(Ptr<JsonNode> message)
+		vint ServerReadSourceClientId(Ptr<JsonNode> message)
 		{
-			return GetJsonInt(GetJsonObjectField(GetJsonObject(message), WString::Unmanaged(L"sourceClientId")));
+			return ServerGetJsonInt(ServerGetJsonObjectField(ServerGetJsonObject(message), WString::Unmanaged(L"sourceClientId")));
 		}
 
-		void WriteSourceClientId(Ptr<JsonNode> message, vint clientId)
+		void ServerWriteSourceClientId(Ptr<JsonNode> message, vint clientId)
 		{
-			SetJsonObjectField(GetJsonObject(message), WString::Unmanaged(L"sourceClientId"), CreateJsonNumber(clientId));
+			ServerSetJsonObjectField(ServerGetJsonObject(message), WString::Unmanaged(L"sourceClientId"), ServerCreateJsonNumber(clientId));
 		}
 
-		Ptr<JsonObject> CreateRpcMessage(const WString& rpcMethod, vint requestId, vint sourceClientId)
+		Ptr<JsonObject> ServerCreateRpcMessage(const WString& rpcMethod, vint requestId, vint sourceClientId)
 		{
-			auto message = CreateJsonObject();
-			AddJsonObjectField(message, WString::Unmanaged(L"rpcMethod"), CreateJsonString(rpcMethod));
-			AddJsonObjectField(message, WString::Unmanaged(L"rpcRequestId"), CreateJsonNumber(requestId));
-			AddJsonObjectField(message, WString::Unmanaged(L"sourceClientId"), CreateJsonNumber(sourceClientId));
+			auto message = ServerCreateJsonObject();
+			ServerAddJsonObjectField(message, WString::Unmanaged(L"rpcMethod"), ServerCreateJsonString(rpcMethod));
+			ServerAddJsonObjectField(message, WString::Unmanaged(L"rpcRequestId"), ServerCreateJsonNumber(requestId));
+			ServerAddJsonObjectField(message, WString::Unmanaged(L"sourceClientId"), ServerCreateJsonNumber(sourceClientId));
 			return message;
 		}
 
-		Ptr<JsonObject> CreateLoginMessage(vint serverClientId)
+		Ptr<JsonObject> ServerCreateLoginMessage(vint serverClientId)
 		{
-			auto message = CreateJsonObject();
-			AddJsonObjectField(message, WString::Unmanaged(L"rpcChannelingSystem"), CreateJsonString(WString::Unmanaged(L"Login")));
-			AddJsonObjectField(message, WString::Unmanaged(L"serverClientId"), CreateJsonNumber(serverClientId));
+			auto message = ServerCreateJsonObject();
+			ServerAddJsonObjectField(message, WString::Unmanaged(L"rpcChannelingSystem"), ServerCreateJsonString(WString::Unmanaged(L"Login")));
+			ServerAddJsonObjectField(message, WString::Unmanaged(L"serverClientId"), ServerCreateJsonNumber(serverClientId));
 			return message;
 		}
 
-		bool TryReadLogoutMessage(Ptr<JsonNode> message)
+		bool ServerTryReadLogoutMessage(Ptr<JsonNode> message)
 		{
 			if (auto object = message.Cast<JsonObject>())
 			{
-				auto systemField = FindJsonObjectField(object, WString::Unmanaged(L"rpcChannelingSystem"));
-				return systemField && GetJsonString(systemField) == WString::Unmanaged(L"Logout");
+				auto systemField = ServerFindJsonObjectField(object, WString::Unmanaged(L"rpcChannelingSystem"));
+				return systemField && ServerGetJsonString(systemField) == WString::Unmanaged(L"Logout");
 			}
 			return false;
 		}
 
-		bool IsBroadcastReady(Ptr<RpcJsonDispatcherServer::PendingBroadcast> pending)
+		bool ServerIsBroadcastReady(Ptr<RpcJsonDispatcherServer::PendingBroadcast> pending)
 		{
 			for (auto clientId : pending->expectedClientIds)
 			{
@@ -241,22 +241,22 @@ RpcJsonDispatcherServer
 
 	JsonPackage RpcJsonDispatcherServer::CreateBroadcastResponse(vint sourceClientId, vint targetClientId, vint requestId, Ptr<PendingBroadcast> pending)
 	{
-		auto response = CreateRpcMessage(WString::Unmanaged(L"Response:Broadcast_Response"), requestId, sourceClientId);
-		AddJsonObjectField(response, WString::Unmanaged(L"targetClientId"), CreateJsonNumber(targetClientId));
+		auto response = ServerCreateRpcMessage(WString::Unmanaged(L"Response:Broadcast_Response"), requestId, sourceClientId);
+		ServerAddJsonObjectField(response, WString::Unmanaged(L"targetClientId"), ServerCreateJsonNumber(targetClientId));
 
 		if (pending && pending->hasNonNullResponse)
 		{
-			auto consolidated = CreateJsonArray();
+			auto consolidated = ServerCreateJsonArray();
 			for (auto clientId : pending->expectedClientIds)
 			{
 				auto index = pending->responses.Keys().IndexOf(clientId);
 				if (index != -1)
 				{
-					auto responseObject = GetJsonObject(pending->responses.Values()[index]);
-					auto responseField = FindJsonObjectField(responseObject, WString::Unmanaged(L"response"));
-					if (responseField && !IsJsonNull(responseField))
+					auto responseObject = ServerGetJsonObject(pending->responses.Values()[index]);
+					auto responseField = ServerFindJsonObjectField(responseObject, WString::Unmanaged(L"response"));
+					if (responseField && !ServerIsJsonNull(responseField))
 					{
-						auto array = GetJsonArray(responseField);
+						auto array = ServerGetJsonArray(responseField);
 						for (auto item : array->items)
 						{
 							consolidated->items.Add(item);
@@ -264,11 +264,11 @@ RpcJsonDispatcherServer
 					}
 				}
 			}
-			AddJsonObjectField(response, WString::Unmanaged(L"response"), consolidated);
+			ServerAddJsonObjectField(response, WString::Unmanaged(L"response"), consolidated);
 		}
 		else
 		{
-			AddJsonObjectField(response, WString::Unmanaged(L"response"), CreateJsonLiteral(JsonLiteralValue::Null));
+			ServerAddJsonObjectField(response, WString::Unmanaged(L"response"), ServerCreateJsonLiteral(JsonLiteralValue::Null));
 		}
 		return response;
 	}
@@ -301,8 +301,8 @@ RpcJsonDispatcherServer
 
 		copy_visitor::AstVisitor copier;
 		auto redirectedMessage = copier.CopyNode(message.Obj());
-		WriteRequestId(redirectedMessage, redirectedRequestId);
-		WriteSourceClientId(redirectedMessage, serverClientId);
+		ServerWriteRequestId(redirectedMessage, redirectedRequestId);
+		ServerWriteSourceClientId(redirectedMessage, serverClientId);
 
 		JsonPackage immediateResponse;
 		bool shouldFlush = false;
@@ -366,13 +366,13 @@ RpcJsonDispatcherServer
 
 	bool RpcJsonDispatcherServer::TryHandleBroadcastResponse(vint senderClientId, JsonPackage response)
 	{
-		if (TryReadRpcMethod(response) != WString::Unmanaged(L"Response:Broadcast_Response"))
+		if (ServerTryReadRpcMethod(response) != WString::Unmanaged(L"Response:Broadcast_Response"))
 		{
 			return false;
 		}
 
 		CompletedBroadcast completed;
-		auto redirectedRequestId = ReadRequestId(response);
+		auto redirectedRequestId = ServerReadRequestId(response);
 		bool handled = false;
 
 		SPIN_LOCK(lockBroadcasts)
@@ -386,15 +386,15 @@ RpcJsonDispatcherServer
 
 				if (pending->expectedClientIds.Contains(senderClientId))
 				{
-					auto responseObject = GetJsonObject(response);
-					auto responseField = FindJsonObjectField(responseObject, WString::Unmanaged(L"response"));
-					if (responseField && !IsJsonNull(responseField))
+					auto responseObject = ServerGetJsonObject(response);
+					auto responseField = ServerFindJsonObjectField(responseObject, WString::Unmanaged(L"response"));
+					if (responseField && !ServerIsJsonNull(responseField))
 					{
 						pending->hasNonNullResponse = true;
 					}
 					pending->responses.Set(senderClientId, response);
 
-					if (IsBroadcastReady(pending))
+					if (ServerIsBroadcastReady(pending))
 					{
 						completed = CompleteBroadcastLocked(key);
 					}
@@ -427,7 +427,7 @@ RpcJsonDispatcherServer
 		}
 
 		CHECK_ERROR(rpcChannel, L"RpcJsonDispatcherServer needs an RPC channel.");
-		rpcChannel->SendToClient(clientId, CreateLoginMessage(GetServerClientId()));
+		rpcChannel->SendToClient(clientId, ServerCreateLoginMessage(GetServerClientId()));
 		for (auto request : declarations)
 		{
 			rpcChannel->SendToClient(clientId, request);
@@ -497,7 +497,7 @@ RpcJsonDispatcherServer
 				if (expectedIndex != -1)
 				{
 					pending->expectedClientIds.RemoveAt(expectedIndex);
-					if (IsBroadcastReady(pending))
+					if (ServerIsBroadcastReady(pending))
 					{
 						completedBroadcasts.Add(CompleteBroadcastLocked(key));
 					}
@@ -520,27 +520,27 @@ RpcJsonDispatcherServer
 
 	void RpcJsonDispatcherServer::OnRead(vint senderClientId, const JsonPackage& package)
 	{
-		if (TryReadLogoutMessage(package))
+		if (ServerTryReadLogoutMessage(package))
 		{
 			DisconnectClient(senderClientId);
 			return;
 		}
 
-		auto rpcMethod = TryReadRpcMethod(package);
+		auto rpcMethod = ServerTryReadRpcMethod(package);
 		CHECK_ERROR(rpcMethod != WString::Empty, L"RpcJsonDispatcherServer expects an RPC message.");
 
-		if (IsRpcRequest(rpcMethod))
+		if (ServerIsRpcRequest(rpcMethod))
 		{
-			auto originalClientId = ReadSourceClientId(package);
+			auto originalClientId = ServerReadSourceClientId(package);
 			CHECK_ERROR(originalClientId == senderClientId, L"RpcJsonDispatcherServer received a request with a mismatched source client id.");
 
-			if (IsBroadcastAndDropRequest(rpcMethod))
+			if (ServerIsBroadcastAndDropRequest(rpcMethod))
 			{
 				HandleServiceDeclaration(originalClientId, package);
 			}
-			else if (IsBroadcastRequest(rpcMethod))
+			else if (ServerIsBroadcastRequest(rpcMethod))
 			{
-				auto immediateResponse = StartBroadcast(originalClientId, ReadRequestId(package), package);
+				auto immediateResponse = StartBroadcast(originalClientId, ServerReadRequestId(package), package);
 				if (immediateResponse)
 				{
 					SendJsonResponse(originalClientId, immediateResponse);
@@ -553,7 +553,7 @@ RpcJsonDispatcherServer
 			return;
 		}
 
-		CHECK_ERROR(IsRpcResponse(rpcMethod), L"RpcJsonDispatcherServer expects an RPC request or response.");
+		CHECK_ERROR(ServerIsRpcResponse(rpcMethod), L"RpcJsonDispatcherServer expects an RPC request or response.");
 		if (!TryHandleBroadcastResponse(senderClientId, package))
 		{
 			CHECK_FAIL(L"RpcJsonDispatcherServer received an unmatched RPC response.");

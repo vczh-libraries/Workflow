@@ -174,7 +174,7 @@ namespace vl
 			}
 
 		}
-		
+
 /***********************************************************************
 * RpcByrefEnumerator
 ***********************************************************************/
@@ -241,7 +241,7 @@ namespace vl
 		{
 			return CreateTrackedProxy<RpcByrefEnumerator, IValueEnumerator>(lifecycle, GetRemoteListOps(lifecycle, ref, serializer)->EnumCreate(ref), serializer);
 		}
-		
+
 /***********************************************************************
 * RpcByrefReadonlyList
 ***********************************************************************/
@@ -289,7 +289,7 @@ namespace vl
 		{
 			return GetRemoteListOps(lifecycle, ref, serializer)->ListIndexOf(ref, SerializeValue(serializer, RpcBoxValueByref(value, lifecycle)));
 		}
-		
+
 /***********************************************************************
 * RpcByrefList
 ***********************************************************************/
@@ -358,7 +358,7 @@ namespace vl
 		{
 			GetRemoteListOps(lifecycle, ref, serializer)->ListClear(ref);
 		}
-		
+
 /***********************************************************************
 * RpcByrefArray
 ***********************************************************************/
@@ -416,7 +416,7 @@ namespace vl
 		{
 			GetRemoteListOps(lifecycle, ref, serializer)->ArrayResize(ref, size);
 		}
-		
+
 /***********************************************************************
 * RpcByrefObservableList
 ***********************************************************************/
@@ -495,7 +495,7 @@ namespace vl
 		{
 			GetRemoteListOps(lifecycle, ref, serializer)->ListClear(ref);
 		}
-		
+
 /***********************************************************************
 * RpcByrefDictionary
 ***********************************************************************/
@@ -557,7 +557,7 @@ namespace vl
 		{
 			GetRemoteListOps(lifecycle, ref, serializer)->DictClear(ref);
 		}
-		
+
 /***********************************************************************
 * RpcCalleeListOps
 ***********************************************************************/
@@ -763,7 +763,7 @@ namespace vl
 			if (!dict) throw Exception(L"RpcCalleeListOps::DictGetValues cannot find the target dictionary.");
 			return lifecycle->PtrToRef(dict->GetValues());
 		}
-		
+
 /***********************************************************************
 * RpcCalleeListEventOps
 ***********************************************************************/
