@@ -22,6 +22,7 @@ DEVELOPER: Zihan Chen(vczh)
 #include "..\..\Source\Parser\Generated\WorkflowParser.h"
 #include "..\..\Source\Parser\WfExpression.h"
 #include "..\..\Source\Analyzer\WfAnalyzer.h"
-#include "..\..\Source\Analyzer\WfAnalyzer_GenerateRpc.h"
+#include "..\..\Source\Analyzer\Rpc\WfAnalyzer_RpcAstHelpers.h"
+#include "..\..\Source\Analyzer\Rpc\WfAnalyzer_GenerateRpc.h"
 #include "..\..\Source\Emitter\WfEmitter.h"
 #include "..\..\Source\Cpp\WfCpp.h"
