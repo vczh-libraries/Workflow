@@ -28,6 +28,19 @@ Workflow JSON RPC uses `RpcJsonDispatcher`, `RpcJsonLifecycle`, generated JSON o
 
 [API Explanation](./KB_Workflow_JsonRequestRouting.md)
 
+#### Compiler Driver and C++ Generation
+
+Workflow compiler driver APIs let callers parse and analyze Workflow source modules, detect when RPC metadata is generated, create RPC wrapper Workflow modules, generate C++ for the final module set, and merge x86/x64 generated C++ output.
+
+- Use `vl::workflow::emitter::Compile` for ordinary Workflow source strings when a runtime assembly is the only output.
+- Use `vl::workflow::analyzer::WfLexicalScopeManager` when compiler state, errors, RPC metadata, generated wrapper modules, or C++ generation are needed.
+- Use `vl::workflow::analyzer::GenerateModuleRpc` and `vl::workflow::analyzer::GenerateModuleRpcJson` after a successful RPC-validating rebuild leaves `manager.rpcMetadata->metadataModule` available.
+- Use `vl::workflow::WfPrint` to capture generated RPC metadata and wrapper modules as Workflow text.
+- Use `vl::workflow::cppcodegen::GenerateCppFiles` to generate the full C++ file set from the final analyzed module set.
+- Use `vl::workflow::cppcodegen::MergeCppMultiPlatform` and `vl::workflow::cppcodegen::MergeCppFileContent` to combine x86/x64 generated output and preserve user implementation regions.
+
+[API Explanation](./KB_Workflow_CompilerDriverAndCppGeneration.md)
+
 ### Design Explanation
 
 #### Attribute System
