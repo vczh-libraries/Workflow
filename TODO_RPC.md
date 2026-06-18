@@ -17,5 +17,3 @@
 - A dedicated guidelines for VlppOS oriented synchronization best practice.
 - A dedicated guidelines for codegen tools, including input output format and .d.ts
 - `BuildRelease.ps1` copy `Workflow/Release/Rpc.d.ts`.
-- AST building helper functions.
-  - Refactor is needed to scan if some functions in RPC code generation is duplicating those in `WfAnalyzer.h`.
