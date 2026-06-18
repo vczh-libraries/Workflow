@@ -1,6 +1,6 @@
-# Workflow Interface Based RPC (Generated Wrappers)
+# Workflow Generated RPC Wrappers
 
-This document describes the generated C++ functions produced from Workflow RPC metadata and how an application should wire them into an RPC lifecycle. Attribute rules and serializable type rules are covered by `TODO_RPC_Definition.md`.
+This document describes the generated C++ functions produced from Workflow RPC metadata and how an application should wire them into an RPC lifecycle. Attribute rules and serializable type rules are covered by [Workflow Interface-Based RPC Definition](./KB_Workflow_InterfaceBasedRpcDefinition.md).
 
 ## When to Call Generated Functions
 
@@ -70,6 +70,6 @@ For an `@rpc:Byval` collection return, JSON object ops still serialize the trans
 
 JSON event sending follows the same argument rule through generated strong typed caller-side ops. The generated listener does not serialize arguments directly; it calls the strong typed ops method, and the JSON ops method boxes and serializes arguments before broadcasting. JSON event receiving deserializes the argument nodes before raising the local event under the suppression flag. Event exception maps still use `system::RpcException[int]`: JSON receive-side ops serialize the map using existing unknown-value support, and JSON send-side ops deserialize it before deciding whether to raise a normal Workflow exception.
 
-Known-type JSON serialization finishes by constructing the schema described in `TODO_RPC_Json.md`: primitives become JSON primitives or tagged primitive arrays as required, enums become numbers, structs become JSON objects, and collections become arrays or tagged collection objects. Unknown-type serialization includes enough type information in the JSON value for `rpcjson_Deserialize(node)` to reconstruct a reflected value.
+Known-type JSON serialization finishes by constructing the schema described in [Workflow JSON Serialization Schema](./KB_Workflow_Design_JsonSerializationSchema.md): primitives become JSON primitives or tagged primitive arrays as required, enums become numbers, structs become JSON objects, and collections become arrays or tagged collection objects. Unknown-type serialization includes enough type information in the JSON value for `rpcjson_Deserialize(node)` to reconstruct a reflected value.
 
 Deserialization validates the JSON shape it expects. Missing struct fields, unknown type tags, or unsupported reflected values raise exceptions. Interface references and byref collection references serialize through `RpcObjectReference`; deserialization converts the reference back through the lifecycle path when the value is unboxed.

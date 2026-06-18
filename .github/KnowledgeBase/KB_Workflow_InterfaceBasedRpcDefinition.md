@@ -1,4 +1,4 @@
-# Workflow Interface Based RPC (Attribute Definition)
+# Workflow Interface-Based RPC Definition
 
 ## Attributes
 

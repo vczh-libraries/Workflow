@@ -30,7 +30,7 @@ Usually, git commit and push are required after finishing, but there is one exce
   - `Release/Rpc.d.ts`
   - Comment on `IRpcLifecycle`
     - If the only code change is this comment after a successful testing process, extra building is required but testing rerun not required.
-  - `TODO_RPC_Definition.md`
-  - `TODO_RPC_Json.md`
-  - `TODO_RPC_JsonRequest.md`
-  - `TODO_RPC_GeneratedWrappers.md`
+  - [Workflow Interface-Based RPC Definition](../KnowledgeBase/KB_Workflow_InterfaceBasedRpcDefinition.md)
+  - [Workflow JSON Serialization Schema](../KnowledgeBase/KB_Workflow_Design_JsonSerializationSchema.md)
+  - [Workflow JSON Request Routing](../KnowledgeBase/KB_Workflow_JsonRequestRouting.md)
+  - [Workflow Generated RPC Wrappers](../KnowledgeBase/KB_Workflow_Design_GeneratedRpcWrappers.md)

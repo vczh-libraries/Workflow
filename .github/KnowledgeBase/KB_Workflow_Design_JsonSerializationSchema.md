@@ -1,4 +1,4 @@
-# Workflow Interface Based RPC (JSON Serialization Schema)
+# Workflow JSON Serialization Schema
 
 There are two kinds of JSON schema for RPC serializable types:
 - Schema for known types. They are used when the context gives you enough information therefore you know what type is expected without having to look into actual values, including `object` or `system::JsonNode`.
@@ -89,7 +89,7 @@ The declarations map directly to the C++ ops interfaces in `Source/Library/Rpc/W
 
 Request envelopes model how `IRpcDispatcher` chooses an ops object. Calls made through `SendToClient_ObjectOps` include both `sourceClientId` and `targetClientId`. Calls made through `BroadcastFromClient_ObjectEventOps` include only `sourceClientId` because the dispatcher expands the broadcast target list. Response envelopes are always one-to-one from the receiving client back to the requesting client, so they always contain both client ids. `IRpcListOps` and `IRpcListEventOps` are local adapters only: list methods are transported as `IObjectOps_InvokeMethod` with predefined negative method ids, and observable-list `ItemChanged` is transported as `IObjectEventOps_InvokeEvent` with the predefined negative event id.
 
-The stable internal transport structs are declared in `Rpc.d.ts` itself: `system_RpcObjectReference`, `system_RpcException`, and `system_RpcByvalReturnValue<T>`. The predefined JSON serializer owns `system::RpcObjectReference` and `system::RpcException` serialization; per-RPC generated serializers should not emit dedicated struct functions for them. Void-returning ops still have response envelopes, but no `response` field. Value-returning ops put the serialized value in `response`. `IRpcObjectEventOps::InvokeEvent`, including predefined observable-list `ItemChanged` events, returns the JSON form of `null | [number, system_RpcException][]`, matching `system::RpcException[int]` after deserialization. Request routing, response consolidation, and service declaration replay rules are specified in `TODO_RPC_JsonRequest.md`.
+The stable internal transport structs are declared in `Rpc.d.ts` itself: `system_RpcObjectReference`, `system_RpcException`, and `system_RpcByvalReturnValue<T>`. The predefined JSON serializer owns `system::RpcObjectReference` and `system::RpcException` serialization; per-RPC generated serializers should not emit dedicated struct functions for them. Void-returning ops still have response envelopes, but no `response` field. Value-returning ops put the serialized value in `response`. `IRpcObjectEventOps::InvokeEvent`, including predefined observable-list `ItemChanged` events, returns the JSON form of `null | [number, system_RpcException][]`, matching `system::RpcException[int]` after deserialization. Request routing, response consolidation, and service declaration replay rules are specified in [Workflow JSON Request Routing](./KB_Workflow_JsonRequestRouting.md).
 
 ## Other Strict Rules
 

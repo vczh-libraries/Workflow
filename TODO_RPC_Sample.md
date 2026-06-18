@@ -115,7 +115,7 @@ func clientMain(lc : IRpcLifecycle*) : string
 
 ## Goal
 
-In this task you are going to build and run test cases to verify if these cases are working, according to `TODO_RPC_Definition.md`
+In this task you are going to build and run test cases to verify if these cases are working, according to [Workflow Interface-Based RPC Definition](.github/KnowledgeBase/KB_Workflow_InterfaceBasedRpcDefinition.md).
 This test is to ensure that:
 - Wrapper Workflow Script code generation take members of base types of interfaces into consideration recursively.
 
