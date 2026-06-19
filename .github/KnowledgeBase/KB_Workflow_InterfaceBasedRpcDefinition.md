@@ -117,7 +117,7 @@ All types below count as serializable types, but serialization itself is optiona
 - `@rpc:Dynamic` can only be used inside an interface type with `@rpc:Interface`.
   - Not triggered any of the above error is triggered on the same attribute.
   - Triggered when the member it applies to is not in an interface with `@rpc:Interface`.
-  
+
 ## Semantic
 
 ## @rpc:Interface
