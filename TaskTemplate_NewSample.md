@@ -12,6 +12,14 @@ RPC samples are split into two files:
 
 Only `SAMPLE` is added to `IndexRpc.txt`. Both files must appear in `CompilerTest_LoadAndCompile` under `Resource Files\Rpc`.
 
+## Goal
+
+In this task you are going to build and run test cases to verify if these cases are working, according to [Workflow Interface-Based RPC Definition](.github/KnowledgeBase/KB_Workflow_InterfaceBasedRpcDefinition.md).
+This test is to ensure that:
+- Wrapper Workflow Script code generation take members of base types of interfaces into consideration recursively.
+
+If the current implemention is correct, the added samples should just pass the test.
+
 ## Sample Rpc\Inheritance.txt
 
 ```Workflow
@@ -112,11 +120,3 @@ func clientMain(lc : IRpcLifecycle*) : string
   return s; // [][One][][Two][][Derived]
 }
 ```
-
-## Goal
-
-In this task you are going to build and run test cases to verify if these cases are working, according to [Workflow Interface-Based RPC Definition](.github/KnowledgeBase/KB_Workflow_InterfaceBasedRpcDefinition.md).
-This test is to ensure that:
-- Wrapper Workflow Script code generation take members of base types of interfaces into consideration recursively.
-
-If the current implemention is correct, the added samples should just pass the test.
