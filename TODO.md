@@ -21,7 +21,6 @@
 - Can `WfInterfaceInstance` not inherit from `IDescriptable`?
 - Check error handling. Ensure crashing instead of covering.
 - A dedicated guidelines for codegen tools, including input output format and .d.ts
-- `BuildRelease.ps1` copy `Workflow/Release/Rpc.d.ts`.
 
 ### GacGen Awareness
 
