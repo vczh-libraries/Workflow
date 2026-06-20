@@ -1,9 +1,12 @@
 #include <Vlpp.h>
+#if defined VCZH_MSVC
 #define _WINSOCKAPI_
 #include <Windows.h>
+#endif
 
 using namespace vl;
 
+#if defined VCZH_MSVC
 WString GetExePath()
 {
 	wchar_t buffer[65536];
@@ -20,6 +23,7 @@ WString GetExePath()
 	}
 	return WString::CopyFrom(buffer, pos + 1);
 }
+#endif
 
 WString GetJsonRequestOutputPath()
 {
