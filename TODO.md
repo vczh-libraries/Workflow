@@ -20,7 +20,6 @@
   - https://github.com/vczh-libraries/Workflow/commit/7b0e54a1964774cbb011ea1e675aa8c72a3fbec4
 - Can `WfInterfaceInstance` not inherit from `IDescriptable`?
 - Check error handling. Ensure crashing instead of covering.
-- A dedicated guidelines for codegen tools, including input output format and .d.ts
 
 ### GacGen Awareness
 
