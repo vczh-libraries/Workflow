@@ -304,6 +304,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
+#if defined VCZH_MSVC
 	{
 		console::Console::WriteLine(L"<Merging Apps: ChatBot>");
 		SortedList<WString> fileNames32;
@@ -341,6 +342,7 @@ int main(int argc, char* argv[])
 			file.WriteAllText(code, false, BomEncoder::Mbcs);
 		}
 	}
+#endif
 
 	ReleaseWorkflowTable();
 	ThreadLocalStorage::DisposeStorages();
