@@ -9,6 +9,7 @@ using namespace vl::collections;
 using namespace vl::console;
 using namespace vl::glr::json;
 using namespace vl::inter_process;
+using namespace vl::inter_process::windows_http;
 using namespace vl::rpc_controller;
 using namespace vl::rpc_controller::channeling;
 using namespace chatbot;

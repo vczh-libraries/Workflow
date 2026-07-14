@@ -20,6 +20,9 @@ Windows implementation of IAsyncSocket(Server|Client)
 #define VCZH_INTERPROCESS_ASYNCSOCKET_WINDOWS
 
 // Winsock must precede every include that can include windows.h.
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
 #include <WinSock2.h>
 #include <MSWSock.h>
 #define _WINSOCKAPI_

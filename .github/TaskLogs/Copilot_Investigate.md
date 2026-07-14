@@ -44,7 +44,7 @@ After the fix:
 
 # PROPOSALS
 
-- No.1 Preserve the Windows lean-header boundary upstream and import the concrete HTTP namespace
+- No.1 Preserve the Windows lean-header boundary upstream and import the concrete HTTP namespace [CONFIRMED]
 
 ## No.1 Preserve the Windows lean-header boundary upstream and import the concrete HTTP namespace
 
@@ -55,3 +55,9 @@ Once the upstream merged release compiles, add `using namespace vl::inter_proces
 Run the complete Workflow build/release pipeline so the imported release, all generated/runtime variants and TypeScript checks are covered, then execute the interactive three-client ChatBot SOP to validate real HTTP channel behavior and shutdown.
 
 ### CODE CHANGE
+
+VlppOS commit `27558ec` defines `WIN32_LEAN_AND_MEAN` before the first `Windows.h` inclusion in `AsyncSocket.Windows.h`, then regenerates `Release/VlppOS.Windows.h`. Workflow imports that generated header unchanged. `ChatBotServer/Main.cpp` and `ChatBotClient/Main.cpp` add `using namespace vl::inter_process::windows_http;` beside the retained generic inter-process namespace.
+
+The Debug x64 Workflow wrapper build succeeds with 0 warnings and 0 errors. The interactive ChatBot SOP also passes through the prescribed CLI wrapper: Tom, Jerry and Spike join sequentially; every client observes all nine messages across three rounds; Jerry and Spike observe `Tom left`; the server exits on ENTER; and the server plus all three clients exit with code 0.
+
+Finally, `Tools\Tools\Build.ps1 Workflow` completes with exit code 0. It rebuilds Release Win32 and x64, executes `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection` and `RuntimeTest` on both platforms, passes the TypeScript `tsc --noEmit` build, regenerates the Workflow release and rebuilds CppMerge.
