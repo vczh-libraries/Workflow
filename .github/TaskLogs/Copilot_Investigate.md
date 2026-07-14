@@ -43,3 +43,15 @@ After the fix:
 `Tools\Tools\Build.ps1 Workflow` imported the new VlppOS release and stopped at its first solution-build failure. A follow-up Debug x64 build through Workflow's logging wrapper reproduced nine compiler errors in every project consuming `Import\VlppOS.Windows.cpp`: `RPC_WSTR` could not convert to `WString` in `HttpServerConnection::GenerateNewGuid`. The newly packaged `AsyncSocket.Windows.h` precedes `NetworkProtocol.Windows.h` in the merged release and includes `Windows.h` before the latter header can define its established lean/RPC include policy. This confirms a real generated-release integration break in the upstream source, before compilation can reach the expected ChatBot namespace call sites.
 
 # PROPOSALS
+
+- No.1 Preserve the Windows lean-header boundary upstream and import the concrete HTTP namespace
+
+## No.1 Preserve the Windows lean-header boundary upstream and import the concrete HTTP namespace
+
+Fix the generated-release integration error at its source in VlppOS, not in `Workflow\Import`. `AsyncSocket.Windows.h` must continue to include Winsock 2 before `Windows.h`, but it should also define `WIN32_LEAN_AND_MEAN` before that first `Windows.h` inclusion. This prevents the newly earlier AsyncSocket section in the merged release header from pulling RPC declarations before `NetworkProtocol.Windows.h` defines `RPC_USE_NATIVE_WCHAR`; the latter header can then include `rpc.h` with the same native-wide-string contract used by the standalone sources. Regenerate the VlppOS release and copy all non-`IncludeOnly` root release artifacts back into Workflow.
+
+Once the upstream merged release compiles, add `using namespace vl::inter_process::windows_http;` at the Windows HTTP composition boundary in both ChatBot server and client source files. Keep the existing `using namespace vl::inter_process;` for generic channel/protocol APIs and status enums. No named-pipe namespace import is needed because Workflow has no named-pipe concrete usage.
+
+Run the complete Workflow build/release pipeline so the imported release, all generated/runtime variants and TypeScript checks are covered, then execute the interactive three-client ChatBot SOP to validate real HTTP channel behavior and shutdown.
+
+### CODE CHANGE
