@@ -164,7 +164,7 @@ There is a `Parser.xml` file in these folder.
 You need to offer the absolute path of `Parser.xml` to the tool as a command-line argument.
 Only run necessary `Parser.xml` in folders that are changed.
 
-## Linux Specific
+## Linux/macOS Specific
 
 `REPO-ROOT/Test/Linux` stores linux configurations for:
 - `CompilerTest_GenerateMetadata`: `CompilerTest_GenerateMetadata.vcxproj`.

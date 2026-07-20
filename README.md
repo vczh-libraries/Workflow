@@ -43,15 +43,8 @@ You can also get rid of runtime reflection overhead in this way.
 
 ## Unit Test
 
-For **Windows**, open `Test/UnitTest/UnitTest.sln`, and run the following projects in order:
-- **CompilerTest_GenerateMetadata** : Generate metadata file for involved C++ types (including classes only for unit test).
-  - **CompilerTest_LoadAndCompiler** will not function correctly if C++ reflection is changed but **CompilerTest_GenerateMetadata** is not executed.
-- **CompilerTest_LoadAndCompile** : Load the generated metadata, compile and run Workflow scripts, and generate C++ code from Workflow scripts.
-  - **Rebuild the solution after execution**.
-- **CppTest** : Run generated C++ code.
-- **CppTest_Metaonly** : Run generated C++ code.
-- **CppTest_Reflection** : Run generated C++ code.
-- **LibraryTest** : Test built-in library for Workflow.
-- **RuntimeTest** : Test Workflow debugger.
+Checkout [Project.md](./Project.md) for details about compiling and running each test projects.
 
-For **Linux**, use `Test/Linux/*/makefile` to build and run unit test projects as described above.
+On Windows, use MSBuild or Visual Studio to build.
+
+On Linux/macOS, run `REPO-ROOT/.github/Ubuntu/build.sh` in a project folder to update the makefile from vcxproj and build the project.
