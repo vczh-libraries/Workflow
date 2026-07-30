@@ -71,8 +71,9 @@ The correct order to run them is:
 ### Baseline Comparison
 
 - `CompilerTest_GenerateMetadata`:
-  - It generates `Test/UnitTest/Generated/Reflection{32,64}.bin` and `Test/UnitTest/Generated/Reflection{32,64}.txt`,
-    then compares the generated `.txt` against the baseline in `Test/Resources/Baseline/Reflection{32,64}.txt`.
+  - It generates the self-contained base layer `Test/Generated/Reflection{32,64}.bin` and the dependent C++ test-type layer `Test/Generated/ReflectionCppTypes{32,64}.bin`.
+  - `Reflection{32,64}.txt` contains the base-only type snapshot. `ReflectionCppTypes{32,64}.txt` contains the combined snapshot after both layers are registered.
+  - It compares both generated snapshots against their corresponding baselines in `Test/Resources/Baseline`.
 - `CompilerTest_LoadAndCompile`:
   - For `Runtime` test cases that use `@rpc:Interface` attributes, it generates RPC metadata and writes it to
     `Test/Generated/RpcMetadata{32,64}/{itemName}.txt`, then compares against the baseline in

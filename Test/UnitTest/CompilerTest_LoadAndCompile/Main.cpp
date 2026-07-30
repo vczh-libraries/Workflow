@@ -14,7 +14,8 @@ using namespace vl::workflow::cppcodegen;
 #define INSTALL_SERIALIZABLE_TYPE(TYPE)\
 	serializableTypes.Add(TypeInfo<TYPE>::content.typeName, Ptr(new SerializableType<TYPE>));
 
-Ptr<ITypeLoader> testTypeLoader;
+Ptr<ITypeLoader> baseTypeLoader;
+Ptr<ITypeLoader> cppTypeLoader;
 
 const wchar_t* REFLECTION_BIN()
 {
@@ -49,35 +50,64 @@ const wchar_t* REFLECTION_BASELINE()
 	}
 }
 
+const wchar_t* REFLECTION_CPP_TYPES_BIN()
+{
+	switch (testCpuArchitecture)
+	{
+	case WfCpuArchitecture::x86: return L"ReflectionCppTypes32.bin";
+	case WfCpuArchitecture::x64: return L"ReflectionCppTypes64.bin";
+	default:
+		CHECK_FAIL(L"The CPU architecture is specified.");
+	}
+}
+
+const wchar_t* REFLECTION_CPP_TYPES_OUTPUT()
+{
+	switch (testCpuArchitecture)
+	{
+	case WfCpuArchitecture::x86: return L"ReflectionCppTypes32[2].txt";
+	case WfCpuArchitecture::x64: return L"ReflectionCppTypes64[2].txt";
+	default:
+		CHECK_FAIL(L"The CPU architecture is specified.");
+	}
+}
+
+const wchar_t* REFLECTION_CPP_TYPES_BASELINE()
+{
+	switch (testCpuArchitecture)
+	{
+	case WfCpuArchitecture::x86: return L"ReflectionCppTypes32.txt";
+	case WfCpuArchitecture::x64: return L"ReflectionCppTypes64.txt";
+	default:
+		CHECK_FAIL(L"The CPU architecture is specified.");
+	}
+}
+
 void LoadTypes()
 {
 	{
 		collections::Dictionary<WString, Ptr<ISerializableType>> serializableTypes;
 		REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(INSTALL_SERIALIZABLE_TYPE)
 		FileStream fileStream(GetTestOutputBasePath() + REFLECTION_BIN(), FileStream::ReadOnly);
-		testTypeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
+		baseTypeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
 	}
-	GetGlobalTypeManager()->AddTypeLoader(testTypeLoader);
+	GetGlobalTypeManager()->AddTypeLoader(baseTypeLoader);
 	CHECK_ERROR(GetGlobalTypeManager()->Load(), L"Failed to load types");
-}
-
-void LoadTypes64()
-{
 	{
 		collections::Dictionary<WString, Ptr<ISerializableType>> serializableTypes;
 		REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(INSTALL_SERIALIZABLE_TYPE)
-			FileStream fileStream(GetTestOutputBasePath() + REFLECTION_BIN(), FileStream::ReadOnly);
-		testTypeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
+		FileStream fileStream(GetTestOutputBasePath() + REFLECTION_CPP_TYPES_BIN(), FileStream::ReadOnly);
+		cppTypeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
 	}
-	GetGlobalTypeManager()->AddTypeLoader(testTypeLoader);
-	CHECK_ERROR(GetGlobalTypeManager()->Load(), L"Failed to load types");
+	GetGlobalTypeManager()->AddTypeLoader(cppTypeLoader);
 }
 
 void UnloadTypes()
 {
 	CHECK_ERROR(GetGlobalTypeManager()->Unload(), L"Failed to unload types");
 	CHECK_ERROR(ResetGlobalTypeManager(), L"Failed to reset type manager");
-	testTypeLoader = nullptr;
+	cppTypeLoader = nullptr;
+	baseTypeLoader = nullptr;
 }
 
 void AssertLines(const WString& expectedString, const WString& actualString)
@@ -107,22 +137,53 @@ void AssertLines(const WString& expectedString, const WString& actualString)
 	}
 }
 
+void LogAndCompareTypes(const wchar_t* outputName, const wchar_t* baselineName)
+{
+	{
+		FileStream fileStream(GetTestOutputBasePath() + outputName, FileStream::WriteOnly);
+		BomEncoder encoder(BomEncoder::Utf8);
+		EncoderStream encoderStream(fileStream, encoder);
+		StreamWriter writer(encoderStream);
+		LogTypeManager(writer);
+	}
+	{
+		auto expectedString = File(GetTestOutputBasePath() + baselineName).ReadAllTextByBom();
+		auto actualString = File(GetTestOutputBasePath() + outputName).ReadAllTextByBom();
+		AssertLines(expectedString, actualString);
+	}
+}
+
 TEST_FILE
 {
 	TEST_CASE(L"Run LoadMetaonlyTypes()")
 	{
+		UnloadTypes();
 		{
-			FileStream fileStream(GetTestOutputBasePath() + REFLECTION_OUTPUT(), FileStream::WriteOnly);
-			BomEncoder encoder(BomEncoder::Utf8);
-			EncoderStream encoderStream(fileStream, encoder);
-			StreamWriter writer(encoderStream);
-			LogTypeManager(writer);
+			collections::Dictionary<WString, Ptr<ISerializableType>> serializableTypes;
+			REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(INSTALL_SERIALIZABLE_TYPE)
+			FileStream fileStream(GetTestOutputBasePath() + REFLECTION_CPP_TYPES_BIN(), FileStream::ReadOnly);
+			TEST_ERROR(LoadMetaonlyTypes(fileStream, serializableTypes));
 		}
+		TEST_ASSERT(ResetGlobalTypeManager());
+
 		{
-			auto expectedString = File(GetTestOutputBasePath() + REFLECTION_BASELINE()).ReadAllTextByBom();
-			auto actualString = File(GetTestOutputBasePath() + REFLECTION_OUTPUT()).ReadAllTextByBom();
-			AssertLines(expectedString, actualString);
+			collections::Dictionary<WString, Ptr<ISerializableType>> serializableTypes;
+			REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(INSTALL_SERIALIZABLE_TYPE)
+			FileStream fileStream(GetTestOutputBasePath() + REFLECTION_BIN(), FileStream::ReadOnly);
+			baseTypeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
 		}
+		GetGlobalTypeManager()->AddTypeLoader(baseTypeLoader);
+		TEST_ASSERT(GetGlobalTypeManager()->Load());
+		LogAndCompareTypes(REFLECTION_OUTPUT(), REFLECTION_BASELINE());
+
+		{
+			collections::Dictionary<WString, Ptr<ISerializableType>> serializableTypes;
+			REFLECTION_PREDEFINED_SERIALIZABLE_TYPES(INSTALL_SERIALIZABLE_TYPE)
+			FileStream fileStream(GetTestOutputBasePath() + REFLECTION_CPP_TYPES_BIN(), FileStream::ReadOnly);
+			cppTypeLoader = LoadMetaonlyTypes(fileStream, serializableTypes);
+		}
+		GetGlobalTypeManager()->AddTypeLoader(cppTypeLoader);
+		LogAndCompareTypes(REFLECTION_CPP_TYPES_OUTPUT(), REFLECTION_CPP_TYPES_BASELINE());
 	});
 }
 

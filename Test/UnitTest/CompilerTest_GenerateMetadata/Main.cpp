@@ -50,11 +50,43 @@ WString GetTestOutputPath()
 #define REFLECTION_BIN L"Reflection64.bin"
 #define REFLECTION_OUTPUT L"Reflection64.txt"
 #define REFLECTION_BASELINE L"Reflection64.txt"
+#define REFLECTION_CPP_TYPES_BIN L"ReflectionCppTypes64.bin"
+#define REFLECTION_CPP_TYPES_OUTPUT L"ReflectionCppTypes64.txt"
+#define REFLECTION_CPP_TYPES_BASELINE L"ReflectionCppTypes64.txt"
 #else
 #define REFLECTION_BIN L"Reflection32.bin"
 #define REFLECTION_OUTPUT L"Reflection32.txt"
 #define REFLECTION_BASELINE L"Reflection32.txt"
+#define REFLECTION_CPP_TYPES_BIN L"ReflectionCppTypes32.bin"
+#define REFLECTION_CPP_TYPES_OUTPUT L"ReflectionCppTypes32.txt"
+#define REFLECTION_CPP_TYPES_BASELINE L"ReflectionCppTypes32.txt"
 #endif
+
+void LogTypesAndUpdateBaseline(const WString& outputName, const WString& baselineName)
+{
+	{
+		FileStream fileStream(GetTestOutputPath() + outputName, FileStream::WriteOnly);
+		BomEncoder encoder(BomEncoder::Utf8);
+		EncoderStream encoderStream(fileStream, encoder);
+		StreamWriter writer(encoderStream);
+		LogTypeManager(writer);
+	}
+	{
+		List<WString> first, second;
+		File metadataFile(GetTestOutputPath() + outputName);
+		File baselineFile(GetTestOutputPath() + L"../Resources/Baseline/" + baselineName);
+
+		metadataFile.ReadAllLinesByBom(first);
+		if (baselineFile.Exists())
+		{
+			baselineFile.ReadAllLinesByBom(second);
+		}
+		if (CompareEnumerable(first, second) != 0)
+		{
+			baselineFile.WriteAllLines(first, false, BomEncoder::Utf8);
+		}
+	}
+}
 
 TEST_FILE
 {
@@ -67,31 +99,23 @@ TEST_FILE
 		TEST_ASSERT(XmlAstLoadTypes());
 		TEST_ASSERT(JsonAstLoadTypes());
 		TEST_ASSERT(WfLoadLibraryTypes());
-		TEST_ASSERT(LoadCppTypes());
-		GetGlobalTypeManager()->Load();
+		auto manager = GetGlobalTypeManager();
+		TEST_ASSERT(manager->Load());
 		{
+			List<ITypeDescriptor*> excludedTypes;
 			FileStream fileStream(GetTestOutputPath() + REFLECTION_BIN, FileStream::WriteOnly);
-			GenerateMetaonlyTypes(fileStream);
+			GenerateMetaonlyTypes(excludedTypes, fileStream);
 		}
-		{
-			FileStream fileStream(GetTestOutputPath() + REFLECTION_OUTPUT, FileStream::WriteOnly);
-			BomEncoder encoder(BomEncoder::Utf8);
-			EncoderStream encoderStream(fileStream, encoder);
-			StreamWriter writer(encoderStream);
-			LogTypeManager(writer);
-		}
-		{
-			List<WString> first, second;
-			File metadataFile(GetTestOutputPath() + REFLECTION_OUTPUT);
-			File baselineFile(GetTestOutputPath() + L"../Resources/Baseline/" REFLECTION_BASELINE);
+		LogTypesAndUpdateBaseline(REFLECTION_OUTPUT, REFLECTION_BASELINE);
 
-			metadataFile.ReadAllLinesByBom(first);
-			baselineFile.ReadAllLinesByBom(second);
-			if (CompareEnumerable(first, second) != 0)
-			{
-				baselineFile.WriteAllLines(first, false, BomEncoder::Utf8);
-			}
+		List<ITypeDescriptor*> baseTypes;
+		CollectRegisteredTypes(baseTypes);
+		TEST_ASSERT(LoadCppTypes());
+		{
+			FileStream fileStream(GetTestOutputPath() + REFLECTION_CPP_TYPES_BIN, FileStream::WriteOnly);
+			GenerateMetaonlyTypes(baseTypes, fileStream);
 		}
+		LogTypesAndUpdateBaseline(REFLECTION_CPP_TYPES_OUTPUT, REFLECTION_CPP_TYPES_BASELINE);
 		TEST_ASSERT(ResetGlobalTypeManager());
 	});
 }

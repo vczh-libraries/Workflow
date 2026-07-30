@@ -1,7 +1,7 @@
-﻿@FullName:vl::reflection::description::IValueArray
+@FullName:vl::reflection::description::IValueArray
 interface system::Array : system::ReadonlyList {
-    function Resize(size : system::Int32) : system::Void;
-    function Set(index : system::Int32, value : system::Object) : system::Void;
+    function Resize(size : system::Int64) : system::Void;
+    function Set(index : system::Int64, value : system::Object) : system::Void;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IValueArray>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IValueArray>::Create)
@@ -18,7 +18,7 @@ interface system::Array : system::ReadonlyList {
 interface system::Async : system::Interface {
     property Status : system::AsyncStatus { get:GetStatus }
 
-    static function Delay(milliseconds : system::Int32) : system::Async^;
+    static function Delay(milliseconds : system::Int64) : system::Async^;
     function Execute(callback : system::Function<system::Void, system::CoroutineResult^>^, context : system::AsyncContext^) : system::Boolean;
     function GetStatus() : system::AsyncStatus;
 
@@ -55,7 +55,7 @@ interface system::AsyncCoroutine::IImpl : system::Async {
 
 @FullName:vl::reflection::description::IAsyncScheduler
 interface system::AsyncScheduler : system::Interface {
-    function DelayExecute(callback : system::Function<system::Void>^, milliseconds : system::Int32) : system::Void;
+    function DelayExecute(callback : system::Function<system::Void>^, milliseconds : system::Int64) : system::Void;
     function Execute(callback : system::Function<system::Void>^) : system::Void;
     function ExecuteInBackground(callback : system::Function<system::Void>^) : system::Void;
     static function GetSchedulerForCurrentThread() : system::AsyncScheduler^;
@@ -82,8 +82,8 @@ interface system::CallStack : system::Interface {
     property GlobalVariables : system::ReadonlyDictionary^ { get:GetGlobalVariables }
     property LocalArguments : system::ReadonlyDictionary^ { get:GetLocalArguments }
     property LocalVariables : system::ReadonlyDictionary^ { get:GetLocalVariables }
-    property RowAfterCodegen : system::Int32 { get:GetRowAfterCodegen }
-    property RowBeforeCodegen : system::Int32 { get:GetRowBeforeCodegen }
+    property RowAfterCodegen : system::Int64 { get:GetRowAfterCodegen }
+    property RowBeforeCodegen : system::Int64 { get:GetRowBeforeCodegen }
     property SourceCodeAfterCodegen : system::String { get:GetSourceCodeAfterCodegen }
     property SourceCodeBeforeCodegen : system::String { get:GetSourceCodeBeforeCodegen }
 
@@ -92,8 +92,8 @@ interface system::CallStack : system::Interface {
     function GetGlobalVariables() : system::ReadonlyDictionary^;
     function GetLocalArguments() : system::ReadonlyDictionary^;
     function GetLocalVariables() : system::ReadonlyDictionary^;
-    function GetRowAfterCodegen() : system::Int32;
-    function GetRowBeforeCodegen() : system::Int32;
+    function GetRowAfterCodegen() : system::Int64;
+    function GetRowBeforeCodegen() : system::Int64;
     function GetSourceCodeAfterCodegen() : system::String;
     function GetSourceCodeBeforeCodegen() : system::String;
 
@@ -143,16 +143,16 @@ enum system::CoroutineStatus {
 @ValueType
 @Serializable
 struct system::DateTime {
-    property day : system::Int32;
-    property dayOfWeek : system::Int32;
-    property hour : system::Int32;
-    property milliseconds : system::Int32;
-    property minute : system::Int32;
-    property month : system::Int32;
+    property day : system::Int64;
+    property dayOfWeek : system::Int64;
+    property hour : system::Int64;
+    property milliseconds : system::Int64;
+    property minute : system::Int64;
+    property month : system::Int64;
     property osInternal : system::UInt64;
     property osMilliseconds : system::UInt64;
-    property second : system::Int32;
-    property year : system::Int32;
+    property second : system::Int64;
+    property year : system::Int64;
 }
 
 @FullName:vl::reflection::description::IValueDictionary
@@ -202,10 +202,10 @@ interface system::EnumerableCoroutine::IImpl : system::Enumerator {
 @FullName:vl::reflection::description::IValueEnumerator
 interface system::Enumerator : system::Interface {
     property Current : system::Object { get:GetCurrent }
-    property Index : system::Int32 { get:GetIndex }
+    property Index : system::Int64 { get:GetIndex }
 
     function GetCurrent() : system::Object;
-    function GetIndex() : system::Int32;
+    function GetIndex() : system::Int64;
     function Next() : system::Boolean;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IValueEnumerator>::Create($Arguments)
@@ -243,26 +243,26 @@ interface system::Future : system::Async, system::Promise {
 @FullName:vl::rpc_controller::IRpcController
 interface system::IRpcController : system::IRpcOperations {
     function Finalize() : system::Void;
-    function GetEventSuppressedFlag(ref : system::RpcObjectReference, eventId : system::Int32) : system::Boolean;
+    function GetEventSuppressedFlag(ref : system::RpcObjectReference, eventId : system::Int64) : system::Boolean;
     function GetItemChangedSuppressedFlag(ref : system::RpcObjectReference) : system::Boolean;
-    function SetEventSuppressedFlag(ref : system::RpcObjectReference, eventId : system::Int32, suppressed : system::Boolean) : system::Void;
+    function SetEventSuppressedFlag(ref : system::RpcObjectReference, eventId : system::Int64, suppressed : system::Boolean) : system::Void;
     function SetItemChangedSuppressedFlag(ref : system::RpcObjectReference, suppressed : system::Boolean) : system::Void;
 
 }
 
 @FullName:vl::rpc_controller::IRpcDispatcher
 interface system::IRpcDispatcher : system::Interface {
-    function BroadcastFromClient_ObjectEventOps(selfClientId : system::Int32) : system::IRpcObjectEventOps*;
+    function BroadcastFromClient_ObjectEventOps(selfClientId : system::Int64) : system::IRpcObjectEventOps*;
     function DeclareLocalService(ref : system::RpcObjectReference) : system::Void;
     function Finalize() : system::Void;
     function Initialize() : system::Void;
-    function SendToClient_ObjectOps(targetClientId : system::Int32) : system::IRpcObjectOps*;
+    function SendToClient_ObjectOps(targetClientId : system::Int64) : system::IRpcObjectOps*;
 
 }
 
 @FullName:vl::rpc_controller::IRpcJsonMessageDispatcher
 interface system::IRpcJsonMessageDispatcher : system::Interface {
-    function AllocateRequestId() : system::Int32;
+    function AllocateRequestId() : system::Int64;
     function OnJsonRequest(message : system::JsonNode^, requestType : system::IRpcJsonMessageDispatcher::RequestType) : system::JsonNode^;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcJsonMessageDispatcher>::Create($Arguments)
@@ -280,18 +280,18 @@ enum system::IRpcJsonMessageDispatcher::RequestType {
 
 @FullName:vl::rpc_controller::IRpcLifecycle
 interface system::IRpcLifecycle : system::Interface {
-    property ClientId : system::Int32 { get:GetClientId }
+    property ClientId : system::Int64 { get:GetClientId }
     property Controller : system::IRpcController* { get:GetController }
     property Dispatcher : system::IRpcDispatcher* { get:GetDispatcher }
     property Serializer : system::IRpcSerializer* { get:GetSerializer }
 
     function DeclareRemoteService(ref : system::RpcObjectReference) : system::Void;
     function Finalize() : system::Void;
-    function GetClientId() : system::Int32;
+    function GetClientId() : system::Int64;
     function GetController() : system::IRpcController*;
     function GetDispatcher() : system::IRpcDispatcher*;
     function GetSerializer() : system::IRpcSerializer*;
-    function GetTypeIdFromName(typeName : system::String) : system::Int32;
+    function GetTypeIdFromName(typeName : system::String) : system::Int64;
     function Initialize() : system::Void;
     @InvokeTemplate:::vl::rpc_controller::JsonDeserializePredefinedTypes($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::JsonDeserializePredefinedTypes)
@@ -299,8 +299,8 @@ interface system::IRpcLifecycle : system::Interface {
     @InvokeTemplate:::vl::rpc_controller::JsonSerializePredefinedTypes($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::JsonSerializePredefinedTypes)
     static function JsonSerializePredefinedTypes(value : system::Object, rpcjson_Serialize : system::Function<system::JsonNode^, system::Object>^) : system::JsonNode^;
-    function LocalObjectHold(ref : system::RpcObjectReference, remoteClientId : system::Int32) : system::Void;
-    function LocalObjectUnhold(ref : system::RpcObjectReference, remoteClientId : system::Int32) : system::Void;
+    function LocalObjectHold(ref : system::RpcObjectReference, remoteClientId : system::Int64) : system::Void;
+    function LocalObjectUnhold(ref : system::RpcObjectReference, remoteClientId : system::Int64) : system::Void;
     function PtrToRef(obj : system::Interface^) : system::RpcObjectReference;
     @InvokeTemplate:::vl::rpc_controller::ReadEventException($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::ReadEventException)
@@ -309,7 +309,7 @@ interface system::IRpcLifecycle : system::Interface {
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::ReadMethodException)
     static function ReadMethodException(value : system::Object) : system::Void;
     function RefToPtr(ref : system::RpcObjectReference) : system::Interface^;
-    function RegisterLocalService(typeId : system::Int32, service : system::Interface^) : system::Void;
+    function RegisterLocalService(typeId : system::Int64, service : system::Interface^) : system::Void;
     function RequestService(typeName : system::String) : system::Interface^;
     @InvokeTemplate:::vl::rpc_controller::RpcBoxByref($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::rpc_controller::RpcBoxByref)
@@ -331,7 +331,7 @@ interface system::IRpcLifecycle : system::Interface {
 
 @FullName:vl::rpc_controller::IRpcListEventOps
 interface system::IRpcListEventOps : system::Interface {
-    function OnItemChanged(ref : system::RpcObjectReference, index : system::Int32, oldCount : system::Int32, newCount : system::Int32) : system::Object;
+    function OnItemChanged(ref : system::RpcObjectReference, index : system::Int64, oldCount : system::Int64, newCount : system::Int64) : system::Object;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListEventOps>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListEventOps>::Create)
@@ -340,11 +340,11 @@ interface system::IRpcListEventOps : system::Interface {
 
 @FullName:vl::rpc_controller::IRpcListOps
 interface system::IRpcListOps : system::Interface {
-    function ArrayResize(ref : system::RpcObjectReference, size : system::Int32) : system::Void;
+    function ArrayResize(ref : system::RpcObjectReference, size : system::Int64) : system::Void;
     function DictClear(ref : system::RpcObjectReference) : system::Void;
     function DictContainsKey(ref : system::RpcObjectReference, key : system::Object) : system::Boolean;
     function DictGet(ref : system::RpcObjectReference, key : system::Object) : system::Object;
-    function DictGetCount(ref : system::RpcObjectReference) : system::Int32;
+    function DictGetCount(ref : system::RpcObjectReference) : system::Int64;
     function DictGetKeys(ref : system::RpcObjectReference) : system::RpcObjectReference;
     function DictGetValues(ref : system::RpcObjectReference) : system::RpcObjectReference;
     function DictRemove(ref : system::RpcObjectReference, key : system::Object) : system::Boolean;
@@ -352,15 +352,15 @@ interface system::IRpcListOps : system::Interface {
     function EnumCreate(ref : system::RpcObjectReference) : system::RpcObjectReference;
     function EnumGetCurrent(enumerator : system::RpcObjectReference) : system::Object;
     function EnumNext(enumerator : system::RpcObjectReference) : system::Boolean;
-    function ListAdd(ref : system::RpcObjectReference, value : system::Object) : system::Int32;
+    function ListAdd(ref : system::RpcObjectReference, value : system::Object) : system::Int64;
     function ListClear(ref : system::RpcObjectReference) : system::Void;
     function ListContains(ref : system::RpcObjectReference, value : system::Object) : system::Boolean;
-    function ListGet(ref : system::RpcObjectReference, index : system::Int32) : system::Object;
-    function ListGetCount(ref : system::RpcObjectReference) : system::Int32;
-    function ListIndexOf(ref : system::RpcObjectReference, value : system::Object) : system::Int32;
-    function ListInsert(ref : system::RpcObjectReference, index : system::Int32, value : system::Object) : system::Int32;
-    function ListRemoveAt(ref : system::RpcObjectReference, index : system::Int32) : system::Boolean;
-    function ListSet(ref : system::RpcObjectReference, index : system::Int32, value : system::Object) : system::Void;
+    function ListGet(ref : system::RpcObjectReference, index : system::Int64) : system::Object;
+    function ListGetCount(ref : system::RpcObjectReference) : system::Int64;
+    function ListIndexOf(ref : system::RpcObjectReference, value : system::Object) : system::Int64;
+    function ListInsert(ref : system::RpcObjectReference, index : system::Int64, value : system::Object) : system::Int64;
+    function ListRemoveAt(ref : system::RpcObjectReference, index : system::Int64) : system::Boolean;
+    function ListSet(ref : system::RpcObjectReference, index : system::Int64, value : system::Object) : system::Void;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListOps>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcListOps>::Create)
@@ -369,7 +369,7 @@ interface system::IRpcListOps : system::Interface {
 
 @FullName:vl::rpc_controller::IRpcObjectEventOps
 interface system::IRpcObjectEventOps : system::Interface {
-    function InvokeEvent(ref : system::RpcObjectReference, eventId : system::Int32, arguments : system::Array^) : system::Object;
+    function InvokeEvent(ref : system::RpcObjectReference, eventId : system::Int64, arguments : system::Array^) : system::Object;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectEventOps>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectEventOps>::Create)
@@ -378,9 +378,9 @@ interface system::IRpcObjectEventOps : system::Interface {
 
 @FullName:vl::rpc_controller::IRpcObjectOps
 interface system::IRpcObjectOps : system::Interface {
-    function EndInvokeMethod(slot : system::Int32) : system::Void;
-    function InvokeMethod(ref : system::RpcObjectReference, methodId : system::Int32, arguments : system::Array^) : system::Object;
-    function ObjectHold(ref : system::RpcObjectReference, remoteClientId : system::Int32, hold : system::Boolean) : system::Void;
+    function EndInvokeMethod(slot : system::Int64) : system::Void;
+    function InvokeMethod(ref : system::RpcObjectReference, methodId : system::Int64, arguments : system::Array^) : system::Object;
+    function ObjectHold(ref : system::RpcObjectReference, remoteClientId : system::Int64, hold : system::Boolean) : system::Void;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectOps>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<vl::rpc_controller::IRpcObjectOps>::Create)
@@ -516,12 +516,12 @@ class system::JsonString : system::JsonNode {
 
 @FullName:vl::reflection::description::IValueList
 interface system::List : system::ReadonlyList {
-    function Add(value : system::Object) : system::Int32;
+    function Add(value : system::Object) : system::Int64;
     function Clear() : system::Void;
-    function Insert(index : system::Int32, value : system::Object) : system::Int32;
+    function Insert(index : system::Int64, value : system::Object) : system::Int64;
     function Remove(value : system::Object) : system::Boolean;
-    function RemoveAt(index : system::Int32) : system::Boolean;
-    function Set(index : system::Int32, value : system::Object) : system::Void;
+    function RemoveAt(index : system::Int64) : system::Boolean;
+    function Set(index : system::Int64, value : system::Object) : system::Void;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IValueList>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IValueList>::Create)
@@ -546,12 +546,12 @@ class system::Localization : system::ReferenceType {
     static function FormatNumber(locale : system::Locale, number : system::String) : system::String;
     static function FormatTime(locale : system::Locale, format : system::String, date : system::DateTime) : system::String;
     static function GetLongDateFormats(locale : system::Locale) : system::Enumerable<system::String>^;
-    static function GetLongDayOfWeekName(locale : system::Locale, dayOfWeek : system::Int32) : system::String;
-    static function GetLongMonthName(locale : system::Locale, month : system::Int32) : system::String;
+    static function GetLongDayOfWeekName(locale : system::Locale, dayOfWeek : system::Int64) : system::String;
+    static function GetLongMonthName(locale : system::Locale, month : system::Int64) : system::String;
     static function GetLongTimeFormats(locale : system::Locale) : system::Enumerable<system::String>^;
     static function GetShortDateFormats(locale : system::Locale) : system::Enumerable<system::String>^;
-    static function GetShortDayOfWeekName(locale : system::Locale, dayOfWeek : system::Int32) : system::String;
-    static function GetShortMonthName(locale : system::Locale, month : system::Int32) : system::String;
+    static function GetShortDayOfWeekName(locale : system::Locale, dayOfWeek : system::Int64) : system::String;
+    static function GetShortMonthName(locale : system::Locale, month : system::Int64) : system::String;
     static function GetShortTimeFormats(locale : system::Locale) : system::Enumerable<system::String>^;
     static function GetYearMonthDateFormats(locale : system::Locale) : system::Enumerable<system::String>^;
     static function Invariant() : system::Locale;
@@ -625,7 +625,7 @@ class system::Object {
 
 @FullName:vl::reflection::description::IValueObservableList
 interface system::ObservableList : system::List {
-    event ItemChanged : system::Function<system::Void, system::Int32, system::Int32, system::Int32>^;
+    event ItemChanged : system::Function<system::Void, system::Int64, system::Int64, system::Int64>^;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IValueObservableList>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IValueObservableList>::Create)
@@ -647,15 +647,15 @@ class system::ParsingAstBase : system::ReferenceType {
 @FullName:vl::glr::ParsingTextPos
 @ValueType
 struct system::ParsingTextPos {
-    property column : system::Int32;
-    property index : system::Int32;
-    property row : system::Int32;
+    property column : system::Int64;
+    property index : system::Int64;
+    property row : system::Int64;
 }
 
 @FullName:vl::glr::ParsingTextRange
 @ValueType
 struct system::ParsingTextRange {
-    property codeIndex : system::Int32;
+    property codeIndex : system::Int64;
     property end : system::ParsingTextPos;
     property start : system::ParsingTextPos;
 }
@@ -664,8 +664,8 @@ struct system::ParsingTextRange {
 @ValueType
 struct system::ParsingToken {
     property codeRange : system::ParsingTextRange;
-    property index : system::Int32;
-    property token : system::Int32;
+    property index : system::Int64;
+    property token : system::Int64;
     property value : system::String;
 }
 
@@ -678,12 +678,12 @@ interface system::Promise : system::Interface {
 
 @FullName:vl::reflection::description::IValueReadonlyDictionary
 interface system::ReadonlyDictionary : system::Interface {
-    property Count : system::Int32 { get:GetCount }
+    property Count : system::Int64 { get:GetCount }
     property Keys : system::ReadonlyList^ { get:GetKeys }
     property Values : system::ReadonlyList^ { get:GetValues }
 
     function Get(key : system::Object) : system::Object;
-    function GetCount() : system::Int32;
+    function GetCount() : system::Int64;
     function GetKeys() : system::ReadonlyList^;
     function GetValues() : system::ReadonlyList^;
 
@@ -694,12 +694,12 @@ interface system::ReadonlyDictionary : system::Interface {
 
 @FullName:vl::reflection::description::IValueReadonlyList
 interface system::ReadonlyList : system::Enumerable {
-    property Count : system::Int32 { get:GetCount }
+    property Count : system::Int64 { get:GetCount }
 
     function Contains(value : system::Object) : system::Boolean;
-    function Get(index : system::Int32) : system::Object;
-    function GetCount() : system::Int32;
-    function IndexOf(value : system::Object) : system::Int32;
+    function Get(index : system::Int64) : system::Object;
+    function GetCount() : system::Int64;
+    function IndexOf(value : system::Object) : system::Int64;
 
     @InvokeTemplate:::vl::reflection::description::ValueInterfaceProxy<IValueReadonlyList>::Create($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ValueInterfaceProxy<IValueReadonlyList>::Create)
@@ -740,7 +740,7 @@ class system::RpcByrefReadonlyList : system::ReadonlyList, system::IRpcWrapperBa
 
 @FullName:vl::rpc_controller::RpcByvalReturnValue
 class system::RpcByvalReturnValue : system::ReferenceType {
-    property slot : system::Int32;
+    property slot : system::Int64;
     property value : system::Object;
 
     constructor () : system::RpcByvalReturnValue^;
@@ -755,9 +755,9 @@ struct system::RpcException {
 @FullName:vl::rpc_controller::RpcObjectReference
 @ValueType
 struct system::RpcObjectReference {
-    property clientId : system::Int32;
-    property objectId : system::Int32;
-    property typeId : system::Int32;
+    property clientId : system::Int64;
+    property objectId : system::Int64;
+    property typeId : system::Int64;
 }
 
 @FullName:float
@@ -770,7 +770,7 @@ class system::StateMachine : system::ReferenceType {
     property StateMachineStatus : system::CoroutineStatus { get:GetStateMachineStatus }
     property stateMachineCoroutine : system::Coroutine^;
     property stateMachineInitialized : system::Boolean;
-    property stateMachineInput : system::Int32;
+    property stateMachineInput : system::Int64;
     property stateMachineStopped : system::Boolean;
 
     function GetStateMachineStatus() : system::CoroutineStatus;
@@ -800,47 +800,47 @@ interface system::Subscription : system::ReferenceType {
 @FullName:vl::reflection::description::Sys
 class system::Sys : system::ReferenceType {
     static function Backward(dt : system::DateTime, milliseconds : system::UInt64) : system::DateTime;
-    static function Compare(a : system::UInt8, b : system::UInt8) : system::Int32;
-    static function Compare(a : system::UInt16, b : system::UInt16) : system::Int32;
-    static function Compare(a : system::UInt32, b : system::UInt32) : system::Int32;
-    static function Compare(a : system::UInt64, b : system::UInt64) : system::Int32;
-    static function Compare(a : system::Int8, b : system::Int8) : system::Int32;
-    static function Compare(a : system::Int16, b : system::Int16) : system::Int32;
-    static function Compare(a : system::Int32, b : system::Int32) : system::Int32;
-    static function Compare(a : system::Int64, b : system::Int64) : system::Int32;
-    static function Compare(a : system::Single, b : system::Single) : system::Int32;
-    static function Compare(a : system::Double, b : system::Double) : system::Int32;
-    static function Compare(a : system::Boolean, b : system::Boolean) : system::Int32;
-    static function Compare(a : system::Char, b : system::Char) : system::Int32;
-    static function Compare(a : system::String, b : system::String) : system::Int32;
-    static function Compare(a : system::Locale, b : system::Locale) : system::Int32;
-    static function Compare(a : system::DateTime, b : system::DateTime) : system::Int32;
-    static function CreateDateTime(year : system::Int32, month : system::Int32, day : system::Int32) : system::DateTime;
-    static function CreateDateTime(year : system::Int32, month : system::Int32, day : system::Int32, hour : system::Int32, minute : system::Int32, second : system::Int32, milliseconds : system::Int32) : system::DateTime;
-    static function Find(value : system::String, substr : system::String) : system::Int32;
+    static function Compare(a : system::UInt8, b : system::UInt8) : system::Int64;
+    static function Compare(a : system::UInt16, b : system::UInt16) : system::Int64;
+    static function Compare(a : system::UInt32, b : system::UInt32) : system::Int64;
+    static function Compare(a : system::UInt64, b : system::UInt64) : system::Int64;
+    static function Compare(a : system::Int8, b : system::Int8) : system::Int64;
+    static function Compare(a : system::Int16, b : system::Int16) : system::Int64;
+    static function Compare(a : system::Int32, b : system::Int32) : system::Int64;
+    static function Compare(a : system::Int64, b : system::Int64) : system::Int64;
+    static function Compare(a : system::Single, b : system::Single) : system::Int64;
+    static function Compare(a : system::Double, b : system::Double) : system::Int64;
+    static function Compare(a : system::Boolean, b : system::Boolean) : system::Int64;
+    static function Compare(a : system::Char, b : system::Char) : system::Int64;
+    static function Compare(a : system::String, b : system::String) : system::Int64;
+    static function Compare(a : system::Locale, b : system::Locale) : system::Int64;
+    static function Compare(a : system::DateTime, b : system::DateTime) : system::Int64;
+    static function CreateDateTime(year : system::Int64, month : system::Int64, day : system::Int64) : system::DateTime;
+    static function CreateDateTime(year : system::Int64, month : system::Int64, day : system::Int64, hour : system::Int64, minute : system::Int64, second : system::Int64, milliseconds : system::Int64) : system::DateTime;
+    static function Find(value : system::String, substr : system::String) : system::Int64;
     static function Forward(dt : system::DateTime, milliseconds : system::UInt64) : system::DateTime;
     static function GetLocalTime() : system::DateTime;
     static function GetUtcTime() : system::DateTime;
-    static function Int32ToInt(value : system::Int32) : system::Int32;
-    static function Int64ToInt(value : system::Int64) : system::Int32;
-    static function IntToInt32(value : system::Int32) : system::Int32;
-    static function IntToInt64(value : system::Int32) : system::Int64;
+    static function Int32ToInt(value : system::Int32) : system::Int64;
+    static function Int64ToInt(value : system::Int64) : system::Int64;
+    static function IntToInt32(value : system::Int64) : system::Int32;
+    static function IntToInt64(value : system::Int64) : system::Int64;
     static function LCase(value : system::String) : system::String;
-    static function Left(value : system::String, length : system::Int32) : system::String;
-    static function Len(value : system::String) : system::Int32;
-    static function LoremIpsumParagraph(bestLength : system::Int32) : system::String;
-    static function LoremIpsumSentence(bestLength : system::Int32) : system::String;
-    static function LoremIpsumTitle(bestLength : system::Int32) : system::String;
-    static function Mid(value : system::String, start : system::Int32, length : system::Int32) : system::String;
+    static function Left(value : system::String, length : system::Int64) : system::String;
+    static function Len(value : system::String) : system::Int64;
+    static function LoremIpsumParagraph(bestLength : system::Int64) : system::String;
+    static function LoremIpsumSentence(bestLength : system::Int64) : system::String;
+    static function LoremIpsumTitle(bestLength : system::Int64) : system::String;
+    static function Mid(value : system::String, start : system::Int64, length : system::Int64) : system::String;
     static function ReverseEnumerable(value : system::Enumerable^) : system::Enumerable^;
-    static function Right(value : system::String, length : system::Int32) : system::String;
+    static function Right(value : system::String, length : system::Int64) : system::String;
     static function ToLocalTime(dt : system::DateTime) : system::DateTime;
     static function ToUtcTime(dt : system::DateTime) : system::DateTime;
     static function UCase(value : system::String) : system::String;
-    static function UInt32ToUInt(value : system::UInt32) : system::UInt32;
-    static function UInt64ToUInt(value : system::UInt64) : system::UInt32;
-    static function UIntToUInt32(value : system::UInt32) : system::UInt32;
-    static function UIntToUInt64(value : system::UInt32) : system::UInt64;
+    static function UInt32ToUInt(value : system::UInt32) : system::UInt64;
+    static function UInt64ToUInt(value : system::UInt64) : system::UInt64;
+    static function UIntToUInt32(value : system::UInt64) : system::UInt32;
+    static function UIntToUInt64(value : system::UInt64) : system::UInt64;
 
 }
 
@@ -866,10 +866,10 @@ primitive system::UInt8;
 
 @FullName:vl::reflection::description::Versioning
 class system::Versioning : system::ReferenceType {
-    property Version : system::Int32 { get:GetVersion }
+    property Version : system::Int64 { get:GetVersion }
 
-    function AllocateVersion() : system::Int32;
-    function GetVersion() : system::Int32;
+    function AllocateVersion() : system::Int64;
+    function GetVersion() : system::Int64;
 
     constructor () : system::Versioning^;
 }
@@ -953,22 +953,22 @@ class system::XmlText : system::XmlNode {
 
 @FullName:vl::reflection::description::IAttributeBag
 interface system::reflection::AttributeBag : system::Interface {
-    property AttributeCount : system::Int32 { get:GetAttributeCount }
+    property AttributeCount : system::Int64 { get:GetAttributeCount }
 
-    function GetAttribute(index : system::Int32) : system::reflection::AttributeInfo*;
-    function GetAttributeCount() : system::Int32;
+    function GetAttribute(index : system::Int64) : system::reflection::AttributeInfo*;
+    function GetAttributeCount() : system::Int64;
 
 }
 
 @FullName:vl::reflection::description::IAttributeInfo
 interface system::reflection::AttributeInfo : system::Interface {
     property AttributeType : system::reflection::TypeDescriptor* { get:GetAttributeType }
-    property AttributeValueCount : system::Int32 { get:GetAttributeValueCount }
+    property AttributeValueCount : system::Int64 { get:GetAttributeValueCount }
 
     function GetAttributeType() : system::reflection::TypeDescriptor*;
-    function GetAttributeValue(index : system::Int32) : system::Object;
-    function GetAttributeValueCount() : system::Int32;
-    function GetAttributeValueType(index : system::Int32) : system::reflection::TypeDescriptor*;
+    function GetAttributeValue(index : system::Int64) : system::Object;
+    function GetAttributeValueCount() : system::Int64;
+    function GetAttributeValueType(index : system::Int64) : system::reflection::TypeDescriptor*;
 
 }
 
@@ -981,10 +981,10 @@ interface system::reflection::BoxedValue : system::Interface {
 @FullName:vl::reflection::description::IEnumType
 interface system::reflection::EnumType : system::Interface {
     function FromEnum(value : system::Object) : system::UInt64;
-    function GetItemCount() : system::Int32;
-    function GetItemName(index : system::Int32) : system::String;
-    function GetItemValue(index : system::Int32) : system::UInt64;
-    function IndexOfItem(name : system::String) : system::Int32;
+    function GetItemCount() : system::Int64;
+    function GetItemName(index : system::Int64) : system::String;
+    function GetItemValue(index : system::Int64) : system::UInt64;
+    function IndexOfItem(name : system::String) : system::Int64;
     function IsFlagEnum() : system::Boolean;
     function ToEnum(value : system::UInt64) : system::Object;
 
@@ -999,12 +999,12 @@ interface system::reflection::EventHandler : system::Interface {
 @FullName:vl::reflection::description::IEventInfo
 interface system::reflection::EventInfo : system::reflection::MemberInfo {
     property HandlerType : system::reflection::TypeInfo* { get:GetHandlerType }
-    property ObservingPropertyCount : system::Int32 { get:GetObservingPropertyCount }
+    property ObservingPropertyCount : system::Int64 { get:GetObservingPropertyCount }
 
     function Attach(thisObject : system::Object, handler : system::Function^) : system::reflection::EventHandler^;
     function GetHandlerType() : system::reflection::TypeInfo*;
-    function GetObservingProperty(index : system::Int32) : system::reflection::PropertyInfo*;
-    function GetObservingPropertyCount() : system::Int32;
+    function GetObservingProperty(index : system::Int64) : system::reflection::PropertyInfo*;
+    function GetObservingPropertyCount() : system::Int64;
     function Invoke(thisObject : system::Object, arguments : system::ReadonlyList^) : system::Void;
 
 }
@@ -1021,10 +1021,10 @@ interface system::reflection::MemberInfo : system::reflection::AttributeBag {
 
 @FullName:vl::reflection::description::IMethodGroupInfo
 interface system::reflection::MethodGroupInfo : system::reflection::MemberInfo {
-    property MethodCount : system::Int32 { get:GetMethodCount }
+    property MethodCount : system::Int64 { get:GetMethodCount }
 
-    function GetMethod(index : system::Int32) : system::reflection::MethodInfo*;
-    function GetMethodCount() : system::Int32;
+    function GetMethod(index : system::Int64) : system::reflection::MethodInfo*;
+    function GetMethodCount() : system::Int64;
 
 }
 
@@ -1032,14 +1032,14 @@ interface system::reflection::MethodGroupInfo : system::reflection::MemberInfo {
 interface system::reflection::MethodInfo : system::reflection::MemberInfo, system::reflection::MemberInfo {
     property OwnerMethodGroup : system::reflection::MethodGroupInfo* { get:GetOwnerMethodGroup }
     property OwnerProperty : system::reflection::PropertyInfo* { get:GetOwnerProperty }
-    property ParameterCount : system::Int32 { get:GetParameterCount }
+    property ParameterCount : system::Int64 { get:GetParameterCount }
     property Return : system::reflection::TypeInfo* { get:GetReturn }
 
     function CheckArguments(arguments : system::Array<system::Object>^) : system::Void;
     function GetOwnerMethodGroup() : system::reflection::MethodGroupInfo*;
     function GetOwnerProperty() : system::reflection::PropertyInfo*;
-    function GetParameter(index : system::Int32) : system::reflection::ParameterInfo*;
-    function GetParameterCount() : system::Int32;
+    function GetParameter(index : system::Int64) : system::reflection::ParameterInfo*;
+    function GetParameterCount() : system::Int64;
     function GetReturn() : system::reflection::TypeInfo*;
     function Invoke(thisObject : system::Object, arguments : system::Array<system::Object>^) : system::Object;
     function IsStatic() : system::Boolean;
@@ -1083,35 +1083,35 @@ interface system::reflection::SerializableType : system::Interface {
 
 @FullName:vl::reflection::description::ITypeDescriptor
 interface system::reflection::TypeDescriptor : system::reflection::AttributeBag {
-    property BaseTypeDescriptorCount : system::Int32 { get:GetBaseTypeDescriptorCount }
+    property BaseTypeDescriptorCount : system::Int64 { get:GetBaseTypeDescriptorCount }
     property ConstructorGroup : system::reflection::MethodGroupInfo* { get:GetConstructorGroup }
     property EnumType : system::reflection::EnumType* { get:GetEnumType }
-    property EventCount : system::Int32 { get:GetEventCount }
-    property MethodGroupCount : system::Int32 { get:GetMethodGroupCount }
-    property PropertyCount : system::Int32 { get:GetPropertyCount }
+    property EventCount : system::Int64 { get:GetEventCount }
+    property MethodGroupCount : system::Int64 { get:GetMethodGroupCount }
+    property PropertyCount : system::Int64 { get:GetPropertyCount }
     property SerializableType : system::reflection::SerializableType* { get:GetSerializableType }
     property TypeDescriptorFlags : system::reflection::TypeDescriptorFlags { get:GetTypeDescriptorFlags }
     property TypeName : system::String { get:GetTypeName }
     property ValueType : system::reflection::ValueType* { get:GetValueType }
 
     function CanConvertTo(targetType : system::reflection::TypeDescriptor*) : system::Boolean;
-    function GetBaseTypeDescriptor(index : system::Int32) : system::reflection::TypeDescriptor*;
-    function GetBaseTypeDescriptorCount() : system::Int32;
+    function GetBaseTypeDescriptor(index : system::Int64) : system::reflection::TypeDescriptor*;
+    function GetBaseTypeDescriptorCount() : system::Int64;
     function GetConstructorGroup() : system::reflection::MethodGroupInfo*;
     function GetEnumType() : system::reflection::EnumType*;
-    function GetEvent(index : system::Int32) : system::reflection::EventInfo*;
+    function GetEvent(index : system::Int64) : system::reflection::EventInfo*;
     function GetEventByName(name : system::String, inheritable : system::Boolean) : system::reflection::EventInfo*;
-    function GetEventCount() : system::Int32;
-    function GetMethodGroup(index : system::Int32) : system::reflection::MethodGroupInfo*;
+    function GetEventCount() : system::Int64;
+    function GetMethodGroup(index : system::Int64) : system::reflection::MethodGroupInfo*;
     function GetMethodGroupByName(name : system::String, inheritable : system::Boolean) : system::reflection::MethodGroupInfo*;
-    function GetMethodGroupCount() : system::Int32;
-    function GetProperty(index : system::Int32) : system::reflection::PropertyInfo*;
+    function GetMethodGroupCount() : system::Int64;
+    function GetProperty(index : system::Int64) : system::reflection::PropertyInfo*;
     function GetPropertyByName(name : system::String, inheritable : system::Boolean) : system::reflection::PropertyInfo*;
-    function GetPropertyCount() : system::Int32;
+    function GetPropertyCount() : system::Int64;
     function GetSerializableType() : system::reflection::SerializableType*;
     @InvokeTemplate:::vl::reflection::description::ITypeDescriptor_GetTypeDescriptor($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ITypeDescriptor_GetTypeDescriptor)
-    static function GetTypeDescriptor(index : system::Int32) : system::reflection::TypeDescriptor*;
+    static function GetTypeDescriptor(index : system::Int64) : system::reflection::TypeDescriptor*;
     @InvokeTemplate:::vl::reflection::description::ITypeDescriptor_GetTypeDescriptor($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ITypeDescriptor_GetTypeDescriptor)
     static function GetTypeDescriptor(name : system::String) : system::reflection::TypeDescriptor*;
@@ -1120,7 +1120,7 @@ interface system::reflection::TypeDescriptor : system::reflection::AttributeBag 
     static function GetTypeDescriptor(value : system::Object) : system::reflection::TypeDescriptor*;
     @InvokeTemplate:::vl::reflection::description::ITypeDescriptor_GetTypeDescriptorCount($Arguments)
     @ClosureTemplate:::vl::Func<$Func>(&::vl::reflection::description::ITypeDescriptor_GetTypeDescriptorCount)
-    static function GetTypeDescriptorCount() : system::Int32;
+    static function GetTypeDescriptorCount() : system::Int64;
     function GetTypeDescriptorFlags() : system::reflection::TypeDescriptorFlags;
     function GetTypeName() : system::String;
     function GetValueType() : system::reflection::ValueType*;
@@ -1149,14 +1149,14 @@ enum system::reflection::TypeDescriptorFlags {
 interface system::reflection::TypeInfo : system::Interface {
     property Decorator : system::reflection::TypeInfo::Decorator { get:GetDecorator }
     property ElementType : system::reflection::TypeInfo* { get:GetElementType }
-    property GenericArgumentCount : system::Int32 { get:GetGenericArgumentCount }
+    property GenericArgumentCount : system::Int64 { get:GetGenericArgumentCount }
     property TypeDescriptor : system::reflection::TypeDescriptor* { get:GetTypeDescriptor }
     property TypeFriendlyName : system::String { get:GetTypeFriendlyName }
 
     function GetDecorator() : system::reflection::TypeInfo::Decorator;
     function GetElementType() : system::reflection::TypeInfo*;
-    function GetGenericArgument(index : system::Int32) : system::reflection::TypeInfo*;
-    function GetGenericArgumentCount() : system::Int32;
+    function GetGenericArgument(index : system::Int64) : system::reflection::TypeInfo*;
+    function GetGenericArgumentCount() : system::Int64;
     function GetTypeDescriptor() : system::reflection::TypeDescriptor*;
     function GetTypeFriendlyName() : system::String;
 
@@ -1242,7 +1242,7 @@ struct system::workflow_attributes::att_rpc_Dynamic {
 @FullName:vl::__vwsn::att_rpc_IdNumber
 @ValueType
 struct system::workflow_attributes::att_rpc_IdNumber {
-    property argument : system::Int32;
+    property argument : system::Int64;
 }
 
 @FullName:vl::__vwsn::att_rpc_IdString
@@ -1255,4 +1255,134 @@ struct system::workflow_attributes::att_rpc_IdString {
 @ValueType
 struct system::workflow_attributes::att_rpc_Interface {
 }
+
+@FullName:test::att_test_Int
+@ValueType
+struct system::workflow_attributes::att_test_Int {
+    property argument : system::Int64;
+}
+
+@FullName:test::att_test_List
+@ValueType
+struct system::workflow_attributes::att_test_List {
+    property argument : system::String;
+}
+
+@FullName:test::att_test_Map
+@ValueType
+struct system::workflow_attributes::att_test_Map {
+    property argument : system::Double;
+}
+
+@FullName:test::att_test_Point
+@ValueType
+struct system::workflow_attributes::att_test_Point {
+    property argument : test::Point;
+}
+
+@FullName:test::att_test_Range
+@ValueType
+struct system::workflow_attributes::att_test_Range {
+    property argument : system::String;
+}
+
+@FullName:test::CustomInterfaceProcessor
+class test::CustomInterfaceProcessor : system::ReferenceType {
+    static function Sum(values : system::Enumerable^) : system::Int64;
+
+}
+
+@FullName:test::Hinters
+class test::Hinters : system::ReferenceType {
+    property MyList : system::List<system::Int64>^ { get:GetMyList }
+    property ObservableList : system::ObservableList<system::Int64>^ { get:GetObservableList }
+    property Storage : system::List<system::Int64>^ { get:GetStorage set:SetStorage }
+
+    function CountArray(xs : system::Array<system::Int64>^) : system::Int64;
+    function CountList(xs : system::List<system::Int64>^) : system::Int64;
+    function CountObservableList(xs : system::ObservableList<system::Int64>^) : system::Int64;
+    function CountSortedList(xs : system::ReadonlyList<system::Int64>^) : system::Int64;
+    @InvokeTemplate:::test::CreateHinter($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::test::CreateHinter)
+    static function CreateHinter(x : system::Int64) : test::Hinters*;
+    @InvokeTemplate:::test::GetDictionaryFromHinter($This, $Arguments)
+    @ClosureTemplate:::vl::Func<$Func>($This, &::test::GetDictionaryFromHinter)
+    function GetDictionary(xs : system::Dictionary<system::Int64, system::Int64>^) : system::Dictionary<system::Int64, system::Int64>^;
+    function GetList(xs : system::List<system::Int64>^, y : system::Int64) : system::List<system::Int64>^;
+    function GetMyList() : system::List<system::Int64>^;
+    function GetObservableList() : system::ObservableList<system::Int64>^;
+    function GetReadonlyArray(xs : system::ReadonlyList<system::Int64>^) : system::ReadonlyList<system::Int64>^;
+    @InvokeTemplate:::test::GetReadonlyDictionaryFromHinter($This, $Arguments)
+    @ClosureTemplate:::vl::Func<$Func>($This, &::test::GetReadonlyDictionaryFromHinter)
+    function GetReadonlyDictionary(xs : system::ReadonlyDictionary<system::Int64, system::Int64>^) : system::ReadonlyDictionary<system::Int64, system::Int64>^;
+    function GetReadonlyList(xs : system::ReadonlyList<system::Int64>^) : system::ReadonlyList<system::Int64>^;
+    @InvokeTemplate:$This->GetReadonlySL($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>($This, &$Type::GetReadonlySL)
+    function GetReadonlySortedList(xs : system::ReadonlyList<system::Int64>^) : system::ReadonlyList<system::Int64>^;
+    function GetStorage() : system::List<system::Int64>^;
+    function SetStorage(value : system::List<system::Int64>^) : system::Void;
+
+    @InvokeTemplate:::test::CreateHinter($Arguments)
+    @ClosureTemplate:::vl::Func<$Func>(&::test::CreateHinter)
+    constructor () : test::Hinters^;
+}
+
+@FullName:test::ObservableValue
+class test::ObservableValue : system::ReferenceType {
+    event ValueChanged : system::Function<system::Void, system::Int64, system::Int64>^ observing {
+        Value,
+    }
+
+    property DisplayName : system::String { get:GetDisplayName }
+    property Name : system::String { get:GetName set:SetName }
+    property Value : system::Int64 { get:GetValue set:SetValue event:ValueChanged }
+
+    static function Create(value : system::Int64, name : system::String) : test::ObservableValue^;
+    static function CreatePtr(value : system::Int64, name : system::String) : test::ObservableValue*;
+    function GetDisplayName() : system::String;
+    function GetName() : system::String;
+    function GetValue() : system::Int64;
+    function SetName(value : system::String) : system::Void;
+    function SetValue(value : system::Int64) : system::Void;
+
+    constructor () : test::ObservableValue^;
+    constructor (value : system::Int64) : test::ObservableValue^;
+    constructor (value : system::Int64, x : system::Double?) : test::ObservableValue*;
+    constructor (value : system::Int64, x : system::Boolean?) : test::ObservableValue*;
+}
+
+@FullName:test::Point
+@ValueType
+struct test::Point {
+    property x : system::Int64;
+    property y : system::Int64;
+}
+
+@FullName:test::PointClass
+class test::PointClass : system::ReferenceType {
+    property x : system::Int64;
+    property y : system::Int64;
+
+    constructor () : test::PointClass^;
+}
+
+@FullName:test::Seasons
+@ValueType
+@Flags
+enum test::Seasons {
+    Autumn = 4,
+    Bad = 10,
+    Good = 5,
+    None = 0,
+    Spring = 1,
+    Summer = 2,
+    Winter = 8,
+}
+
+@FullName:test::SyncScheduler
+class test::SyncScheduler : system::AsyncScheduler {
+    static function Run(callback  : system::Function<system::Void>^) : system::Void;
+
+}
+
 
