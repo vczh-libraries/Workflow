@@ -31,25 +31,23 @@ namespace vl::rpc_controller::channeling
 		vl::Ptr<vl::rpc_controller::RpcJsonDispatcher>	rpcDispatcher;
 		vl::Ptr<vl::rpc_controller::RpcJsonLifecycle>	lifecycle;
 
-		// covers messages and bufferedResponses
-		vl::SpinLock									lockMessages;
-		vl::Semaphore									semaphoreMessages;
+		// covers messages, bufferedResponses, waitingForServices and injectedException
+		vl::CriticalSection							lockMessages;
+		vl::ConditionVariable							cvMessages;
 		vl::collections::List<ReceivedJsonMessage>		messages;
 		vl::collections::List<ReceivedJsonMessage>		bufferedResponses;
+		vl::collections::List<vl::WString>				waitingForServices;
+		bool											hasInjectedException = false;
+		vl::WString									injectedException;
 
 		// covers cachedIncomingServiceDeclarations and cachedOutgoingServiceDeclarations
 		vl::SpinLock									lockServiceDeclarations;
 		vl::collections::List<JsonPackage>				cachedIncomingServiceDeclarations;
 		vl::collections::List<JsonPackage>				cachedOutgoingServiceDeclarations;
 
-		// covers waitingForServices
-		vl::SpinLock									lockWaitingForServices;
-		vl::collections::List<vl::WString>				waitingForServices;
-		vl::EventObject									eventWaitingForServices;
-		bool											eventWaitingForServicesCreated = false;
-		vl::EventObject									eventServerLocalClientId;
-
 		void											PrepareConnection(JsonChannel* channel, const vl::collections::List<vl::WString>& _waitingForServices);
+		void											ThrowInjectedExceptionLocked();
+		void											ThrowInjectedException();
 		void											ProcessCachedIncomingServiceDeclarations();
 		void											SendCachedOutgoingServiceDeclarations();
 		void											ProcessIncomingServiceDeclaration(JsonPackage request);
@@ -83,6 +81,7 @@ namespace vl::rpc_controller::channeling
 		void											NotifyServerClientDisconnected();
 
 		vl::vint										AllocateRequestId() override;
+		void											InjectException(const vl::WString& message) override;
 		JsonPackage										OnJsonRequest(JsonPackage message, RequestType requestType) override;
 		void											OnRead(vl::vint senderClientId, const JsonPackage& package) override;
 

@@ -641,6 +641,10 @@ namespace vl
 /***********************************************************************
 * IRpcJsonMessageDispatcher
 ***********************************************************************/
+		RpcInjectedException::RpcInjectedException(const WString& message)
+			: Exception(message)
+		{
+		}
 
 		Ptr<JsonNode> IRpcJsonMessageDispatcher::DefaultTranslate(
 			Ptr<JsonNode> message,

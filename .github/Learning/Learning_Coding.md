@@ -355,7 +355,7 @@ Model JSON request intent explicitly. Use a request type such as `Direct`, `Broa
 
 ## Run channel-backed RPC dispatchers through one task queue
 
-When `IRpcJsonMessageDispatcher::OnJsonRequest` is synchronous but the underlying `IChannel` read/write path is asynchronous, route request processing through one dispatcher task queue. Incoming channel messages can wake a semaphore-backed queue; `OnJsonRequest` should process nested requests while waiting for its matching response and requeue unrelated responses. Keeping request processing and channel callback work on the same queue avoids cross-thread RPC reentrancy bugs.
+When `IRpcJsonMessageDispatcher::OnJsonRequest` is synchronous but the underlying `IChannel` read/write path is asynchronous, route request processing through one dispatcher task queue. Guard received messages, buffered responses, persistent injected failures, and response commitment with one `CriticalSection`; wake the predicate loop through a `ConditionVariable`. `OnJsonRequest` should test injection before messages, process nested requests while waiting for its matching response, recheck injection at dispatcher-controlled checkpoints, and requeue unrelated responses. Keeping request processing and channel callback work on the same queue avoids cross-thread RPC reentrancy bugs.
 
 Prefer explicit async scheduling over polling or `Thread::Sleep` in ChatBot-style dispatchers. Keep the default queue as an application-level option (for example created from `Main.cpp`) and let dispatcher bases call a scheduling hook instead of owning the queue, so users can provide their own scheduling mechanism.
 

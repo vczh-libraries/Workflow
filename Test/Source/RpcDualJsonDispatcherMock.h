@@ -46,13 +46,18 @@ namespace vl
 			rpc_controller::IRpcLifecycle*								lifecycle2 = nullptr;
 			collections::List<Ptr<glr::json::JsonNode>>					jsonRequests;
 			vint														nextRequestId = 0;
+			SpinLock													lockInjectedException;
+			bool														hasInjectedException = false;
+			WString													injectedException;
 
 			rpc_controller::IRpcLifecycle*								GetOtherLifecycle(vint clientId)const;
+			void														ThrowInjectedException();
 
 		public:
 			void														SetLifecycles(rpc_controller::IRpcLifecycle* lc1, rpc_controller::IRpcLifecycle* lc2);
 
 			vint														AllocateRequestId()override;
+			void														InjectException(const WString& message)override;
 			Ptr<glr::json::JsonNode>									OnJsonRequest(Ptr<glr::json::JsonNode> message, rpc_controller::IRpcJsonMessageDispatcher::RequestType requestType)override;
 			void														DumpJsonRequests(const WString& itemName);
 		};

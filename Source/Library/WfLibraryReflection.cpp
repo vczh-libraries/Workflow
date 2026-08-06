@@ -154,6 +154,7 @@ WfLoadLibraryTypes
 
 			BEGIN_INTERFACE_MEMBER(vl::rpc_controller::IRpcJsonMessageDispatcher)
 				CLASS_MEMBER_METHOD(AllocateRequestId, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(InjectException, { L"message" })
 				CLASS_MEMBER_METHOD(OnJsonRequest, { L"message" _ L"requestType" })
 			END_INTERFACE_MEMBER(vl::rpc_controller::IRpcJsonMessageDispatcher)
 

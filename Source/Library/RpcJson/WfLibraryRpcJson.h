@@ -27,6 +27,12 @@ namespace vl
 		extern Ptr<glr::json::JsonNode>				JsonSerializePredefinedTypes(const reflection::description::Value& value, const RpcJsonSerializeCallback& rpcjson_Serialize);
 		extern reflection::description::Value		JsonDeserializePredefinedTypes(const reflection::description::Value& value, const RpcJsonDeserializeCallback& rpcjson_Deserialize);
 
+		class RpcInjectedException : public Exception
+		{
+		public:
+			RpcInjectedException(const WString& message);
+		};
+
 		class IRpcJsonMessageDispatcher
 			: public virtual reflection::IDescriptable
 			, public reflection::Description<IRpcJsonMessageDispatcher>
@@ -40,6 +46,7 @@ namespace vl
 			};
 
 			virtual vint							AllocateRequestId() = 0;
+			virtual void							InjectException(const WString& message) = 0;
 			virtual Ptr<glr::json::JsonNode>		OnJsonRequest(Ptr<glr::json::JsonNode> message, RequestType requestType) = 0;
 
 			static Ptr<glr::json::JsonNode>			DefaultTranslate(

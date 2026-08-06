@@ -13,8 +13,8 @@ namespace vl
 		using namespace reflection::description;
 		using namespace rpc_controller;
 
-		namespace
-		{
+			namespace rpc_dual_json_dispatcher_helper
+			{
 			WString GetDataSchemaImportPath()
 			{
 #if defined VCZH_64 || defined VCZH_GCC
@@ -137,6 +137,7 @@ namespace vl
 
 			};
 		}
+		using namespace rpc_dual_json_dispatcher_helper;
 
 /***********************************************************************
 * RpcDualJsonDispatcherMock
@@ -260,7 +261,6 @@ namespace vl
 			return nullptr;
 #undef ERROR_MESSAGE_PREFIX
 		}
-
 		void RpcDualJsonRequestBridge::SetLifecycles(IRpcLifecycle* lc1, IRpcLifecycle* lc2)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestBridge::SetLifecycles(IRpcLifecycle*, IRpcLifecycle*)#"
@@ -275,9 +275,30 @@ namespace vl
 			return ++nextRequestId;
 		}
 
+		void RpcDualJsonRequestBridge::ThrowInjectedException()
+		{
+			SPIN_LOCK(lockInjectedException)
+			{
+				if (hasInjectedException)
+				{
+					throw RpcInjectedException(injectedException);
+				}
+			}
+		}
+
+		void RpcDualJsonRequestBridge::InjectException(const WString& message)
+		{
+			SPIN_LOCK(lockInjectedException)
+			{
+				hasInjectedException = true;
+				injectedException = message;
+			}
+		}
+
 		Ptr<JsonNode> RpcDualJsonRequestBridge::OnJsonRequest(Ptr<JsonNode> message, IRpcJsonMessageDispatcher::RequestType requestType)
 		{
 #define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RpcDualJsonRequestBridge::OnJsonRequest(Ptr<JsonNode>, RequestType)#"
+			ThrowInjectedException();
 			auto object = GetJsonObject(message);
 			auto sourceClientId = ReadSourceClientId(message);
 			auto receiver = GetOtherLifecycle(sourceClientId);
@@ -302,6 +323,7 @@ namespace vl
 			{
 				jsonRequests.Add(response);
 			}
+			ThrowInjectedException();
 			return response;
 #undef ERROR_MESSAGE_PREFIX
 		}

@@ -116,6 +116,11 @@ Interface Implementation Proxy (Implement)
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(AllocateRequestId);
 				}
 
+				void InjectException(const vl::WString& message)override
+				{
+					INVOKE_INTERFACE_PROXY(InjectException, message);
+				}
+
 				vl::Ptr<vl::glr::json::JsonNode> OnJsonRequest(vl::Ptr<vl::glr::json::JsonNode> message, vl::rpc_controller::IRpcJsonMessageDispatcher::RequestType requestType)override
 				{
 					INVOKEGET_INTERFACE_PROXY(OnJsonRequest, message, requestType);
