@@ -39,7 +39,7 @@ namespace chatbot
 			}),
 			Func<void(RpcObjectReference, IDescriptable*)>([this, ops](RpcObjectReference ref, IDescriptable* obj)
 			{
-				vl_workflow_global::ChatBotApp::Instance().rpclistener_Attach(ref.typeId, GetRpcJsonLifecycle(), ref, obj, ops);
+				vl_workflow_global::ChatBotApp::Instance().rpclistener_Attach(ref.typeId, GetRpcLifecycle(), ref, obj, ops);
 			})
 			);
 
