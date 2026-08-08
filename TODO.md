@@ -7,10 +7,6 @@
 - Compiler complexity could be O(n2) which makes big single GacXML compilation slow.
   - or not complexity problem but just AST pooling?
 
-## Workflow Interface Based RPC
-
-- [TODO_RPC.md](./TODO_RPC.md)
-
 ## Improvements
 
 ### RPC
@@ -19,7 +15,6 @@
 - `WfCpp_WriteReflection.cpp` is changed because `INVOKE(GET?)_INTERFACE_PROXY` does not handle overloading property. This should be a VlppParser bug. Fix the bug and revert this file.
   - https://github.com/vczh-libraries/Workflow/commit/7b0e54a1964774cbb011ea1e675aa8c72a3fbec4
 - Can `WfInterfaceInstance` not inherit from `IDescriptable`?
-- Check error handling. Ensure crashing instead of covering.
 
 ### GacGen Awareness
 
