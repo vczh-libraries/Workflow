@@ -40,6 +40,8 @@ Here is a list of unit test projects in `REPO-ROOT/Test/UnitTest/{NAME}/{NAME}.v
 - `CppTest`: Generated C++ code from executable test cases.
 - `CppTest_Metaonly`: Generated C++ code from executable test cases.
 - `CppTest_Reflection`: Generated C++ code from executable test cases.
+- `RpcStdioTest_Driver`: Runs every indexed RPC sample through a fresh `RpcStdioTest_Service` child process connected by standard-input/standard-output redirection.
+- `RpcStdioTest_Service`: Hosts exactly one indexed RPC sample as the provider side of the standard-input/standard-output RPC test.
 
 In `REPO-ROOT/Test/TypeScript` there is a TypeScript package, it will becomes available after running `CompilerTest_LoadAndCompiler` and `CppTest`. You need to run `prepare.ps1` followed by `npm run build` and ensure you don't see any error. This project verifies if JSON serialization of Workflow RPC is properly implemented.
 
@@ -61,6 +63,7 @@ The correct order to run them is:
   - If it updates any C++ source code, build debug Win32 and x64 again.
 - Run `RuntimeTest` for Win32 and x64.
 - Run `CppTest`, `CppTest_Metaonly` and `CppTest_Reflection` for Win32 and x64.
+- Run `RpcStdioTest_Driver` for Win32 and x64, starting the `RpcStdioTest_Service` executable of the matching configuration and platform.
 - When you believe that all test projects should run, call `..\Tools\Tools\Build.ps1 Workflow` to test against everything.
   - It does not write any building or execution log.
   - It stops at the first failure.
@@ -100,7 +103,7 @@ When generated files are expected to change, baseline comparison will fail. You 
 `Codegen` and `Rpc` generates C++ source files from each sample, affecting `CppTest`, `CppTest_Metaonly`, `CppTest_Reflection`.
 - Changing the compiler or samples will end up updating C++ source files in these projects, causing them need to rebuild.
 - Generated C++ source code will be added to `Generated_(Cpp|Reflection)(Rpc)?.vcxitems`, they will be consumed by `CppTest*` unit test projects.
-- `Codegen` will also generate `TestCases.cpp`, `Rpc` will also generate `TestCasesRpc.cpp`, they are referenced by `CppTest*` unit test projects.
+- `Codegen` will also generate `TestCases.cpp`. `Rpc` will also generate `TestCasesRpc.cpp`, `TestCasesRpcStdio_Driver.cpp`, and `TestCasesRpcStdio_Service.cpp`; they are referenced by the `CppTest*` and `RpcStdioTest_*` projects.
 - Different `CppTest*` compile the same set of source code using different reflection options, source files used by them should be compatible with all reflection options:
   - Avoid using any reflection features.
   - The only exception are type reflection registration files for workflow generated types, they are referenced in `Generated_Reflection(Rpc)?.vcxitems` with preprocessor applied.
@@ -129,6 +132,13 @@ If `CompilerTest_LoadAndCompiler` succeeded but subsequent test projects fail:
 - Pass all unit test, fix any test failure including pre-existings.
 
 ## CLI Test Projects
+
+`RpcStdioTest_Driver` and `RpcStdioTest_Service` are non-interactive CLI test projects for Workflow RPC over `vl::inter_process::stdio_redirection`:
+- Invoke the driver as `RpcStdioTest_Driver <cli-command-to-start-RpcStdioTest_Service> [path-to-SkippedTestCaseListFile]`.
+- The optional skipped-test file contains exact `IndexRpc.txt` case names, one per line.
+- The driver starts a new service process for each non-skipped case and appends the case name to the supplied service command.
+- The driver reports the value returned by each case's `clientMain`; exceptions and protocol failures terminate the test process.
+- The service accepts exactly one case name, runs that case's `serviceMain`, and reserves standard output for the channel protocol.
 
 `ChatBotServer` and `ChatBotClient` are test projects based on Workflow RPC with `vl::inter_process::HttpServer`:
 - Start `ChatBotServer`, wait for a message to print.
@@ -175,6 +185,8 @@ Only run necessary `Parser.xml` in folders that are changed.
 - `CppTest_Reflection`: `CppTest_Reflection.vcxproj`.
 - `LibraryTest`: `LibraryTest.vcxproj`.
 - `RuntimeTest`: `RuntimeTest.vcxproj`.
+- `RpcStdioTest_Driver`: `RpcStdioTest_Driver.vcxproj`.
+- `RpcStdioTest_Service`: `RpcStdioTest_Service.vcxproj`.
 
 You need to build, test and debug in that specific folder, otherwise the unit test will not function properly.
 On Linux, only configuration "debug x64" is available, no need to build or run projects with other configurations.

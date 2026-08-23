@@ -70,6 +70,31 @@ static Ptr<List<Ptr<RpcEventBridgeInfo>>> CollectRpcEventBridgeInfos(WfLexicalSc
 	return eventInfos;
 }
 
+static Ptr<List<WString>> CollectRpcServiceNames(WfLexicalScopeManager& manager)
+{
+	auto serviceNames = Ptr(new List<WString>);
+	auto ctorAttribute = GetTypeDescriptor<vl::__vwsn::att_rpc_Ctor>();
+	for (auto typeFullName : manager.rpcMetadata->typeFullNames)
+	{
+		auto td = rpc_generating::FindRpcTypeDescriptor(&manager, typeFullName);
+		CHECK_ERROR(td, L"CollectRpcServiceNames: Failed to find RPC interface type descriptor.");
+		bool hasCtorAttribute = false;
+		for (vint i = 0; i < td->GetAttributeCount(); i++)
+		{
+			if (td->GetAttribute(i)->GetAttributeType() == ctorAttribute)
+			{
+				hasCtorAttribute = true;
+				break;
+			}
+		}
+		if (hasCtorAttribute)
+		{
+			serviceNames->Add(typeFullName);
+		}
+	}
+	return serviceNames;
+}
+
 static void CompileRpcSample(WfLexicalScopeManager& manager, const WString& itemName, const WString& sample, Ptr<WfModule>& wrapperModule, Ptr<WfModule>& wrapperJsonModule)
 {
 	manager.Clear(true, true);
@@ -173,6 +198,7 @@ TEST_FILE
 		Dictionary<WString, WString> assemblyNames;
 		Dictionary<WString, WString> assemblyEntries;
 		Dictionary<WString, Ptr<List<Ptr<RpcEventBridgeInfo>>>> rpcEventBridgeInfosPerItem;
+		Dictionary<WString, Ptr<List<WString>>> rpcServiceNamesPerItem;
 		LoadSampleIndex(L"Rpc", rpcNames);
 
 		for (auto rpcLine : rpcNames)
@@ -192,6 +218,7 @@ TEST_FILE
 				VerifyRpcMetadata(manager);
 				{
 					rpcEventBridgeInfosPerItem.Add(itemName, CollectRpcEventBridgeInfos(manager, itemName));
+					rpcServiceNamesPerItem.Add(itemName, CollectRpcServiceNames(manager));
 
 					auto wrapperString = GenerateToStream([&](StreamWriter& writer)
 					{
@@ -363,6 +390,119 @@ TEST_FILE
 
 				writer.WriteLine(L"});");
 			}
+			writer.WriteLine(L"}");
+		});
+
+		TEST_CASE(L"TestCasesRpcStdio_Driver.cpp")
+		{
+			FileStream fileStream(GetCppOutputPathRpc() + L"TestCasesRpcStdio_Driver.cpp", FileStream::WriteOnly);
+			Utf8Encoder encoder;
+			EncoderStream encoderStream(fileStream, encoder);
+			StreamWriter writer(encoderStream);
+
+			for (auto rpcLine : rpcNames)
+			{
+				WString itemName, itemResult;
+				if (!DecodeRpcName(rpcLine, itemName, itemResult)) continue;
+
+				writer.WriteString(L"#include \"");
+				writer.WriteString(assemblyEntries[itemName]);
+				writer.WriteLine(L".h\"");
+			}
+
+			writer.WriteLine(L"#include \"../Source/TestCasesRpcStdio_Driver.h\"");
+			writer.WriteLine(L"");
+			writer.WriteLine(L"using namespace vl;");
+			writer.WriteLine(L"using namespace vl::collections;");
+			writer.WriteLine(L"using namespace vl::rpc_controller_test;");
+			writer.WriteLine(L"");
+			writer.WriteLine(L"void RunTestCasesRpcStdio_Driver(const WString& serviceCommand, const SortedList<WString>& skippedTestCases)");
+			writer.WriteLine(L"{");
+
+			for (auto rpcLine : rpcNames)
+			{
+				WString itemName, itemResult;
+				if (!DecodeRpcName(rpcLine, itemName, itemResult)) continue;
+
+				writer.WriteString(L"\tif (skippedTestCases.Contains(L\"");
+				writer.WriteString(itemName);
+				writer.WriteLine(L"\"))");
+				writer.WriteLine(L"\t{");
+				writer.WriteString(L"\t\tPrintRpcStdioSkippedTestCase(L\"");
+				writer.WriteString(itemName);
+				writer.WriteLine(L"\");");
+				writer.WriteLine(L"\t}");
+				writer.WriteLine(L"\telse");
+				writer.WriteLine(L"\t{");
+				writer.WriteLine(L"\t\tList<WString> waitingForServices;");
+				auto serviceNames = rpcServiceNamesPerItem[itemName];
+				for (auto serviceName : *serviceNames.Obj())
+				{
+					writer.WriteString(L"\t\twaitingForServices.Add(L\"");
+					writer.WriteString(serviceName);
+					writer.WriteLine(L"\");");
+				}
+				writer.WriteString(L"\t\tRunRpcStdioTestCase<::vl_workflow_global::");
+				writer.WriteString(assemblyNames[itemName]);
+				writer.WriteString(L", ");
+				writer.WriteString(
+					rpcEventBridgeInfosPerItem.Keys().Contains(itemName) && rpcEventBridgeInfosPerItem.Get(itemName)->Count() > 0
+					? L"true"
+					: L"false");
+				writer.WriteString(L">(L\"");
+				writer.WriteString(itemName);
+				writer.WriteLine(L"\", serviceCommand, waitingForServices);");
+				writer.WriteLine(L"\t}");
+			}
+			writer.WriteLine(L"}");
+		});
+
+		TEST_CASE(L"TestCasesRpcStdio_Service.cpp")
+		{
+			FileStream fileStream(GetCppOutputPathRpc() + L"TestCasesRpcStdio_Service.cpp", FileStream::WriteOnly);
+			Utf8Encoder encoder;
+			EncoderStream encoderStream(fileStream, encoder);
+			StreamWriter writer(encoderStream);
+
+			for (auto rpcLine : rpcNames)
+			{
+				WString itemName, itemResult;
+				if (!DecodeRpcName(rpcLine, itemName, itemResult)) continue;
+
+				writer.WriteString(L"#include \"");
+				writer.WriteString(assemblyEntries[itemName]);
+				writer.WriteLine(L".h\"");
+			}
+
+			writer.WriteLine(L"#include \"../Source/TestCasesRpcStdio_Service.h\"");
+			writer.WriteLine(L"");
+			writer.WriteLine(L"using namespace vl;");
+			writer.WriteLine(L"using namespace vl::rpc_controller_test;");
+			writer.WriteLine(L"");
+			writer.WriteLine(L"void RunTestCasesRpcStdio_Service(const WString& itemName)");
+			writer.WriteLine(L"{");
+
+			for (auto rpcLine : rpcNames)
+			{
+				WString itemName, itemResult;
+				if (!DecodeRpcName(rpcLine, itemName, itemResult)) continue;
+
+				writer.WriteString(L"\tif (itemName == L\"");
+				writer.WriteString(itemName);
+				writer.WriteLine(L"\")");
+				writer.WriteLine(L"\t{");
+				writer.WriteString(L"\t\tRunRpcStdioService<::vl_workflow_global::");
+				writer.WriteString(assemblyNames[itemName]);
+				writer.WriteString(L", ");
+				writer.WriteString(
+					rpcEventBridgeInfosPerItem.Keys().Contains(itemName) && rpcEventBridgeInfosPerItem.Get(itemName)->Count() > 0
+					? L"true"
+					: L"false");
+				writer.WriteLine(L">();");
+				writer.WriteLine(L"\t\treturn;");
+				writer.WriteLine(L"\t}");
+			}
+			writer.WriteLine(L"\tCHECK_FAIL(L\"Unknown RPC stdio test case.\");");
 			writer.WriteLine(L"}");
 		});
 #endif
