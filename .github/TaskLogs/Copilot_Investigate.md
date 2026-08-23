@@ -43,3 +43,25 @@ The implementation will be accepted when all of the following conditions hold:
 - Both projects are present in `UnitTest.sln`, `Project.md` documents their roles and invocation, and `Test/Linux/RpcStdioTest_Driver/vmake` plus `Test/Linux/RpcStdioTest_Service/vmake` describe portable builds without claiming unperformed Linux runtime verification.
 
 # PROPOSALS
+
+- No.1 Generate role-specific stdio harnesses over the existing JSON RPC channel stack
+
+## No.1 Generate role-specific stdio harnesses over the existing JSON RPC channel stack
+
+Extend the existing `TestRpcCompile.cpp` per-sample metadata collection and final harness generation so the same `IndexRpc.txt` iteration that writes `TestCasesRpc.cpp` also writes two role-specific dispatchers. The driver dispatcher will enumerate every case, honor an exact-name skipped-case set, provide the existing expected string and generated service type names, and instantiate the matching generated C++ assembly. The service dispatcher will select exactly one matching generated assembly by case name. Event-bearing assemblies will continue to be identified from the compiler's RPC event metadata so listener attachment is generated only when the assembly actually has events.
+
+Add manually maintained `TestCasesRpcStdio_Driver.h` and `TestCasesRpcStdio_Service.h` templates that configure each generated assembly with the existing JSON serializer, JSON object/event operations, strong typed operations, id map, wrapper factory, and optional event attacher. No Workflow compiler, RPC runtime, or transport API change is required.
+
+The driver side will compose the existing channel and JSON RPC classes over `StdioRedirectionServer`. For each case it will:
+
+1. Start a fresh channel server and launch the supplied service command with the case name appended.
+2. Wait for the remote service channel to be admitted as client 1.
+3. Connect the driver RPC endpoint as local client 2.
+4. Connect the JSON RPC broadcasting broker as local client 3, start its task queue, and register clients 1 and 2.
+5. Initialize the driver lifecycle while waiting for the compiler-collected `@rpc:Ctor` service names, execute the existing `clientMain`, compare its result with the existing `IndexRpc.txt` expectation, finalize RPC, and stop the per-case server and task queue.
+
+The service side will compose `StdioRedirectionClient` with the same channel/JSON RPC client layer, register the selected case's services through the existing `serviceMain`, initialize the dispatcher, and run its task queue until the parent closes the redirected connection. Stdout remains exclusively owned by the framed protocol. Both executables will retain fail-fast behavior for invalid arguments, unknown cases, transport failures, and result mismatches.
+
+Add two no-reflection C++ application projects based on the existing C++/ChatBot test-project configuration. Each project will import the Workflow library, shared test types, and generated RPC assemblies; compile its generated dispatcher and manually maintained header; and be added to all four `UnitTest.sln` configurations. Add matching Linux `vmake` files and update `Project.md` with the two project roles, invocation contract, skip-file format, and generation relationship.
+
+### CODE CHANGE
