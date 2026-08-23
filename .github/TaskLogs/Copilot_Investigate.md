@@ -44,7 +44,7 @@ The implementation will be accepted when all of the following conditions hold:
 
 # PROPOSALS
 
-- No.1 Generate role-specific stdio harnesses over the existing JSON RPC channel stack
+- No.1 Generate role-specific stdio harnesses over the existing JSON RPC channel stack [DENIED]
 
 ## No.1 Generate role-specific stdio harnesses over the existing JSON RPC channel stack
 
@@ -65,3 +65,13 @@ The service side will compose `StdioRedirectionClient` with the same channel/JSO
 Add two no-reflection C++ application projects based on the existing C++/ChatBot test-project configuration. Each project will import the Workflow library, shared test types, and generated RPC assemblies; compile its generated dispatcher and manually maintained header; and be added to all four `UnitTest.sln` configurations. Add matching Linux `vmake` files and update `Project.md` with the two project roles, invocation contract, skip-file format, and generation relationship.
 
 ### CODE CHANGE
+
+The attempted implementation extended `CompilerTest_LoadAndCompile` to generate driver and service dispatchers for all 126 `IndexRpc.txt` entries, added shared driver/service harness headers over `StdioRedirectionServer` and `StdioRedirectionClient`, added both application projects to all solution configurations, added Linux `vmake` files, and documented the projects in `Project.md`. The driver launched one service process per case, preserved endpoint client ids 1 and 2, configured the JSON RPC broker as client 3, ran `clientMain`, and compared its return value with the existing `IndexRpc.txt` result.
+
+### DENIED
+
+The projects and all 126 generated dispatch entries built successfully in Debug x64 with zero warnings and zero errors, and the first case completed its RPC exchange. However, the proposal's requirement to compare the split-process `clientMain` result with the old in-process expectation is invalid for the existing fixtures.
+
+`Collection_Default` expects `[123][1234][12345]`, but the stdio run correctly produced `[123][][12345]`: `serviceMain` assigns the service process's `xsService`, while `clientMain` reads the distinct driver process's `xsService`. `Collection_InByref_OutByref` then terminated while formatting that empty driver-side collection. A CDB stack trace placed the exception in `Rpc_Collection_InByref_OutByref::Print5` and `clientMain`, after the RPC method had returned, rather than in the stdio channel or JSON dispatcher.
+
+Static inspection found this shared-global pattern throughout all 96 collection fixtures and in several destructor, event, registration, and wrapper fixtures. An instrumented run that retained every RPC operation and exception check but only reported result differences completed all 70 cases whose result formatter did not index an empty service-side global. Core method, property, event, inheritance, exception, nullable, primitive, list-operation, and wrapper scenarios reached the expected transport behavior. Therefore the transport composition is viable, but exact comparison against the existing single-process oracle cannot be part of this proposal without changing the fixtures or introducing a nonstandard service-state synchronization protocol, either of which contradicts the intended reusable external-service boundary.
