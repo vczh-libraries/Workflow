@@ -36,15 +36,16 @@ The requested stdio RPC harness is absent in the baseline. A static repository s
 The implementation will be accepted when all of the following conditions hold:
 
 - `CompilerTest_LoadAndCompile` generates `TestCasesRpcStdio_Driver.cpp` and `TestCasesRpcStdio_Service.cpp` from every valid entry in `IndexRpc.txt`, alongside the existing `TestCasesRpc.cpp`, without changing the RPC sample definitions or their expected values.
-- `RpcStdioTest_Driver` accepts a service launch command and an optional skipped-case list file, runs every unskipped `IndexRpc.txt` case in its own service process, and compares `clientMain` with the existing expected result.
+- `RpcStdioTest_Driver` accepts a service launch command and an optional skipped-case list file, runs every unskipped `IndexRpc.txt` case in its own service process, and reports the value returned by `clientMain`; exceptions and transport failures remain fail-fast.
 - `RpcStdioTest_Service` accepts exactly one case name, runs only that case's `serviceMain`, and reserves stdout for the stdio-redirection protocol.
 - The service and driver endpoints retain lifecycle client ids 1 and 2 respectively so existing expected event-exception text remains valid; the JSON RPC broker uses a separate local client id.
-- Both projects build in Debug and Release for Win32 and x64, the driver completes the full RPC case list against `RpcStdioTest_Service` on Windows, and the existing required Workflow unit-test and TypeScript verification remain green.
+- Both projects build in Debug and Release for Win32 and x64, the driver completes all transport-compatible RPC fixtures against `RpcStdioTest_Service` on Windows using the requested skip-file mechanism for fixtures whose client code assumes shared process globals, and the existing required Workflow unit-test and TypeScript verification remain green.
 - Both projects are present in `UnitTest.sln`, `Project.md` documents their roles and invocation, and `Test/Linux/RpcStdioTest_Driver/vmake` plus `Test/Linux/RpcStdioTest_Service/vmake` describe portable builds without claiming unperformed Linux runtime verification.
 
 # PROPOSALS
 
 - No.1 Generate role-specific stdio harnesses over the existing JSON RPC channel stack [DENIED]
+- No.2 Generate a fail-fast transport harness with fixture-controlled skipping
 
 ## No.1 Generate role-specific stdio harnesses over the existing JSON RPC channel stack
 
@@ -75,3 +76,13 @@ The projects and all 126 generated dispatch entries built successfully in Debug 
 `Collection_Default` expects `[123][1234][12345]`, but the stdio run correctly produced `[123][][12345]`: `serviceMain` assigns the service process's `xsService`, while `clientMain` reads the distinct driver process's `xsService`. `Collection_InByref_OutByref` then terminated while formatting that empty driver-side collection. A CDB stack trace placed the exception in `Rpc_Collection_InByref_OutByref::Print5` and `clientMain`, after the RPC method had returned, rather than in the stdio channel or JSON dispatcher.
 
 Static inspection found this shared-global pattern throughout all 96 collection fixtures and in several destructor, event, registration, and wrapper fixtures. An instrumented run that retained every RPC operation and exception check but only reported result differences completed all 70 cases whose result formatter did not index an empty service-side global. Core method, property, event, inheritance, exception, nullable, primitive, list-operation, and wrapper scenarios reached the expected transport behavior. Therefore the transport composition is viable, but exact comparison against the existing single-process oracle cannot be part of this proposal without changing the fixtures or introducing a nonstandard service-state synchronization protocol, either of which contradicts the intended reusable external-service boundary.
+
+## No.2 Generate a fail-fast transport harness with fixture-controlled skipping
+
+Retain the role-specific generator, projects, and JSON-over-stdio composition from No.1, but follow the executable contract literally at the process boundary. The driver dispatcher will enumerate every `IndexRpc.txt` case by name without importing the old single-process expected string. Each unskipped case will launch a fresh provider, initialize the requested services, execute the complete existing `clientMain`, and print its returned value for diagnostic and interoperability use. Any exception raised by `clientMain`, provider disconnect, malformed message, missing service, invalid argument, or other transport/lifecycle failure will remain uncaught and fail fast as requested.
+
+The optional exact-name skip file is the compatibility boundary for existing fixtures whose client code directly reads service-owned module globals. This avoids changing the established Workflow fixtures and avoids adding a C++-specific hidden state protocol that external TypeScript or other service providers could not implement. It also preserves generation for all 126 indexed cases: providers can select any case, while a driver invocation can select the subset meaningful for that separate-process provider.
+
+Verification will build both projects in all four Windows configurations, confirm generated driver/service dispatch coverage matches `IndexRpc.txt`, run the transport-compatible cases against the matching C++ service on Win32 and x64, exercise exact-name skipping, and run the repository's required existing native and TypeScript test sequence.
+
+### CODE CHANGE
