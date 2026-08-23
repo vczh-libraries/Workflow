@@ -135,6 +135,7 @@ If `CompilerTest_LoadAndCompiler` succeeded but subsequent test projects fail:
 
 `RpcStdioTest_Driver` and `RpcStdioTest_Service` are non-interactive CLI test projects for Workflow RPC over `vl::inter_process::stdio_redirection`:
 - Invoke the driver as `RpcStdioTest_Driver <cli-command-to-start-RpcStdioTest_Service> [path-to-SkippedTestCaseListFile]`.
+- After building Debug x64, `Test/StartRpcStdio.ps1 [path-to-SkippedTestCaseListFile]` runs the Windows pair with the matching service path. On Linux or macOS, build both `Test/Linux/RpcStdioTest_*` projects and run `Test/StartRpcStdio.sh [path-to-SkippedTestCaseListFile]`.
 - The optional skipped-test file contains exact `IndexRpc.txt` case names, one per line.
 - The driver starts a new service process for each non-skipped case and appends the case name to the supplied service command.
 - The driver reports the value returned by each case's `clientMain`; exceptions and protocol failures terminate the test process.
