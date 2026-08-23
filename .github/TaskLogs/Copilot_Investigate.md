@@ -17,3 +17,13 @@ The failing sample assigns `xsService` only from `serviceMain`, which runs in th
 Isolating every `IndexRpc.txt` entry confirmed the established compatibility boundary: 70 cases complete across separate processes, while 56 collection cases abort because their client-side result formatting indexes module globals populated only in the service process. This is fixture state coupling, not a stdio transport or RPC dispatch failure.
 
 # PROPOSALS
+
+- No.1 Use the C++ provider's compatibility list by default
+
+## No.1 Use the C++ provider's compatibility list by default
+
+The two launchers specifically pair `RpcStdioTest_Driver` with the repository's C++ `RpcStdioTest_Service`, whose compatibility boundary is now known and repeatable. Add a checked-in exact-name skip list containing the 56 fixtures whose client result formatting depends on service-process globals. When no argument is supplied, `StartRpcStdio.sh` and `StartRpcStdio.ps1` will pass this bundled list to the driver so their default invocation runs all 70 process-compatible cases. An explicitly supplied skip file will continue to replace the default, preserving the driver launcher as a tool for other providers and allowing an empty file to request all 126 cases deliberately.
+
+Document the default and override behavior in `Project.md`. Do not catch the fixture exception or weaken fail-fast behavior in the driver, and do not alter the existing RPC samples merely to synchronize C++-specific test globals across an external-provider boundary.
+
+### CODE CHANGE
