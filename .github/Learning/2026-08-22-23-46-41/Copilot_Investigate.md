@@ -12,7 +12,7 @@ and `RpcStdioTest_Driver` will run all test cases unless one is in the skipped l
 on each test case it starts `cli-command-to-start=RpcStdioTest_Service`, with an extra argument of the test case name.
 Note that it doesn't have to be `RpcStdioTest_Service`, but this is what we verify against right now, in the future other people could offer their own `RpcStdioTest_Service`.
 
-`RpcStdioTest_Driver` connects `RpcStdioTest_Service` via stdio redirection, just like how `../GacUI/DebugRemoteProtocolWithNativeRenderer.md` is done with `/cli` option.
+`RpcStdioTest_Driver` connects `RpcStdioTest_Service` via stdio redirection, just like how `../GacUI/.github/Jobs/DebugRemoteProtocolWithNativeRenderer.md` is done with `/cli` option.
 The stdio redirection implementation of `INetworkProtocolServer` is already done in VlppOS.
 
 Test case names are in `IndexRpc.txt`.

@@ -6,7 +6,7 @@ I would like you to write
 
 ../Workflow/Test/StartRpcStdio.ps1, assuming the solution has been build with debug x64, start RpcStdioTest\_(Driver|Service).
 
-../GacUI/Test/StartCore.ps1, according to ../GacUI/DebugRemoteProtocolWithNativeRenderer.md, to run core side test app with following options:
+../GacUI/Test/StartCore.ps1, according to ../GacUI/.github/Jobs/DebugRemoteProtocolWithNativeRenderer.md, to run core side test app with following options:
 
 - test apps:
   - CppTest\_Rvm: -App cpptest\_rvm
