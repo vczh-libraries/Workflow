@@ -137,6 +137,7 @@ If `CompilerTest_LoadAndCompiler` succeeded but subsequent test projects fail:
 - Invoke the driver as `RpcStdioTest_Driver <cli-command-to-start-RpcStdioTest_Service> [path-to-SkippedTestCaseListFile]`.
 - After building Debug x64, `Test/StartRpcStdio.ps1 [path-to-SkippedTestCaseListFile]` runs the Windows pair with the matching service path. On Linux or macOS, build both `Test/Linux/RpcStdioTest_*` projects and run `Test/StartRpcStdio.sh [path-to-SkippedTestCaseListFile]`.
 - The optional skipped-test file contains exact `IndexRpc.txt` case names, one per line.
+- When the launchers are called without a skipped-test file, they use `Test/Resources/RpcStdioTest_CppSkipped.txt` to skip fixtures whose result formatting depends on module globals initialized in the separate C++ service process. Supply an explicit file to replace this C++ compatibility default; an empty file deliberately runs all indexed cases.
 - The driver starts a new service process for each non-skipped case and appends the case name to the supplied service command.
 - The driver reports the value returned by each case's `clientMain`; exceptions and protocol failures terminate the test process.
 - The service accepts exactly one case name, runs that case's `serviceMain`, and reserves standard output for the channel protocol.

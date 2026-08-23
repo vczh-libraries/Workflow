@@ -18,7 +18,7 @@ Isolating every `IndexRpc.txt` entry confirmed the established compatibility bou
 
 # PROPOSALS
 
-- No.1 Use the C++ provider's compatibility list by default
+- No.1 Use the C++ provider's compatibility list by default [CONFIRMED]
 
 ## No.1 Use the C++ provider's compatibility list by default
 
@@ -27,3 +27,9 @@ The two launchers specifically pair `RpcStdioTest_Driver` with the repository's 
 Document the default and override behavior in `Project.md`. Do not catch the fixture exception or weaken fail-fast behavior in the driver, and do not alter the existing RPC samples merely to synchronize C++-specific test globals across an external-provider boundary.
 
 ### CODE CHANGE
+
+Added `Test/Resources/RpcStdioTest_CppSkipped.txt` with the 56 exact `IndexRpc.txt` names that abort when their driver-side result formatting indexes service-owned module globals. Both `Test/StartRpcStdio.sh` and `Test/StartRpcStdio.ps1` now resolve and pass this file when no override is supplied. An explicit skip-file argument still replaces the default, and the driver continues to receive the service command and skip path as separate arguments. `Project.md` documents the default, override, and explicit-empty-file behavior.
+
+### CONFIRMED
+
+The bundled list contains 56 unique names, all present in `IndexRpc.txt`. Bash syntax validation and `git diff --check` passed. Running `Test/StartRpcStdio.sh` without arguments completed all 70 non-skipped cases and exited with code 0, including the former first crash point. Running it with a temporary explicit list that selected only `PrimitiveTypes` executed that case, reported `[6][12][1.75][2.875][Hi!][false][Autumn][13,27]`, and exited with code 0, confirming override behavior. No C++ source or generated file changed, so rebuilding the already-current driver and service was unnecessary.
