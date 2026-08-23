@@ -45,7 +45,7 @@ The implementation will be accepted when all of the following conditions hold:
 # PROPOSALS
 
 - No.1 Generate role-specific stdio harnesses over the existing JSON RPC channel stack [DENIED]
-- No.2 Generate a fail-fast transport harness with fixture-controlled skipping
+- No.2 Generate a fail-fast transport harness with fixture-controlled skipping [CONFIRMED]
 
 ## No.1 Generate role-specific stdio harnesses over the existing JSON RPC channel stack
 
@@ -86,3 +86,17 @@ The optional exact-name skip file is the compatibility boundary for existing fix
 Verification will build both projects in all four Windows configurations, confirm generated driver/service dispatch coverage matches `IndexRpc.txt`, run the transport-compatible cases against the matching C++ service on Win32 and x64, exercise exact-name skipping, and run the repository's required existing native and TypeScript test sequence.
 
 ### CODE CHANGE
+
+`CompilerTest_LoadAndCompile` now collects each assembly's `@rpc:Ctor` service names and event metadata while compiling the existing RPC samples, then generates role-specific dispatchers for every one of the 126 `IndexRpc.txt` entries. The driver dispatcher applies exact-name skipping, supplies the required service names, and invokes the matching assembly's complete `clientMain`; the service dispatcher selects one exact case and invokes the corresponding `serviceMain`. The generated dispatchers are written and merged by the existing compiler test into `SourceCppGenRpc`, `Generated/CppRpc32`, and `Generated/CppRpc64` alongside `TestCasesRpc.cpp`.
+
+The manually maintained driver and service headers compose the generated assemblies with the existing JSON RPC lifecycle, serializers, wrapper factories, optional event listeners, and stdio-redirection transport. For each case the driver launches a fresh service process, admits it as lifecycle client 1, connects the consumer as client 2 and the local broadcasting broker as client 3, initializes required services, prints the value returned by `clientMain`, finalizes RPC, and tears down the process and task queue. The service accepts a single generated case, registers its provider objects, initializes the dispatcher, and runs until the driver closes the redirected connection. Existing exceptions and explicit protocol checks provide the requested fail-fast behavior.
+
+`RpcStdioTest_Driver` and `RpcStdioTest_Service` were added as no-reflection applications in all four `UnitTest.sln` configurations with matching filters and Linux `vmake` descriptions. The driver accepts the service command and optional BOM-aware exact-name skip file; the service accepts exactly one case name. `Project.md` documents the projects, generation outputs, build order, invocation, skip format, per-case process behavior, and diagnostic result reporting.
+
+### CONFIRMED
+
+The generator produced 126 driver dispatches and 126 service dispatches in each of `SourceCppGenRpc`, `Generated/CppRpc32`, and `Generated/CppRpc64`. `CompilerTest_LoadAndCompile` passed 711/711 cases and performed its normal merge pass, confirming that the checked-in dispatchers are compiler-generated. Both project XML files and filters parse successfully, all solution configuration and shared-item mappings are present, both Linux `vmake` entries reference the intended project/import set, and `git diff --check` reports no whitespace errors.
+
+The full solution built successfully with zero warnings and zero errors in Debug Win32, Debug x64, Release Win32, and Release x64. The required native sequence passed for `LibraryTest`, `CompilerTest_GenerateMetadata`, `CompilerTest_LoadAndCompile`, `RuntimeTest`, `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` on the required architectures; TypeScript preparation and `npm run build` also passed.
+
+Against the matching Debug C++ service, the driver completed on both Win32 and x64 with exit code 0: 70 transport-compatible cases ran in fresh service processes and 56 fixtures were skipped by exact name. Those skipped fixtures have client code that indexes service-owned process globals and can terminate after an otherwise successful split-process RPC exchange, as established by the denied proposal. All 126 cases remain generated and individually selectable; the optional skip file is the requested mechanism for choosing a compatible external-provider run.
