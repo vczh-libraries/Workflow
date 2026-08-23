@@ -48,7 +48,7 @@ The implementation will be accepted when all of the following conditions hold:
 
 # PROPOSALS
 
-- No.1 Add repository-relative orchestration launchers
+- No.1 Add repository-relative orchestration launchers [CONFIRMED]
 
 ## No.1 Add repository-relative orchestration launchers
 
@@ -63,3 +63,17 @@ The iGac/wGac `test_core.sh` launchers will follow `test.sh`'s `--app:...`, `--p
 Update project and platform documentation with launcher syntax, sequencing, protocol limits, and the distinction between the existing native `test.sh` and new GacUI Core-side `test_core.sh`. Verify the PowerShell launchers through real Debug x64 processes and their interactive endpoints, then terminate every test process; validate the portable scripts statically without claiming runtime execution.
 
 ### CODE CHANGE
+
+Added `Workflow/Test/StartRpcStdio.ps1` and `Workflow/Test/StartRpcStdio.sh`. Both launchers resolve the matching repository-relative driver and service binaries, validate an optional skip-list file, preserve paths when constructing the service child command, and keep the driver attached to the calling terminal. `Workflow/Project.md` now documents both launchers.
+
+Added `GacUI/Test/StartCore.ps1` with separate validated app and transport option sets. It maps `cpptest_rvm` to `CppTest_Rvm`, maps `fct`, `rpt`, and `rvmt` to the corresponding `RemotingTest_Core` selector, passes `/Cli:<host>` where supported, or starts a manual `RemotingTest_RvmHost` after a one-second delay. Added the intentionally named `GacUI/Test/StartRendrerer.ps1` to launch `RemotingTest_Rendering_Win32` with the selected transport and optional validated automation port. Both launchers return process objects for interactive orchestration and cleanup. `GacUI/Project.md` and the remote-protocol guides now document the commands.
+
+Added matching `iGac/test_core.sh` and `wGac/test_core.sh` launchers using `test.sh`-style `--app:`, `--protocol:`, `--cli`, and `--unblock` arguments. They accept the portable `/MiniHttp` transport, invoke the GacUI Linux project build wrapper with `-f`, start manual requesters/Core processes before the required one-second delay and host build/start, prebuild the host for Core `/Cli` mode, and clean up an already-started primary process if a later host build fails or the launcher is interrupted. Updated every Markdown file in GacUI, iGac, and wGac that mentions `test.sh` so it also describes or points to `test_core.sh`.
+
+### CONFIRMED
+
+The Workflow PowerShell launcher was run against the Debug x64 binaries with a temporary skip list that retained `Rpc:PrimitiveTypes`. It launched `RpcStdioTest_Driver.exe` with the exact quoted `RpcStdioTest_Service.exe` command, completed the RPC case successfully, and exited with code 0.
+
+The complete GacUI Debug x64 solution built successfully with 0 warnings and 0 errors. Real launcher runs covered every requested app selector and every Windows transport: `/Http /FCT`, `/MiniHttp /RPT`, `/Pipe /RVMT /Cli:<host>`, and standalone `CppTest_Rvm /Http`; standalone `CppTest_Rvm /Cli:<host>` was also exercised. Process inspection confirmed the selected executable and exact command line in each run. Manual requester mode started `RemotingTest_RvmHost /Http` 1.029 seconds later, while both CLI requesters auto-launched the host with exact `/Cli`. Core, standalone requester, and renderer automation endpoints returned HTTP 200, and renderer/requester `/IO` endpoints accepted exact `!Exit`. Renderer checks covered both `/port:8890` and the omitted-port default at 8889. All launched test processes were terminated after verification.
+
+PowerShell AST parsing passed for all three new `.ps1` files. Bash syntax parsing passed for the Workflow, iGac, and wGac scripts; all new shell files are LF-only. Static inspection in both portable repositories confirmed `sleep 1` precedes the manual host full build and launch, and that every consumed GacUI Linux project is built with `-f`. Per the request, the iGac and wGac launchers were not runtime-executed. `git diff --check` passed in all repositories, and a repository-wide scan confirmed that every GacUI/iGac/wGac Markdown file mentioning `test.sh` also mentions `test_core.sh`.
