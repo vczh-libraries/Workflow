@@ -47,3 +47,19 @@ The implementation will be accepted when all of the following conditions hold:
 - `Workflow/Project.md`, `GacUI/Project.md`, and every Markdown document in GacUI/iGac/wGac that mentions `test.sh` also explains or points to `test_core.sh` where appropriate.
 
 # PROPOSALS
+
+- No.1 Add repository-relative orchestration launchers
+
+## No.1 Add repository-relative orchestration launchers
+
+Add thin PowerShell and Bash launchers that validate their small public option sets, resolve every executable and build helper relative to the launcher location, and forward the exact selectors documented by the existing test applications. Keep the application and transport dimensions distinct: `cpptest_rvm|fct|rpt|rvmt` selects the requester/Core workload, while `http|pipe|minihttp` selects a Windows network transport and portable launchers accept only `minihttp`.
+
+The Workflow launchers will call `RpcStdioTest_Driver` in the current terminal so its output and failures stay interactive, supplying the matching Debug x64 service executable as the driver's child command and forwarding an optional skip file.
+
+The Windows Core launcher will start the selected requester/Core as a child process and wait for it. For manual RVM mode it will wait one second and then start `RemotingTest_RvmHost` with the same transport; CLI mode will instead pass the quoted host executable path through `/Cli:` and let the test app auto-launch it. The renderer launcher will remain attached to `RemotingTest_Rendering_Win32` and forward its selected transport and optional validated automation port.
+
+The iGac/wGac `test_core.sh` launchers will follow `test.sh`'s `--app:...`, `--protocol:...`, `--cli`, and `--unblock` spelling. They will use the sibling GacUI full-build wrapper for every GacUI project they consume. Manual RVM runs will start the local requester or GacUI Core first, sleep one second, and only then full-build and start the host. CLI runs require the host executable to exist when the requester/Core starts, so they will full-build the host before launch and pass its absolute path without starting a separate host. Blocking runs will wait on the primary requester/Core; unblocked runs will print its PID.
+
+Update project and platform documentation with launcher syntax, sequencing, protocol limits, and the distinction between the existing native `test.sh` and new GacUI Core-side `test_core.sh`. Verify the PowerShell launchers through real Debug x64 processes and their interactive endpoints, then terminate every test process; validate the portable scripts statically without claiming runtime execution.
+
+### CODE CHANGE
