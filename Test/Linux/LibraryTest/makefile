@@ -16,7 +16,7 @@ clean:
 
 all:pre-build ./Bin/UnitTest
 
-./Bin/UnitTest:./Obj/Vlpp.o ./Obj/Vlpp.Linux.o ./Obj/VlppGlrParser.o ./Obj/VlppOS.o ./Obj/VlppOS.Linux.o ./Obj/VlppReflection.o ./Obj/VlppRegex.o ./Obj/WfLibraryCppHelper.o ./Obj/WfLibraryPredefined.o ./Obj/WfLibraryReflection.o ./Obj/WfLibraryRpc.o ./Obj/WfLibraryRpcController.o ./Obj/WfLibraryRpcLifecycle.o ./Obj/WfLibraryRpcWrappers.o ./Obj/WfLibraryRpcJson.o ./Obj/WfLibraryRpcJsonDispatcherClient.o ./Obj/WfLibraryRpcJsonDispatcherServer.o ./Obj/RpcDualLifecycleMock.o ./Obj/Main.o ./Obj/TestLibrary.o ./Obj/TestLibraryRpcByval.o
+./Bin/UnitTest:./Obj/Vlpp.o ./Obj/Vlpp.Linux.o ./Obj/VlppGlrParser.o ./Obj/VlppOS.o ./Obj/VlppOS.Linux.o ./Obj/VlppReflection.o ./Obj/VlppRegex.o ./Obj/WfLibraryCppHelper.o ./Obj/WfLibraryPredefined.o ./Obj/WfLibraryReflection.o ./Obj/WfLibraryRpc.o ./Obj/WfLibraryRpcController.o ./Obj/WfLibraryRpcLifecycle.o ./Obj/WfLibraryRpcWrappers.o ./Obj/WfLibraryRpcJson.o ./Obj/WfLibraryRpcJsonDispatcherClient.o ./Obj/WfLibraryRpcJsonDispatcherServer.o ./Obj/RpcDualLifecycleMock.o ./Obj/RpcDualJsonDispatcherMock.o ./Obj/Main.o ./Obj/TestLibrary.o ./Obj/TestLibraryRpcByval.o ./Obj/TestLibraryRpcJson.o
 	$(CPP_LINK)
 
 ./Obj/Vlpp.o: ../../../Import/Vlpp.cpp
@@ -73,6 +73,9 @@ all:pre-build ./Bin/UnitTest
 ./Obj/RpcDualLifecycleMock.o: ../../Source/RpcDualLifecycleMock.cpp
 	$(CPP_COMPILE)
 
+./Obj/RpcDualJsonDispatcherMock.o: ../../Source/RpcDualJsonDispatcherMock.cpp
+	$(CPP_COMPILE)
+
 ./Obj/Main.o: ../../UnitTest/LibraryTest/Main.cpp
 	$(CPP_COMPILE)
 
@@ -80,4 +83,7 @@ all:pre-build ./Bin/UnitTest
 	$(CPP_COMPILE)
 
 ./Obj/TestLibraryRpcByval.o: ../../UnitTest/LibraryTest/TestLibraryRpcByval.cpp
+	$(CPP_COMPILE)
+
+./Obj/TestLibraryRpcJson.o: ../../UnitTest/LibraryTest/TestLibraryRpcJson.cpp
 	$(CPP_COMPILE)

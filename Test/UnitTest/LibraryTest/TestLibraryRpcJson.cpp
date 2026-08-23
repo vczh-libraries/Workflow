@@ -298,7 +298,34 @@ namespace vl::workflow_library_test
 		}
 	};
 
-	class RequestThread : public Thread
+	class CompletionThread : public Thread
+	{
+	private:
+		EventObject completed;
+
+	protected:
+		void SignalCompletion()
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::workflow_library_test::CompletionThread::SignalCompletion()#"
+			CHECK_ERROR(completed.Signal(), ERROR_MESSAGE_PREFIX L"Failed to signal thread completion.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+	public:
+		CompletionThread()
+		{
+#define ERROR_MESSAGE_PREFIX L"vl::workflow_library_test::CompletionThread::CompletionThread()#"
+			CHECK_ERROR(completed.CreateManualUnsignal(false), ERROR_MESSAGE_PREFIX L"Failed to create the completion event.");
+#undef ERROR_MESSAGE_PREFIX
+		}
+
+		bool WaitForTime(vint milliseconds)
+		{
+			return completed.WaitForTime(milliseconds);
+		}
+	};
+
+	class RequestThread : public CompletionThread
 	{
 	private:
 		IRpcJsonMessageDispatcher* dispatcher;
@@ -318,6 +345,7 @@ namespace vl::workflow_library_test
 				catchThreadId = Thread::GetCurrentThreadId();
 				error = ex.Message();
 			}
+			SignalCompletion();
 		}
 
 	public:
@@ -334,7 +362,7 @@ namespace vl::workflow_library_test
 		}
 	};
 
-	class InitializeThread : public Thread
+	class InitializeThread : public CompletionThread
 	{
 	private:
 		RpcJsonDispatcherClient* dispatcher;
@@ -351,6 +379,7 @@ namespace vl::workflow_library_test
 			{
 				error = ex.Message();
 			}
+			SignalCompletion();
 		}
 
 	public:
