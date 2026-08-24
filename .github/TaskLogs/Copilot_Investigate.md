@@ -2,34 +2,34 @@
 
 # PROBLEM DESCRIPTION
 
-Workflow/Test/StartRpcStdio.sh core dumped, figure out why and fix it
+  - `RpcStdioTest_Driver` and `RpcStdioTest_Service` should use `VCZH_DEBUG_NO_REFLECTION` and remove dependencies to reflection files.
+  - `RpcStdioTest_Driver` should check test results against `IndexRpc.txt` just like `CppTest`. Crash when the result does not match.
+  - Remove `RpcStdioTest_CppSkipped.txt`, and `StartRpcStdio.(ps1|sh)` will not by default use it when a skip list is not offered.
+    - When a skip list is not offered it should just run every test cases.
+    - Prepare a `Test/StartRpcStdio_DtorSkipList.txt` to collect all test cases that require the execution order of destructors. This is for some other languages like TypeScript or C#, which doesn't offer stable destructor execution like C++, skipping such cases is unavoidable. But for C++ this file should not be needed.
+  - Currently almost all test case does not produce the correct result, you need to fix it. Make sure **every** test case in `IndexRpc.txt` is working correctly with `StartRpcStdio.ps1` when nothing is skipped.
+  - Make sure all test cases actually pass, including `UnitTest` and `StartRpcStdio.ps1` running.
+  - Update `Project.md`:
+    - Running `StartRpcStdio.(ps1|sh)` is always required along with `UnitTest`.
 
 # UPDATES
 
 # TEST [CONFIRMED]
 
-Run `Test/StartRpcStdio.sh` from the Workflow repository after building the Linux RPC stdio driver and service projects. The failure is confirmed if the driver or one of its service processes dumps core. Success requires the script to finish without a crash and all selected RPC stdio cases to complete. A debugger backtrace should identify the failing ownership or protocol path before any fix is accepted.
+Build `Test/UnitTest/UnitTest.sln` in Debug x64, then run `Test/StartRpcStdio.ps1` with a checked-in list whose entries do not match any `IndexRpc.txt` case so the current default C++ compatibility skip list is bypassed. The problem is confirmed if any indexed case crashes, returns a value different from its `IndexRpc.txt` expectation, or is not checked against that expectation.
 
-Running the launcher without an explicit skip file reproduced the failure. `Collection_Default` completed but returned `[123][][12345]`, then `Collection_InByref_OutByref` terminated with an uncaught `vl::Exception` and Bash reported that `RpcStdioTest_Driver` aborted with a core dump.
+The completed change must satisfy all of these conditions:
 
-The failing sample assigns `xsService` only from `serviceMain`, which runs in the child service process. `clientMain` runs in the driver process and therefore sees its own empty `xsService`; generated `Rpc_Collection_InByref_OutByref::Print5` indexes elements 0 through 4 and throws on that empty list. The archived CDB trace for the same implementation placed the exception in `Rpc_Collection_InByref_OutByref::Print5` and `clientMain`, after the remote RPC method returned. The current generated C++ has the same call path.
+- `RpcStdioTest_Driver` and `RpcStdioTest_Service` define `VCZH_DEBUG_NO_REFLECTION` in every configuration, do not import `Generated_ReflectionRpc`, and the generated stdio harnesses include ordinary generated headers rather than `*Reflection.h`.
+- `RpcStdioTest_Driver` compares every non-skipped `clientMain` result with the exact expectation decoded from `IndexRpc.txt` and fails immediately on a mismatch.
+- Calling `Test/StartRpcStdio.ps1` or `Test/StartRpcStdio.sh` without a skip-list argument runs every `IndexRpc.txt` case; no C++ default skip list remains.
+- `Test/StartRpcStdio_DtorSkipList.txt` contains the exact indexed cases whose expected output depends on deterministic destructor execution, for use by providers that cannot guarantee it, but the C++ launchers do not select it automatically.
+- Every indexed RPC case succeeds through `Test/StartRpcStdio.ps1` without a skip list, all UnitTest projects pass in their required configurations, generated artifacts and TypeScript consumers remain valid, and the final code review/static scans show no stale reflection or removed-skip-list dependency.
 
-Isolating every `IndexRpc.txt` entry confirmed the established compatibility boundary: 70 cases complete across separate processes, while 56 collection cases abort because their client-side result formatting indexes module globals populated only in the service process. This is fixture state coupling, not a stdio transport or RPC dispatch failure.
+The current Debug x64 solution builds with 0 warnings and 0 errors. Passing `IndexCodegen.txt` as the explicit skip-list argument selects no RPC case names and therefore forces the current driver to begin running the complete index. `Collection_Default` returned `[123][][12345]` instead of the indexed `[123][1234][12345]`; `Collection_InByref_OutByref` then called `abort()` before returning because its client-side formatter indexed the empty driver-process copy of `xsService`.
+
+The current no-argument launcher hides 56 crashing collection fixtures behind `RpcStdioTest_CppSkipped.txt` and exits with code 0 for the remaining 70 cases, but the output demonstrates that it is not a passing test: every completed collection case has an empty service-state bracket; the destructor cases omit service-process destructor messages; `Event` and `EventOblist` omit service-process event messages; `FailDoubleRegistration` no longer exercises the intended duplicate identities; and `LocalAndWrapper` loses a service-process equality result. `RpcStdioTest_Driver` only prints these wrong values and never compares them with `IndexRpc.txt`.
+
+Source inspection confirms the same process-boundary cause. The affected samples store observations in module globals written by `serviceMain` or service implementations, while `clientMain` reads a distinct copy in the driver process. The generated stdio harnesses also include `*Reflection.h`, and both stdio projects import `Generated_ReflectionRpc`, despite already defining `VCZH_DEBUG_NO_REFLECTION` in every configuration.
 
 # PROPOSALS
-
-- No.1 Use the C++ provider's compatibility list by default [CONFIRMED]
-
-## No.1 Use the C++ provider's compatibility list by default
-
-The two launchers specifically pair `RpcStdioTest_Driver` with the repository's C++ `RpcStdioTest_Service`, whose compatibility boundary is now known and repeatable. Add a checked-in exact-name skip list containing the 56 fixtures whose client result formatting depends on service-process globals. When no argument is supplied, `StartRpcStdio.sh` and `StartRpcStdio.ps1` will pass this bundled list to the driver so their default invocation runs all 70 process-compatible cases. An explicitly supplied skip file will continue to replace the default, preserving the driver launcher as a tool for other providers and allowing an empty file to request all 126 cases deliberately.
-
-Document the default and override behavior in `Project.md`. Do not catch the fixture exception or weaken fail-fast behavior in the driver, and do not alter the existing RPC samples merely to synchronize C++-specific test globals across an external-provider boundary.
-
-### CODE CHANGE
-
-Added `Test/Resources/RpcStdioTest_CppSkipped.txt` with the 56 exact `IndexRpc.txt` names that abort when their driver-side result formatting indexes service-owned module globals. Both `Test/StartRpcStdio.sh` and `Test/StartRpcStdio.ps1` now resolve and pass this file when no override is supplied. An explicit skip-file argument still replaces the default, and the driver continues to receive the service command and skip path as separate arguments. `Project.md` documents the default, override, and explicit-empty-file behavior.
-
-### CONFIRMED
-
-The bundled list contains 56 unique names, all present in `IndexRpc.txt`. Bash syntax validation and `git diff --check` passed. Running `Test/StartRpcStdio.sh` without arguments completed all 70 non-skipped cases and exited with code 0, including the former first crash point. Running it with a temporary explicit list that selected only `PrimitiveTypes` executed that case, reported `[6][12][1.75][2.875][Hi!][false][Autumn][13,27]`, and exited with code 0, confirming override behavior. No C++ source or generated file changed, so rebuilding the already-current driver and service was unnecessary.
