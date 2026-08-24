@@ -13,28 +13,13 @@ rpcmethod_RpcPropDefaultInterfaceList__IValue_GetValue
 ========================================================
 Functions:
 ========================================================
-ClientValueChanged (18 .. 27)
-    Arguments:
-    Captured Variables:
-    Local Variables:
-
-MakeValue (28 .. 36)
+MakeValue (18 .. 26)
     Arguments:
         value
     Captured Variables:
     Local Variables:
 
-Print (41 .. 72)
-    Arguments:
-        xs
-    Captured Variables:
-    Local Variables:
-        result
-        <for-enumerable>x
-        <for-enumerator>x
-        x
-
-CheckValue (73 .. 107)
+CheckValue (31 .. 65)
     Arguments:
         value
         shouldBeWrapper
@@ -43,7 +28,7 @@ CheckValue (73 .. 107)
     Local Variables:
         valueObj
 
-CheckList (108 .. 180)
+CheckList (66 .. 138)
     Arguments:
         xs
         shouldBeWrapper
@@ -55,12 +40,27 @@ CheckList (108 .. 180)
         <for-end>i
         i
 
-serviceMain (181 .. 207)
+serviceMain (139 .. 165)
     Arguments:
         lc
     Captured Variables:
     Local Variables:
         serviceObj
+
+ClientValueChanged (186 .. 195)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+Print (196 .. 227)
+    Arguments:
+        xs
+    Captured Variables:
+    Local Variables:
+        result
+        <for-enumerable>x
+        <for-enumerator>x
+        x
 
 clientMain (228 .. 352)
     Arguments:
@@ -211,21 +211,21 @@ rpcops_IOps_CreateJson (1527 .. 1543)
     Captured Variables:
     Local Variables:
 
-<method:GetValue<RpcPropDefaultInterfaceList::IValue>(26)> in MakeValue (37 .. 40)
+<method:GetValue<RpcPropDefaultInterfaceList::IValue>(26)> in MakeValue (27 .. 30)
     Arguments:
     Captured Variables:
         <captured>value
         <captured-this>0
     Local Variables:
 
-<method:GetValue<RpcPropDefaultInterfaceList::IService>(27)> in serviceMain (208 .. 211)
+<method:GetValue<RpcPropDefaultInterfaceList::IService>(27)> in serviceMain (166 .. 169)
     Arguments:
     Captured Variables:
         <captured>_Value
         <captured-this>0
     Local Variables:
 
-<method:SetValue<RpcPropDefaultInterfaceList::IService>(28)> in serviceMain (212 .. 222)
+<method:SetValue<RpcPropDefaultInterfaceList::IService>(28)> in serviceMain (170 .. 180)
     Arguments:
         value
     Captured Variables:
@@ -233,7 +233,7 @@ rpcops_IOps_CreateJson (1527 .. 1543)
         <captured-this>0
     Local Variables:
 
-<method:Signal<RpcPropDefaultInterfaceList::IService>(29)> in serviceMain (223 .. 227)
+<method:Signal<RpcPropDefaultInterfaceList::IService>(29)> in serviceMain (181 .. 185)
     Arguments:
     Captured Variables:
         <captured>_Value
@@ -634,425 +634,425 @@ Instructions:
 15   :     StoreGlobalVar: var = 7(rpcmethod_RpcPropDefaultInterfaceList__IValue_GetValue)
 16   :     LoadValue     : value = <null>
 17   :     Return        
-//  ""
-18   :     LoadValue     : value = <String, >
-//  s
-19   :     LoadGlobalVar : var = 0(s)
-//  ("" & s)
-20   :     OpConcat      
-//  "[ValueChanged]"
-21   :     LoadValue     : value = <String, [ValueChanged]>
-//  (("" & s) & "[ValueChanged]")
-22   :     OpConcat      
-//  (s = (("" & s) & "[ValueChanged]"))
-23   :     Duplicate     : stackPatternCount = 0
-//  (s = (("" & s) & "[ValueChanged]"))
-24   :     StoreGlobalVar: var = 0(s)
-//  (s = (("" & s) & "[ValueChanged]"));
-25   :     Pop           
-//  func ClientValueChanged() : (void)
-26   :     LoadValue     : value = <null>
-//  func ClientValueChanged() : (void)
-27   :     Return        
 //  new (IValue^)
-28   :     LoadLocalVar  : var = 0(value)
+18   :     LoadLocalVar  : var = 0(value)
 //  new (IValue^)
-29   :     LoadValue     : value = <null>
+19   :     LoadValue     : value = <null>
 //  new (IValue^)
-30   :     CreateClosureContext: stackPatternCount = 2
+20   :     CreateClosureContext: stackPatternCount = 2
 //  new (IValue^)
-31   :     LoadMethodInfo: methodInfo = GetValue<RpcPropDefaultInterfaceList::IValue>
+21   :     LoadMethodInfo: methodInfo = GetValue<RpcPropDefaultInterfaceList::IValue>
 //  func GetValue() : (string)
-32   :     LoadFunction  : func = 26(<method:GetValue<RpcPropDefaultInterfaceList::IValue>(26)> in MakeValue)
+22   :     LoadFunction  : func = 26(<method:GetValue<RpcPropDefaultInterfaceList::IValue>(26)> in MakeValue)
 //  new (IValue^)
-33   :     CreateInterface: methodInfo = <RpcPropDefaultInterfaceList::IValue>, stackPatternCount = 2
+23   :     CreateInterface: methodInfo = <RpcPropDefaultInterfaceList::IValue>, stackPatternCount = 2
 //  return new (IValue^)
-34   :     Return        
+24   :     Return        
 //  func MakeValue(value : string) : (IValue^)
-35   :     LoadValue     : value = <null>
+25   :     LoadValue     : value = <null>
 //  func MakeValue(value : string) : (IValue^)
-36   :     Return        
+26   :     Return        
 //  value
-37   :     LoadCapturedVar: var = 0(<captured>value)
+27   :     LoadCapturedVar: var = 0(<captured>value)
 //  return value;
-38   :     Return        
+28   :     Return        
 //  func GetValue() : (string)
-39   :     LoadValue     : value = <null>
+29   :     LoadValue     : value = <null>
 //  func GetValue() : (string)
-40   :     Return        
+30   :     Return        
+//  value
+31   :     LoadLocalVar  : var = 0(value)
+//  var valueObj : object = value;
+32   :     StoreLocalVar : var = 3(valueObj)
+//  shouldBeWrapper
+33   :     LoadLocalVar  : var = 1(shouldBeWrapper)
+//  if (shouldBeWrapper)
+34   :     OpNot         : type = Bool
+//  if (shouldBeWrapper)
+35   :     JumpIf        : label = 50
+//  valueObj
+36   :     LoadLocalVar  : var = 3(valueObj)
+//  (valueObj as (system::IRpcWrapperBase^))
+37   :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::IRpcWrapperBase
+//  (valueObj as (system::IRpcWrapperBase^)) is null
+38   :     LoadValue     : value = <null>
+//  (valueObj as (system::IRpcWrapperBase^)) is null
+39   :     CompareReference
+//  if ((valueObj as (system::IRpcWrapperBase^)) is null)
+40   :     OpNot         : type = Bool
+//  if ((valueObj as (system::IRpcWrapperBase^)) is null)
+41   :     JumpIf        : label = 49
 //  ""
-41   :     LoadValue     : value = <String, >
-//  var result = "";
-42   :     StoreLocalVar : var = 1(result)
-//  xs
-43   :     LoadLocalVar  : var = 0(xs)
-//  xs
-44   :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
-//  var <for-enumerable>x = xs of (::system::Enumerable^);
-45   :     StoreLocalVar : var = 2(<for-enumerable>x)
-//  <for-enumerable>x
-46   :     LoadLocalVar  : var = 2(<for-enumerable>x)
-//  <for-enumerable>x.CreateEnumerator()
-47   :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
-//  var <for-enumerator>x = <for-enumerable>x.CreateEnumerator();
-48   :     StoreLocalVar : var = 3(<for-enumerator>x)
-//  <for-enumerator>x
-49   :     LoadLocalVar  : var = 3(<for-enumerator>x)
-//  <for-enumerator>x.Next()
-50   :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
-//  while (<for-enumerator>x.Next())
-51   :     OpNot         : type = Bool
-//  while (<for-enumerator>x.Next())
-52   :     JumpIf        : label = 69
-//  <for-enumerator>x
-53   :     LoadLocalVar  : var = 3(<for-enumerator>x)
-//  <for-enumerator>x.GetCurrent()
-54   :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
-//  <for-enumerator>x.GetCurrent()
-55   :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcPropDefaultInterfaceList::IValue
-//  var x = (cast (::RpcPropDefaultInterfaceList::IValue^) <for-enumerator>x.GetCurrent());
-56   :     StoreLocalVar : var = 4(x)
+42   :     LoadValue     : value = <String, >
+//  name
+43   :     LoadLocalVar  : var = 2(name)
+//  ("" & name)
+44   :     OpConcat      
+//  " should be a wrapper object"
+45   :     LoadValue     : value = <String,  should be a wrapper object>
+//  (("" & name) & " should be a wrapper object")
+46   :     OpConcat      
+//  raise (("" & name) & " should be a wrapper object");
+47   :     RaiseException
+//  if ((valueObj as (system::IRpcWrapperBase^)) is null)
+48   :     Jump          : label = 49
+//  if (shouldBeWrapper)
+49   :     Jump          : label = 64
+//  valueObj
+50   :     LoadLocalVar  : var = 3(valueObj)
+//  (valueObj as (system::IRpcWrapperBase^))
+51   :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::IRpcWrapperBase
+//  (valueObj as (system::IRpcWrapperBase^)) is not null
+52   :     LoadValue     : value = <null>
+//  (valueObj as (system::IRpcWrapperBase^)) is not null
+53   :     CompareReference
+//  (valueObj as (system::IRpcWrapperBase^)) is not null
+54   :     OpNot         : type = Bool
+//  if ((valueObj as (system::IRpcWrapperBase^)) is not null)
+55   :     OpNot         : type = Bool
+//  if ((valueObj as (system::IRpcWrapperBase^)) is not null)
+56   :     JumpIf        : label = 64
 //  ""
 57   :     LoadValue     : value = <String, >
-//  result
-58   :     LoadLocalVar  : var = 1(result)
-//  ("" & result)
+//  name
+58   :     LoadLocalVar  : var = 2(name)
+//  ("" & name)
 59   :     OpConcat      
-//  ""
-60   :     LoadValue     : value = <String, >
-//  (("" & result) & "")
+//  " should be a local object"
+60   :     LoadValue     : value = <String,  should be a local object>
+//  (("" & name) & " should be a local object")
 61   :     OpConcat      
-//  x
-62   :     LoadLocalVar  : var = 4(x)
-//  x.Value
-63   :     InvokeMethod  : methodInfo = GetValue<RpcPropDefaultInterfaceList::IValue>, stackPatternCount = 0
-//  ((("" & result) & "") & x.Value)
-64   :     OpConcat      
-//  (result = ((("" & result) & "") & x.Value))
-65   :     Duplicate     : stackPatternCount = 0
-//  (result = ((("" & result) & "") & x.Value))
-66   :     StoreLocalVar : var = 1(result)
-//  (result = ((("" & result) & "") & x.Value));
-67   :     Pop           
-//  while (<for-enumerator>x.Next())
-68   :     Jump          : label = 49
-//  result
-69   :     LoadLocalVar  : var = 1(result)
-//  return result;
-70   :     Return        
-//  func Print(xs : IValue^[]) : (string)
-71   :     LoadValue     : value = <null>
-//  func Print(xs : IValue^[]) : (string)
-72   :     Return        
-//  value
-73   :     LoadLocalVar  : var = 0(value)
-//  var valueObj : object = value;
-74   :     StoreLocalVar : var = 3(valueObj)
-//  shouldBeWrapper
-75   :     LoadLocalVar  : var = 1(shouldBeWrapper)
-//  if (shouldBeWrapper)
-76   :     OpNot         : type = Bool
-//  if (shouldBeWrapper)
-77   :     JumpIf        : label = 92
-//  valueObj
-78   :     LoadLocalVar  : var = 3(valueObj)
-//  (valueObj as (system::IRpcWrapperBase^))
-79   :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::IRpcWrapperBase
-//  (valueObj as (system::IRpcWrapperBase^)) is null
-80   :     LoadValue     : value = <null>
-//  (valueObj as (system::IRpcWrapperBase^)) is null
-81   :     CompareReference
-//  if ((valueObj as (system::IRpcWrapperBase^)) is null)
-82   :     OpNot         : type = Bool
-//  if ((valueObj as (system::IRpcWrapperBase^)) is null)
-83   :     JumpIf        : label = 91
-//  ""
-84   :     LoadValue     : value = <String, >
-//  name
-85   :     LoadLocalVar  : var = 2(name)
-//  ("" & name)
-86   :     OpConcat      
-//  " should be a wrapper object"
-87   :     LoadValue     : value = <String,  should be a wrapper object>
-//  (("" & name) & " should be a wrapper object")
-88   :     OpConcat      
-//  raise (("" & name) & " should be a wrapper object");
-89   :     RaiseException
-//  if ((valueObj as (system::IRpcWrapperBase^)) is null)
-90   :     Jump          : label = 91
-//  if (shouldBeWrapper)
-91   :     Jump          : label = 106
-//  valueObj
-92   :     LoadLocalVar  : var = 3(valueObj)
-//  (valueObj as (system::IRpcWrapperBase^))
-93   :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::IRpcWrapperBase
-//  (valueObj as (system::IRpcWrapperBase^)) is not null
-94   :     LoadValue     : value = <null>
-//  (valueObj as (system::IRpcWrapperBase^)) is not null
-95   :     CompareReference
-//  (valueObj as (system::IRpcWrapperBase^)) is not null
-96   :     OpNot         : type = Bool
-//  if ((valueObj as (system::IRpcWrapperBase^)) is not null)
-97   :     OpNot         : type = Bool
-//  if ((valueObj as (system::IRpcWrapperBase^)) is not null)
-98   :     JumpIf        : label = 106
-//  ""
-99   :     LoadValue     : value = <String, >
-//  name
-100  :     LoadLocalVar  : var = 2(name)
-//  ("" & name)
-101  :     OpConcat      
-//  " should be a local object"
-102  :     LoadValue     : value = <String,  should be a local object>
-//  (("" & name) & " should be a local object")
-103  :     OpConcat      
 //  raise (("" & name) & " should be a local object");
-104  :     RaiseException
+62   :     RaiseException
 //  if ((valueObj as (system::IRpcWrapperBase^)) is not null)
-105  :     Jump          : label = 106
+63   :     Jump          : label = 64
 //  func CheckValue(value : IValue^, shouldBeWrapper : bool, name : string) : (void)
-106  :     LoadValue     : value = <null>
+64   :     LoadValue     : value = <null>
 //  func CheckValue(value : IValue^, shouldBeWrapper : bool, name : string) : (void)
-107  :     Return        
+65   :     Return        
 //  xs
-108  :     LoadLocalVar  : var = 0(xs)
+66   :     LoadLocalVar  : var = 0(xs)
 //  var xsObj : object = xs;
-109  :     StoreLocalVar : var = 3(xsObj)
+67   :     StoreLocalVar : var = 3(xsObj)
 //  shouldBeWrapper
-110  :     LoadLocalVar  : var = 1(shouldBeWrapper)
+68   :     LoadLocalVar  : var = 1(shouldBeWrapper)
 //  if (shouldBeWrapper)
-111  :     OpNot         : type = Bool
+69   :     OpNot         : type = Bool
 //  if (shouldBeWrapper)
-112  :     JumpIf        : label = 127
+70   :     JumpIf        : label = 85
 //  xsObj
-113  :     LoadLocalVar  : var = 3(xsObj)
+71   :     LoadLocalVar  : var = 3(xsObj)
 //  (xsObj as (system::IRpcWrapperBase^))
-114  :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::IRpcWrapperBase
+72   :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::IRpcWrapperBase
 //  (xsObj as (system::IRpcWrapperBase^)) is null
-115  :     LoadValue     : value = <null>
+73   :     LoadValue     : value = <null>
 //  (xsObj as (system::IRpcWrapperBase^)) is null
-116  :     CompareReference
+74   :     CompareReference
 //  if ((xsObj as (system::IRpcWrapperBase^)) is null)
-117  :     OpNot         : type = Bool
+75   :     OpNot         : type = Bool
 //  if ((xsObj as (system::IRpcWrapperBase^)) is null)
-118  :     JumpIf        : label = 126
+76   :     JumpIf        : label = 84
 //  ""
-119  :     LoadValue     : value = <String, >
+77   :     LoadValue     : value = <String, >
 //  name
-120  :     LoadLocalVar  : var = 2(name)
+78   :     LoadLocalVar  : var = 2(name)
 //  ("" & name)
-121  :     OpConcat      
+79   :     OpConcat      
 //  " should be a wrapper object"
-122  :     LoadValue     : value = <String,  should be a wrapper object>
+80   :     LoadValue     : value = <String,  should be a wrapper object>
 //  (("" & name) & " should be a wrapper object")
-123  :     OpConcat      
+81   :     OpConcat      
 //  raise (("" & name) & " should be a wrapper object");
-124  :     RaiseException
+82   :     RaiseException
 //  if ((xsObj as (system::IRpcWrapperBase^)) is null)
-125  :     Jump          : label = 126
+83   :     Jump          : label = 84
 //  if (shouldBeWrapper)
-126  :     Jump          : label = 141
+84   :     Jump          : label = 99
 //  xsObj
-127  :     LoadLocalVar  : var = 3(xsObj)
+85   :     LoadLocalVar  : var = 3(xsObj)
 //  (xsObj as (system::IRpcWrapperBase^))
-128  :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::IRpcWrapperBase
+86   :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::IRpcWrapperBase
 //  (xsObj as (system::IRpcWrapperBase^)) is not null
-129  :     LoadValue     : value = <null>
+87   :     LoadValue     : value = <null>
 //  (xsObj as (system::IRpcWrapperBase^)) is not null
-130  :     CompareReference
+88   :     CompareReference
 //  (xsObj as (system::IRpcWrapperBase^)) is not null
-131  :     OpNot         : type = Bool
+89   :     OpNot         : type = Bool
 //  if ((xsObj as (system::IRpcWrapperBase^)) is not null)
-132  :     OpNot         : type = Bool
+90   :     OpNot         : type = Bool
 //  if ((xsObj as (system::IRpcWrapperBase^)) is not null)
-133  :     JumpIf        : label = 141
+91   :     JumpIf        : label = 99
 //  ""
-134  :     LoadValue     : value = <String, >
+92   :     LoadValue     : value = <String, >
 //  name
-135  :     LoadLocalVar  : var = 2(name)
+93   :     LoadLocalVar  : var = 2(name)
 //  ("" & name)
-136  :     OpConcat      
+94   :     OpConcat      
 //  " should be a local object"
-137  :     LoadValue     : value = <String,  should be a local object>
+95   :     LoadValue     : value = <String,  should be a local object>
 //  (("" & name) & " should be a local object")
-138  :     OpConcat      
+96   :     OpConcat      
 //  raise (("" & name) & " should be a local object");
-139  :     RaiseException
+97   :     RaiseException
 //  if ((xsObj as (system::IRpcWrapperBase^)) is not null)
-140  :     Jump          : label = 141
+98   :     Jump          : label = 99
 //  0
-141  :     LoadValue     : value = <I8, 0>
+99   :     LoadValue     : value = <I8, 0>
 //  var <for-begin>i : ::system::Int64 = 0;
-142  :     StoreLocalVar : var = 4(<for-begin>i)
+100  :     StoreLocalVar : var = 4(<for-begin>i)
 //  xs
-143  :     LoadLocalVar  : var = 0(xs)
+101  :     LoadLocalVar  : var = 0(xs)
 //  xs.Count
-144  :     InvokeMethod  : methodInfo = GetCount<system::ReadonlyList>, stackPatternCount = 0
+102  :     InvokeMethod  : methodInfo = GetCount<system::ReadonlyList>, stackPatternCount = 0
 //  1
-145  :     LoadValue     : value = <I8, 1>
+103  :     LoadValue     : value = <I8, 1>
 //  (xs.Count - 1)
-146  :     OpSub         : type = I8
+104  :     OpSub         : type = I8
 //  var <for-end>i : ::system::Int64 = (xs.Count - 1);
-147  :     StoreLocalVar : var = 5(<for-end>i)
+105  :     StoreLocalVar : var = 5(<for-end>i)
 //  <for-begin>i
-148  :     LoadLocalVar  : var = 4(<for-begin>i)
+106  :     LoadLocalVar  : var = 4(<for-begin>i)
 //  var i = <for-begin>i;
-149  :     StoreLocalVar : var = 6(i)
+107  :     StoreLocalVar : var = 6(i)
 //  i
-150  :     LoadLocalVar  : var = 6(i)
+108  :     LoadLocalVar  : var = 6(i)
 //  <for-end>i
-151  :     LoadLocalVar  : var = 5(<for-end>i)
+109  :     LoadLocalVar  : var = 5(<for-end>i)
 //  (i <= <for-end>i)
-152  :     CompareLiteral: type = I8
+110  :     CompareLiteral: type = I8
 //  (i <= <for-end>i)
-153  :     OpLE          
+111  :     OpLE          
 //  while ((i <= <for-end>i))
-154  :     OpNot         : type = Bool
+112  :     OpNot         : type = Bool
 //  while ((i <= <for-end>i))
-155  :     JumpIf        : label = 179
+113  :     JumpIf        : label = 137
 //  i
-156  :     LoadLocalVar  : var = 6(i)
+114  :     LoadLocalVar  : var = 6(i)
 //  xs
-157  :     LoadLocalVar  : var = 0(xs)
+115  :     LoadLocalVar  : var = 0(xs)
 //  xs[i]
-158  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+116  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
 //  shouldBeWrapper
-159  :     LoadLocalVar  : var = 1(shouldBeWrapper)
+117  :     LoadLocalVar  : var = 1(shouldBeWrapper)
 //  ""
-160  :     LoadValue     : value = <String, >
+118  :     LoadValue     : value = <String, >
 //  name
-161  :     LoadLocalVar  : var = 2(name)
+119  :     LoadLocalVar  : var = 2(name)
 //  ("" & name)
-162  :     OpConcat      
+120  :     OpConcat      
 //  "["
-163  :     LoadValue     : value = <String, [>
+121  :     LoadValue     : value = <String, [>
 //  (("" & name) & "[")
-164  :     OpConcat      
+122  :     OpConcat      
 //  i
-165  :     LoadLocalVar  : var = 6(i)
+123  :     LoadLocalVar  : var = 6(i)
 //  i
-166  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+124  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
 //  ((("" & name) & "[") & i)
-167  :     OpConcat      
+125  :     OpConcat      
 //  "]"
-168  :     LoadValue     : value = <String, ]>
+126  :     LoadValue     : value = <String, ]>
 //  (((("" & name) & "[") & i) & "]")
-169  :     OpConcat      
+127  :     OpConcat      
 //  CheckValue(xs[i], shouldBeWrapper, (((("" & name) & "[") & i) & "]"))
-170  :     Invoke        : func = 3(CheckValue), stackPatternCount = 3
+128  :     Invoke        : func = 1(CheckValue), stackPatternCount = 3
 //  CheckValue(xs[i], shouldBeWrapper, (((("" & name) & "[") & i) & "]"));
-171  :     Pop           
+129  :     Pop           
 //  i
-172  :     LoadLocalVar  : var = 6(i)
+130  :     LoadLocalVar  : var = 6(i)
 //  1
-173  :     LoadValue     : value = <I8, 1>
+131  :     LoadValue     : value = <I8, 1>
 //  (i + 1)
-174  :     OpAdd         : type = I8
+132  :     OpAdd         : type = I8
 //  (i = (i + 1))
-175  :     Duplicate     : stackPatternCount = 0
+133  :     Duplicate     : stackPatternCount = 0
 //  (i = (i + 1))
-176  :     StoreLocalVar : var = 6(i)
+134  :     StoreLocalVar : var = 6(i)
 //  (i = (i + 1));
-177  :     Pop           
+135  :     Pop           
 //  while ((i <= <for-end>i))
-178  :     Jump          : label = 150
+136  :     Jump          : label = 108
 //  func CheckList(xs : IValue^[], shouldBeWrapper : bool, name : string) : (void)
-179  :     LoadValue     : value = <null>
+137  :     LoadValue     : value = <null>
 //  func CheckList(xs : IValue^[], shouldBeWrapper : bool, name : string) : (void)
-180  :     Return        
+138  :     Return        
 //  {}
-181  :     NewList       : stackPatternCount = 0
+139  :     NewList       : stackPatternCount = 0
 //  new (IService^)
-182  :     LoadValue     : value = <null>
+140  :     LoadValue     : value = <null>
 //  new (IService^)
-183  :     CreateClosureContext: stackPatternCount = 2
+141  :     CreateClosureContext: stackPatternCount = 2
 //  new (IService^)
-184  :     LoadMethodInfo: methodInfo = GetValue<RpcPropDefaultInterfaceList::IService>
+142  :     LoadMethodInfo: methodInfo = GetValue<RpcPropDefaultInterfaceList::IService>
 //  func GetValue() : (IValue^[])
-185  :     LoadFunction  : func = 27(<method:GetValue<RpcPropDefaultInterfaceList::IService>(27)> in serviceMain)
+143  :     LoadFunction  : func = 27(<method:GetValue<RpcPropDefaultInterfaceList::IService>(27)> in serviceMain)
 //  new (IService^)
-186  :     LoadMethodInfo: methodInfo = SetValue<RpcPropDefaultInterfaceList::IService>
+144  :     LoadMethodInfo: methodInfo = SetValue<RpcPropDefaultInterfaceList::IService>
 //  func SetValue(value : IValue^[]) : (void)
-187  :     LoadFunction  : func = 28(<method:SetValue<RpcPropDefaultInterfaceList::IService>(28)> in serviceMain)
+145  :     LoadFunction  : func = 28(<method:SetValue<RpcPropDefaultInterfaceList::IService>(28)> in serviceMain)
 //  new (IService^)
-188  :     LoadMethodInfo: methodInfo = Signal<RpcPropDefaultInterfaceList::IService>
+146  :     LoadMethodInfo: methodInfo = Signal<RpcPropDefaultInterfaceList::IService>
 //  func Signal() : (void)
-189  :     LoadFunction  : func = 29(<method:Signal<RpcPropDefaultInterfaceList::IService>(29)> in serviceMain)
+147  :     LoadFunction  : func = 29(<method:Signal<RpcPropDefaultInterfaceList::IService>(29)> in serviceMain)
 //  new (IService^)
-190  :     CreateInterface: methodInfo = <RpcPropDefaultInterfaceList::IService>, stackPatternCount = 6
+148  :     CreateInterface: methodInfo = <RpcPropDefaultInterfaceList::IService>, stackPatternCount = 6
 //  var serviceObj = new (IService^)
-191  :     StoreLocalVar : var = 1(serviceObj)
+149  :     StoreLocalVar : var = 1(serviceObj)
 //  "A"
-192  :     LoadValue     : value = <String, A>
+150  :     LoadValue     : value = <String, A>
 //  MakeValue("A")
-193  :     Invoke        : func = 1(MakeValue), stackPatternCount = 1
+151  :     Invoke        : func = 0(MakeValue), stackPatternCount = 1
 //  serviceObj
-194  :     LoadLocalVar  : var = 1(serviceObj)
+152  :     LoadLocalVar  : var = 1(serviceObj)
 //  serviceObj.Value
-195  :     InvokeMethod  : methodInfo = GetValue<RpcPropDefaultInterfaceList::IService>, stackPatternCount = 0
+153  :     InvokeMethod  : methodInfo = GetValue<RpcPropDefaultInterfaceList::IService>, stackPatternCount = 0
 //  serviceObj.Value.Add(MakeValue("A"))
-196  :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
+154  :     InvokeMethod  : methodInfo = Add<system::List>, stackPatternCount = 1
 //  serviceObj.Value.Add(MakeValue("A"));
-197  :     Pop           
+155  :     Pop           
 //  "RpcPropDefaultInterfaceList::IService"
-198  :     LoadValue     : value = <String, RpcPropDefaultInterfaceList::IService>
+156  :     LoadValue     : value = <String, RpcPropDefaultInterfaceList::IService>
 //  rpc_GetIds()
-199  :     Invoke        : func = 7(rpc_GetIds), stackPatternCount = 0
+157  :     Invoke        : func = 7(rpc_GetIds), stackPatternCount = 0
 //  rpc_GetIds()["RpcPropDefaultInterfaceList::IService"]
-200  :     InvokeMethod  : methodInfo = Get<system::ReadonlyDictionary>, stackPatternCount = 1
+158  :     InvokeMethod  : methodInfo = Get<system::ReadonlyDictionary>, stackPatternCount = 1
 //  serviceObj
-201  :     LoadLocalVar  : var = 1(serviceObj)
+159  :     LoadLocalVar  : var = 1(serviceObj)
 //  serviceObj
-202  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Interface
+160  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Interface
 //  lc
-203  :     LoadLocalVar  : var = 0(lc)
+161  :     LoadLocalVar  : var = 0(lc)
 //  lc.RegisterLocalService(rpc_GetIds()["RpcPropDefaultInterfaceList::IService"], serviceObj)
-204  :     InvokeMethod  : methodInfo = RegisterLocalService<system::IRpcLifecycle>, stackPatternCount = 2
+162  :     InvokeMethod  : methodInfo = RegisterLocalService<system::IRpcLifecycle>, stackPatternCount = 2
 //  lc.RegisterLocalService(rpc_GetIds()["RpcPropDefaultInterfaceList::IService"], serviceObj);
-205  :     Pop           
+163  :     Pop           
 //  func serviceMain(lc : IRpcLifecycle*) : (void)
-206  :     LoadValue     : value = <null>
+164  :     LoadValue     : value = <null>
 //  func serviceMain(lc : IRpcLifecycle*) : (void)
-207  :     Return        
+165  :     Return        
 //  _Value
-208  :     LoadCapturedVar: var = 0(<captured>_Value)
+166  :     LoadCapturedVar: var = 0(<captured>_Value)
 //  return _Value;
-209  :     Return        
+167  :     Return        
 //  func GetValue() : (IValue^[])
-210  :     LoadValue     : value = <null>
+168  :     LoadValue     : value = <null>
 //  func GetValue() : (IValue^[])
-211  :     Return        
+169  :     Return        
 //  value
-212  :     LoadLocalVar  : var = 0(value)
+170  :     LoadLocalVar  : var = 0(value)
 //  true
-213  :     LoadValue     : value = <Bool, true>
+171  :     LoadValue     : value = <Bool, true>
 //  "Parameter value in serviceMain"
-214  :     LoadValue     : value = <String, Parameter value in serviceMain>
+172  :     LoadValue     : value = <String, Parameter value in serviceMain>
 //  CheckList(value, true, "Parameter value in serviceMain")
-215  :     Invoke        : func = 4(CheckList), stackPatternCount = 3
+173  :     Invoke        : func = 2(CheckList), stackPatternCount = 3
 //  CheckList(value, true, "Parameter value in serviceMain");
-216  :     Pop           
+174  :     Pop           
 //  value
-217  :     LoadLocalVar  : var = 0(value)
+175  :     LoadLocalVar  : var = 0(value)
 //  (_Value = value)
-218  :     Duplicate     : stackPatternCount = 0
+176  :     Duplicate     : stackPatternCount = 0
 //  (_Value = value)
-219  :     StoreCapturedVar: var = 0
+177  :     StoreCapturedVar: var = 0
 //  (_Value = value);
-220  :     Pop           
+178  :     Pop           
 //  func SetValue(value : IValue^[]) : (void)
-221  :     LoadValue     : value = <null>
+179  :     LoadValue     : value = <null>
 //  func SetValue(value : IValue^[]) : (void)
-222  :     Return        
+180  :     Return        
 //  ValueChanged()
-223  :     LoadCapturedVar: var = 1(<captured-this>0)
+181  :     LoadCapturedVar: var = 1(<captured-this>0)
 //  ValueChanged()
-224  :     InvokeEvent   : eventInfo = ValueChanged<RpcPropDefaultInterfaceList::IService>, stackPatternCount = 0
+182  :     InvokeEvent   : eventInfo = ValueChanged<RpcPropDefaultInterfaceList::IService>, stackPatternCount = 0
 //  ValueChanged();
-225  :     Pop           
+183  :     Pop           
 //  func Signal() : (void)
+184  :     LoadValue     : value = <null>
+//  func Signal() : (void)
+185  :     Return        
+//  ""
+186  :     LoadValue     : value = <String, >
+//  s
+187  :     LoadGlobalVar : var = 0(s)
+//  ("" & s)
+188  :     OpConcat      
+//  "[ValueChanged]"
+189  :     LoadValue     : value = <String, [ValueChanged]>
+//  (("" & s) & "[ValueChanged]")
+190  :     OpConcat      
+//  (s = (("" & s) & "[ValueChanged]"))
+191  :     Duplicate     : stackPatternCount = 0
+//  (s = (("" & s) & "[ValueChanged]"))
+192  :     StoreGlobalVar: var = 0(s)
+//  (s = (("" & s) & "[ValueChanged]"));
+193  :     Pop           
+//  func ClientValueChanged() : (void)
+194  :     LoadValue     : value = <null>
+//  func ClientValueChanged() : (void)
+195  :     Return        
+//  ""
+196  :     LoadValue     : value = <String, >
+//  var result = "";
+197  :     StoreLocalVar : var = 1(result)
+//  xs
+198  :     LoadLocalVar  : var = 0(xs)
+//  xs
+199  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var <for-enumerable>x = xs of (::system::Enumerable^);
+200  :     StoreLocalVar : var = 2(<for-enumerable>x)
+//  <for-enumerable>x
+201  :     LoadLocalVar  : var = 2(<for-enumerable>x)
+//  <for-enumerable>x.CreateEnumerator()
+202  :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
+//  var <for-enumerator>x = <for-enumerable>x.CreateEnumerator();
+203  :     StoreLocalVar : var = 3(<for-enumerator>x)
+//  <for-enumerator>x
+204  :     LoadLocalVar  : var = 3(<for-enumerator>x)
+//  <for-enumerator>x.Next()
+205  :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
+//  while (<for-enumerator>x.Next())
+206  :     OpNot         : type = Bool
+//  while (<for-enumerator>x.Next())
+207  :     JumpIf        : label = 224
+//  <for-enumerator>x
+208  :     LoadLocalVar  : var = 3(<for-enumerator>x)
+//  <for-enumerator>x.GetCurrent()
+209  :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
+//  <for-enumerator>x.GetCurrent()
+210  :     ConvertToType : flag = SharedPtr, typeDescriptor = RpcPropDefaultInterfaceList::IValue
+//  var x = (cast (::RpcPropDefaultInterfaceList::IValue^) <for-enumerator>x.GetCurrent());
+211  :     StoreLocalVar : var = 4(x)
+//  ""
+212  :     LoadValue     : value = <String, >
+//  result
+213  :     LoadLocalVar  : var = 1(result)
+//  ("" & result)
+214  :     OpConcat      
+//  ""
+215  :     LoadValue     : value = <String, >
+//  (("" & result) & "")
+216  :     OpConcat      
+//  x
+217  :     LoadLocalVar  : var = 4(x)
+//  x.Value
+218  :     InvokeMethod  : methodInfo = GetValue<RpcPropDefaultInterfaceList::IValue>, stackPatternCount = 0
+//  ((("" & result) & "") & x.Value)
+219  :     OpConcat      
+//  (result = ((("" & result) & "") & x.Value))
+220  :     Duplicate     : stackPatternCount = 0
+//  (result = ((("" & result) & "") & x.Value))
+221  :     StoreLocalVar : var = 1(result)
+//  (result = ((("" & result) & "") & x.Value));
+222  :     Pop           
+//  while (<for-enumerator>x.Next())
+223  :     Jump          : label = 204
+//  result
+224  :     LoadLocalVar  : var = 1(result)
+//  return result;
+225  :     Return        
+//  func Print(xs : IValue^[]) : (string)
 226  :     LoadValue     : value = <null>
-//  func Signal() : (void)
+//  func Print(xs : IValue^[]) : (string)
 227  :     Return        
 //  "RpcPropDefaultInterfaceList::IService"
 228  :     LoadValue     : value = <String, RpcPropDefaultInterfaceList::IService>
@@ -1069,7 +1069,7 @@ Instructions:
 //  ClientValueChanged
 234  :     CreateClosureContext: stackPatternCount = 0
 //  ClientValueChanged
-235  :     LoadFunction  : func = 0(ClientValueChanged)
+235  :     LoadFunction  : func = 4(ClientValueChanged)
 //  ClientValueChanged
 236  :     CreateClosure 
 //  attach(service.ValueChanged, ClientValueChanged)
@@ -1089,7 +1089,7 @@ Instructions:
 //  "service.Value before SetValue"
 244  :     LoadValue     : value = <String, service.Value before SetValue>
 //  CheckList(valueA, true, "service.Value before SetValue")
-245  :     Invoke        : func = 4(CheckList), stackPatternCount = 3
+245  :     Invoke        : func = 2(CheckList), stackPatternCount = 3
 //  CheckList(valueA, true, "service.Value before SetValue");
 246  :     Pop           
 //  ""
@@ -1105,7 +1105,7 @@ Instructions:
 //  valueA
 252  :     LoadLocalVar  : var = 2(valueA)
 //  Print(valueA)
-253  :     Invoke        : func = 2(Print), stackPatternCount = 1
+253  :     Invoke        : func = 5(Print), stackPatternCount = 1
 //  ((("" & s) & "[") & Print(valueA))
 254  :     OpConcat      
 //  "]"
@@ -1125,7 +1125,7 @@ Instructions:
 //  "B"
 262  :     LoadValue     : value = <String, B>
 //  MakeValue("B")
-263  :     Invoke        : func = 1(MakeValue), stackPatternCount = 1
+263  :     Invoke        : func = 0(MakeValue), stackPatternCount = 1
 //  valueB
 264  :     LoadLocalVar  : var = 3(valueB)
 //  valueB.Add(MakeValue("B"))
@@ -1135,7 +1135,7 @@ Instructions:
 //  "C"
 267  :     LoadValue     : value = <String, C>
 //  MakeValue("C")
-268  :     Invoke        : func = 1(MakeValue), stackPatternCount = 1
+268  :     Invoke        : func = 0(MakeValue), stackPatternCount = 1
 //  valueB
 269  :     LoadLocalVar  : var = 3(valueB)
 //  valueB.Add(MakeValue("C"))
@@ -1145,7 +1145,7 @@ Instructions:
 //  "D"
 272  :     LoadValue     : value = <String, D>
 //  MakeValue("D")
-273  :     Invoke        : func = 1(MakeValue), stackPatternCount = 1
+273  :     Invoke        : func = 0(MakeValue), stackPatternCount = 1
 //  valueB
 274  :     LoadLocalVar  : var = 3(valueB)
 //  valueB.Add(MakeValue("D"))
@@ -1159,7 +1159,7 @@ Instructions:
 //  "valueB"
 279  :     LoadValue     : value = <String, valueB>
 //  CheckList(valueB, false, "valueB")
-280  :     Invoke        : func = 4(CheckList), stackPatternCount = 3
+280  :     Invoke        : func = 2(CheckList), stackPatternCount = 3
 //  CheckList(valueB, false, "valueB");
 281  :     Pop           
 //  valueB
@@ -1201,7 +1201,7 @@ Instructions:
 //  "service.Value before ValueChanged"
 300  :     LoadValue     : value = <String, service.Value before ValueChanged>
 //  CheckList(valueCached, true, "service.Value before ValueChanged")
-301  :     Invoke        : func = 4(CheckList), stackPatternCount = 3
+301  :     Invoke        : func = 2(CheckList), stackPatternCount = 3
 //  CheckList(valueCached, true, "service.Value before ValueChanged");
 302  :     Pop           
 //  ""
@@ -1217,7 +1217,7 @@ Instructions:
 //  valueCached
 308  :     LoadLocalVar  : var = 4(valueCached)
 //  Print(valueCached)
-309  :     Invoke        : func = 2(Print), stackPatternCount = 1
+309  :     Invoke        : func = 5(Print), stackPatternCount = 1
 //  ((("" & s) & "[") & Print(valueCached))
 310  :     OpConcat      
 //  "]"
@@ -1267,7 +1267,7 @@ Instructions:
 //  "service.Value after ValueChanged"
 333  :     LoadValue     : value = <String, service.Value after ValueChanged>
 //  CheckList(value, false, "service.Value after ValueChanged")
-334  :     Invoke        : func = 4(CheckList), stackPatternCount = 3
+334  :     Invoke        : func = 2(CheckList), stackPatternCount = 3
 //  CheckList(value, false, "service.Value after ValueChanged");
 335  :     Pop           
 //  ""
@@ -1283,7 +1283,7 @@ Instructions:
 //  value
 341  :     LoadLocalVar  : var = 5(value)
 //  Print(value)
-342  :     Invoke        : func = 2(Print), stackPatternCount = 1
+342  :     Invoke        : func = 5(Print), stackPatternCount = 1
 //  ((("" & s) & "[") & Print(value))
 343  :     OpConcat      
 //  "]"

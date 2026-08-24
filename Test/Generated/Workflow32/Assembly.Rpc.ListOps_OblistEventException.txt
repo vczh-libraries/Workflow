@@ -7,15 +7,7 @@ rpcmethod_RpcListOpsOblistEventException__IServer_GetOblist
 ========================================================
 Functions:
 ========================================================
-CrashItemChanged (6 .. 22)
-    Arguments:
-        index
-        oldCount
-        newCount
-    Captured Variables:
-    Local Variables:
-
-serviceMain (23 .. 39)
+serviceMain (6 .. 22)
     Arguments:
         lc
     Captured Variables:
@@ -140,7 +132,17 @@ rpcops_IOps_CreateJson (573 .. 581)
     Captured Variables:
     Local Variables:
 
-<method:GetOblist<RpcListOpsOblistEventException::IServer>(19)> in serviceMain (40 .. 53)
+<method:CrashItemChanged<RpcListOpsOblistEventException::IServer>(18)> in serviceMain (23 .. 39)
+    Arguments:
+        index
+        oldCount
+        newCount
+    Captured Variables:
+        <captured>_List
+        <captured-this>0
+    Local Variables:
+
+<method:GetOblist<RpcListOpsOblistEventException::IServer>(20)> in serviceMain (40 .. 53)
     Arguments:
     Captured Variables:
         <captured>_List
@@ -323,73 +325,73 @@ Instructions:
 3    :     StoreGlobalVar: var = 1(rpcmethod_RpcListOpsOblistEventException__IServer_GetOblist)
 4    :     LoadValue     : value = <null>
 5    :     Return        
-//  ""
-6    :     LoadValue     : value = <String, >
-//  index
-7    :     LoadLocalVar  : var = 0(index)
-//  index
-8    :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  ("" & index)
-9    :     OpConcat      
-//  ","
-10   :     LoadValue     : value = <String, ,>
-//  (("" & index) & ",")
-11   :     OpConcat      
-//  oldCount
-12   :     LoadLocalVar  : var = 1(oldCount)
-//  oldCount
-13   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  ((("" & index) & ",") & oldCount)
-14   :     OpConcat      
-//  ","
-15   :     LoadValue     : value = <String, ,>
-//  (((("" & index) & ",") & oldCount) & ",")
-16   :     OpConcat      
-//  newCount
-17   :     LoadLocalVar  : var = 2(newCount)
-//  newCount
-18   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  ((((("" & index) & ",") & oldCount) & ",") & newCount)
-19   :     OpConcat      
-//  raise ((((("" & index) & ",") & oldCount) & ",") & newCount);
-20   :     RaiseException
-//  func CrashItemChanged(index : int, oldCount : int, newCount : int) : (void)
-21   :     LoadValue     : value = <null>
-//  func CrashItemChanged(index : int, oldCount : int, newCount : int) : (void)
-22   :     Return        
 //  null
-23   :     LoadValue     : value = <null>
+6    :     LoadValue     : value = <null>
 //  new (IServer^)
-24   :     LoadValue     : value = <null>
+7    :     LoadValue     : value = <null>
 //  new (IServer^)
-25   :     CreateClosureContext: stackPatternCount = 2
+8    :     CreateClosureContext: stackPatternCount = 2
 //  new (IServer^)
-26   :     LoadMethodInfo: methodInfo = GetOblist<RpcListOpsOblistEventException::IServer>
+9    :     LoadMethodInfo: methodInfo = GetOblist<RpcListOpsOblistEventException::IServer>
 //  func GetOblist() : (observe int[])
-27   :     LoadFunction  : func = 19(<method:GetOblist<RpcListOpsOblistEventException::IServer>(19)> in serviceMain)
+10   :     LoadFunction  : func = 19(<method:GetOblist<RpcListOpsOblistEventException::IServer>(20)> in serviceMain)
 //  new (IServer^)
-28   :     CreateInterface: methodInfo = <RpcListOpsOblistEventException::IServer>, stackPatternCount = 2
+11   :     CreateInterface: methodInfo = <RpcListOpsOblistEventException::IServer>, stackPatternCount = 2
 //  var serverObj = new (IServer^)
-29   :     StoreLocalVar : var = 1(serverObj)
+12   :     StoreLocalVar : var = 1(serverObj)
 //  "RpcListOpsOblistEventException::IServer"
-30   :     LoadValue     : value = <String, RpcListOpsOblistEventException::IServer>
+13   :     LoadValue     : value = <String, RpcListOpsOblistEventException::IServer>
 //  rpc_GetIds()
-31   :     Invoke        : func = 3(rpc_GetIds), stackPatternCount = 0
+14   :     Invoke        : func = 2(rpc_GetIds), stackPatternCount = 0
 //  rpc_GetIds()["RpcListOpsOblistEventException::IServer"]
-32   :     InvokeMethod  : methodInfo = Get<system::ReadonlyDictionary>, stackPatternCount = 1
+15   :     InvokeMethod  : methodInfo = Get<system::ReadonlyDictionary>, stackPatternCount = 1
 //  serverObj
-33   :     LoadLocalVar  : var = 1(serverObj)
+16   :     LoadLocalVar  : var = 1(serverObj)
 //  serverObj
-34   :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Interface
+17   :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Interface
 //  lc
-35   :     LoadLocalVar  : var = 0(lc)
+18   :     LoadLocalVar  : var = 0(lc)
 //  lc.RegisterLocalService(rpc_GetIds()["RpcListOpsOblistEventException::IServer"], serverObj)
-36   :     InvokeMethod  : methodInfo = RegisterLocalService<system::IRpcLifecycle>, stackPatternCount = 2
+19   :     InvokeMethod  : methodInfo = RegisterLocalService<system::IRpcLifecycle>, stackPatternCount = 2
 //  lc.RegisterLocalService(rpc_GetIds()["RpcListOpsOblistEventException::IServer"], serverObj);
-37   :     Pop           
+20   :     Pop           
 //  func serviceMain(lc : IRpcLifecycle*) : (void)
+21   :     LoadValue     : value = <null>
+//  func serviceMain(lc : IRpcLifecycle*) : (void)
+22   :     Return        
+//  ""
+23   :     LoadValue     : value = <String, >
+//  index
+24   :     LoadLocalVar  : var = 0(index)
+//  index
+25   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ("" & index)
+26   :     OpConcat      
+//  ","
+27   :     LoadValue     : value = <String, ,>
+//  (("" & index) & ",")
+28   :     OpConcat      
+//  oldCount
+29   :     LoadLocalVar  : var = 1(oldCount)
+//  oldCount
+30   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((("" & index) & ",") & oldCount)
+31   :     OpConcat      
+//  ","
+32   :     LoadValue     : value = <String, ,>
+//  (((("" & index) & ",") & oldCount) & ",")
+33   :     OpConcat      
+//  newCount
+34   :     LoadLocalVar  : var = 2(newCount)
+//  newCount
+35   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  ((((("" & index) & ",") & oldCount) & ",") & newCount)
+36   :     OpConcat      
+//  raise ((((("" & index) & ",") & oldCount) & ",") & newCount);
+37   :     RaiseException
+//  func CrashItemChanged(index : int, oldCount : int, newCount : int) : (void)
 38   :     LoadValue     : value = <null>
-//  func serviceMain(lc : IRpcLifecycle*) : (void)
+//  func CrashItemChanged(index : int, oldCount : int, newCount : int) : (void)
 39   :     Return        
 //  {}
 40   :     NewObservableList: stackPatternCount = 0
@@ -402,9 +404,9 @@ Instructions:
 //  _List
 44   :     LoadCapturedVar: var = 0(<captured>_List)
 //  CrashItemChanged
-45   :     CreateClosureContext: stackPatternCount = 0
+45   :     LoadClosureContext
 //  CrashItemChanged
-46   :     LoadFunction  : func = 0(CrashItemChanged)
+46   :     LoadFunction  : func = 18(<method:CrashItemChanged<RpcListOpsOblistEventException::IServer>(18)> in serviceMain)
 //  CrashItemChanged
 47   :     CreateClosure 
 //  attach(_List.ItemChanged, CrashItemChanged)
@@ -1020,7 +1022,7 @@ Instructions:
 //  ops
 353  :     LoadLocalVar  : var = 2(ops)
 //  rpcwrapper_RpcListOpsOblistEventException__IServer(lc, ref, ops)
-354  :     Invoke        : func = 9(rpcwrapper_RpcListOpsOblistEventException__IServer), stackPatternCount = 3
+354  :     Invoke        : func = 8(rpcwrapper_RpcListOpsOblistEventException__IServer), stackPatternCount = 3
 //  rpcwrapper_RpcListOpsOblistEventException__IServer(lc, ref, ops)
 355  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::IRpcWrapperBase
 //  return rpcwrapper_RpcListOpsOblistEventException__IServer(lc, ref, ops);
@@ -1062,7 +1064,7 @@ Instructions:
 //  rpcjson_Serialize
 374  :     CreateClosureContext: stackPatternCount = 0
 //  rpcjson_Serialize
-375  :     LoadFunction  : func = 12(rpcjson_Serialize)
+375  :     LoadFunction  : func = 11(rpcjson_Serialize)
 //  rpcjson_Serialize
 376  :     CreateClosure 
 //  system::IRpcLifecycle::JsonSerializePredefinedTypes(value, rpcjson_Serialize)
@@ -1190,7 +1192,7 @@ Instructions:
 //  rpcjson_Deserialize
 438  :     CreateClosureContext: stackPatternCount = 0
 //  rpcjson_Deserialize
-439  :     LoadFunction  : func = 13(rpcjson_Deserialize)
+439  :     LoadFunction  : func = 12(rpcjson_Deserialize)
 //  rpcjson_Deserialize
 440  :     CreateClosure 
 //  system::IRpcLifecycle::JsonDeserializePredefinedTypes(node, rpcjson_Deserialize)
@@ -1226,7 +1228,7 @@ Instructions:
 //  value
 456  :     LoadLocalVar  : var = 0(value)
 //  rpcjson_Serialize(value)
-457  :     Invoke        : func = 12(rpcjson_Serialize), stackPatternCount = 1
+457  :     Invoke        : func = 11(rpcjson_Serialize), stackPatternCount = 1
 //  var result = rpcjson_Serialize(value);
 458  :     StoreLocalVar : var = 1(result)
 //  result
@@ -1242,7 +1244,7 @@ Instructions:
 //  value
 464  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::JsonNode
 //  rpcjson_Deserialize((cast (system::JsonNode^) value))
-465  :     Invoke        : func = 13(rpcjson_Deserialize), stackPatternCount = 1
+465  :     Invoke        : func = 12(rpcjson_Deserialize), stackPatternCount = 1
 //  return rpcjson_Deserialize((cast (system::JsonNode^) value));
 466  :     Return        
 //  func Deserialize(value : object) : (object)
@@ -1326,7 +1328,7 @@ Instructions:
 //  jsonValue0
 506  :     LoadLocalVar  : var = 6(jsonValue0)
 //  rpcjson_Serialize(jsonValue0)
-507  :     Invoke        : func = 12(rpcjson_Serialize), stackPatternCount = 1
+507  :     Invoke        : func = 11(rpcjson_Serialize), stackPatternCount = 1
 //  var jsonNode1 = rpcjson_Serialize(jsonValue0);
 508  :     StoreLocalVar : var = 7(jsonNode1)
 //  try
@@ -1362,7 +1364,7 @@ Instructions:
 //  {message : ex.Message;}
 524  :     UpdateProperty: propertyInfo = message<system::RpcException>
 //  rpcjson_Serialize({message : ex.Message;} of (system::RpcException))
-525  :     Invoke        : func = 12(rpcjson_Serialize), stackPatternCount = 1
+525  :     Invoke        : func = 11(rpcjson_Serialize), stackPatternCount = 1
 //  return rpcjson_Serialize({message : ex.Message;} of (system::RpcException));
 526  :     Return        
 //  unknownId
@@ -1380,7 +1382,7 @@ Instructions:
 //  null
 533  :     LoadValue     : value = <null>
 //  rpcjson_Serialize(null)
-534  :     Invoke        : func = 12(rpcjson_Serialize), stackPatternCount = 1
+534  :     Invoke        : func = 11(rpcjson_Serialize), stackPatternCount = 1
 //  return rpcjson_Serialize(null);
 535  :     Return        
 //  func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
@@ -1516,7 +1518,7 @@ Instructions:
 //  jsonResult
 601  :     LoadLocalVar  : var = 3(jsonResult)
 //  rpcjson_Deserialize(jsonResult)
-602  :     Invoke        : func = 13(rpcjson_Deserialize), stackPatternCount = 1
+602  :     Invoke        : func = 12(rpcjson_Deserialize), stackPatternCount = 1
 //  var methodResult = rpcjson_Deserialize(jsonResult);
 603  :     StoreLocalVar : var = 4(methodResult)
 //  methodResult
@@ -1530,7 +1532,7 @@ Instructions:
 //  jsonResult
 608  :     LoadLocalVar  : var = 3(jsonResult)
 //  rpcjson_Deserialize(jsonResult)
-609  :     Invoke        : func = 13(rpcjson_Deserialize), stackPatternCount = 1
+609  :     Invoke        : func = 12(rpcjson_Deserialize), stackPatternCount = 1
 //  rpcjson_Deserialize(jsonResult)
 610  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::RpcObjectReference
 //  var jsonValue0 = (cast (system::RpcObjectReference) rpcjson_Deserialize(jsonResult));

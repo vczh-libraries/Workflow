@@ -11,12 +11,19 @@ rpcevent_RpcPropDefaultList__IService_ValueChanged
 ========================================================
 Functions:
 ========================================================
-ClientValueChanged (14 .. 23)
+serviceMain (14 .. 35)
+    Arguments:
+        lc
+    Captured Variables:
+    Local Variables:
+        serviceObj
+
+ClientValueChanged (63 .. 72)
     Arguments:
     Captured Variables:
     Local Variables:
 
-Print (24 .. 54)
+Print (73 .. 103)
     Arguments:
         xs
     Captured Variables:
@@ -25,13 +32,6 @@ Print (24 .. 54)
         <for-enumerable>x
         <for-enumerator>x
         x
-
-serviceMain (55 .. 76)
-    Arguments:
-        lc
-    Captured Variables:
-    Local Variables:
-        serviceObj
 
 clientMain (104 .. 235)
     Arguments:
@@ -174,14 +174,14 @@ rpcops_IOps_CreateJson (1293 .. 1307)
     Captured Variables:
     Local Variables:
 
-<method:GetValue<RpcPropDefaultList::IService>(22)> in serviceMain (77 .. 80)
+<method:GetValue<RpcPropDefaultList::IService>(22)> in serviceMain (36 .. 39)
     Arguments:
     Captured Variables:
         <captured>_Value
         <captured-this>0
     Local Variables:
 
-<method:SetValue<RpcPropDefaultList::IService>(23)> in serviceMain (81 .. 98)
+<method:SetValue<RpcPropDefaultList::IService>(23)> in serviceMain (40 .. 57)
     Arguments:
         value
     Captured Variables:
@@ -190,7 +190,7 @@ rpcops_IOps_CreateJson (1293 .. 1307)
     Local Variables:
         valueObj
 
-<method:Signal<RpcPropDefaultList::IService>(24)> in serviceMain (99 .. 103)
+<method:Signal<RpcPropDefaultList::IService>(24)> in serviceMain (58 .. 62)
     Arguments:
     Captured Variables:
         <captured>_Value
@@ -542,185 +542,185 @@ Instructions:
 11   :     StoreGlobalVar: var = 5(rpcevent_RpcPropDefaultList__IService_ValueChanged)
 12   :     LoadValue     : value = <null>
 13   :     Return        
-//  ""
-14   :     LoadValue     : value = <String, >
-//  s
-15   :     LoadGlobalVar : var = 0(s)
-//  ("" & s)
-16   :     OpConcat      
-//  "[ValueChanged]"
-17   :     LoadValue     : value = <String, [ValueChanged]>
-//  (("" & s) & "[ValueChanged]")
-18   :     OpConcat      
-//  (s = (("" & s) & "[ValueChanged]"))
-19   :     Duplicate     : stackPatternCount = 0
-//  (s = (("" & s) & "[ValueChanged]"))
-20   :     StoreGlobalVar: var = 0(s)
-//  (s = (("" & s) & "[ValueChanged]"));
-21   :     Pop           
-//  func ClientValueChanged() : (void)
-22   :     LoadValue     : value = <null>
-//  func ClientValueChanged() : (void)
-23   :     Return        
-//  ""
-24   :     LoadValue     : value = <String, >
-//  var result = "";
-25   :     StoreLocalVar : var = 1(result)
-//  xs
-26   :     LoadLocalVar  : var = 0(xs)
-//  xs
-27   :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
-//  var <for-enumerable>x = xs of (::system::Enumerable^);
-28   :     StoreLocalVar : var = 2(<for-enumerable>x)
-//  <for-enumerable>x
-29   :     LoadLocalVar  : var = 2(<for-enumerable>x)
-//  <for-enumerable>x.CreateEnumerator()
-30   :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
-//  var <for-enumerator>x = <for-enumerable>x.CreateEnumerator();
-31   :     StoreLocalVar : var = 3(<for-enumerator>x)
-//  <for-enumerator>x
-32   :     LoadLocalVar  : var = 3(<for-enumerator>x)
-//  <for-enumerator>x.Next()
-33   :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
-//  while (<for-enumerator>x.Next())
-34   :     OpNot         : type = Bool
-//  while (<for-enumerator>x.Next())
-35   :     JumpIf        : label = 51
-//  <for-enumerator>x
-36   :     LoadLocalVar  : var = 3(<for-enumerator>x)
-//  <for-enumerator>x.GetCurrent()
-37   :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
-//  <for-enumerator>x.GetCurrent()
-38   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  var x = (cast (::system::String) <for-enumerator>x.GetCurrent());
-39   :     StoreLocalVar : var = 4(x)
-//  ""
-40   :     LoadValue     : value = <String, >
-//  result
-41   :     LoadLocalVar  : var = 1(result)
-//  ("" & result)
-42   :     OpConcat      
-//  ""
-43   :     LoadValue     : value = <String, >
-//  (("" & result) & "")
-44   :     OpConcat      
-//  x
-45   :     LoadLocalVar  : var = 4(x)
-//  ((("" & result) & "") & x)
-46   :     OpConcat      
-//  (result = ((("" & result) & "") & x))
-47   :     Duplicate     : stackPatternCount = 0
-//  (result = ((("" & result) & "") & x))
-48   :     StoreLocalVar : var = 1(result)
-//  (result = ((("" & result) & "") & x));
-49   :     Pop           
-//  while (<for-enumerator>x.Next())
-50   :     Jump          : label = 32
-//  result
-51   :     LoadLocalVar  : var = 1(result)
-//  return result;
-52   :     Return        
-//  func Print(xs : string[]) : (string)
-53   :     LoadValue     : value = <null>
-//  func Print(xs : string[]) : (string)
-54   :     Return        
 //  "A"
-55   :     LoadValue     : value = <String, A>
+14   :     LoadValue     : value = <String, A>
 //  {"A";}
-56   :     NewList       : stackPatternCount = 1
+15   :     NewList       : stackPatternCount = 1
 //  new (IService^)
-57   :     LoadValue     : value = <null>
+16   :     LoadValue     : value = <null>
 //  new (IService^)
-58   :     CreateClosureContext: stackPatternCount = 2
+17   :     CreateClosureContext: stackPatternCount = 2
 //  new (IService^)
-59   :     LoadMethodInfo: methodInfo = GetValue<RpcPropDefaultList::IService>
+18   :     LoadMethodInfo: methodInfo = GetValue<RpcPropDefaultList::IService>
 //  func GetValue() : (string[])
-60   :     LoadFunction  : func = 22(<method:GetValue<RpcPropDefaultList::IService>(22)> in serviceMain)
+19   :     LoadFunction  : func = 22(<method:GetValue<RpcPropDefaultList::IService>(22)> in serviceMain)
 //  new (IService^)
-61   :     LoadMethodInfo: methodInfo = SetValue<RpcPropDefaultList::IService>
+20   :     LoadMethodInfo: methodInfo = SetValue<RpcPropDefaultList::IService>
 //  func SetValue(value : string[]) : (void)
-62   :     LoadFunction  : func = 23(<method:SetValue<RpcPropDefaultList::IService>(23)> in serviceMain)
+21   :     LoadFunction  : func = 23(<method:SetValue<RpcPropDefaultList::IService>(23)> in serviceMain)
 //  new (IService^)
-63   :     LoadMethodInfo: methodInfo = Signal<RpcPropDefaultList::IService>
+22   :     LoadMethodInfo: methodInfo = Signal<RpcPropDefaultList::IService>
 //  func Signal() : (void)
-64   :     LoadFunction  : func = 24(<method:Signal<RpcPropDefaultList::IService>(24)> in serviceMain)
+23   :     LoadFunction  : func = 24(<method:Signal<RpcPropDefaultList::IService>(24)> in serviceMain)
 //  new (IService^)
-65   :     CreateInterface: methodInfo = <RpcPropDefaultList::IService>, stackPatternCount = 6
+24   :     CreateInterface: methodInfo = <RpcPropDefaultList::IService>, stackPatternCount = 6
 //  var serviceObj = new (IService^)
-66   :     StoreLocalVar : var = 1(serviceObj)
+25   :     StoreLocalVar : var = 1(serviceObj)
 //  "RpcPropDefaultList::IService"
-67   :     LoadValue     : value = <String, RpcPropDefaultList::IService>
+26   :     LoadValue     : value = <String, RpcPropDefaultList::IService>
 //  rpc_GetIds()
-68   :     Invoke        : func = 4(rpc_GetIds), stackPatternCount = 0
+27   :     Invoke        : func = 4(rpc_GetIds), stackPatternCount = 0
 //  rpc_GetIds()["RpcPropDefaultList::IService"]
-69   :     InvokeMethod  : methodInfo = Get<system::ReadonlyDictionary>, stackPatternCount = 1
+28   :     InvokeMethod  : methodInfo = Get<system::ReadonlyDictionary>, stackPatternCount = 1
 //  serviceObj
-70   :     LoadLocalVar  : var = 1(serviceObj)
+29   :     LoadLocalVar  : var = 1(serviceObj)
 //  serviceObj
-71   :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Interface
+30   :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Interface
 //  lc
-72   :     LoadLocalVar  : var = 0(lc)
+31   :     LoadLocalVar  : var = 0(lc)
 //  lc.RegisterLocalService(rpc_GetIds()["RpcPropDefaultList::IService"], serviceObj)
-73   :     InvokeMethod  : methodInfo = RegisterLocalService<system::IRpcLifecycle>, stackPatternCount = 2
+32   :     InvokeMethod  : methodInfo = RegisterLocalService<system::IRpcLifecycle>, stackPatternCount = 2
 //  lc.RegisterLocalService(rpc_GetIds()["RpcPropDefaultList::IService"], serviceObj);
-74   :     Pop           
+33   :     Pop           
 //  func serviceMain(lc : IRpcLifecycle*) : (void)
-75   :     LoadValue     : value = <null>
+34   :     LoadValue     : value = <null>
 //  func serviceMain(lc : IRpcLifecycle*) : (void)
-76   :     Return        
+35   :     Return        
 //  _Value
-77   :     LoadCapturedVar: var = 0(<captured>_Value)
+36   :     LoadCapturedVar: var = 0(<captured>_Value)
 //  return _Value;
-78   :     Return        
+37   :     Return        
 //  func GetValue() : (string[])
-79   :     LoadValue     : value = <null>
+38   :     LoadValue     : value = <null>
 //  func GetValue() : (string[])
-80   :     Return        
+39   :     Return        
 //  value
-81   :     LoadLocalVar  : var = 0(value)
+40   :     LoadLocalVar  : var = 0(value)
 //  var valueObj : object = value;
-82   :     StoreLocalVar : var = 1(valueObj)
+41   :     StoreLocalVar : var = 1(valueObj)
 //  valueObj
-83   :     LoadLocalVar  : var = 1(valueObj)
+42   :     LoadLocalVar  : var = 1(valueObj)
 //  (valueObj as (system::IRpcWrapperBase^))
-84   :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::IRpcWrapperBase
+43   :     TryConvertToType: flag = SharedPtr, typeDescriptor = system::IRpcWrapperBase
 //  (valueObj as (system::IRpcWrapperBase^)) is not null
-85   :     LoadValue     : value = <null>
+44   :     LoadValue     : value = <null>
 //  (valueObj as (system::IRpcWrapperBase^)) is not null
-86   :     CompareReference
+45   :     CompareReference
 //  (valueObj as (system::IRpcWrapperBase^)) is not null
-87   :     OpNot         : type = Bool
+46   :     OpNot         : type = Bool
 //  if ((valueObj as (system::IRpcWrapperBase^)) is not null)
-88   :     OpNot         : type = Bool
+47   :     OpNot         : type = Bool
 //  if ((valueObj as (system::IRpcWrapperBase^)) is not null)
-89   :     JumpIf        : label = 93
+48   :     JumpIf        : label = 52
 //  "Parameter value should be a copied local object in serviceMain"
-90   :     LoadValue     : value = <String, Parameter value should be a copied local object in serviceMain>
+49   :     LoadValue     : value = <String, Parameter value should be a copied local object in serviceMain>
 //  raise "Parameter value should be a copied local object in serviceMain";
-91   :     RaiseException
+50   :     RaiseException
 //  if ((valueObj as (system::IRpcWrapperBase^)) is not null)
-92   :     Jump          : label = 93
+51   :     Jump          : label = 52
 //  value
-93   :     LoadLocalVar  : var = 0(value)
+52   :     LoadLocalVar  : var = 0(value)
 //  (_Value = value)
-94   :     Duplicate     : stackPatternCount = 0
+53   :     Duplicate     : stackPatternCount = 0
 //  (_Value = value)
-95   :     StoreCapturedVar: var = 0
+54   :     StoreCapturedVar: var = 0
 //  (_Value = value);
-96   :     Pop           
+55   :     Pop           
 //  func SetValue(value : string[]) : (void)
-97   :     LoadValue     : value = <null>
+56   :     LoadValue     : value = <null>
 //  func SetValue(value : string[]) : (void)
-98   :     Return        
+57   :     Return        
 //  ValueChanged()
-99   :     LoadCapturedVar: var = 1(<captured-this>0)
+58   :     LoadCapturedVar: var = 1(<captured-this>0)
 //  ValueChanged()
-100  :     InvokeEvent   : eventInfo = ValueChanged<RpcPropDefaultList::IService>, stackPatternCount = 0
+59   :     InvokeEvent   : eventInfo = ValueChanged<RpcPropDefaultList::IService>, stackPatternCount = 0
 //  ValueChanged();
-101  :     Pop           
+60   :     Pop           
 //  func Signal() : (void)
+61   :     LoadValue     : value = <null>
+//  func Signal() : (void)
+62   :     Return        
+//  ""
+63   :     LoadValue     : value = <String, >
+//  s
+64   :     LoadGlobalVar : var = 0(s)
+//  ("" & s)
+65   :     OpConcat      
+//  "[ValueChanged]"
+66   :     LoadValue     : value = <String, [ValueChanged]>
+//  (("" & s) & "[ValueChanged]")
+67   :     OpConcat      
+//  (s = (("" & s) & "[ValueChanged]"))
+68   :     Duplicate     : stackPatternCount = 0
+//  (s = (("" & s) & "[ValueChanged]"))
+69   :     StoreGlobalVar: var = 0(s)
+//  (s = (("" & s) & "[ValueChanged]"));
+70   :     Pop           
+//  func ClientValueChanged() : (void)
+71   :     LoadValue     : value = <null>
+//  func ClientValueChanged() : (void)
+72   :     Return        
+//  ""
+73   :     LoadValue     : value = <String, >
+//  var result = "";
+74   :     StoreLocalVar : var = 1(result)
+//  xs
+75   :     LoadLocalVar  : var = 0(xs)
+//  xs
+76   :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var <for-enumerable>x = xs of (::system::Enumerable^);
+77   :     StoreLocalVar : var = 2(<for-enumerable>x)
+//  <for-enumerable>x
+78   :     LoadLocalVar  : var = 2(<for-enumerable>x)
+//  <for-enumerable>x.CreateEnumerator()
+79   :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
+//  var <for-enumerator>x = <for-enumerable>x.CreateEnumerator();
+80   :     StoreLocalVar : var = 3(<for-enumerator>x)
+//  <for-enumerator>x
+81   :     LoadLocalVar  : var = 3(<for-enumerator>x)
+//  <for-enumerator>x.Next()
+82   :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
+//  while (<for-enumerator>x.Next())
+83   :     OpNot         : type = Bool
+//  while (<for-enumerator>x.Next())
+84   :     JumpIf        : label = 100
+//  <for-enumerator>x
+85   :     LoadLocalVar  : var = 3(<for-enumerator>x)
+//  <for-enumerator>x.GetCurrent()
+86   :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
+//  <for-enumerator>x.GetCurrent()
+87   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  var x = (cast (::system::String) <for-enumerator>x.GetCurrent());
+88   :     StoreLocalVar : var = 4(x)
+//  ""
+89   :     LoadValue     : value = <String, >
+//  result
+90   :     LoadLocalVar  : var = 1(result)
+//  ("" & result)
+91   :     OpConcat      
+//  ""
+92   :     LoadValue     : value = <String, >
+//  (("" & result) & "")
+93   :     OpConcat      
+//  x
+94   :     LoadLocalVar  : var = 4(x)
+//  ((("" & result) & "") & x)
+95   :     OpConcat      
+//  (result = ((("" & result) & "") & x))
+96   :     Duplicate     : stackPatternCount = 0
+//  (result = ((("" & result) & "") & x))
+97   :     StoreLocalVar : var = 1(result)
+//  (result = ((("" & result) & "") & x));
+98   :     Pop           
+//  while (<for-enumerator>x.Next())
+99   :     Jump          : label = 81
+//  result
+100  :     LoadLocalVar  : var = 1(result)
+//  return result;
+101  :     Return        
+//  func Print(xs : string[]) : (string)
 102  :     LoadValue     : value = <null>
-//  func Signal() : (void)
+//  func Print(xs : string[]) : (string)
 103  :     Return        
 //  "RpcPropDefaultList::IService"
 104  :     LoadValue     : value = <String, RpcPropDefaultList::IService>
@@ -737,7 +737,7 @@ Instructions:
 //  ClientValueChanged
 110  :     CreateClosureContext: stackPatternCount = 0
 //  ClientValueChanged
-111  :     LoadFunction  : func = 0(ClientValueChanged)
+111  :     LoadFunction  : func = 1(ClientValueChanged)
 //  ClientValueChanged
 112  :     CreateClosure 
 //  attach(service.ValueChanged, ClientValueChanged)
@@ -787,7 +787,7 @@ Instructions:
 //  valueA
 135  :     LoadLocalVar  : var = 2(valueA)
 //  Print(valueA)
-136  :     Invoke        : func = 1(Print), stackPatternCount = 1
+136  :     Invoke        : func = 2(Print), stackPatternCount = 1
 //  ((("" & s) & "[") & Print(valueA))
 137  :     OpConcat      
 //  "]"
@@ -883,7 +883,7 @@ Instructions:
 //  valueCached
 183  :     LoadLocalVar  : var = 5(valueCached)
 //  Print(valueCached)
-184  :     Invoke        : func = 1(Print), stackPatternCount = 1
+184  :     Invoke        : func = 2(Print), stackPatternCount = 1
 //  ((("" & s) & "[") & Print(valueCached))
 185  :     OpConcat      
 //  "]"
@@ -965,7 +965,7 @@ Instructions:
 //  value
 224  :     LoadLocalVar  : var = 6(value)
 //  Print(value)
-225  :     Invoke        : func = 1(Print), stackPatternCount = 1
+225  :     Invoke        : func = 2(Print), stackPatternCount = 1
 //  ((("" & s) & "[") & Print(value))
 226  :     OpConcat      
 //  "]"

@@ -11,17 +11,17 @@ rpcevent_RpcPropDefault__IService_ValueChanged
 ========================================================
 Functions:
 ========================================================
-ClientValueChanged (14 .. 23)
-    Arguments:
-    Captured Variables:
-    Local Variables:
-
-serviceMain (24 .. 44)
+serviceMain (14 .. 34)
     Arguments:
         lc
     Captured Variables:
     Local Variables:
         serviceObj
+
+ClientValueChanged (50 .. 59)
+    Arguments:
+    Captured Variables:
+    Local Variables:
 
 clientMain (60 .. 120)
     Arguments:
@@ -159,14 +159,14 @@ rpcops_IOps_CreateJson (1092 .. 1106)
     Captured Variables:
     Local Variables:
 
-<method:GetValue<RpcPropDefault::IService>(21)> in serviceMain (45 .. 48)
+<method:GetValue<RpcPropDefault::IService>(21)> in serviceMain (35 .. 38)
     Arguments:
     Captured Variables:
         <captured>_Value
         <captured-this>0
     Local Variables:
 
-<method:SetValue<RpcPropDefault::IService>(22)> in serviceMain (49 .. 54)
+<method:SetValue<RpcPropDefault::IService>(22)> in serviceMain (39 .. 44)
     Arguments:
         value
     Captured Variables:
@@ -174,7 +174,7 @@ rpcops_IOps_CreateJson (1092 .. 1106)
         <captured-this>0
     Local Variables:
 
-<method:Signal<RpcPropDefault::IService>(23)> in serviceMain (55 .. 59)
+<method:Signal<RpcPropDefault::IService>(23)> in serviceMain (45 .. 49)
     Arguments:
     Captured Variables:
         <captured>_Value
@@ -512,97 +512,97 @@ Instructions:
 11   :     StoreGlobalVar: var = 5(rpcevent_RpcPropDefault__IService_ValueChanged)
 12   :     LoadValue     : value = <null>
 13   :     Return        
-//  ""
-14   :     LoadValue     : value = <String, >
-//  s
-15   :     LoadGlobalVar : var = 0(s)
-//  ("" & s)
-16   :     OpConcat      
-//  "[ValueChanged]"
-17   :     LoadValue     : value = <String, [ValueChanged]>
-//  (("" & s) & "[ValueChanged]")
-18   :     OpConcat      
-//  (s = (("" & s) & "[ValueChanged]"))
-19   :     Duplicate     : stackPatternCount = 0
-//  (s = (("" & s) & "[ValueChanged]"))
-20   :     StoreGlobalVar: var = 0(s)
-//  (s = (("" & s) & "[ValueChanged]"));
-21   :     Pop           
-//  func ClientValueChanged() : (void)
-22   :     LoadValue     : value = <null>
-//  func ClientValueChanged() : (void)
-23   :     Return        
 //  "A"
-24   :     LoadValue     : value = <String, A>
+14   :     LoadValue     : value = <String, A>
 //  new (RpcPropDefault::IService^)
-25   :     LoadValue     : value = <null>
+15   :     LoadValue     : value = <null>
 //  new (RpcPropDefault::IService^)
-26   :     CreateClosureContext: stackPatternCount = 2
+16   :     CreateClosureContext: stackPatternCount = 2
 //  new (RpcPropDefault::IService^)
-27   :     LoadMethodInfo: methodInfo = GetValue<RpcPropDefault::IService>
+17   :     LoadMethodInfo: methodInfo = GetValue<RpcPropDefault::IService>
 //  func GetValue() : (string)
-28   :     LoadFunction  : func = 21(<method:GetValue<RpcPropDefault::IService>(21)> in serviceMain)
+18   :     LoadFunction  : func = 21(<method:GetValue<RpcPropDefault::IService>(21)> in serviceMain)
 //  new (RpcPropDefault::IService^)
-29   :     LoadMethodInfo: methodInfo = SetValue<RpcPropDefault::IService>
+19   :     LoadMethodInfo: methodInfo = SetValue<RpcPropDefault::IService>
 //  func SetValue(value : string) : (void)
-30   :     LoadFunction  : func = 22(<method:SetValue<RpcPropDefault::IService>(22)> in serviceMain)
+20   :     LoadFunction  : func = 22(<method:SetValue<RpcPropDefault::IService>(22)> in serviceMain)
 //  new (RpcPropDefault::IService^)
-31   :     LoadMethodInfo: methodInfo = Signal<RpcPropDefault::IService>
+21   :     LoadMethodInfo: methodInfo = Signal<RpcPropDefault::IService>
 //  func Signal() : (void)
-32   :     LoadFunction  : func = 23(<method:Signal<RpcPropDefault::IService>(23)> in serviceMain)
+22   :     LoadFunction  : func = 23(<method:Signal<RpcPropDefault::IService>(23)> in serviceMain)
 //  new (RpcPropDefault::IService^)
-33   :     CreateInterface: methodInfo = <RpcPropDefault::IService>, stackPatternCount = 6
+23   :     CreateInterface: methodInfo = <RpcPropDefault::IService>, stackPatternCount = 6
 //  var serviceObj = new (RpcPropDefault::IService^)
-34   :     StoreLocalVar : var = 1(serviceObj)
+24   :     StoreLocalVar : var = 1(serviceObj)
 //  "RpcPropDefault::IService"
-35   :     LoadValue     : value = <String, RpcPropDefault::IService>
+25   :     LoadValue     : value = <String, RpcPropDefault::IService>
 //  rpc_GetIds()
-36   :     Invoke        : func = 3(rpc_GetIds), stackPatternCount = 0
+26   :     Invoke        : func = 3(rpc_GetIds), stackPatternCount = 0
 //  rpc_GetIds()["RpcPropDefault::IService"]
-37   :     InvokeMethod  : methodInfo = Get<system::ReadonlyDictionary>, stackPatternCount = 1
+27   :     InvokeMethod  : methodInfo = Get<system::ReadonlyDictionary>, stackPatternCount = 1
 //  serviceObj
-38   :     LoadLocalVar  : var = 1(serviceObj)
+28   :     LoadLocalVar  : var = 1(serviceObj)
 //  serviceObj
-39   :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Interface
+29   :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Interface
 //  lc
-40   :     LoadLocalVar  : var = 0(lc)
+30   :     LoadLocalVar  : var = 0(lc)
 //  lc.RegisterLocalService(rpc_GetIds()["RpcPropDefault::IService"], serviceObj)
-41   :     InvokeMethod  : methodInfo = RegisterLocalService<system::IRpcLifecycle>, stackPatternCount = 2
+31   :     InvokeMethod  : methodInfo = RegisterLocalService<system::IRpcLifecycle>, stackPatternCount = 2
 //  lc.RegisterLocalService(rpc_GetIds()["RpcPropDefault::IService"], serviceObj);
-42   :     Pop           
+32   :     Pop           
 //  func serviceMain(lc : IRpcLifecycle*) : (void)
-43   :     LoadValue     : value = <null>
+33   :     LoadValue     : value = <null>
 //  func serviceMain(lc : IRpcLifecycle*) : (void)
-44   :     Return        
+34   :     Return        
 //  _Value
-45   :     LoadCapturedVar: var = 0(<captured>_Value)
+35   :     LoadCapturedVar: var = 0(<captured>_Value)
 //  return _Value;
-46   :     Return        
+36   :     Return        
 //  func GetValue() : (string)
-47   :     LoadValue     : value = <null>
+37   :     LoadValue     : value = <null>
 //  func GetValue() : (string)
-48   :     Return        
+38   :     Return        
 //  value
-49   :     LoadLocalVar  : var = 0(value)
+39   :     LoadLocalVar  : var = 0(value)
 //  (_Value = value)
-50   :     Duplicate     : stackPatternCount = 0
+40   :     Duplicate     : stackPatternCount = 0
 //  (_Value = value)
-51   :     StoreCapturedVar: var = 0
+41   :     StoreCapturedVar: var = 0
 //  (_Value = value);
-52   :     Pop           
+42   :     Pop           
 //  func SetValue(value : string) : (void)
-53   :     LoadValue     : value = <null>
+43   :     LoadValue     : value = <null>
 //  func SetValue(value : string) : (void)
-54   :     Return        
+44   :     Return        
 //  ValueChanged()
-55   :     LoadCapturedVar: var = 1(<captured-this>0)
+45   :     LoadCapturedVar: var = 1(<captured-this>0)
 //  ValueChanged()
-56   :     InvokeEvent   : eventInfo = ValueChanged<RpcPropDefault::IService>, stackPatternCount = 0
+46   :     InvokeEvent   : eventInfo = ValueChanged<RpcPropDefault::IService>, stackPatternCount = 0
 //  ValueChanged();
+47   :     Pop           
+//  func Signal() : (void)
+48   :     LoadValue     : value = <null>
+//  func Signal() : (void)
+49   :     Return        
+//  ""
+50   :     LoadValue     : value = <String, >
+//  s
+51   :     LoadGlobalVar : var = 0(s)
+//  ("" & s)
+52   :     OpConcat      
+//  "[ValueChanged]"
+53   :     LoadValue     : value = <String, [ValueChanged]>
+//  (("" & s) & "[ValueChanged]")
+54   :     OpConcat      
+//  (s = (("" & s) & "[ValueChanged]"))
+55   :     Duplicate     : stackPatternCount = 0
+//  (s = (("" & s) & "[ValueChanged]"))
+56   :     StoreGlobalVar: var = 0(s)
+//  (s = (("" & s) & "[ValueChanged]"));
 57   :     Pop           
-//  func Signal() : (void)
+//  func ClientValueChanged() : (void)
 58   :     LoadValue     : value = <null>
-//  func Signal() : (void)
+//  func ClientValueChanged() : (void)
 59   :     Return        
 //  "RpcPropDefault::IService"
 60   :     LoadValue     : value = <String, RpcPropDefault::IService>
@@ -619,7 +619,7 @@ Instructions:
 //  ClientValueChanged
 66   :     CreateClosureContext: stackPatternCount = 0
 //  ClientValueChanged
-67   :     LoadFunction  : func = 0(ClientValueChanged)
+67   :     LoadFunction  : func = 1(ClientValueChanged)
 //  ClientValueChanged
 68   :     CreateClosure 
 //  attach(service.ValueChanged, ClientValueChanged)
