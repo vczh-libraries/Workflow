@@ -33,3 +33,20 @@ The current no-argument launcher hides 56 crashing collection fixtures behind `R
 Source inspection confirms the same process-boundary cause. The affected samples store observations in module globals written by `serviceMain` or service implementations, while `clientMain` reads a distinct copy in the driver process. The generated stdio harnesses also include `*Reflection.h`, and both stdio projects import `Generated_ReflectionRpc`, despite already defining `VCZH_DEBUG_NO_REFLECTION` in every configuration.
 
 # PROPOSALS
+
+- No.1 Make RPC fixtures process-independent and enforce the index contract
+
+## No.1 Make RPC fixtures process-independent and enforce the index contract
+
+Keep the production RPC transport and lifecycle behavior unchanged. The failures come from tests observing service-owned state through same-process module globals, so make those observations part of each affected test service contract instead:
+
+- Collection fixtures continue checking byval/byref wrapper and copy semantics at every existing level, but retrieve the formatted service-side collection through a service method rather than reading the driver process's empty `xsService`.
+- Event fixtures keep distinct client and service logs and retrieve the service log through RPC, preserving the indexed ordering without relying on one shared `s` variable.
+- Destructor fixtures keep client-owned and service-owned destructor logs separate, retrieve service-side checkpoints synchronously, and preserve the existing C++ ordering assertions. The eight `Dtor*` cases are also listed in `Test/StartRpcStdio_DtorSkipList.txt` for providers whose languages do not guarantee deterministic destructor execution.
+- `LocalAndWrapper` retrieves comparisons involving service-owned objects from the service itself. Replace `FailDoubleRegistration`'s impossible cross-process shared-pointer-alias setup with a direct duplicate `IRpcLifecycle::RegisterLocalService` rejection test, retaining the fixture's intended duplicate-registration failure semantics on both same-process and stdio lifecycles.
+
+Update `CompilerTest_LoadAndCompile`'s stdio harness generation to include the normal generated assembly entry headers, pass each decoded `IndexRpc.txt` expectation into `RunRpcStdioTestCase`, and fail immediately when `clientMain` returns a different value. Remove `Generated_ReflectionRpc` from both stdio projects while retaining `VCZH_DEBUG_NO_REFLECTION` in every configuration.
+
+Remove the C++ compatibility skip list and make both launchers omit the optional skip argument unless the caller explicitly supplies one. Add the destructor portability list at the requested `Test` path and update `Project.md` so a no-skip `StartRpcStdio` run is mandatory alongside UnitTest verification.
+
+### CODE CHANGE
