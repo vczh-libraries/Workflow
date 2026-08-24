@@ -41,3 +41,24 @@ The inventory also confirms why the organization is misleading: commit `6e41bc85
 The baseline Debug x64 solution builds successfully with 0 warnings and 0 errors. `Test/Resources/IndexRpc.txt` currently has SHA-256 `FDE03E98102BEF91FA1C6E729E04518DED74B3EB167416F95FD5AF1755AE4397`, which will be used to confirm the behavioral contract was not edited.
 
 # PROPOSALS
+
+- No.1 Make RPC fixture process ownership explicit and make stdio verification canonical
+
+## No.1 Make RPC fixture process ownership explicit and make stdio verification canonical
+
+Reorganize every indexed `*_Test.txt` fixture according to the process that owns each declaration, without changing any RPC contract or expected result:
+
+- Move service-only state into the anonymous `IService`/`IServer` implementation created by `serviceMain`, adding explicit member types where module-level inference was previously used.
+- Move service-only helper functions into that same anonymous implementation, including helpers reached transitively from service methods.
+- Keep client-only state and helper functions at module scope immediately below `serviceMain` and before `clientMain`.
+- Keep a stateless helper at module scope when it is genuinely shared by service and client code. Remove declarations that become unused.
+- Split deliberately duplicated cross-process identity objects in `LocalAndWrapper_Test.txt` and `ServiceWrapper_Test.txt` into clearly named service-owned and client-owned declarations so the existing equality checks retain the same meaning without implying shared memory.
+
+Apply the same policy text to `Project.md` and `.github/Rules/new-sample-rpc.md`, emphasizing that the separation is required even though the in-memory harness can make a module global appear shared. Preserve `IndexRpc.txt` exactly and allow `CompilerTest_LoadAndCompile` to regenerate derived outputs from the manually edited Workflow fixtures.
+
+Make stdio verification part of both canonical build entry points:
+
+- In the Tools repository, make `vgo vbuild Workflow` run `Workflow/Test/StartRpcStdio.sh` after all Workflow vmake projects have built, capture a nonzero exit in the existing `.vbuild/Workflow` failure log, and pass no skip list.
+- Allow `Workflow/Test/StartRpcStdio.ps1` to select an explicitly named configuration/platform while retaining Debug x64 as its no-argument default. Invoke it in a child PowerShell process from the Tools Workflow build path using the already-built Release x64 binaries, so the script's deliberate `exit` cannot terminate the parent `Build.ps1` before release generation completes.
+
+### CODE CHANGE
