@@ -8,16 +8,20 @@ namespace RpcEventOblist
     @rpc:IdNumber(0)
     interface IService
     {
-        @rpc:IdString("RpcEventOblist::IService.ModifyHeldList")
+        @rpc:IdString("RpcEventOblist::IService.GetServiceResult")
         @rpc:IdNumber(1)
+        func GetServiceResult() : (::system::String);
+
+        @rpc:IdString("RpcEventOblist::IService.ModifyHeldList")
+        @rpc:IdNumber(2)
         func ModifyHeldList() : (::system::Void);
 
         @rpc:IdString("RpcEventOblist::IService.SetList")
-        @rpc:IdNumber(2)
+        @rpc:IdNumber(3)
         func SetList(@rpc:Byref xs : observe ::system::Int64[]) : (::system::Void);
 
         @rpc:IdString("RpcEventOblist::IService.WatchHeldList")
-        @rpc:IdNumber(3)
+        @rpc:IdNumber(4)
         func WatchHeldList() : (::system::Void);
     }
 }

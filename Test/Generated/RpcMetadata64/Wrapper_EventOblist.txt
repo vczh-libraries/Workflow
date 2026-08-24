@@ -2,19 +2,22 @@
 
 var rpctype_RpcEventOblist__IService : int = 0;
 
-var rpcmethod_RpcEventOblist__IService_ModifyHeldList : int = 1;
+var rpcmethod_RpcEventOblist__IService_GetServiceResult : int = 1;
 
-var rpcmethod_RpcEventOblist__IService_SetList : int = 2;
+var rpcmethod_RpcEventOblist__IService_ModifyHeldList : int = 2;
 
-var rpcmethod_RpcEventOblist__IService_WatchHeldList : int = 3;
+var rpcmethod_RpcEventOblist__IService_SetList : int = 3;
+
+var rpcmethod_RpcEventOblist__IService_WatchHeldList : int = 4;
 
 func rpc_GetIds() : (int[string])
 {
     var result : int[string] = {};
     result.Set("RpcEventOblist::IService", 0);
-    result.Set("RpcEventOblist::IService.ModifyHeldList", 1);
-    result.Set("RpcEventOblist::IService.SetList", 2);
-    result.Set("RpcEventOblist::IService.WatchHeldList", 3);
+    result.Set("RpcEventOblist::IService.GetServiceResult", 1);
+    result.Set("RpcEventOblist::IService.ModifyHeldList", 2);
+    result.Set("RpcEventOblist::IService.SetList", 3);
+    result.Set("RpcEventOblist::IService.WatchHeldList", 4);
     return result;
 }
 
@@ -44,6 +47,8 @@ func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
 
 interface rpcops_IOps_Rpc_EventOblist
 {
+    func InvokeMethod_RpcEventOblist__IService_GetServiceResult(ref : system::RpcObjectReference) : (::system::String);
+
     func InvokeMethod_RpcEventOblist__IService_ModifyHeldList(ref : system::RpcObjectReference) : (::system::Void);
 
     func InvokeMethod_RpcEventOblist__IService_SetList(ref : system::RpcObjectReference, arg_xs : observe ::system::Int64[]) : (::system::Void);
@@ -67,6 +72,11 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
             try
             switch (methodId)
             {
+                case rpcmethod_RpcEventOblist__IService_GetServiceResult:
+                {
+                    var target = (cast (RpcEventOblist::IService^) _lc.RefToPtr(ref));
+                    return target.GetServiceResult();
+                }
                 case rpcmethod_RpcEventOblist__IService_ModifyHeldList:
                 {
                     var target = (cast (RpcEventOblist::IService^) _lc.RefToPtr(ref));
@@ -137,6 +147,15 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_EventObl
     {
         var _lc : system::IRpcLifecycle* = lc;
 
+        override func InvokeMethod_RpcEventOblist__IService_GetServiceResult(ref : system::RpcObjectReference) : (::system::String)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcEventOblist__IService_GetServiceResult, arguments);
+            system::IRpcLifecycle::ReadMethodException(invokeResult);
+            return (cast (::system::String) invokeResult);
+        }
+
         override func InvokeMethod_RpcEventOblist__IService_ModifyHeldList(ref : system::RpcObjectReference) : (::system::Void)
         {
             var arguments : system::Array^ = {};
@@ -193,6 +212,13 @@ func rpcwrapper_RpcEventOblist__IService(lc : system::IRpcLifecycle*, proxyRef :
             {
                 _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
             }
+        }
+
+        override func GetServiceResult() : (::system::String)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            return _ops.InvokeMethod_RpcEventOblist__IService_GetServiceResult(_ref);
         }
 
         override func ModifyHeldList() : (::system::Void)

@@ -4,14 +4,17 @@ var rpctype_RpcCollection__InByval__PropByval__IService : int = 0;
 
 var rpcmethod_RpcCollection__InByval__PropByval__IService_GetList : int = 1;
 
-var rpcmethod_RpcCollection__InByval__PropByval__IService_SetList : int = 2;
+var rpcmethod_RpcCollection__InByval__PropByval__IService_GetServiceResult : int = 2;
+
+var rpcmethod_RpcCollection__InByval__PropByval__IService_SetList : int = 3;
 
 func rpc_GetIds() : (int[string])
 {
     var result : int[string] = {};
     result.Set("RpcCollection::InByval::PropByval::IService", 0);
     result.Set("RpcCollection::InByval::PropByval::IService.GetList", 1);
-    result.Set("RpcCollection::InByval::PropByval::IService.SetList", 2);
+    result.Set("RpcCollection::InByval::PropByval::IService.GetServiceResult", 2);
+    result.Set("RpcCollection::InByval::PropByval::IService.SetList", 3);
     return result;
 }
 
@@ -43,6 +46,8 @@ interface rpcops_IOps_Rpc_Collection_PropByval
 {
     func InvokeMethod_RpcCollection__InByval__PropByval__IService_GetList(ref : system::RpcObjectReference) : (::system::Int64[]);
 
+    func InvokeMethod_RpcCollection__InByval__PropByval__IService_GetServiceResult(ref : system::RpcObjectReference) : (::system::String);
+
     func InvokeMethod_RpcCollection__InByval__PropByval__IService_SetList(ref : system::RpcObjectReference, arg_<value> : ::system::Int64[]) : (::system::Void);
 }
 
@@ -73,6 +78,11 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                     _byvalReturnValues.Set(_slot, copiedReturnValue);
                     (_slot = (_slot + 1));
                     return byvalReturnValue;
+                }
+                case rpcmethod_RpcCollection__InByval__PropByval__IService_GetServiceResult:
+                {
+                    var target = (cast (RpcCollection::InByval::PropByval::IService^) _lc.RefToPtr(ref));
+                    return target.GetServiceResult();
                 }
                 case rpcmethod_RpcCollection__InByval__PropByval__IService_SetList:
                 {
@@ -145,6 +155,15 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Collecti
             return result;
         }
 
+        override func InvokeMethod_RpcCollection__InByval__PropByval__IService_GetServiceResult(ref : system::RpcObjectReference) : (::system::String)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcCollection__InByval__PropByval__IService_GetServiceResult, arguments);
+            system::IRpcLifecycle::ReadMethodException(invokeResult);
+            return (cast (::system::String) invokeResult);
+        }
+
         override func InvokeMethod_RpcCollection__InByval__PropByval__IService_SetList(ref : system::RpcObjectReference, arg_<value> : ::system::Int64[]) : (::system::Void)
         {
             var arguments : system::Array^ = {};
@@ -198,6 +217,13 @@ func rpcwrapper_RpcCollection__InByval__PropByval__IService(lc : system::IRpcLif
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
             return _ops.InvokeMethod_RpcCollection__InByval__PropByval__IService_GetList(_ref);
+        }
+
+        override func GetServiceResult() : (::system::String)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            return _ops.InvokeMethod_RpcCollection__InByval__PropByval__IService_GetServiceResult(_ref);
         }
 
         override func SetList(<value> : ::system::Int64[]) : (::system::Void)

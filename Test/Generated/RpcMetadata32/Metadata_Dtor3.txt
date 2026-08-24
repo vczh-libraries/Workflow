@@ -17,7 +17,7 @@ namespace RpcDtor3Test
 
     @rpc:Interface
     @rpc:IdString("RpcDtor3Test::IValue")
-    @rpc:IdNumber(4)
+    @rpc:IdNumber(5)
     interface IValue
     {
     }
@@ -28,8 +28,12 @@ namespace RpcDtor3Test
     @rpc:IdNumber(2)
     interface IService
     {
-        @rpc:IdString("RpcDtor3Test::IService.ContainValue")
+        @rpc:IdString("RpcDtor3Test::IService.ConsumeServiceResult")
         @rpc:IdNumber(3)
+        func ConsumeServiceResult() : (::system::String);
+
+        @rpc:IdString("RpcDtor3Test::IService.ContainValue")
+        @rpc:IdNumber(4)
         func ContainValue(value : ::RpcDtor3Test::IValue^) : (::RpcDtor3Test::IContainer^);
     }
 }

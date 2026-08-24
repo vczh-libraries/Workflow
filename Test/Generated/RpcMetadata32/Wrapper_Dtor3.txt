@@ -6,9 +6,11 @@ var rpcmethod_RpcDtor3Test__IContainer_GetValue : int = 1;
 
 var rpctype_RpcDtor3Test__IService : int = 2;
 
-var rpcmethod_RpcDtor3Test__IService_ContainValue : int = 3;
+var rpcmethod_RpcDtor3Test__IService_ConsumeServiceResult : int = 3;
 
-var rpctype_RpcDtor3Test__IValue : int = 4;
+var rpcmethod_RpcDtor3Test__IService_ContainValue : int = 4;
+
+var rpctype_RpcDtor3Test__IValue : int = 5;
 
 func rpc_GetIds() : (int[string])
 {
@@ -16,8 +18,9 @@ func rpc_GetIds() : (int[string])
     result.Set("RpcDtor3Test::IContainer", 0);
     result.Set("RpcDtor3Test::IContainer.GetValue", 1);
     result.Set("RpcDtor3Test::IService", 2);
-    result.Set("RpcDtor3Test::IService.ContainValue", 3);
-    result.Set("RpcDtor3Test::IValue", 4);
+    result.Set("RpcDtor3Test::IService.ConsumeServiceResult", 3);
+    result.Set("RpcDtor3Test::IService.ContainValue", 4);
+    result.Set("RpcDtor3Test::IValue", 5);
     return result;
 }
 
@@ -53,6 +56,8 @@ interface rpcops_IOps_Rpc_Dtor3
 {
     func InvokeMethod_RpcDtor3Test__IContainer_GetValue(ref : system::RpcObjectReference) : (::RpcDtor3Test::IValue^);
 
+    func InvokeMethod_RpcDtor3Test__IService_ConsumeServiceResult(ref : system::RpcObjectReference) : (::system::String);
+
     func InvokeMethod_RpcDtor3Test__IService_ContainValue(ref : system::RpcObjectReference, arg_value : ::RpcDtor3Test::IValue^) : (::RpcDtor3Test::IContainer^);
 }
 
@@ -76,6 +81,11 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                 {
                     var target = (cast (RpcDtor3Test::IContainer^) _lc.RefToPtr(ref));
                     return system::IRpcLifecycle::RpcBoxByval(target.GetValue(), _lc);
+                }
+                case rpcmethod_RpcDtor3Test__IService_ConsumeServiceResult:
+                {
+                    var target = (cast (RpcDtor3Test::IService^) _lc.RefToPtr(ref));
+                    return target.ConsumeServiceResult();
                 }
                 case rpcmethod_RpcDtor3Test__IService_ContainValue:
                 {
@@ -141,6 +151,15 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Dtor3^)
             var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtor3Test__IContainer_GetValue, arguments);
             system::IRpcLifecycle::ReadMethodException(invokeResult);
             return (system::IRpcLifecycle::RpcUnboxByval(invokeResult, _lc) as (::RpcDtor3Test::IValue^));
+        }
+
+        override func InvokeMethod_RpcDtor3Test__IService_ConsumeServiceResult(ref : system::RpcObjectReference) : (::system::String)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtor3Test__IService_ConsumeServiceResult, arguments);
+            system::IRpcLifecycle::ReadMethodException(invokeResult);
+            return (cast (::system::String) invokeResult);
         }
 
         override func InvokeMethod_RpcDtor3Test__IService_ContainValue(ref : system::RpcObjectReference, arg_value : ::RpcDtor3Test::IValue^) : (::RpcDtor3Test::IContainer^)
@@ -255,6 +274,13 @@ func rpcwrapper_RpcDtor3Test__IService(lc : system::IRpcLifecycle*, proxyRef : s
             {
                 _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
             }
+        }
+
+        override func ConsumeServiceResult() : (::system::String)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            return _ops.InvokeMethod_RpcDtor3Test__IService_ConsumeServiceResult(_ref);
         }
 
         override func ContainValue(value : ::RpcDtor3Test::IValue^) : (::RpcDtor3Test::IContainer^)

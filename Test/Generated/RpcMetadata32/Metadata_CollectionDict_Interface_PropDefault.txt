@@ -8,14 +8,14 @@ namespace RpcCollectionDict
         {
             @rpc:Interface
             @rpc:IdString("RpcCollectionDict::Interface::PropDefault::IValue")
-            @rpc:IdNumber(3)
+            @rpc:IdNumber(4)
             interface IValue
             {
                 @rpc:Dynamic
                 prop Value : ::system::String{GetValue}
 
                 @rpc:IdString("RpcCollectionDict::Interface::PropDefault::IValue.GetValue")
-                @rpc:IdNumber(4)
+                @rpc:IdNumber(5)
                 func GetValue() : (::system::String);
             }
 
@@ -33,8 +33,12 @@ namespace RpcCollectionDict
                 @rpc:IdNumber(1)
                 func GetList() : (::RpcCollectionDict::Interface::PropDefault::IValue^[::system::Int32]);
 
-                @rpc:IdString("RpcCollectionDict::Interface::PropDefault::IService.SetList")
+                @rpc:IdString("RpcCollectionDict::Interface::PropDefault::IService.GetServiceResult")
                 @rpc:IdNumber(2)
+                func GetServiceResult() : (::system::String);
+
+                @rpc:IdString("RpcCollectionDict::Interface::PropDefault::IService.SetList")
+                @rpc:IdNumber(3)
                 func SetList(@rpc:Byref <value> : ::RpcCollectionDict::Interface::PropDefault::IValue^[::system::Int32]) : (::system::Void);
             }
         }

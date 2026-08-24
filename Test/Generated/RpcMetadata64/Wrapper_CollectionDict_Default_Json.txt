@@ -74,6 +74,13 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                     (_slot = (_slot + 1));
                     return byvalReturnValue;
                 }
+                case rpcmethod_RpcCollectionDict__Default__IService_GetServiceResult:
+                {
+                    var target = (cast (RpcCollectionDict::Default::IService^) _lc.RefToPtr(ref));
+                    var jsonString0 = new (system::JsonString^)();
+                    (jsonString0.content = {value : (cast (string) target.GetServiceResult());});
+                    return jsonString0;
+                }
                 default:
                 (unknownId = true);
             }
@@ -152,6 +159,18 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Coll
             var result = (cast (::system::String[::system::Int64]) system::IRpcLifecycle::RpcUnboxByval(jsonValue2, _lc));
             objectOps.EndInvokeMethod(strongByvalReturnValue.slot);
             return result;
+        }
+
+        override func InvokeMethod_RpcCollectionDict__Default__IService_GetServiceResult(ref : system::RpcObjectReference) : (::system::String)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcCollectionDict__Default__IService_GetServiceResult, arguments);
+            var jsonResult = (cast (system::JsonNode^) invokeResult);
+            var methodResult = rpcjson_Deserialize(jsonResult);
+            system::IRpcLifecycle::ReadMethodException(methodResult);
+            var jsonValue0 = (cast (::system::String) rpcjson_Deserialize(jsonResult));
+            return jsonValue0;
         }
     };
 }

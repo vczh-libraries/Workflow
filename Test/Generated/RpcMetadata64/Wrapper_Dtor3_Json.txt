@@ -67,6 +67,13 @@ func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObject
                     var jsonNode1 = rpcjson_Serialize(jsonValue0);
                     return jsonNode1;
                 }
+                case rpcmethod_RpcDtor3Test__IService_ConsumeServiceResult:
+                {
+                    var target = (cast (RpcDtor3Test::IService^) _lc.RefToPtr(ref));
+                    var jsonString0 = new (system::JsonString^)();
+                    (jsonString0.content = {value : (cast (string) target.ConsumeServiceResult());});
+                    return jsonString0;
+                }
                 case rpcmethod_RpcDtor3Test__IService_ContainValue:
                 {
                     var target = (cast (RpcDtor3Test::IService^) _lc.RefToPtr(ref));
@@ -137,6 +144,18 @@ func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Dtor
             system::IRpcLifecycle::ReadMethodException(methodResult);
             var jsonValue0 = rpcjson_Deserialize(jsonResult);
             return (system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::RpcDtor3Test::IValue^));
+        }
+
+        override func InvokeMethod_RpcDtor3Test__IService_ConsumeServiceResult(ref : system::RpcObjectReference) : (::system::String)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcDtor3Test__IService_ConsumeServiceResult, arguments);
+            var jsonResult = (cast (system::JsonNode^) invokeResult);
+            var methodResult = rpcjson_Deserialize(jsonResult);
+            system::IRpcLifecycle::ReadMethodException(methodResult);
+            var jsonValue0 = (cast (::system::String) rpcjson_Deserialize(jsonResult));
+            return jsonValue0;
         }
 
         override func InvokeMethod_RpcDtor3Test__IService_ContainValue(ref : system::RpcObjectReference, arg_value : ::RpcDtor3Test::IValue^) : (::RpcDtor3Test::IContainer^)

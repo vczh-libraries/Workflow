@@ -4,7 +4,7 @@ namespace RpcDtorPropCached
 {
     @rpc:Interface
     @rpc:IdString("RpcDtorPropCached::IValue")
-    @rpc:IdNumber(5)
+    @rpc:IdNumber(6)
     interface IValue
     {
     }
@@ -19,19 +19,23 @@ namespace RpcDtorPropCached
         prop Value : ::RpcDtorPropCached::IValue^{GetValue : ValueChanged}
 
         @rpc:IdString("RpcDtorPropCached::IService.ValueChanged")
-        @rpc:IdNumber(4)
+        @rpc:IdNumber(5)
         event ValueChanged();
 
-        @rpc:IdString("RpcDtorPropCached::IService.GetValue")
+        @rpc:IdString("RpcDtorPropCached::IService.ConsumeServiceResult")
         @rpc:IdNumber(1)
+        func ConsumeServiceResult() : (::system::String);
+
+        @rpc:IdString("RpcDtorPropCached::IService.GetValue")
+        @rpc:IdNumber(2)
         func GetValue() : (::RpcDtorPropCached::IValue^);
 
         @rpc:IdString("RpcDtorPropCached::IService.SetValue")
-        @rpc:IdNumber(2)
+        @rpc:IdNumber(3)
         func SetValue(value : ::RpcDtorPropCached::IValue^) : (::system::Void);
 
         @rpc:IdString("RpcDtorPropCached::IService.Signal")
-        @rpc:IdNumber(3)
+        @rpc:IdNumber(4)
         func Signal() : (::system::Void);
     }
 }

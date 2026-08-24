@@ -4,17 +4,20 @@ var rpctype_RpcCollection__Interface__Nested__InByval__OutByval__IService : int 
 
 var rpcmethod_RpcCollection__Interface__Nested__InByval__OutByval__IService_DoList : int = 1;
 
-var rpctype_RpcCollection__Interface__Nested__InByval__OutByval__IValue : int = 2;
+var rpcmethod_RpcCollection__Interface__Nested__InByval__OutByval__IService_GetServiceResult : int = 2;
 
-var rpcmethod_RpcCollection__Interface__Nested__InByval__OutByval__IValue_GetValue : int = 3;
+var rpctype_RpcCollection__Interface__Nested__InByval__OutByval__IValue : int = 3;
+
+var rpcmethod_RpcCollection__Interface__Nested__InByval__OutByval__IValue_GetValue : int = 4;
 
 func rpc_GetIds() : (int[string])
 {
     var result : int[string] = {};
     result.Set("RpcCollection::Interface::Nested::InByval::OutByval::IService", 0);
     result.Set("RpcCollection::Interface::Nested::InByval::OutByval::IService.DoList", 1);
-    result.Set("RpcCollection::Interface::Nested::InByval::OutByval::IValue", 2);
-    result.Set("RpcCollection::Interface::Nested::InByval::OutByval::IValue.GetValue", 3);
+    result.Set("RpcCollection::Interface::Nested::InByval::OutByval::IService.GetServiceResult", 2);
+    result.Set("RpcCollection::Interface::Nested::InByval::OutByval::IValue", 3);
+    result.Set("RpcCollection::Interface::Nested::InByval::OutByval::IValue.GetValue", 4);
     return result;
 }
 
@@ -49,6 +52,8 @@ interface rpcops_IOps_Rpc_Collection_Interface_Nested_InByval_OutByval
     func InvokeMethod_RpcCollection__Interface__Nested__InByval__OutByval__IValue_GetValue(ref : system::RpcObjectReference) : (::system::Int32);
 
     func InvokeMethod_RpcCollection__Interface__Nested__InByval__OutByval__IService_DoList(ref : system::RpcObjectReference, arg_xs : ::RpcCollection::Interface::Nested::InByval::OutByval::IValue^[][::system::Int32]) : (::RpcCollection::Interface::Nested::InByval::OutByval::IValue^[][::system::Int32]);
+
+    func InvokeMethod_RpcCollection__Interface__Nested__InByval__OutByval__IService_GetServiceResult(ref : system::RpcObjectReference) : (::system::String);
 }
 
 func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
@@ -83,6 +88,11 @@ func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^
                     _byvalReturnValues.Set(_slot, copiedReturnValue);
                     (_slot = (_slot + 1));
                     return byvalReturnValue;
+                }
+                case rpcmethod_RpcCollection__Interface__Nested__InByval__OutByval__IService_GetServiceResult:
+                {
+                    var target = (cast (RpcCollection::Interface::Nested::InByval::OutByval::IService^) _lc.RefToPtr(ref));
+                    return target.GetServiceResult();
                 }
                 default:
                 (unknownId = true);
@@ -157,6 +167,15 @@ func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_Collecti
             var result = (cast (::RpcCollection::Interface::Nested::InByval::OutByval::IValue^[][::system::Int32]) system::IRpcLifecycle::RpcUnboxByval(byvalReturnValue.value, _lc));
             objectOps.EndInvokeMethod(byvalReturnValue.slot);
             return result;
+        }
+
+        override func InvokeMethod_RpcCollection__Interface__Nested__InByval__OutByval__IService_GetServiceResult(ref : system::RpcObjectReference) : (::system::String)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcCollection__Interface__Nested__InByval__OutByval__IService_GetServiceResult, arguments);
+            system::IRpcLifecycle::ReadMethodException(invokeResult);
+            return (cast (::system::String) invokeResult);
         }
     };
 }
@@ -248,6 +267,13 @@ func rpcwrapper_RpcCollection__Interface__Nested__InByval__OutByval__IService(lc
             if (_lc is null)
             raise "RPC wrapper has been disconnected from lifecycle.";
             return _ops.InvokeMethod_RpcCollection__Interface__Nested__InByval__OutByval__IService_DoList(_ref, xs);
+        }
+
+        override func GetServiceResult() : (::system::String)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            return _ops.InvokeMethod_RpcCollection__Interface__Nested__InByval__OutByval__IService_GetServiceResult(_ref);
         }
     };
     lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);

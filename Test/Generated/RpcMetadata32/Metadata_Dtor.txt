@@ -4,7 +4,7 @@ namespace RpcDtorTest
 {
     @rpc:Interface
     @rpc:IdString("RpcDtorTest::IValue")
-    @rpc:IdNumber(2)
+    @rpc:IdNumber(3)
     interface IValue
     {
     }
@@ -15,8 +15,12 @@ namespace RpcDtorTest
     @rpc:IdNumber(0)
     interface IService
     {
-        @rpc:IdString("RpcDtorTest::IService.MakeValue")
+        @rpc:IdString("RpcDtorTest::IService.GetState")
         @rpc:IdNumber(1)
+        func GetState() : (::system::String);
+
+        @rpc:IdString("RpcDtorTest::IService.MakeValue")
+        @rpc:IdNumber(2)
         func MakeValue() : (::RpcDtorTest::IValue^);
     }
 }

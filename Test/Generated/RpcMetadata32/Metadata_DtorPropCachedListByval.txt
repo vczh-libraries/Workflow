@@ -4,7 +4,7 @@ namespace RpcDtorPropCachedListByval
 {
     @rpc:Interface
     @rpc:IdString("RpcDtorPropCachedListByval::IValue")
-    @rpc:IdNumber(5)
+    @rpc:IdNumber(6)
     interface IValue
     {
     }
@@ -20,20 +20,24 @@ namespace RpcDtorPropCachedListByval
         prop Value : ::RpcDtorPropCachedListByval::IValue^[]{GetValue : ValueChanged}
 
         @rpc:IdString("RpcDtorPropCachedListByval::IService.ValueChanged")
-        @rpc:IdNumber(4)
+        @rpc:IdNumber(5)
         event ValueChanged();
+
+        @rpc:IdString("RpcDtorPropCachedListByval::IService.ConsumeServiceResult")
+        @rpc:IdNumber(1)
+        func ConsumeServiceResult() : (::system::String);
 
         @rpc:Byval
         @rpc:IdString("RpcDtorPropCachedListByval::IService.GetValue")
-        @rpc:IdNumber(1)
+        @rpc:IdNumber(2)
         func GetValue() : (::RpcDtorPropCachedListByval::IValue^[]);
 
         @rpc:IdString("RpcDtorPropCachedListByval::IService.SetValue")
-        @rpc:IdNumber(2)
+        @rpc:IdNumber(3)
         func SetValue(@rpc:Byref value : ::RpcDtorPropCachedListByval::IValue^[]) : (::system::Void);
 
         @rpc:IdString("RpcDtorPropCachedListByval::IService.Signal")
-        @rpc:IdNumber(3)
+        @rpc:IdNumber(4)
         func Signal() : (::system::Void);
     }
 }
