@@ -65,6 +65,7 @@ namespace RpcCollectionOblist
 				friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IService>;
 #endif
 			public:
+				virtual ::vl::WString GetServiceResult() = 0;
 				virtual ::vl::Ptr<::vl::reflection::description::IValueObservableList> DoList(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs) = 0;
 			};
 
@@ -102,6 +103,7 @@ class rpcops_IOps_Rpc_CollectionOblist_Interface_Default : public virtual ::vl::
 public:
 	virtual ::vl::WString InvokeMethod_RpcCollectionOblist__Interface__Default__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual ::vl::Ptr<::vl::reflection::description::IValueObservableList> InvokeMethod_RpcCollectionOblist__Interface__Default__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueObservableList> arg_xs) = 0;
+	virtual ::vl::WString InvokeMethod_RpcCollectionOblist__Interface__Default__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) = 0;
 };
 
 /***********************************************************************
@@ -117,6 +119,7 @@ namespace vl_workflow_global
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> xsService;
 		::vl::vint64_t rpctype_RpcCollectionOblist__Interface__Default__IService = 0;
 		::vl::vint64_t rpcmethod_RpcCollectionOblist__Interface__Default__IService_DoList = 0;
+		::vl::vint64_t rpcmethod_RpcCollectionOblist__Interface__Default__IService_GetServiceResult = 0;
 		::vl::vint64_t rpctype_RpcCollectionOblist__Interface__Default__IValue = 0;
 		::vl::vint64_t rpcmethod_RpcCollectionOblist__Interface__Default__IValue_GetValue = 0;
 
@@ -169,6 +172,7 @@ Closures
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::WString InvokeMethod_RpcCollectionOblist__Interface__Default__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> InvokeMethod_RpcCollectionOblist__Interface__Default__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueObservableList> arg_xs) override;
+		::vl::WString InvokeMethod_RpcCollectionOblist__Interface__Default__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 	};
 
 	class __vwsnc1_Rpc_CollectionOblist_Interface_Default_MakeValue__RpcCollectionOblist_Interface_Default_IValue : public ::vl::Object, public virtual ::RpcCollectionOblist::Interface::Default::IValue
@@ -186,6 +190,7 @@ Closures
 	public:
 		__vwsnc2_Rpc_CollectionOblist_Interface_Default_serviceMain__RpcCollectionOblist_Interface_Default_IService();
 
+		::vl::WString GetServiceResult() override;
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> DoList(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs) override;
 	};
 
@@ -219,6 +224,7 @@ Closures
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::WString InvokeMethod_RpcCollectionOblist__Interface__Default__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> InvokeMethod_RpcCollectionOblist__Interface__Default__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueObservableList> arg_xs) override;
+		::vl::WString InvokeMethod_RpcCollectionOblist__Interface__Default__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 	};
 
 	class __vwsnc6_Rpc_CollectionOblist_Interface_Default_rpcwrapper_RpcCollectionOblist__Interface__Default__IValue__RpcCollectionOblist_Interface_Default_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcCollectionOblist::Interface::Default::IRpcWrapper_IValue
@@ -245,6 +251,7 @@ Closures
 		void DisconnectFromLifecycle() override;
 		~__vwsnc7_Rpc_CollectionOblist_Interface_Default_rpcwrapper_RpcCollectionOblist__Interface__Default__IService__RpcCollectionOblist_Interface_Default_IRpcWrapper_IService();
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> DoList(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs) override;
+		::vl::WString GetServiceResult() override;
 	};
 
 	class __vwsnc8_Rpc_CollectionOblist_Interface_Default_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcSerializer

@@ -71,12 +71,14 @@ namespace vl
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(Exchange1, { L"o" })
 				CLASS_MEMBER_METHOD(Exchange2, { L"o" })
+				CLASS_MEMBER_METHOD(GetServiceResult, NO_PARAMETER)
 			END_INTERFACE_MEMBER(::RpcWrapperTest::IService)
 
 			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_LocalAndWrapper)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcWrapperTest__IService_Exchange1, { L"ref" _ L"arg_o" })
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcWrapperTest__IService_Exchange2, { L"ref" _ L"arg_o" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcWrapperTest__IService_GetServiceResult, { L"ref" })
 			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_LocalAndWrapper)
 
 #undef _

@@ -46,6 +46,10 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetList);
 				}
+				::vl::WString GetServiceResult() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetServiceResult);
+				}
 				void SetList(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_value_) override
 				{
 					INVOKE_INTERFACE_PROXY(SetList, __vwsn_value_);
@@ -63,6 +67,10 @@ namespace vl
 				::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollectionDict__Interface__Nested__PropDefault__IService_GetList(::vl::rpc_controller::RpcObjectReference ref) override
 				{
 					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcCollectionDict__Interface__Nested__PropDefault__IService_GetList, ref);
+				}
+				::vl::WString InvokeMethod_RpcCollectionDict__Interface__Nested__PropDefault__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcCollectionDict__Interface__Nested__PropDefault__IService_GetServiceResult, ref);
 				}
 				void InvokeMethod_RpcCollectionDict__Interface__Nested__PropDefault__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_value_) override
 				{

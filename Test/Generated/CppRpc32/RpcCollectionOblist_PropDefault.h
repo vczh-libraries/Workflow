@@ -56,6 +56,7 @@ namespace RpcCollectionOblist
 			friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IService>;
 #endif
 		public:
+			virtual ::vl::WString GetServiceResult() = 0;
 			virtual ::vl::Ptr<::vl::reflection::description::IValueObservableList> GetList() = 0;
 			virtual void SetList(::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsn_value_) = 0;
 		};
@@ -76,6 +77,7 @@ class rpcops_IOps_Rpc_CollectionOblist_PropDefault : public virtual ::vl::reflec
 #endif
 public:
 	virtual ::vl::Ptr<::vl::reflection::description::IValueObservableList> InvokeMethod_RpcCollectionOblist__PropDefault__IService_GetList(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual ::vl::WString InvokeMethod_RpcCollectionOblist__PropDefault__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeMethod_RpcCollectionOblist__PropDefault__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsn_value_) = 0;
 };
 
@@ -92,6 +94,7 @@ namespace vl_workflow_global
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> xsService;
 		::vl::vint32_t rpctype_RpcCollectionOblist__PropDefault__IService = 0;
 		::vl::vint32_t rpcmethod_RpcCollectionOblist__PropDefault__IService_GetList = 0;
+		::vl::vint32_t rpcmethod_RpcCollectionOblist__PropDefault__IService_GetServiceResult = 0;
 		::vl::vint32_t rpcmethod_RpcCollectionOblist__PropDefault__IService_SetList = 0;
 
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
@@ -126,6 +129,7 @@ Closures
 		__vwsnc1_Rpc_CollectionOblist_PropDefault_serviceMain__RpcCollectionOblist_PropDefault_IService();
 
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> _List;
+		::vl::WString GetServiceResult() override;
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> GetList() override;
 		void SetList(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs) override;
 	};
@@ -159,6 +163,7 @@ Closures
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> InvokeMethod_RpcCollectionOblist__PropDefault__IService_GetList(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::WString InvokeMethod_RpcCollectionOblist__PropDefault__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcCollectionOblist__PropDefault__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsn_value_) override;
 	};
 
@@ -173,6 +178,7 @@ Closures
 		void DisconnectFromLifecycle() override;
 		~__vwsnc5_Rpc_CollectionOblist_PropDefault_rpcwrapper_RpcCollectionOblist__PropDefault__IService__RpcCollectionOblist_PropDefault_IRpcWrapper_IService();
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> GetList() override;
+		::vl::WString GetServiceResult() override;
 		void SetList(::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsn_value_) override;
 	};
 
@@ -214,6 +220,7 @@ Closures
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> InvokeMethod_RpcCollectionOblist__PropDefault__IService_GetList(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::WString InvokeMethod_RpcCollectionOblist__PropDefault__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcCollectionOblist__PropDefault__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsn_value_) override;
 	};
 }

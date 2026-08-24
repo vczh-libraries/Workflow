@@ -40,6 +40,10 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::RpcEventOblist::IService)
+				::vl::WString GetServiceResult() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetServiceResult);
+				}
 				void ModifyHeldList() override
 				{
 					INVOKE_INTERFACE_PROXY_NOPARAMS(ModifyHeldList);
@@ -55,6 +59,10 @@ namespace vl
 			END_INTERFACE_PROXY(::RpcEventOblist::IService)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_EventOblist)
+				::vl::WString InvokeMethod_RpcEventOblist__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcEventOblist__IService_GetServiceResult, ref);
+				}
 				void InvokeMethod_RpcEventOblist__IService_ModifyHeldList(::vl::rpc_controller::RpcObjectReference ref) override
 				{
 					INVOKE_INTERFACE_PROXY(InvokeMethod_RpcEventOblist__IService_ModifyHeldList, ref);

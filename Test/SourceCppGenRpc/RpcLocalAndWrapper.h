@@ -87,6 +87,7 @@ namespace RpcWrapperTest
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IService>;
 #endif
 	public:
+		virtual ::vl::WString GetServiceResult() = 0;
 		virtual ::vl::Ptr<::RpcWrapperTest::IObj2> Exchange1(::vl::Ptr<::RpcWrapperTest::IObj1> o) = 0;
 		virtual ::vl::Ptr<::RpcWrapperTest::IObj1> Exchange2(::vl::Ptr<::RpcWrapperTest::IObj2> o) = 0;
 	};
@@ -107,6 +108,7 @@ class rpcops_IOps_Rpc_LocalAndWrapper : public virtual ::vl::reflection::IDescri
 public:
 	virtual ::vl::Ptr<::RpcWrapperTest::IObj2> InvokeMethod_RpcWrapperTest__IService_Exchange1(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcWrapperTest::IObj1> arg_o) = 0;
 	virtual ::vl::Ptr<::RpcWrapperTest::IObj1> InvokeMethod_RpcWrapperTest__IService_Exchange2(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcWrapperTest::IObj2> arg_o) = 0;
+	virtual ::vl::WString InvokeMethod_RpcWrapperTest__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) = 0;
 };
 
 /***********************************************************************
@@ -130,6 +132,7 @@ namespace vl_workflow_global
 		::vl::vint rpctype_RpcWrapperTest__IService = 0;
 		::vl::vint rpcmethod_RpcWrapperTest__IService_Exchange1 = 0;
 		::vl::vint rpcmethod_RpcWrapperTest__IService_Exchange2 = 0;
+		::vl::vint rpcmethod_RpcWrapperTest__IService_GetServiceResult = 0;
 
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
@@ -197,6 +200,7 @@ Closures
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::Ptr<::RpcWrapperTest::IObj2> InvokeMethod_RpcWrapperTest__IService_Exchange1(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcWrapperTest::IObj1> arg_o) override;
 		::vl::Ptr<::RpcWrapperTest::IObj1> InvokeMethod_RpcWrapperTest__IService_Exchange2(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcWrapperTest::IObj2> arg_o) override;
+		::vl::WString InvokeMethod_RpcWrapperTest__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 	};
 
 	class __vwsnc1_Rpc_LocalAndWrapper__RpcWrapperTest_IObj1 : public ::vl::Object, public virtual ::RpcWrapperTest::IObj1
@@ -218,6 +222,7 @@ Closures
 	public:
 		__vwsnc3_Rpc_LocalAndWrapper_serviceMain__RpcWrapperTest_IService();
 
+		::vl::WString GetServiceResult() override;
 		::vl::Ptr<::RpcWrapperTest::IObj2> Exchange1(::vl::Ptr<::RpcWrapperTest::IObj1> o) override;
 		::vl::Ptr<::RpcWrapperTest::IObj1> Exchange2(::vl::Ptr<::RpcWrapperTest::IObj2> o) override;
 	};
@@ -252,6 +257,7 @@ Closures
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::Ptr<::RpcWrapperTest::IObj2> InvokeMethod_RpcWrapperTest__IService_Exchange1(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcWrapperTest::IObj1> arg_o) override;
 		::vl::Ptr<::RpcWrapperTest::IObj1> InvokeMethod_RpcWrapperTest__IService_Exchange2(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcWrapperTest::IObj2> arg_o) override;
+		::vl::WString InvokeMethod_RpcWrapperTest__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 	};
 
 	class __vwsnc7_Rpc_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IObj1__RpcWrapperTest_IRpcWrapper_IObj1 : public ::vl::Object, public virtual ::RpcWrapperTest::IRpcWrapper_IObj1
@@ -290,6 +296,7 @@ Closures
 		~__vwsnc9_Rpc_LocalAndWrapper_rpcwrapper_RpcWrapperTest__IService__RpcWrapperTest_IRpcWrapper_IService();
 		::vl::Ptr<::RpcWrapperTest::IObj2> Exchange1(::vl::Ptr<::RpcWrapperTest::IObj1> o) override;
 		::vl::Ptr<::RpcWrapperTest::IObj1> Exchange2(::vl::Ptr<::RpcWrapperTest::IObj2> o) override;
+		::vl::WString GetServiceResult() override;
 	};
 }
 

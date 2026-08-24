@@ -820,7 +820,7 @@ TEST_CASE(L"Rpc:ListOps_OblistEventException")
 
 TEST_CASE(L"Rpc:FailDoubleRegistration")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_FailDoubleRegistration, false>(L"FailDoubleRegistration", L"[call][service:Received 1st][client:Received 2nd][call][service:Received 1st][exception][call][exception][call][exception]");
+	RunRpcTestCase<::vl_workflow_global::Rpc_FailDoubleRegistration, false>(L"FailDoubleRegistration", L"[exception]");
 });
 
 TEST_CASE(L"Rpc:Inheritance")

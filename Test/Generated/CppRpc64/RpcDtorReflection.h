@@ -42,6 +42,10 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::RpcDtorTest::IService)
+				::vl::WString GetState() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetState);
+				}
 				::vl::Ptr<::RpcDtorTest::IValue> MakeValue() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(MakeValue);
@@ -52,6 +56,10 @@ namespace vl
 			END_INTERFACE_PROXY(::RpcDtorTest::IValue)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_Dtor)
+				::vl::WString InvokeMethod_RpcDtorTest__IService_GetState(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcDtorTest__IService_GetState, ref);
+				}
 				::vl::Ptr<::RpcDtorTest::IValue> InvokeMethod_RpcDtorTest__IService_MakeValue(::vl::rpc_controller::RpcObjectReference ref) override
 				{
 					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcDtorTest__IService_MakeValue, ref);

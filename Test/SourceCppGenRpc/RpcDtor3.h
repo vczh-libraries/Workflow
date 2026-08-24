@@ -75,6 +75,7 @@ namespace RpcDtor3Test
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IService>;
 #endif
 	public:
+		virtual ::vl::WString ConsumeServiceResult() = 0;
 		virtual ::vl::Ptr<::RpcDtor3Test::IContainer> ContainValue(::vl::Ptr<::RpcDtor3Test::IValue> value) = 0;
 	};
 
@@ -107,6 +108,7 @@ class rpcops_IOps_Rpc_Dtor3 : public virtual ::vl::reflection::IDescriptable, pu
 #endif
 public:
 	virtual ::vl::Ptr<::RpcDtor3Test::IValue> InvokeMethod_RpcDtor3Test__IContainer_GetValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual ::vl::WString InvokeMethod_RpcDtor3Test__IService_ConsumeServiceResult(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual ::vl::Ptr<::RpcDtor3Test::IContainer> InvokeMethod_RpcDtor3Test__IService_ContainValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtor3Test::IValue> arg_value) = 0;
 };
 
@@ -120,15 +122,18 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::WString s;
+		::vl::WString serviceResult;
+		::vl::WString clientResult;
 		::vl::vint rpctype_RpcDtor3Test__IContainer = 0;
 		::vl::vint rpcmethod_RpcDtor3Test__IContainer_GetValue = 0;
 		::vl::vint rpctype_RpcDtor3Test__IService = 0;
+		::vl::vint rpcmethod_RpcDtor3Test__IService_ConsumeServiceResult = 0;
 		::vl::vint rpcmethod_RpcDtor3Test__IService_ContainValue = 0;
 		::vl::vint rpctype_RpcDtor3Test__IValue = 0;
 
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::RpcDtor3Test::IValue> MakeValue();
+		::vl::WString ConsumeClientResult();
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint typeId);
@@ -193,6 +198,7 @@ Closures
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::Ptr<::RpcDtor3Test::IValue> InvokeMethod_RpcDtor3Test__IContainer_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::WString InvokeMethod_RpcDtor3Test__IService_ConsumeServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcDtor3Test::IContainer> InvokeMethod_RpcDtor3Test__IService_ContainValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtor3Test::IValue> arg_value) override;
 	};
 
@@ -201,6 +207,7 @@ Closures
 	public:
 		__vwsnc1_Rpc_Dtor3_serviceMain__RpcDtor3Test_IService();
 
+		::vl::WString ConsumeServiceResult() override;
 		::vl::Ptr<::RpcDtor3Test::IContainer> ContainValue(::vl::Ptr<::RpcDtor3Test::IValue> value) override;
 	};
 
@@ -253,6 +260,7 @@ Closures
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::Ptr<::RpcDtor3Test::IValue> InvokeMethod_RpcDtor3Test__IContainer_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::WString InvokeMethod_RpcDtor3Test__IService_ConsumeServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcDtor3Test::IContainer> InvokeMethod_RpcDtor3Test__IService_ContainValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtor3Test::IValue> arg_value) override;
 	};
 
@@ -291,6 +299,7 @@ Closures
 		::vl::Ptr<::rpcops_IOps_Rpc_Dtor3> _ops;
 		void DisconnectFromLifecycle() override;
 		~__vwsnc9_Rpc_Dtor3_rpcwrapper_RpcDtor3Test__IService__RpcDtor3Test_IRpcWrapper_IService();
+		::vl::WString ConsumeServiceResult() override;
 		::vl::Ptr<::RpcDtor3Test::IContainer> ContainValue(::vl::Ptr<::RpcDtor3Test::IValue> value) override;
 	};
 }

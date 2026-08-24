@@ -48,11 +48,13 @@ namespace vl
 				CLASS_MEMBER_METHOD(DoList, { L"xs" })
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_rpc_Byref)
 				ATTRIBUTE_PARAMETER(L"xs", ::vl::__vwsn::att_rpc_Byval)
+				CLASS_MEMBER_METHOD(GetServiceResult, NO_PARAMETER)
 			END_INTERFACE_MEMBER(::RpcCollection::Nested::InByval::OutByref::IService)
 
 			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Collection_Nested_InByval_OutByref)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollection__Nested__InByval__OutByref__IService_DoList, { L"ref" _ L"arg_xs" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollection__Nested__InByval__OutByref__IService_GetServiceResult, { L"ref" })
 			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Collection_Nested_InByval_OutByref)
 
 #undef _

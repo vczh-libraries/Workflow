@@ -42,6 +42,10 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::RpcDtorPropCached::IService)
+				::vl::WString ConsumeServiceResult() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(ConsumeServiceResult);
+				}
 				::vl::Ptr<::RpcDtorPropCached::IValue> GetValue() override
 				{
 					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetValue);
@@ -63,6 +67,10 @@ namespace vl
 				void InvokeEvent_RpcDtorPropCached__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override
 				{
 					INVOKE_INTERFACE_PROXY(InvokeEvent_RpcDtorPropCached__IService_ValueChanged, ref);
+				}
+				::vl::WString InvokeMethod_RpcDtorPropCached__IService_ConsumeServiceResult(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcDtorPropCached__IService_ConsumeServiceResult, ref);
 				}
 				::vl::Ptr<::RpcDtorPropCached::IValue> InvokeMethod_RpcDtorPropCached__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) override
 				{

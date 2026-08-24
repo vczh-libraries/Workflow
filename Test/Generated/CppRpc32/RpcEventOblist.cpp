@@ -37,14 +37,17 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_EventOblist)
 	vl_workflow_global::Rpc_EventOblist instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString::Unmanaged(L"");
+		instance.serviceResult = ::vl::WString::Unmanaged(L"");
+		instance.clientResult = ::vl::WString::Unmanaged(L"");
 		instance.rpctype_RpcEventOblist__IService = static_cast<::vl::vint32_t>(0);
-		instance.rpcmethod_RpcEventOblist__IService_ModifyHeldList = static_cast<::vl::vint32_t>(1);
-		instance.rpcmethod_RpcEventOblist__IService_SetList = static_cast<::vl::vint32_t>(2);
-		instance.rpcmethod_RpcEventOblist__IService_WatchHeldList = static_cast<::vl::vint32_t>(3);
+		instance.rpcmethod_RpcEventOblist__IService_GetServiceResult = static_cast<::vl::vint32_t>(1);
+		instance.rpcmethod_RpcEventOblist__IService_ModifyHeldList = static_cast<::vl::vint32_t>(2);
+		instance.rpcmethod_RpcEventOblist__IService_SetList = static_cast<::vl::vint32_t>(3);
+		instance.rpcmethod_RpcEventOblist__IService_WatchHeldList = static_cast<::vl::vint32_t>(4);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString::Empty;
+		instance.serviceResult = ::vl::WString::Empty;
+		instance.clientResult = ::vl::WString::Empty;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_EventOblist)
 
 namespace vl_workflow_global
@@ -53,19 +56,19 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	void Rpc_EventOblist::RecordItemChanged(const ::vl::WString& handler, ::vl::vint32_t index, ::vl::vint32_t oldCount, ::vl::vint32_t newCount)
+	::vl::WString Rpc_EventOblist::FormatItemChanged(const ::vl::WString& handler, ::vl::vint32_t index, ::vl::vint32_t oldCount, ::vl::vint32_t newCount)
 	{
-		(GLOBAL_NAME s = ((((((((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[")) + handler) + ::vl::WString::Unmanaged(L":")) + ::vl::__vwsn::ToString(index)) + ::vl::WString::Unmanaged(L",")) + ::vl::__vwsn::ToString(oldCount)) + ::vl::WString::Unmanaged(L",")) + ::vl::__vwsn::ToString(newCount)) + ::vl::WString::Unmanaged(L"]")));
+		return ((((((((::vl::WString::Unmanaged(L"[") + handler) + ::vl::WString::Unmanaged(L":")) + ::vl::__vwsn::ToString(index)) + ::vl::WString::Unmanaged(L",")) + ::vl::__vwsn::ToString(oldCount)) + ::vl::WString::Unmanaged(L",")) + ::vl::__vwsn::ToString(newCount)) + ::vl::WString::Unmanaged(L"]"));
 	}
 
 	void Rpc_EventOblist::ServiceItemChanged(::vl::vint32_t index, ::vl::vint32_t oldCount, ::vl::vint32_t newCount)
 	{
-		GLOBAL_NAME RecordItemChanged(::vl::WString::Unmanaged(L"serviceMain"), index, oldCount, newCount);
+		(GLOBAL_NAME serviceResult = (GLOBAL_NAME serviceResult + GLOBAL_NAME FormatItemChanged(::vl::WString::Unmanaged(L"serviceMain"), index, oldCount, newCount)));
 	}
 
 	void Rpc_EventOblist::ClientItemChanged(::vl::vint32_t index, ::vl::vint32_t oldCount, ::vl::vint32_t newCount)
 	{
-		GLOBAL_NAME RecordItemChanged(::vl::WString::Unmanaged(L"clientMain"), index, oldCount, newCount);
+		(GLOBAL_NAME clientResult = (GLOBAL_NAME clientResult + GLOBAL_NAME FormatItemChanged(::vl::WString::Unmanaged(L"clientMain"), index, oldCount, newCount)));
 	}
 
 	void Rpc_EventOblist::Modify(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs)
@@ -93,16 +96,17 @@ Global Functions
 		::vl::__vwsn::EventDetach(::vl::__vwsn::This(xs.Obj())->ItemChanged, handler);
 		::vl::__vwsn::This(service.Obj())->WatchHeldList();
 		GLOBAL_NAME Modify(xs);
-		return GLOBAL_NAME s;
+		return (GLOBAL_NAME clientResult + ::vl::__vwsn::This(service.Obj())->GetServiceResult());
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> Rpc_EventOblist::rpc_GetIds()
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventOblist::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(0)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventOblist::IService.ModifyHeldList")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(1)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventOblist::IService.SetList")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(2)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventOblist::IService.WatchHeldList")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(3)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventOblist::IService.GetServiceResult")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(1)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventOblist::IService.ModifyHeldList")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(2)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventOblist::IService.SetList")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(3)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventOblist::IService.WatchHeldList")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(4)));
 		return result;
 	}
 
@@ -242,6 +246,11 @@ Closures
 		this->_List = ::vl::Ptr<::vl::reflection::description::IValueObservableList>();
 	}
 
+	::vl::WString __vwsnc1_Rpc_EventOblist_serviceMain__RpcEventOblist_IService::GetServiceResult()
+	{
+		return GLOBAL_NAME serviceResult;
+	}
+
 	void __vwsnc1_Rpc_EventOblist_serviceMain__RpcEventOblist_IService::SetList(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs)
 	{
 		auto xsObj = ::vl::__vwsn::Box(xs);
@@ -278,7 +287,12 @@ Closures
 		{
 			{
 				auto __vwsn_switch_2 = methodId;
-				if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcEventOblist__IService_ModifyHeldList))
+				if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcEventOblist__IService_GetServiceResult))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcEventOblist::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->GetServiceResult());
+				}
+				else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcEventOblist__IService_ModifyHeldList))
 				{
 					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcEventOblist::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 					::vl::__vwsn::This(target.Obj())->ModifyHeldList();
@@ -350,6 +364,15 @@ Closures
 		this->_lc = __vwsnctor_lc;
 	}
 
+	::vl::WString __vwsnc4_Rpc_EventOblist_rpcops_IOps_Create__rpcops_IOps_Rpc_EventOblist::InvokeMethod_RpcEventOblist__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(0));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcEventOblist__IService_GetServiceResult, arguments);
+		::vl::rpc_controller::ReadMethodException(invokeResult);
+		return ::vl::__vwsn::Unbox<::vl::WString>(invokeResult);
+	}
+
 	void __vwsnc4_Rpc_EventOblist_rpcops_IOps_Create__rpcops_IOps_Rpc_EventOblist::InvokeMethod_RpcEventOblist__IService_ModifyHeldList(::vl::rpc_controller::RpcObjectReference ref)
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
@@ -396,6 +419,13 @@ Closures
 		{
 			::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(_ref.clientId))->ObjectHold(_ref, ::vl::__vwsn::This(_lc)->GetClientId(), false);
 		}
+	}
+
+	::vl::WString __vwsnc5_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService::GetServiceResult()
+	{
+		if ((_lc == nullptr))
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcEventOblist__IService_GetServiceResult(_ref);
 	}
 
 	void __vwsnc5_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService::ModifyHeldList()
@@ -452,7 +482,14 @@ Closures
 		{
 			{
 				auto __vwsn_switch_5 = methodId;
-				if ((__vwsn_switch_5 == GLOBAL_NAME rpcmethod_RpcEventOblist__IService_ModifyHeldList))
+				if ((__vwsn_switch_5 == GLOBAL_NAME rpcmethod_RpcEventOblist__IService_GetServiceResult))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcEventOblist::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					auto jsonString0 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+					(::vl::__vwsn::This(jsonString0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::This(target.Obj())->GetServiceResult(); return __vwsn_temp__; }());
+					return ::vl::__vwsn::Box(jsonString0);
+				}
+				else if ((__vwsn_switch_5 == GLOBAL_NAME rpcmethod_RpcEventOblist__IService_ModifyHeldList))
 				{
 					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcEventOblist::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 					::vl::__vwsn::This(target.Obj())->ModifyHeldList();
@@ -529,6 +566,18 @@ Closures
 	__vwsnc9_Rpc_EventOblist_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_EventOblist::__vwsnc9_Rpc_EventOblist_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_EventOblist(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc)
 	{
 		this->_lc = __vwsnctor_lc;
+	}
+
+	::vl::WString __vwsnc9_Rpc_EventOblist_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_EventOblist::InvokeMethod_RpcEventOblist__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(0));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcEventOblist__IService_GetServiceResult, arguments);
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		auto methodResult = GLOBAL_NAME rpcjson_Deserialize(jsonResult);
+		::vl::rpc_controller::ReadMethodException(methodResult);
+		auto jsonValue0 = ::vl::__vwsn::Unbox<::vl::WString>(GLOBAL_NAME rpcjson_Deserialize(jsonResult));
+		return jsonValue0;
 	}
 
 	void __vwsnc9_Rpc_EventOblist_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_EventOblist::InvokeMethod_RpcEventOblist__IService_ModifyHeldList(::vl::rpc_controller::RpcObjectReference ref)

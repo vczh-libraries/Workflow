@@ -46,6 +46,7 @@ namespace vl
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Ctor)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(GetList, NO_PARAMETER)
+				CLASS_MEMBER_METHOD(GetServiceResult, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetList, { L"__vwsn_value_" })
 				CLASS_MEMBER_PROPERTY(List, GetList, SetList)
 			END_INTERFACE_MEMBER(::RpcCollectionOblist::Nested::InByref::PropByref::IService)
@@ -53,6 +54,7 @@ namespace vl
 			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionOblist_Nested_PropByref)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionOblist__Nested__InByref__PropByref__IService_GetList, { L"ref" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionOblist__Nested__InByref__PropByref__IService_GetServiceResult, { L"ref" })
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionOblist__Nested__InByref__PropByref__IService_SetList, { L"ref" _ L"__vwsn_value_" })
 			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionOblist_Nested_PropByref)
 

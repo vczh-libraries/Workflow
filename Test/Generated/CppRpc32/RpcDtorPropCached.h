@@ -28,17 +28,18 @@ namespace vl_workflow_global
 	struct __vwsnf1_Rpc_DtorPropCached_clientMain_;
 	struct __vwsnf2_Rpc_DtorPropCached_rpclistener_RpcDtorPropCached__IService_;
 	struct __vwsnf3_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IService_;
-	class __vwsnc10_Rpc_DtorPropCached_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc11_Rpc_DtorPropCached_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_DtorPropCached;
+	class __vwsnc10_Rpc_DtorPropCached_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps;
+	class __vwsnc11_Rpc_DtorPropCached_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps;
+	class __vwsnc12_Rpc_DtorPropCached_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_DtorPropCached;
 	class __vwsnc1_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue;
-	class __vwsnc2_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService;
-	class __vwsnc3_Rpc_DtorPropCached_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
-	class __vwsnc4_Rpc_DtorPropCached_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
-	class __vwsnc5_Rpc_DtorPropCached_rpcops_IOps_Create__rpcops_IOps_Rpc_DtorPropCached;
-	class __vwsnc6_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IValue__RpcDtorPropCached_IRpcWrapper_IValue;
-	class __vwsnc7_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IService__RpcDtorPropCached_IRpcWrapper_IService;
-	class __vwsnc8_Rpc_DtorPropCached_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer;
-	class __vwsnc9_Rpc_DtorPropCached_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps;
+	class __vwsnc2_Rpc_DtorPropCached_MakeServiceValue__RpcDtorPropCached_IValue;
+	class __vwsnc3_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService;
+	class __vwsnc4_Rpc_DtorPropCached_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
+	class __vwsnc5_Rpc_DtorPropCached_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
+	class __vwsnc6_Rpc_DtorPropCached_rpcops_IOps_Create__rpcops_IOps_Rpc_DtorPropCached;
+	class __vwsnc7_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IValue__RpcDtorPropCached_IRpcWrapper_IValue;
+	class __vwsnc8_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IService__RpcDtorPropCached_IRpcWrapper_IService;
+	class __vwsnc9_Rpc_DtorPropCached_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer;
 }
 
 namespace RpcDtorPropCached
@@ -60,6 +61,7 @@ namespace RpcDtorPropCached
 	public:
 		virtual ::vl::Ptr<::RpcDtorPropCached::IValue> GetValue() = 0;
 		::vl::Event<void()> ValueChanged;
+		virtual ::vl::WString ConsumeServiceResult() = 0;
 		virtual void SetValue(::vl::Ptr<::RpcDtorPropCached::IValue> value) = 0;
 		virtual void Signal() = 0;
 	};
@@ -94,6 +96,7 @@ class rpcops_IOps_Rpc_DtorPropCached : public virtual ::vl::reflection::IDescrip
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_Rpc_DtorPropCached>;
 #endif
 public:
+	virtual ::vl::WString InvokeMethod_RpcDtorPropCached__IService_ConsumeServiceResult(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual ::vl::Ptr<::RpcDtorPropCached::IValue> InvokeMethod_RpcDtorPropCached__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeMethod_RpcDtorPropCached__IService_SetValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtorPropCached::IValue> arg_value) = 0;
 	virtual void InvokeMethod_RpcDtorPropCached__IService_Signal(::vl::rpc_controller::RpcObjectReference ref) = 0;
@@ -111,7 +114,9 @@ namespace vl_workflow_global
 	public:
 
 		::vl::WString s;
+		::vl::WString serviceResult;
 		::vl::vint32_t rpctype_RpcDtorPropCached__IService = 0;
+		::vl::vint32_t rpcmethod_RpcDtorPropCached__IService_ConsumeServiceResult = 0;
 		::vl::vint32_t rpcmethod_RpcDtorPropCached__IService_GetValue = 0;
 		::vl::vint32_t rpcmethod_RpcDtorPropCached__IService_SetValue = 0;
 		::vl::vint32_t rpcmethod_RpcDtorPropCached__IService_Signal = 0;
@@ -119,6 +124,7 @@ namespace vl_workflow_global
 		::vl::vint32_t rpctype_RpcDtorPropCached__IValue = 0;
 
 		::vl::Ptr<::RpcDtorPropCached::IValue> MakeValue(const ::vl::WString& value);
+		::vl::Ptr<::RpcDtorPropCached::IValue> MakeServiceValue(const ::vl::WString& value);
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
@@ -175,21 +181,35 @@ Closures
 		void operator()() const;
 	};
 
-	class __vwsnc10_Rpc_DtorPropCached_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
+	class __vwsnc10_Rpc_DtorPropCached_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
 	{
 	public:
-		__vwsnc10_Rpc_DtorPropCached_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc10_Rpc_DtorPropCached_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+
+		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::vint32_t _slot = 0;
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> _byvalReturnValues;
+		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
+		void EndInvokeMethod(::vl::vint32_t slot) override;
+		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t remoteClientId, bool hold) override;
+	};
+
+	class __vwsnc11_Rpc_DtorPropCached_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
+	{
+	public:
+		__vwsnc11_Rpc_DtorPropCached_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::reflection::description::Value InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc11_Rpc_DtorPropCached_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_DtorPropCached : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_DtorPropCached
+	class __vwsnc12_Rpc_DtorPropCached_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_DtorPropCached : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_DtorPropCached
 	{
 	public:
-		__vwsnc11_Rpc_DtorPropCached_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_DtorPropCached(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc12_Rpc_DtorPropCached_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_DtorPropCached(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcDtorPropCached__IService_ConsumeServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcDtorPropCached::IValue> InvokeMethod_RpcDtorPropCached__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcDtorPropCached__IService_SetValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtorPropCached::IValue> arg_value) override;
 		void InvokeMethod_RpcDtorPropCached__IService_Signal(::vl::rpc_controller::RpcObjectReference ref) override;
@@ -206,21 +226,32 @@ Closures
 		~__vwsnc1_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue();
 	};
 
-	class __vwsnc2_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService : public ::vl::Object, public virtual ::RpcDtorPropCached::IService
+	class __vwsnc2_Rpc_DtorPropCached_MakeServiceValue__RpcDtorPropCached_IValue : public ::vl::Object, public virtual ::RpcDtorPropCached::IValue
 	{
 	public:
-		__vwsnc2_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService();
+		::vl::WString value;
+
+		__vwsnc2_Rpc_DtorPropCached_MakeServiceValue__RpcDtorPropCached_IValue(::vl::WString __vwsnctor_value);
+
+		~__vwsnc2_Rpc_DtorPropCached_MakeServiceValue__RpcDtorPropCached_IValue();
+	};
+
+	class __vwsnc3_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService : public ::vl::Object, public virtual ::RpcDtorPropCached::IService
+	{
+	public:
+		__vwsnc3_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService();
 
 		::vl::Ptr<::RpcDtorPropCached::IValue> _Value;
+		::vl::WString ConsumeServiceResult() override;
 		::vl::Ptr<::RpcDtorPropCached::IValue> GetValue() override;
 		void SetValue(::vl::Ptr<::RpcDtorPropCached::IValue> value) override;
 		void Signal() override;
 	};
 
-	class __vwsnc3_Rpc_DtorPropCached_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
+	class __vwsnc4_Rpc_DtorPropCached_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
 	{
 	public:
-		__vwsnc3_Rpc_DtorPropCached_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc4_Rpc_DtorPropCached_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::vint32_t _slot = 0;
@@ -230,43 +261,44 @@ Closures
 		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t remoteClientId, bool hold) override;
 	};
 
-	class __vwsnc4_Rpc_DtorPropCached_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
+	class __vwsnc5_Rpc_DtorPropCached_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectEventOps
 	{
 	public:
-		__vwsnc4_Rpc_DtorPropCached_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc5_Rpc_DtorPropCached_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::reflection::description::Value InvokeEvent(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t eventId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
 	};
 
-	class __vwsnc5_Rpc_DtorPropCached_rpcops_IOps_Create__rpcops_IOps_Rpc_DtorPropCached : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_DtorPropCached
+	class __vwsnc6_Rpc_DtorPropCached_rpcops_IOps_Create__rpcops_IOps_Rpc_DtorPropCached : public ::vl::Object, public virtual ::rpcops_IOps_Rpc_DtorPropCached
 	{
 	public:
-		__vwsnc5_Rpc_DtorPropCached_rpcops_IOps_Create__rpcops_IOps_Rpc_DtorPropCached(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
+		__vwsnc6_Rpc_DtorPropCached_rpcops_IOps_Create__rpcops_IOps_Rpc_DtorPropCached(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcDtorPropCached__IService_ConsumeServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcDtorPropCached::IValue> InvokeMethod_RpcDtorPropCached__IService_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcDtorPropCached__IService_SetValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtorPropCached::IValue> arg_value) override;
 		void InvokeMethod_RpcDtorPropCached__IService_Signal(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeEvent_RpcDtorPropCached__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override;
 	};
 
-	class __vwsnc6_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IValue__RpcDtorPropCached_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcDtorPropCached::IRpcWrapper_IValue
+	class __vwsnc7_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IValue__RpcDtorPropCached_IRpcWrapper_IValue : public ::vl::Object, public virtual ::RpcDtorPropCached::IRpcWrapper_IValue
 	{
 	public:
-		__vwsnc6_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IValue__RpcDtorPropCached_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_DtorPropCached> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc7_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IValue__RpcDtorPropCached_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_DtorPropCached> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
 		::vl::Ptr<::rpcops_IOps_Rpc_DtorPropCached> _ops;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc6_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IValue__RpcDtorPropCached_IRpcWrapper_IValue();
+		~__vwsnc7_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IValue__RpcDtorPropCached_IRpcWrapper_IValue();
 	};
 
-	class __vwsnc7_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IService__RpcDtorPropCached_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcDtorPropCached::IRpcWrapper_IService
+	class __vwsnc8_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IService__RpcDtorPropCached_IRpcWrapper_IService : public ::vl::Object, public virtual ::RpcDtorPropCached::IRpcWrapper_IService
 	{
 	public:
-		__vwsnc7_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IService__RpcDtorPropCached_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_DtorPropCached> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
+		__vwsnc8_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IService__RpcDtorPropCached_IRpcWrapper_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_DtorPropCached> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::rpc_controller::RpcObjectReference _ref;
@@ -275,32 +307,20 @@ Closures
 		bool __vwsn_Available_ = false;
 		void _rpcInvalidate_Value() override;
 		void DisconnectFromLifecycle() override;
-		~__vwsnc7_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IService__RpcDtorPropCached_IRpcWrapper_IService();
+		~__vwsnc8_Rpc_DtorPropCached_rpcwrapper_RpcDtorPropCached__IService__RpcDtorPropCached_IRpcWrapper_IService();
+		::vl::WString ConsumeServiceResult() override;
 		::vl::Ptr<::RpcDtorPropCached::IValue> GetValue() override;
 		void SetValue(::vl::Ptr<::RpcDtorPropCached::IValue> value) override;
 		void Signal() override;
 	};
 
-	class __vwsnc8_Rpc_DtorPropCached_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcSerializer
+	class __vwsnc9_Rpc_DtorPropCached_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcSerializer
 	{
 	public:
-		__vwsnc8_Rpc_DtorPropCached_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer();
+		__vwsnc9_Rpc_DtorPropCached_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer();
 
 		::vl::reflection::description::Value Serialize(const ::vl::reflection::description::Value& value) override;
 		::vl::reflection::description::Value Deserialize(const ::vl::reflection::description::Value& value) override;
-	};
-
-	class __vwsnc9_Rpc_DtorPropCached_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps
-	{
-	public:
-		__vwsnc9_Rpc_DtorPropCached_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
-
-		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
-		::vl::vint32_t _slot = 0;
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> _byvalReturnValues;
-		::vl::reflection::description::Value InvokeMethod(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t methodId, ::vl::Ptr<::vl::reflection::description::IValueArray> arguments) override;
-		void EndInvokeMethod(::vl::vint32_t slot) override;
-		void ObjectHold(::vl::rpc_controller::RpcObjectReference ref, ::vl::vint32_t remoteClientId, bool hold) override;
 	};
 }
 

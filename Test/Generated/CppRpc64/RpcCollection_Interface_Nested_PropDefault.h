@@ -70,6 +70,7 @@ namespace RpcCollection
 					friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IService>;
 #endif
 				public:
+					virtual ::vl::WString GetServiceResult() = 0;
 					virtual ::vl::Ptr<::vl::reflection::description::IValueDictionary> GetList() = 0;
 					virtual void SetList(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_value_) = 0;
 				};
@@ -109,6 +110,7 @@ class rpcops_IOps_Rpc_Collection_Interface_Nested_PropDefault : public virtual :
 public:
 	virtual ::vl::vint64_t InvokeMethod_RpcCollection__Interface__Nested__PropDefault__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual ::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollection__Interface__Nested__PropDefault__IService_GetList(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual ::vl::WString InvokeMethod_RpcCollection__Interface__Nested__PropDefault__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeMethod_RpcCollection__Interface__Nested__PropDefault__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_value_) = 0;
 };
 
@@ -125,6 +127,7 @@ namespace vl_workflow_global
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> xsService;
 		::vl::vint64_t rpctype_RpcCollection__Interface__Nested__PropDefault__IService = 0;
 		::vl::vint64_t rpcmethod_RpcCollection__Interface__Nested__PropDefault__IService_GetList = 0;
+		::vl::vint64_t rpcmethod_RpcCollection__Interface__Nested__PropDefault__IService_GetServiceResult = 0;
 		::vl::vint64_t rpcmethod_RpcCollection__Interface__Nested__PropDefault__IService_SetList = 0;
 		::vl::vint64_t rpctype_RpcCollection__Interface__Nested__PropDefault__IValue = 0;
 		::vl::vint64_t rpcmethod_RpcCollection__Interface__Nested__PropDefault__IValue_GetValue = 0;
@@ -177,6 +180,7 @@ Closures
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::vint64_t InvokeMethod_RpcCollection__Interface__Nested__PropDefault__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollection__Interface__Nested__PropDefault__IService_GetList(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::WString InvokeMethod_RpcCollection__Interface__Nested__PropDefault__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcCollection__Interface__Nested__PropDefault__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_value_) override;
 	};
 
@@ -196,6 +200,7 @@ Closures
 		__vwsnc2_Rpc_Collection_Interface_Nested_PropDefault_serviceMain__RpcCollection_Interface_Nested_PropDefault_IService();
 
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> _List;
+		::vl::WString GetServiceResult() override;
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> GetList() override;
 		void SetList(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs) override;
 	};
@@ -230,6 +235,7 @@ Closures
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::vint64_t InvokeMethod_RpcCollection__Interface__Nested__PropDefault__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> InvokeMethod_RpcCollection__Interface__Nested__PropDefault__IService_GetList(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::WString InvokeMethod_RpcCollection__Interface__Nested__PropDefault__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcCollection__Interface__Nested__PropDefault__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_value_) override;
 	};
 
@@ -257,6 +263,7 @@ Closures
 		void DisconnectFromLifecycle() override;
 		~__vwsnc7_Rpc_Collection_Interface_Nested_PropDefault_rpcwrapper_RpcCollection__Interface__Nested__PropDefault__IService__RpcCollection_Interface_Nested_PropDefault_IRpcWrapper_IService();
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> GetList() override;
+		::vl::WString GetServiceResult() override;
 		void SetList(::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsn_value_) override;
 	};
 

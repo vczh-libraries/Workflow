@@ -45,6 +45,7 @@ namespace vl
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Interface)
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Ctor)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(GetServiceResult, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(ModifyHeldList, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(SetList, { L"xs" })
 				CLASS_MEMBER_METHOD(WatchHeldList, NO_PARAMETER)
@@ -52,6 +53,7 @@ namespace vl
 
 			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_EventOblist)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcEventOblist__IService_GetServiceResult, { L"ref" })
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcEventOblist__IService_ModifyHeldList, { L"ref" })
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcEventOblist__IService_SetList, { L"ref" _ L"arg_xs" })
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcEventOblist__IService_WatchHeldList, { L"ref" })

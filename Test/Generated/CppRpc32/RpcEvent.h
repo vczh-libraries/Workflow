@@ -53,6 +53,7 @@ namespace RpcEvent
 #endif
 	public:
 		::vl::Event<void(::vl::WString)> SomethingHappened;
+		virtual ::vl::WString GetServiceResult() = 0;
 		virtual void MakeItHappen() = 0;
 		virtual void Watch() = 0;
 	};
@@ -71,6 +72,7 @@ class rpcops_IOps_Rpc_Event : public virtual ::vl::reflection::IDescriptable, pu
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_Rpc_Event>;
 #endif
 public:
+	virtual ::vl::WString InvokeMethod_RpcEvent__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeMethod_RpcEvent__IService_MakeItHappen(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeMethod_RpcEvent__IService_Watch(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeEvent_RpcEvent__IService_SomethingHappened(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0) = 0;
@@ -86,8 +88,10 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::WString s;
+		::vl::WString serviceResult;
+		::vl::WString clientResult;
 		::vl::vint32_t rpctype_RpcEvent__IService = 0;
+		::vl::vint32_t rpcmethod_RpcEvent__IService_GetServiceResult = 0;
 		::vl::vint32_t rpcmethod_RpcEvent__IService_MakeItHappen = 0;
 		::vl::vint32_t rpcevent_RpcEvent__IService_SomethingHappened = 0;
 		::vl::vint32_t rpcmethod_RpcEvent__IService_Watch = 0;
@@ -137,6 +141,7 @@ Closures
 	public:
 		__vwsnc1_Rpc_Event_serviceMain__RpcEvent_IService();
 
+		::vl::WString GetServiceResult() override;
 		void MakeItHappen() override;
 		void Watch() override;
 	};
@@ -169,6 +174,7 @@ Closures
 		__vwsnc4_Rpc_Event_rpcops_IOps_Create__rpcops_IOps_Rpc_Event(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcEvent__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcEvent__IService_MakeItHappen(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcEvent__IService_Watch(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeEvent_RpcEvent__IService_SomethingHappened(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0) override;
@@ -184,6 +190,7 @@ Closures
 		::vl::Ptr<::rpcops_IOps_Rpc_Event> _ops;
 		void DisconnectFromLifecycle() override;
 		~__vwsnc5_Rpc_Event_rpcwrapper_RpcEvent__IService__RpcEvent_IRpcWrapper_IService();
+		::vl::WString GetServiceResult() override;
 		void MakeItHappen() override;
 		void Watch() override;
 	};
@@ -225,6 +232,7 @@ Closures
 		__vwsnc9_Rpc_Event_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Event(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcEvent__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcEvent__IService_MakeItHappen(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcEvent__IService_Watch(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeEvent_RpcEvent__IService_SomethingHappened(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0) override;

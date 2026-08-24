@@ -40,8 +40,9 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionDict_Interface_Neste
 		instance.xsService = ::vl::reflection::description::IValueDictionary::Create();
 		instance.rpctype_RpcCollectionDict__Interface__Nested__InByval__OutByval__IService = static_cast<::vl::vint64_t>(0L);
 		instance.rpcmethod_RpcCollectionDict__Interface__Nested__InByval__OutByval__IService_DoList = static_cast<::vl::vint64_t>(1L);
-		instance.rpctype_RpcCollectionDict__Interface__Nested__InByval__OutByval__IValue = static_cast<::vl::vint64_t>(2L);
-		instance.rpcmethod_RpcCollectionDict__Interface__Nested__InByval__OutByval__IValue_GetValue = static_cast<::vl::vint64_t>(3L);
+		instance.rpcmethod_RpcCollectionDict__Interface__Nested__InByval__OutByval__IService_GetServiceResult = static_cast<::vl::vint64_t>(2L);
+		instance.rpctype_RpcCollectionDict__Interface__Nested__InByval__OutByval__IValue = static_cast<::vl::vint64_t>(3L);
+		instance.rpcmethod_RpcCollectionDict__Interface__Nested__InByval__OutByval__IValue_GetValue = static_cast<::vl::vint64_t>(4L);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.xsService = nullptr;
@@ -158,9 +159,8 @@ Global Functions
 		auto xsClient = xs;
 		auto ys = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(0L))));
 		::vl::__vwsn::This(ys.Obj())->Set(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(5L)), ::vl::__vwsn::Box(GLOBAL_NAME MakeValue(::vl::WString::Unmanaged(L"E"))));
-		GLOBAL_NAME CheckServiceItems(GLOBAL_NAME xsService);
 		GLOBAL_NAME CheckClientItems(xsClient);
-		return ((((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Print(xsOrigin)) + ::vl::WString::Unmanaged(L"]")) + ((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Print(GLOBAL_NAME xsService)) + ::vl::WString::Unmanaged(L"]"))) + ((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Print(xsClient)) + ::vl::WString::Unmanaged(L"]")));
+		return ((((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Print(xsOrigin)) + ::vl::WString::Unmanaged(L"]")) + ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::This(service.Obj())->GetServiceResult()) + ::vl::WString::Unmanaged(L"]"))) + ((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME Print(xsClient)) + ::vl::WString::Unmanaged(L"]")));
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> Rpc_CollectionDict_Interface_Nested_InByval_OutByval::rpc_GetIds()
@@ -168,8 +168,9 @@ Global Functions
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::Nested::InByval::OutByval::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(0L)));
 		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::Nested::InByval::OutByval::IService.DoList")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(1L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::Nested::InByval::OutByval::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::Nested::InByval::OutByval::IValue.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(3L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::Nested::InByval::OutByval::IService.GetServiceResult")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(2L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::Nested::InByval::OutByval::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(3L)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::Nested::InByval::OutByval::IValue.GetValue")), ::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)));
 		return result;
 	}
 
@@ -376,6 +377,18 @@ Closures
 		return result;
 	}
 
+	::vl::WString __vwsnc11_Rpc_CollectionDict_Interface_Nested_InByval_OutByval_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_CollectionDict_Interface_Nested_InByval_OutByval::InvokeMethod_RpcCollectionDict__Interface__Nested__InByval__OutByval__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcCollectionDict__Interface__Nested__InByval__OutByval__IService_GetServiceResult, arguments);
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		auto methodResult = GLOBAL_NAME rpcjson_Deserialize(jsonResult);
+		::vl::rpc_controller::ReadMethodException(methodResult);
+		auto jsonValue0 = ::vl::__vwsn::Unbox<::vl::WString>(GLOBAL_NAME rpcjson_Deserialize(jsonResult));
+		return jsonValue0;
+	}
+
 	//-------------------------------------------------------------------
 
 	__vwsnc1_Rpc_CollectionDict_Interface_Nested_InByval_OutByval_MakeValue__RpcCollectionDict_Interface_Nested_InByval_OutByval_IValue::__vwsnc1_Rpc_CollectionDict_Interface_Nested_InByval_OutByval_MakeValue__RpcCollectionDict_Interface_Nested_InByval_OutByval_IValue(::vl::WString __vwsnctor_value)
@@ -392,6 +405,12 @@ Closures
 
 	__vwsnc2_Rpc_CollectionDict_Interface_Nested_InByval_OutByval_serviceMain__RpcCollectionDict_Interface_Nested_InByval_OutByval_IService::__vwsnc2_Rpc_CollectionDict_Interface_Nested_InByval_OutByval_serviceMain__RpcCollectionDict_Interface_Nested_InByval_OutByval_IService()
 	{
+	}
+
+	::vl::WString __vwsnc2_Rpc_CollectionDict_Interface_Nested_InByval_OutByval_serviceMain__RpcCollectionDict_Interface_Nested_InByval_OutByval_IService::GetServiceResult()
+	{
+		GLOBAL_NAME CheckServiceItems(GLOBAL_NAME xsService);
+		return GLOBAL_NAME Print(GLOBAL_NAME xsService);
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnc2_Rpc_CollectionDict_Interface_Nested_InByval_OutByval_serviceMain__RpcCollectionDict_Interface_Nested_InByval_OutByval_IService::DoList(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
@@ -439,6 +458,11 @@ Closures
 					::vl::__vwsn::This(_byvalReturnValues.Obj())->Set(::vl::__vwsn::Box(_slot), copiedReturnValue);
 					(_slot = (_slot + static_cast<::vl::vint64_t>(1L)));
 					return ::vl::__vwsn::Box(byvalReturnValue);
+				}
+				else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcCollectionDict__Interface__Nested__InByval__OutByval__IService_GetServiceResult))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcCollectionDict::Interface::Nested::InByval::OutByval::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->GetServiceResult());
 				}
 				else
 					(unknownId = true);
@@ -517,6 +541,15 @@ Closures
 		return result;
 	}
 
+	::vl::WString __vwsnc5_Rpc_CollectionDict_Interface_Nested_InByval_OutByval_rpcops_IOps_Create__rpcops_IOps_Rpc_CollectionDict_Interface_Nested_InByval_OutByval::InvokeMethod_RpcCollectionDict__Interface__Nested__InByval__OutByval__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint64_t>(0L));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcCollectionDict__Interface__Nested__InByval__OutByval__IService_GetServiceResult, arguments);
+		::vl::rpc_controller::ReadMethodException(invokeResult);
+		return ::vl::__vwsn::Unbox<::vl::WString>(invokeResult);
+	}
+
 	//-------------------------------------------------------------------
 
 	__vwsnc6_Rpc_CollectionDict_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionDict__Interface__Nested__InByval__OutByval__IValue__RpcCollectionDict_Interface_Nested_InByval_OutByval_IRpcWrapper_IValue::__vwsnc6_Rpc_CollectionDict_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionDict__Interface__Nested__InByval__OutByval__IValue__RpcCollectionDict_Interface_Nested_InByval_OutByval_IRpcWrapper_IValue(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::Ptr<::rpcops_IOps_Rpc_CollectionDict_Interface_Nested_InByval_OutByval> __vwsnctor_ops, ::vl::rpc_controller::RpcObjectReference __vwsnctor_proxyRef)
@@ -577,6 +610,13 @@ Closures
 		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcCollectionDict__Interface__Nested__InByval__OutByval__IService_DoList(_ref, xs);
 	}
 
+	::vl::WString __vwsnc7_Rpc_CollectionDict_Interface_Nested_InByval_OutByval_rpcwrapper_RpcCollectionDict__Interface__Nested__InByval__OutByval__IService__RpcCollectionDict_Interface_Nested_InByval_OutByval_IRpcWrapper_IService::GetServiceResult()
+	{
+		if ((_lc == nullptr))
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcCollectionDict__Interface__Nested__InByval__OutByval__IService_GetServiceResult(_ref);
+	}
+
 	//-------------------------------------------------------------------
 
 	__vwsnc8_Rpc_CollectionDict_Interface_Nested_InByval_OutByval_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer::__vwsnc8_Rpc_CollectionDict_Interface_Nested_InByval_OutByval_rpcops_IRpcSerializer__vl_rpc_controller_IRpcSerializer()
@@ -630,6 +670,13 @@ Closures
 					::vl::__vwsn::This(_byvalReturnValues.Obj())->Set(::vl::__vwsn::Box(_slot), copiedReturnValue);
 					(_slot = (_slot + static_cast<::vl::vint64_t>(1L)));
 					return ::vl::__vwsn::Box(byvalReturnValue);
+				}
+				else if ((__vwsn_switch_5 == GLOBAL_NAME rpcmethod_RpcCollectionDict__Interface__Nested__InByval__OutByval__IService_GetServiceResult))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcCollectionDict::Interface::Nested::InByval::OutByval::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					auto jsonString0 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+					(::vl::__vwsn::This(jsonString0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::This(target.Obj())->GetServiceResult(); return __vwsn_temp__; }());
+					return ::vl::__vwsn::Box(jsonString0);
 				}
 				else
 					(unknownId = true);

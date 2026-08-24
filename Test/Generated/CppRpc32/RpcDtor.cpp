@@ -39,8 +39,9 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Dtor)
 
 		instance.s = ::vl::WString::Unmanaged(L"Not Deleted");
 		instance.rpctype_RpcDtorTest__IService = static_cast<::vl::vint32_t>(0);
-		instance.rpcmethod_RpcDtorTest__IService_MakeValue = static_cast<::vl::vint32_t>(1);
-		instance.rpctype_RpcDtorTest__IValue = static_cast<::vl::vint32_t>(2);
+		instance.rpcmethod_RpcDtorTest__IService_GetState = static_cast<::vl::vint32_t>(1);
+		instance.rpcmethod_RpcDtorTest__IService_MakeValue = static_cast<::vl::vint32_t>(2);
+		instance.rpctype_RpcDtorTest__IValue = static_cast<::vl::vint32_t>(3);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
@@ -74,10 +75,10 @@ Global Functions
 		auto value = ::vl::__vwsn::Unbox<::vl::Ptr<::RpcDtorTest::IValue>>(valueObj);
 		auto wrapperObj = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>>(valueObj);
 		(wrapperObj = ::vl::Ptr<::vl::rpc_controller::IRpcWrapperBase>());
-		auto m = ((::vl::WString::Unmanaged(L"[") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"]"));
+		auto m = ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::This(clientObj.Obj())->GetState()) + ::vl::WString::Unmanaged(L"]"));
 		(value = ::vl::Ptr<::RpcDtorTest::IValue>());
 		(valueObj = ::vl::reflection::description::Value());
-		(m = ((((::vl::WString::Unmanaged(L"") + m) + ::vl::WString::Unmanaged(L"[")) + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"]")));
+		(m = ((((::vl::WString::Unmanaged(L"") + m) + ::vl::WString::Unmanaged(L"[")) + ::vl::__vwsn::This(clientObj.Obj())->GetState()) + ::vl::WString::Unmanaged(L"]")));
 		(clientObj = ::vl::Ptr<::RpcDtorTest::IService>());
 		(obj = ::vl::Ptr<::vl::reflection::IDescriptable>());
 		return m;
@@ -87,8 +88,9 @@ Global Functions
 	{
 		auto result = ::vl::reflection::description::IValueDictionary::Create();
 		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IService")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(0)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IService.MakeValue")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(1)));
-		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(2)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IService.GetState")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(1)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IService.MakeValue")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(2)));
+		::vl::__vwsn::This(result.Obj())->Set(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorTest::IValue")), ::vl::__vwsn::Box(static_cast<::vl::vint32_t>(3)));
 		return result;
 	}
 
@@ -255,6 +257,18 @@ Closures
 		this->_lc = __vwsnctor_lc;
 	}
 
+	::vl::WString __vwsnc11_Rpc_Dtor_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor::InvokeMethod_RpcDtorTest__IService_GetState(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(0));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcDtorTest__IService_GetState, arguments);
+		auto jsonResult = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::glr::json::JsonNode>>(invokeResult);
+		auto methodResult = GLOBAL_NAME rpcjson_Deserialize(jsonResult);
+		::vl::rpc_controller::ReadMethodException(methodResult);
+		auto jsonValue0 = ::vl::__vwsn::Unbox<::vl::WString>(GLOBAL_NAME rpcjson_Deserialize(jsonResult));
+		return jsonValue0;
+	}
+
 	::vl::Ptr<::RpcDtorTest::IValue> __vwsnc11_Rpc_Dtor_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor::InvokeMethod_RpcDtorTest__IService_MakeValue(::vl::rpc_controller::RpcObjectReference ref)
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
@@ -271,6 +285,11 @@ Closures
 
 	__vwsnc1_Rpc_Dtor_serviceMain__RpcDtorTest_IService::__vwsnc1_Rpc_Dtor_serviceMain__RpcDtorTest_IService()
 	{
+	}
+
+	::vl::WString __vwsnc1_Rpc_Dtor_serviceMain__RpcDtorTest_IService::GetState()
+	{
+		return GLOBAL_NAME s;
 	}
 
 	::vl::Ptr<::RpcDtorTest::IValue> __vwsnc1_Rpc_Dtor_serviceMain__RpcDtorTest_IService::MakeValue()
@@ -306,7 +325,12 @@ Closures
 		{
 			{
 				auto __vwsn_switch_2 = methodId;
-				if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcDtorTest__IService_MakeValue))
+				if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcDtorTest__IService_GetState))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcDtorTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					return ::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->GetState());
+				}
+				else if ((__vwsn_switch_2 == GLOBAL_NAME rpcmethod_RpcDtorTest__IService_MakeValue))
 				{
 					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcDtorTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 					return ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->MakeValue()), _lc);
@@ -365,6 +389,15 @@ Closures
 		this->_lc = __vwsnctor_lc;
 	}
 
+	::vl::WString __vwsnc5_Rpc_Dtor_rpcops_IOps_Create__rpcops_IOps_Rpc_Dtor::InvokeMethod_RpcDtorTest__IService_GetState(::vl::rpc_controller::RpcObjectReference ref)
+	{
+		auto arguments = ::vl::reflection::description::IValueArray::Create();
+		::vl::__vwsn::This(arguments.Obj())->Resize(static_cast<::vl::vint32_t>(0));
+		auto invokeResult = ::vl::__vwsn::This(::vl::__vwsn::This(::vl::__vwsn::This(_lc)->GetDispatcher())->SendToClient_ObjectOps(ref.clientId))->InvokeMethod(ref, GLOBAL_NAME rpcmethod_RpcDtorTest__IService_GetState, arguments);
+		::vl::rpc_controller::ReadMethodException(invokeResult);
+		return ::vl::__vwsn::Unbox<::vl::WString>(invokeResult);
+	}
+
 	::vl::Ptr<::RpcDtorTest::IValue> __vwsnc5_Rpc_Dtor_rpcops_IOps_Create__rpcops_IOps_Rpc_Dtor::InvokeMethod_RpcDtorTest__IService_MakeValue(::vl::rpc_controller::RpcObjectReference ref)
 	{
 		auto arguments = ::vl::reflection::description::IValueArray::Create();
@@ -420,6 +453,13 @@ Closures
 		}
 	}
 
+	::vl::WString __vwsnc7_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::GetState()
+	{
+		if ((_lc == nullptr))
+			throw ::vl::Exception(::vl::WString::Unmanaged(L"RPC wrapper has been disconnected from lifecycle."));
+		return ::vl::__vwsn::This(_ops.Obj())->InvokeMethod_RpcDtorTest__IService_GetState(_ref);
+	}
+
 	::vl::Ptr<::RpcDtorTest::IValue> __vwsnc7_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService::MakeValue()
 	{
 		if ((_lc == nullptr))
@@ -460,7 +500,14 @@ Closures
 		{
 			{
 				auto __vwsn_switch_5 = methodId;
-				if ((__vwsn_switch_5 == GLOBAL_NAME rpcmethod_RpcDtorTest__IService_MakeValue))
+				if ((__vwsn_switch_5 == GLOBAL_NAME rpcmethod_RpcDtorTest__IService_GetState))
+				{
+					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcDtorTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
+					auto jsonString0 = ::vl::Ptr<::vl::glr::json::JsonString>(new ::vl::glr::json::JsonString());
+					(::vl::__vwsn::This(jsonString0.Obj())->content = [&](){ ::vl::glr::ParsingToken __vwsn_temp__; __vwsn_temp__.value = ::vl::__vwsn::This(target.Obj())->GetState(); return __vwsn_temp__; }());
+					return ::vl::__vwsn::Box(jsonString0);
+				}
+				else if ((__vwsn_switch_5 == GLOBAL_NAME rpcmethod_RpcDtorTest__IService_MakeValue))
 				{
 					auto target = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcDtorTest::IService>(::vl::__vwsn::This(_lc)->RefToPtr(ref).Obj()));
 					auto jsonValue0 = ::vl::rpc_controller::RpcBoxByval(::vl::__vwsn::Box(::vl::__vwsn::This(target.Obj())->MakeValue()), _lc);

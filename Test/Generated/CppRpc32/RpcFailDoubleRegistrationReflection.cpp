@@ -30,27 +30,12 @@ namespace vl
 		namespace description
 		{
 #ifndef VCZH_DEBUG_NO_REFLECTION
-			IMPL_CPP_TYPE_INFO(RpcFailDoubleRegistrationTest::IObject)
-			IMPL_CPP_TYPE_INFO(RpcFailDoubleRegistrationTest::IRpcWrapper_IObject)
 			IMPL_CPP_TYPE_INFO(RpcFailDoubleRegistrationTest::IRpcWrapper_IService)
 			IMPL_CPP_TYPE_INFO(RpcFailDoubleRegistrationTest::IService)
 			IMPL_CPP_TYPE_INFO(rpcops_IOps_Rpc_FailDoubleRegistration)
 
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 #define _ ,
-			BEGIN_INTERFACE_MEMBER(::RpcFailDoubleRegistrationTest::IObject)
-				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Interface)
-				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
-				CLASS_MEMBER_METHOD(GetName, NO_PARAMETER)
-				CLASS_MEMBER_PROPERTY_READONLY(Name, GetName)
-				ATTRIBUTE_MEMBER(::vl::__vwsn::att_rpc_Dynamic)
-			END_INTERFACE_MEMBER(::RpcFailDoubleRegistrationTest::IObject)
-
-			BEGIN_INTERFACE_MEMBER(::RpcFailDoubleRegistrationTest::IRpcWrapper_IObject)
-				CLASS_MEMBER_BASE(::RpcFailDoubleRegistrationTest::IObject)
-				CLASS_MEMBER_BASE(::vl::rpc_controller::IRpcWrapperBase)
-			END_INTERFACE_MEMBER(::RpcFailDoubleRegistrationTest::IRpcWrapper_IObject)
-
 			BEGIN_INTERFACE_MEMBER(::RpcFailDoubleRegistrationTest::IRpcWrapper_IService)
 				CLASS_MEMBER_BASE(::RpcFailDoubleRegistrationTest::IService)
 				CLASS_MEMBER_BASE(::vl::rpc_controller::IRpcWrapperBase)
@@ -60,13 +45,12 @@ namespace vl
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Interface)
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Ctor)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
-				CLASS_MEMBER_METHOD(SetObject, { L"obj" _ L"index" })
+				CLASS_MEMBER_METHOD(GetResult, NO_PARAMETER)
 			END_INTERFACE_MEMBER(::RpcFailDoubleRegistrationTest::IService)
 
 			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_FailDoubleRegistration)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
-				CLASS_MEMBER_METHOD(InvokeMethod_RpcFailDoubleRegistrationTest__IObject_GetName, { L"ref" })
-				CLASS_MEMBER_METHOD(InvokeMethod_RpcFailDoubleRegistrationTest__IService_SetObject, { L"ref" _ L"arg_obj" _ L"arg_index" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcFailDoubleRegistrationTest__IService_GetResult, { L"ref" })
 			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_FailDoubleRegistration)
 
 #undef _
@@ -75,8 +59,6 @@ namespace vl
 			public:
 				void Load(ITypeManager* manager)
 				{
-					ADD_TYPE_INFO(::RpcFailDoubleRegistrationTest::IObject)
-					ADD_TYPE_INFO(::RpcFailDoubleRegistrationTest::IRpcWrapper_IObject)
 					ADD_TYPE_INFO(::RpcFailDoubleRegistrationTest::IRpcWrapper_IService)
 					ADD_TYPE_INFO(::RpcFailDoubleRegistrationTest::IService)
 					ADD_TYPE_INFO(::rpcops_IOps_Rpc_FailDoubleRegistration)

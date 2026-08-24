@@ -46,11 +46,13 @@ namespace vl
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Ctor)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(DoList, { L"xs" })
+				CLASS_MEMBER_METHOD(GetServiceResult, NO_PARAMETER)
 			END_INTERFACE_MEMBER(::RpcCollectionOblist::Nested::Default::IService)
 
 			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionOblist_Nested_Default)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionOblist__Nested__Default__IService_DoList, { L"ref" _ L"arg_xs" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionOblist__Nested__Default__IService_GetServiceResult, { L"ref" })
 			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionOblist_Nested_Default)
 
 #undef _

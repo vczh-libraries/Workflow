@@ -51,6 +51,7 @@ namespace RpcEventOblist
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IService>;
 #endif
 	public:
+		virtual ::vl::WString GetServiceResult() = 0;
 		virtual void SetList(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs) = 0;
 		virtual void ModifyHeldList() = 0;
 		virtual void WatchHeldList() = 0;
@@ -70,6 +71,7 @@ class rpcops_IOps_Rpc_EventOblist : public virtual ::vl::reflection::IDescriptab
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_Rpc_EventOblist>;
 #endif
 public:
+	virtual ::vl::WString InvokeMethod_RpcEventOblist__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeMethod_RpcEventOblist__IService_ModifyHeldList(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeMethod_RpcEventOblist__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueObservableList> arg_xs) = 0;
 	virtual void InvokeMethod_RpcEventOblist__IService_WatchHeldList(::vl::rpc_controller::RpcObjectReference ref) = 0;
@@ -85,13 +87,15 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::WString s;
+		::vl::WString serviceResult;
+		::vl::WString clientResult;
 		::vl::vint rpctype_RpcEventOblist__IService = 0;
+		::vl::vint rpcmethod_RpcEventOblist__IService_GetServiceResult = 0;
 		::vl::vint rpcmethod_RpcEventOblist__IService_ModifyHeldList = 0;
 		::vl::vint rpcmethod_RpcEventOblist__IService_SetList = 0;
 		::vl::vint rpcmethod_RpcEventOblist__IService_WatchHeldList = 0;
 
-		void RecordItemChanged(const ::vl::WString& handler, ::vl::vint index, ::vl::vint oldCount, ::vl::vint newCount);
+		::vl::WString FormatItemChanged(const ::vl::WString& handler, ::vl::vint index, ::vl::vint oldCount, ::vl::vint newCount);
 		void ServiceItemChanged(::vl::vint index, ::vl::vint oldCount, ::vl::vint newCount);
 		void ClientItemChanged(::vl::vint index, ::vl::vint oldCount, ::vl::vint newCount);
 		void Modify(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs);
@@ -126,6 +130,7 @@ Closures
 		__vwsnc1_Rpc_EventOblist_serviceMain__RpcEventOblist_IService();
 
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> _List;
+		::vl::WString GetServiceResult() override;
 		void SetList(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs) override;
 		void ModifyHeldList() override;
 		void WatchHeldList() override;
@@ -159,6 +164,7 @@ Closures
 		__vwsnc4_Rpc_EventOblist_rpcops_IOps_Create__rpcops_IOps_Rpc_EventOblist(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcEventOblist__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcEventOblist__IService_ModifyHeldList(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcEventOblist__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueObservableList> arg_xs) override;
 		void InvokeMethod_RpcEventOblist__IService_WatchHeldList(::vl::rpc_controller::RpcObjectReference ref) override;
@@ -174,6 +180,7 @@ Closures
 		::vl::Ptr<::rpcops_IOps_Rpc_EventOblist> _ops;
 		void DisconnectFromLifecycle() override;
 		~__vwsnc5_Rpc_EventOblist_rpcwrapper_RpcEventOblist__IService__RpcEventOblist_IRpcWrapper_IService();
+		::vl::WString GetServiceResult() override;
 		void ModifyHeldList() override;
 		void SetList(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs) override;
 		void WatchHeldList() override;
@@ -216,6 +223,7 @@ Closures
 		__vwsnc9_Rpc_EventOblist_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_EventOblist(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcEventOblist__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcEventOblist__IService_ModifyHeldList(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcEventOblist__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueObservableList> arg_xs) override;
 		void InvokeMethod_RpcEventOblist__IService_WatchHeldList(::vl::rpc_controller::RpcObjectReference ref) override;

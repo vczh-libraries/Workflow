@@ -54,6 +54,10 @@ namespace vl
 			END_INTERFACE_PROXY(::RpcDtor3Test::IRpcWrapper_IContainer)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::RpcDtor3Test::IService)
+				::vl::WString ConsumeServiceResult() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(ConsumeServiceResult);
+				}
 				::vl::Ptr<::RpcDtor3Test::IContainer> ContainValue(::vl::Ptr<::RpcDtor3Test::IValue> value) override
 				{
 					INVOKEGET_INTERFACE_PROXY(ContainValue, value);
@@ -67,6 +71,10 @@ namespace vl
 				::vl::Ptr<::RpcDtor3Test::IValue> InvokeMethod_RpcDtor3Test__IContainer_GetValue(::vl::rpc_controller::RpcObjectReference ref) override
 				{
 					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcDtor3Test__IContainer_GetValue, ref);
+				}
+				::vl::WString InvokeMethod_RpcDtor3Test__IService_ConsumeServiceResult(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcDtor3Test__IService_ConsumeServiceResult, ref);
 				}
 				::vl::Ptr<::RpcDtor3Test::IContainer> InvokeMethod_RpcDtor3Test__IService_ContainValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtor3Test::IValue> arg_value) override
 				{

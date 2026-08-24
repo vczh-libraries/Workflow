@@ -64,6 +64,10 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY(Exchange2, o);
 				}
+				::vl::WString GetServiceResult() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetServiceResult);
+				}
 			END_INTERFACE_PROXY(::RpcWrapperTest::IService)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::rpcops_IOps_Rpc_LocalAndWrapper)
@@ -74,6 +78,10 @@ namespace vl
 				::vl::Ptr<::RpcWrapperTest::IObj1> InvokeMethod_RpcWrapperTest__IService_Exchange2(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcWrapperTest::IObj2> arg_o) override
 				{
 					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcWrapperTest__IService_Exchange2, ref, arg_o);
+				}
+				::vl::WString InvokeMethod_RpcWrapperTest__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcWrapperTest__IService_GetServiceResult, ref);
 				}
 			END_INTERFACE_PROXY(::rpcops_IOps_Rpc_LocalAndWrapper)
 

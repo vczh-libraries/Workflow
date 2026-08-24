@@ -55,6 +55,7 @@ namespace RpcDtor2Test
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IService>;
 #endif
 	public:
+		virtual ::vl::WString GetState() = 0;
 		virtual ::vl::Ptr<::RpcDtor2Test::IValue> MakeValue() = 0;
 		virtual ::vl::Ptr<::RpcDtor2Test::IValue> ReviewValue(::vl::Ptr<::RpcDtor2Test::IValue> value) = 0;
 	};
@@ -87,6 +88,7 @@ class rpcops_IOps_Rpc_Dtor2 : public virtual ::vl::reflection::IDescriptable, pu
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_Rpc_Dtor2>;
 #endif
 public:
+	virtual ::vl::WString InvokeMethod_RpcDtor2Test__IService_GetState(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual ::vl::Ptr<::RpcDtor2Test::IValue> InvokeMethod_RpcDtor2Test__IService_MakeValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual ::vl::Ptr<::RpcDtor2Test::IValue> InvokeMethod_RpcDtor2Test__IService_ReviewValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtor2Test::IValue> arg_value) = 0;
 };
@@ -103,6 +105,7 @@ namespace vl_workflow_global
 
 		::vl::WString s;
 		::vl::vint64_t rpctype_RpcDtor2Test__IService = 0;
+		::vl::vint64_t rpcmethod_RpcDtor2Test__IService_GetState = 0;
 		::vl::vint64_t rpcmethod_RpcDtor2Test__IService_MakeValue = 0;
 		::vl::vint64_t rpcmethod_RpcDtor2Test__IService_ReviewValue = 0;
 		::vl::vint64_t rpctype_RpcDtor2Test__IValue = 0;
@@ -148,6 +151,7 @@ Closures
 		__vwsnc11_Rpc_Dtor2_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor2(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcDtor2Test__IService_GetState(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcDtor2Test::IValue> InvokeMethod_RpcDtor2Test__IService_MakeValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcDtor2Test::IValue> InvokeMethod_RpcDtor2Test__IService_ReviewValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtor2Test::IValue> arg_value) override;
 	};
@@ -157,6 +161,7 @@ Closures
 	public:
 		__vwsnc1_Rpc_Dtor2_serviceMain__RpcDtor2Test_IService();
 
+		::vl::WString GetState() override;
 		::vl::Ptr<::RpcDtor2Test::IValue> MakeValue() override;
 		::vl::Ptr<::RpcDtor2Test::IValue> ReviewValue(::vl::Ptr<::RpcDtor2Test::IValue> value) override;
 	};
@@ -199,6 +204,7 @@ Closures
 		__vwsnc5_Rpc_Dtor2_rpcops_IOps_Create__rpcops_IOps_Rpc_Dtor2(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcDtor2Test__IService_GetState(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcDtor2Test::IValue> InvokeMethod_RpcDtor2Test__IService_MakeValue(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcDtor2Test::IValue> InvokeMethod_RpcDtor2Test__IService_ReviewValue(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::RpcDtor2Test::IValue> arg_value) override;
 	};
@@ -225,6 +231,7 @@ Closures
 		::vl::Ptr<::rpcops_IOps_Rpc_Dtor2> _ops;
 		void DisconnectFromLifecycle() override;
 		~__vwsnc7_Rpc_Dtor2_rpcwrapper_RpcDtor2Test__IService__RpcDtor2Test_IRpcWrapper_IService();
+		::vl::WString GetState() override;
 		::vl::Ptr<::RpcDtor2Test::IValue> MakeValue() override;
 		::vl::Ptr<::RpcDtor2Test::IValue> ReviewValue(::vl::Ptr<::RpcDtor2Test::IValue> value) override;
 	};

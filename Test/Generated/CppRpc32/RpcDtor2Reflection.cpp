@@ -52,6 +52,7 @@ namespace vl
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Interface)
 				ATTRIBUTE_TYPE(::vl::__vwsn::att_rpc_Ctor)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(GetState, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(MakeValue, NO_PARAMETER)
 				CLASS_MEMBER_METHOD(ReviewValue, { L"value" })
 			END_INTERFACE_MEMBER(::RpcDtor2Test::IService)
@@ -63,6 +64,7 @@ namespace vl
 
 			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Dtor2)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcDtor2Test__IService_GetState, { L"ref" })
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcDtor2Test__IService_MakeValue, { L"ref" })
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcDtor2Test__IService_ReviewValue, { L"ref" _ L"arg_value" })
 			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_Dtor2)

@@ -55,6 +55,7 @@ namespace vl
 				CLASS_MEMBER_METHOD(DoList, { L"xs" })
 				ATTRIBUTE_MEMBER(::vl::__vwsn::att_rpc_Byval)
 				ATTRIBUTE_PARAMETER(L"xs", ::vl::__vwsn::att_rpc_Byval)
+				CLASS_MEMBER_METHOD(GetServiceResult, NO_PARAMETER)
 			END_INTERFACE_MEMBER(::RpcCollectionOblist::Interface::InByval::OutByval::IService)
 
 			BEGIN_INTERFACE_MEMBER(::RpcCollectionOblist::Interface::InByval::OutByval::IValue)
@@ -68,6 +69,7 @@ namespace vl
 			BEGIN_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionOblist_Interface_InByval_OutByval)
 				CLASS_MEMBER_BASE(::vl::reflection::IDescriptable)
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionOblist__Interface__InByval__OutByval__IService_DoList, { L"ref" _ L"arg_xs" })
+				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionOblist__Interface__InByval__OutByval__IService_GetServiceResult, { L"ref" })
 				CLASS_MEMBER_METHOD(InvokeMethod_RpcCollectionOblist__Interface__InByval__OutByval__IValue_GetValue, { L"ref" })
 			END_INTERFACE_MEMBER(::rpcops_IOps_Rpc_CollectionOblist_Interface_InByval_OutByval)
 

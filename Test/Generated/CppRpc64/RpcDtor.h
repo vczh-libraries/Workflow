@@ -55,6 +55,7 @@ namespace RpcDtorTest
 		friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IService>;
 #endif
 	public:
+		virtual ::vl::WString GetState() = 0;
 		virtual ::vl::Ptr<::RpcDtorTest::IValue> MakeValue() = 0;
 	};
 
@@ -86,6 +87,7 @@ class rpcops_IOps_Rpc_Dtor : public virtual ::vl::reflection::IDescriptable, pub
 	friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<rpcops_IOps_Rpc_Dtor>;
 #endif
 public:
+	virtual ::vl::WString InvokeMethod_RpcDtorTest__IService_GetState(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual ::vl::Ptr<::RpcDtorTest::IValue> InvokeMethod_RpcDtorTest__IService_MakeValue(::vl::rpc_controller::RpcObjectReference ref) = 0;
 };
 
@@ -101,6 +103,7 @@ namespace vl_workflow_global
 
 		::vl::WString s;
 		::vl::vint64_t rpctype_RpcDtorTest__IService = 0;
+		::vl::vint64_t rpcmethod_RpcDtorTest__IService_GetState = 0;
 		::vl::vint64_t rpcmethod_RpcDtorTest__IService_MakeValue = 0;
 		::vl::vint64_t rpctype_RpcDtorTest__IValue = 0;
 
@@ -145,6 +148,7 @@ Closures
 		__vwsnc11_Rpc_Dtor_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_Dtor(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcDtorTest__IService_GetState(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcDtorTest::IValue> InvokeMethod_RpcDtorTest__IService_MakeValue(::vl::rpc_controller::RpcObjectReference ref) override;
 	};
 
@@ -153,6 +157,7 @@ Closures
 	public:
 		__vwsnc1_Rpc_Dtor_serviceMain__RpcDtorTest_IService();
 
+		::vl::WString GetState() override;
 		::vl::Ptr<::RpcDtorTest::IValue> MakeValue() override;
 	};
 
@@ -194,6 +199,7 @@ Closures
 		__vwsnc5_Rpc_Dtor_rpcops_IOps_Create__rpcops_IOps_Rpc_Dtor(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc);
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
+		::vl::WString InvokeMethod_RpcDtorTest__IService_GetState(::vl::rpc_controller::RpcObjectReference ref) override;
 		::vl::Ptr<::RpcDtorTest::IValue> InvokeMethod_RpcDtorTest__IService_MakeValue(::vl::rpc_controller::RpcObjectReference ref) override;
 	};
 
@@ -219,6 +225,7 @@ Closures
 		::vl::Ptr<::rpcops_IOps_Rpc_Dtor> _ops;
 		void DisconnectFromLifecycle() override;
 		~__vwsnc7_Rpc_Dtor_rpcwrapper_RpcDtorTest__IService__RpcDtorTest_IRpcWrapper_IService();
+		::vl::WString GetState() override;
 		::vl::Ptr<::RpcDtorTest::IValue> MakeValue() override;
 	};
 

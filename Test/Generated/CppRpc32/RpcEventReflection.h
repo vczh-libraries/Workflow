@@ -40,6 +40,10 @@ namespace vl
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::RpcEvent::IService)
+				::vl::WString GetServiceResult() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetServiceResult);
+				}
 				void MakeItHappen() override
 				{
 					INVOKE_INTERFACE_PROXY_NOPARAMS(MakeItHappen);
@@ -54,6 +58,10 @@ namespace vl
 				void InvokeEvent_RpcEvent__IService_SomethingHappened(::vl::rpc_controller::RpcObjectReference ref, const ::vl::WString& arg_arg0) override
 				{
 					INVOKE_INTERFACE_PROXY(InvokeEvent_RpcEvent__IService_SomethingHappened, ref, arg_arg0);
+				}
+				::vl::WString InvokeMethod_RpcEvent__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcEvent__IService_GetServiceResult, ref);
 				}
 				void InvokeMethod_RpcEvent__IService_MakeItHappen(::vl::rpc_controller::RpcObjectReference ref) override
 				{

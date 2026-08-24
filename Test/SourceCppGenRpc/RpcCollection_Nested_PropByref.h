@@ -66,6 +66,7 @@ namespace RpcCollection
 					friend struct ::vl::reflection::description::CustomTypeDescriptorSelector<IService>;
 #endif
 				public:
+					virtual ::vl::WString GetServiceResult() = 0;
 					virtual ::vl::Ptr<::vl::reflection::description::IValueList> GetList() = 0;
 					virtual void SetList(::vl::Ptr<::vl::reflection::description::IValueList> __vwsn_value_) = 0;
 				};
@@ -88,6 +89,7 @@ class rpcops_IOps_Rpc_Collection_Nested_PropByref : public virtual ::vl::reflect
 #endif
 public:
 	virtual ::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcCollection__Nested__InByref__PropByref__IService_GetList(::vl::rpc_controller::RpcObjectReference ref) = 0;
+	virtual ::vl::WString InvokeMethod_RpcCollection__Nested__InByref__PropByref__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) = 0;
 	virtual void InvokeMethod_RpcCollection__Nested__InByref__PropByref__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueList> __vwsn_value_) = 0;
 };
 
@@ -104,6 +106,7 @@ namespace vl_workflow_global
 		::vl::Ptr<::vl::reflection::description::IValueList> xsService;
 		::vl::vint rpctype_RpcCollection__Nested__InByref__PropByref__IService = 0;
 		::vl::vint rpcmethod_RpcCollection__Nested__InByref__PropByref__IService_GetList = 0;
+		::vl::vint rpcmethod_RpcCollection__Nested__InByref__PropByref__IService_GetServiceResult = 0;
 		::vl::vint rpcmethod_RpcCollection__Nested__InByref__PropByref__IService_SetList = 0;
 
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
@@ -138,6 +141,7 @@ Closures
 		__vwsnc1_Rpc_Collection_Nested_PropByref_serviceMain__RpcCollection_Nested_InByref_PropByref_IService();
 
 		::vl::Ptr<::vl::reflection::description::IValueList> _List;
+		::vl::WString GetServiceResult() override;
 		::vl::Ptr<::vl::reflection::description::IValueList> GetList() override;
 		void SetList(::vl::Ptr<::vl::reflection::description::IValueList> xs) override;
 	};
@@ -171,6 +175,7 @@ Closures
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcCollection__Nested__InByref__PropByref__IService_GetList(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::WString InvokeMethod_RpcCollection__Nested__InByref__PropByref__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcCollection__Nested__InByref__PropByref__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueList> __vwsn_value_) override;
 	};
 
@@ -185,6 +190,7 @@ Closures
 		void DisconnectFromLifecycle() override;
 		~__vwsnc5_Rpc_Collection_Nested_PropByref_rpcwrapper_RpcCollection__Nested__InByref__PropByref__IService__RpcCollection_Nested_InByref_PropByref_IRpcWrapper_IService();
 		::vl::Ptr<::vl::reflection::description::IValueList> GetList() override;
+		::vl::WString GetServiceResult() override;
 		void SetList(::vl::Ptr<::vl::reflection::description::IValueList> __vwsn_value_) override;
 	};
 
@@ -226,6 +232,7 @@ Closures
 
 		::vl::rpc_controller::IRpcLifecycle* _lc = nullptr;
 		::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcCollection__Nested__InByref__PropByref__IService_GetList(::vl::rpc_controller::RpcObjectReference ref) override;
+		::vl::WString InvokeMethod_RpcCollection__Nested__InByref__PropByref__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override;
 		void InvokeMethod_RpcCollection__Nested__InByref__PropByref__IService_SetList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueList> __vwsn_value_) override;
 	};
 }

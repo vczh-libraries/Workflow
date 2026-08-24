@@ -46,6 +46,10 @@ namespace vl
 				{
 					INVOKEGET_INTERFACE_PROXY(DoList, xs);
 				}
+				::vl::WString GetServiceResult() override
+				{
+					INVOKEGET_INTERFACE_PROXY_NOPARAMS(GetServiceResult);
+				}
 			END_INTERFACE_PROXY(::RpcCollection::Interface::InByval::OutByval::IService)
 
 			BEGIN_INTERFACE_PROXY_NOPARENT_SHAREDPTR(::RpcCollection::Interface::InByval::OutByval::IValue)
@@ -59,6 +63,10 @@ namespace vl
 				::vl::Ptr<::vl::reflection::description::IValueList> InvokeMethod_RpcCollection__Interface__InByval__OutByval__IService_DoList(::vl::rpc_controller::RpcObjectReference ref, ::vl::Ptr<::vl::reflection::description::IValueList> arg_xs) override
 				{
 					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcCollection__Interface__InByval__OutByval__IService_DoList, ref, arg_xs);
+				}
+				::vl::WString InvokeMethod_RpcCollection__Interface__InByval__OutByval__IService_GetServiceResult(::vl::rpc_controller::RpcObjectReference ref) override
+				{
+					INVOKEGET_INTERFACE_PROXY(InvokeMethod_RpcCollection__Interface__InByval__OutByval__IService_GetServiceResult, ref);
 				}
 				::vl::WString InvokeMethod_RpcCollection__Interface__InByval__OutByval__IValue_GetValue(::vl::rpc_controller::RpcObjectReference ref) override
 				{
