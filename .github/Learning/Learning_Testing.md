@@ -14,6 +14,7 @@
 - Pure refactors should not touch generated RPC outputs [5]
 - Split RPC sample definitions and tests consistently [4]
 - Type-check shared `Rpc.d.ts` standalone [3]
+- Keep split-process RPC fixtures independent and enforce `IndexRpc.txt` [3]
 - Workflow analyzer error tests may change values when preserving the error code [1]
 - Workflow samples use `raise`, not `throw` [1]
 - Workflow range syntax for inclusive generated loops is `range [1, xs.Count]` [1]
@@ -28,6 +29,9 @@
 - Track generated TypeScript RPC fixtures in git [1]
 - Use 2-space indentation in Workflow sample files [1]
 - Verify Workflow library file moves with stale-reference scans [1]
+- Keep Workflow stdio launchers repository-relative and interactive [1]
+- Format nested MSBuild source items for portable vmake parsing [1]
+- Run the no-skip RPC stdio suite in canonical Workflow builds [1]
 
 # Refinements
 
@@ -156,3 +160,29 @@ For ChatBot RPC app changes, run one `ChatBotServer` and three `ChatBotClient` p
 For ChatBot dispatcher refactors, also use static scans under `Test/UnitTest/ChatBot*` to confirm no `Thread::Sleep`, dispatcher-owned task queue methods, or unnecessary explicit `Ptr<T>` conversion constructors remain in the touched source.
 
 Also scan for stale class and file names after dispatcher splits or renames, including old dispatcher subclasses, old channel server adapters, and temporary registration guards that should have disappeared.
+
+## Keep split-process RPC fixtures independent and enforce `IndexRpc.txt`
+
+`RpcStdioTest_Driver` launches a fresh provider process for each `IndexRpc.txt` case, so a fixture must not read module globals that only `serviceMain` or the service implementation updated in the provider. Expose service-owned collection, event, destructor, identity, and registration observations through the fixture's RPC service contract while preserving the behavior the original in-process test was designed to verify.
+
+Generate driver and service dispatchers for every indexed case, keep provider stdout reserved for framed protocol traffic, and pass the decoded `IndexRpc.txt` expectation into the driver harness. Compare the complete `clientMain` result exactly and fail immediately on mismatches, exceptions, disconnection, malformed messages, or lifecycle failures.
+
+The C++ launchers must run every indexed case when no skip list is supplied; do not hide broken fixtures behind a default C++ compatibility list. Keep the destructor-order skip list opt-in for providers in languages that cannot guarantee deterministic destructor execution, and never select it automatically for C++ verification.
+
+## Keep Workflow stdio launchers repository-relative and interactive
+
+`Test/StartRpcStdio.ps1` and `Test/StartRpcStdio.sh` should resolve the Debug x64 `RpcStdioTest_Driver` and `RpcStdioTest_Service` from the launcher's repository location, quote the service child command without losing paths that contain spaces, and validate an optional exact-name skip-list path.
+
+Run the driver attached to the calling terminal so its output, failures, and interactive behavior remain visible. Launcher verification should exercise a real retained case far enough to confirm the exact service command and successful process exit, while syntax and path checks alone are insufficient for the Windows launcher.
+
+## Format nested MSBuild source items for portable vmake parsing
+
+When a `ClCompile Include` item needs a nested element such as `/bigobj` `AdditionalOptions`, put the opening include element, nested option, and closing element on separate lines, following the established generated C++ projects. The portable project-to-vmake reader extracts source paths from these lines and can misread or omit a source when the complete nested XML item is compressed onto one line.
+
+After changing this layout, regenerate through `.github/Ubuntu/build.sh` and confirm the source appears in the portable source list and link command; valid MSBuild XML alone does not verify the Linux makefile-generation path.
+
+## Run the no-skip RPC stdio suite in canonical Workflow builds
+
+Run `Test/StartRpcStdio.ps1` or `Test/StartRpcStdio.sh` without a skip list as required verification alongside the Workflow UnitTest projects. The canonical Tools build paths must include this suite: the Unix `vgo vbuild Workflow` path after its vmake projects, and the Windows `Build.ps1 -Project Workflow` path against the already-built Release x64 binaries.
+
+Allow the PowerShell launcher to select an explicit configuration and platform while keeping Debug x64 as its direct-use default. Invoke it in a child PowerShell process from the canonical Windows build because the launcher's deliberate `exit` must not terminate the parent before release generation finishes; propagate any nonzero result through the existing build failure path.

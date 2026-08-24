@@ -30,8 +30,9 @@
 - Keep reusable RPC JSON dispatch free of synchronization [2]
 - Mirror ChatBot service event output on server and clients [2]
 - Keep reusable RPC JSON dispatchers free of generated ChatBot dependencies [2]
+- Keep RPC test harness setup under `VCZH_DEBUG_NO_REFLECTION` [2]
 - Keep RPC analyzer source and shared AST helpers under `Source/Analyzer/Rpc` [1]
-- Keep RPC JSON test harness setup under `VCZH_DEBUG_NO_REFLECTION` [1]
+- Place RPC fixture state on the process that owns it [1]
 - Use generated strong typed RPC ops for event listeners [1]
 - Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for registering free functions as reflection static methods [1]
 - Workflow interface event declarations use type-only payloads [1]
@@ -161,9 +162,11 @@ Workflow interface event declarations in samples use type-only payload syntax. D
 
 When the user says `RunRpcTestCase` needs to change, apply the change to every variant of that test harness. Do not add helper functions only to share code between variants unless the user explicitly asks for that; duplication is acceptable when it keeps JSON-value and flat harness behavior clear.
 
-## Keep RPC JSON test harness setup under `VCZH_DEBUG_NO_REFLECTION`
+## Keep RPC test harness setup under `VCZH_DEBUG_NO_REFLECTION`
 
 Split RPC C++ test harness paths by representation: `RunRpcTestCase_JsonValue` owns JSON serializers, JSON object/event ops, JSON strong typed ops, JSON dispatchers, and `SetSerializer` calls under `VCZH_DEBUG_NO_REFLECTION`; `RunRpcTestCase_Flat` should use flat ops and should not require a serializer.
+
+The generated `RpcStdioTest_Driver` and `RpcStdioTest_Service` harnesses also stay no-reflection. Include the ordinary generated assembly entry headers, define `VCZH_DEBUG_NO_REFLECTION` in every configuration, and do not import `Generated_ReflectionRpc` merely because reflection-flavored generated headers are available.
 
 ## Use generated strong typed RPC ops for event listeners
 
@@ -380,3 +383,9 @@ Reusable RPC JSON setup guidance belongs in `.github/KnowledgeBase/KB_Workflow_J
 For the ChatBot CLI apps, attach server-side handlers to the same service events that client wrappers observe, and print the same formats: `speakerName joined`, `speakerName left`, and `speakerName> message`. This keeps local server output aligned with client-visible behavior without changing generated RPC routing.
 
 Keep the event-handler wiring in a shared out-of-line ChatBot helper so the server and clients print the same event text without duplicating handler bodies in each `Main.cpp`.
+
+## Place RPC fixture state on the process that owns it
+
+In `Test/Resources/Rpc/*_Test.txt`, make the service/client process boundary visible even when the in-memory harness would allow a module global to appear shared. Move service-only state and helpers, including transitively reached helpers, into the anonymous service implementation created inside `serviceMain`. Move client-only state and helpers below `serviceMain`, keep only genuinely stateless cross-process helpers above it, and remove unused declarations.
+
+When a fixture intentionally compares local and wrapped identities, use separately named service-owned and client-owned objects instead of declarations that imply shared memory. This reorganization must preserve `IndexRpc.txt` byte-for-byte and regenerate derived outputs through `CompilerTest_LoadAndCompile`.
