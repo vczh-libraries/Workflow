@@ -1,9 +1,15 @@
-  - `RpcStdioTest_Driver` and `RpcStdioTest_Service` should use `VCZH_DEBUG_NO_REFLECTION` and remove dependencies to reflection files.
-  - `RpcStdioTest_Driver` should check test results against `IndexRpc.txt` just like `CppTest`. Crash when the result does not match.
-  - Remove `RpcStdioTest_CppSkipped.txt`, and `StartRpcStdio.(ps1|sh)` will not by default use it when a skip list is not offered.
-    - When a skip list is not offered it should just run every test cases.
-    - Prepare a `Test/StartRpcStdio_DtorSkipList.txt` to collect all test cases that require the execution order of destructors. This is for some other languages like TypeScript or C#, which doesn't offer stable destructor execution like C++, skipping such cases is unavoidable. But for C++ this file should not be needed.
-  - Currently almost all test case does not produce the correct result, you need to fix it. Make sure **every** test case in `IndexRpc.txt` is working correctly with `StartRpcStdio.ps1` when nothing is skipped.
-  - Make sure all test cases actually pass, including `UnitTest` and `StartRpcStdio.ps1` running.
-  - Update `Project.md`:
-    - Running `StartRpcStdio.(ps1|sh)` is always required along with `UnitTest`.
+Follow `REPO-ROOT/.github/Rules/document-and-commit.md` to finish the work.
+
+- `Tools` repo update:
+  - Add `StartRpcStdio.sh` to `vgo vbuild Workflow`.
+  - Add `StartRpcStdio.ps1` to `Build.ps1 -Project Workflow`.
+- You can find a recent commit making `StartRpcStdio.(ps1|sh)` to work:
+  - The root cause is the original test cases assume service and client are running in the same memory space, so in that commit they are separated. But the change is not making the script obvious enough for that intent.
+  - Further improvements are required for each rpc test case Workflow script (txt files)
+    - In the script there are multiple global variables, remove which is no longer used.
+    - If a global variable, or a global function is only used (including recursively/indirectly) in service side, move it inside the service class (inside `new (IService^)` inside `serviceMain`).
+    - Otherwise, such global variable or function should only be used in client side, or when a function is stateless it could be shared between service/client side:
+      - If a global variable or a global function is not used (including recursively/indirectly) in service side, move them below `serviceMain`.
+    - Add the above policy to `Project.md` and `.github/Rules/new-sample-rpc.md`.
+  - Since no semantic in test cases is actually changed, I would expect `IndexRpc.txt` should not be touched as the result should just be the same.
+- To verify, both `StartRpcStdio.ps1` and `UnitTest` should be executed and ensure every single case passes.

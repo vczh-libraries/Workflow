@@ -1,5 +1,3 @@
-investigate repro
-
 Follow
 - `.github\Rules\new-sample.md`
 - `.github\Rules\new-sample-rpc.md`
