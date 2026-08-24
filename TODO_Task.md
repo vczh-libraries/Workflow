@@ -1,24 +1,9 @@
-The goal of this task is to reuse all existing RPC test cases, but create another pair of test app:
-- RpcStdioTest_Driver
-- RpcStdioTest_Service
-added to `UnitTest.sln`.
-
-To start them, say `RpcStdioTest_Driver <cli-command-to-start=RpcStdioTest_Service> [apath-to-SkippedTestCaseListFile]`,
-and `RpcStdioTest_Driver` will run all test cases unless one is in the skipped list,
-on each test case it starts `cli-command-to-start=RpcStdioTest_Service`, with an extra argument of the test case name.
-Note that it doesn't have to be `RpcStdioTest_Service`, but this is what we verify against right now, in the future other people could offer their own `RpcStdioTest_Service`.
-
-`RpcStdioTest_Driver` connects `RpcStdioTest_Service` via stdio redirection, just like how `../GacUI/.github/Jobs/DebugRemoteProtocolWithNativeRenderer.md` is done with `/cli` option.
-The stdio redirection implementation of `INetworkProtocolServer` is already done in VlppOS.
-
-Test case names are in `IndexRpc.txt`.
-`RpcStdioTest_Driver` will execute the client part, which is the service consumer. It execute all test cases at once, between each test case `RpcStdioTest_Service` is launched separatedly.
-`RpcStdioTest_Service` will execute the server part, which is the service provider. It execute exactly the specified test case.
-Since this is a test project, when anything unexpected happened, if there is already an exception for that let it crash, otherwise throw one.
-
-When generating `TestCasesRpc.cpp`, generates `TestCasesRpcStdio_(Driver|Service).cpp`, as well as a manually written `TestCasesRpcStdio_(Driver|Service).h` for shared code across cases.
-This will be the main part of `RpcStdioTest_(Driver|Service)`.
-
-The background is that, GacJS is also doing RPC codegen in TypeScript as a service provider, after `RpcStdioTest_Driver` is done, we could pass the `nodejs to launch a package` command and it will run service providers written in TypeScript, so that we could offer this test project as part of the tool, for people who want to implement RPC in their own languages. But you don't need to worry about anything about GacJS right now, just focus on Workflow repo itself. Since stdio redirection facility has been well tested on Windows/Linux/macOS as well as a simple demo in GacJS, so I believe you can just limit every change in the Workflow repo, and more strictly, I think most of the code do not need to be touch, adding the mentioned codegen with two new projects should be enough.
-
-Update `Project.md` accordingly using similar languages in that document. Create vmake for these new test projects in `Test/Linux` but don't worry about how to test them.
+  - `RpcStdioTest_Driver` and `RpcStdioTest_Service` should use `VCZH_DEBUG_NO_REFLECTION` and remove dependencies to reflection files.
+  - `RpcStdioTest_Driver` should check test results against `IndexRpc.txt` just like `CppTest`. Crash when the result does not match.
+  - Remove `RpcStdioTest_CppSkipped.txt`, and `StartRpcStdio.(ps1|sh)` will not by default use it when a skip list is not offered.
+    - When a skip list is not offered it should just run every test cases.
+    - Prepare a `Test/StartRpcStdio_DtorSkipList.txt` to collect all test cases that require the execution order of destructors. This is for some other languages like TypeScript or C#, which doesn't offer stable destructor execution like C++, skipping such cases is unavoidable. But for C++ this file should not be needed.
+  - Currently almost all test case does not produce the correct result, you need to fix it. Make sure **every** test case in `IndexRpc.txt` is working correctly with `StartRpcStdio.ps1` when nothing is skipped.
+  - Make sure all test cases actually pass, including `UnitTest` and `StartRpcStdio.ps1` running.
+  - Update `Project.md`:
+    - Running `StartRpcStdio.(ps1|sh)` is always required along with `UnitTest`.
