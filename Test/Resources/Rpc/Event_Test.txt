@@ -3,22 +3,28 @@ using system::*;
 using RpcEvent::*;
 
 
-var s = "";
+var serviceResult = "";
+var clientResult = "";
 
 func ServiceSomethingHappened(something : string) : void
 {
-  s = $"$(s)[serviceMain:$(something)]";
+  serviceResult = $"$(serviceResult)[serviceMain:$(something)]";
 }
 
 func ClientSomethingHappened(something : string) : void
 {
-  s = $"$(s)[clientMain:$(something)]";
+  clientResult = $"$(clientResult)[clientMain:$(something)]";
 }
 
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcEvent::IService^)
   {
+    override func GetServiceResult() : string
+    {
+      return serviceResult;
+    }
+
     override func MakeItHappen() : void
     {
       SomethingHappened("A");
@@ -43,5 +49,5 @@ func clientMain(lc : IRpcLifecycle*) : string
   service.Watch();
   service.SomethingHappened("B");
 
-  return s;
+  return clientResult & service.GetServiceResult();
 }

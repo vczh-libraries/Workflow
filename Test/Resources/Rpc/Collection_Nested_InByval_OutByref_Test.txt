@@ -9,6 +9,11 @@ func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcCollection::Nested::InByval::OutByref::IService^)
   {
+    override func GetServiceResult() : string
+    {
+      return Print(xsService);
+    }
+
     override func DoList(xs : (int[])[]) : (int[])[]
     {
       var xsObj : object = xs;
@@ -54,6 +59,6 @@ func clientMain(lc : IRpcLifecycle*) : string
 
   return
     $"[$(Print(xsOrigin))]" &
-    $"[$(Print(xsService))]" &
+    $"[$(service.GetServiceResult())]" &
     $"[$(Print(xsClient))]";
 }

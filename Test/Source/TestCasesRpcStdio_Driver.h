@@ -154,10 +154,12 @@ namespace vl::rpc_controller_test
 	template<typename TInstance, bool HasEvent>
 	void RunRpcStdioTestCase(
 		const WString& itemName,
+		const WString& expected,
 		const WString& serviceCommand,
 		const List<WString>& waitingForServices
 		)
 	{
+#define ERROR_MESSAGE_PREFIX L"vl::rpc_controller_test::RunRpcStdioTestCase<TInstance, HasEvent>(const WString&, const WString&, const WString&, const List<WString>&)#"
 		Console::WriteLine(L"Rpc:" + itemName);
 
 		auto parser = Ptr(new Parser);
@@ -185,7 +187,9 @@ namespace vl::rpc_controller_test
 		requesterDispatcher->Initialize();
 
 		auto actual = TInstance::Instance().clientMain(requesterDispatcher->GetRpcLifecycle());
-		Console::WriteLine(L"    result : " + actual);
+		Console::WriteLine(L"    expected : " + expected);
+		Console::WriteLine(L"    actual   : " + actual);
+		CHECK_ERROR(actual == expected, ERROR_MESSAGE_PREFIX L"The actual result does not match IndexRpc.txt.");
 
 		EventObject finalized;
 		CHECK_ERROR(finalized.CreateAutoUnsignal(false), L"Failed to create the RPC stdio finalization event.");
@@ -200,6 +204,7 @@ namespace vl::rpc_controller_test
 		channelServer->Stop();
 		taskQueue->QueueExitTask();
 		taskQueueThread->Wait();
+#undef ERROR_MESSAGE_PREFIX
 	}
 }
 

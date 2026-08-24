@@ -9,6 +9,11 @@ func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcDtor2Test::IService^)
   {
+    override func GetState() : string
+    {
+      return s;
+    }
+
     override func MakeValue() : IValue^
     {
       return new (RpcDtor2Test::IValue^)
@@ -48,9 +53,9 @@ func clientMain(lc : IRpcLifecycle*) : string
     raise "IValue(wrapperObj) should be a wrapper object in clientMain";
   }
   wrapperObj = null;
-  var m = $"[$(s)]";
+  var m = $"[$(clientObj.GetState())]";
   value = null;
-  m = $"$(m)[$(s)]";
+  m = $"$(m)[$(clientObj.GetState())]";
   clientObj = null;
   obj = null;
   return m;

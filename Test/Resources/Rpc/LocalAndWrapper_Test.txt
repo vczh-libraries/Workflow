@@ -15,6 +15,13 @@ func serviceMain(lc : IRpcLifecycle*) : void
 {
   var service = new (RpcWrapperTest::IService^)
   {
+    override func GetServiceResult() : string
+    {
+      return
+        $"[$(serviceReceived_Obj1 == clientObj1)]" &
+        $"[$(serviceReceived_Obj2 == serviceObj2)]";
+    }
+
     override func Exchange1(o : IObj1^) : IObj2^
     {
       var wrapperObj : object = o;
@@ -63,8 +70,7 @@ func clientMain(lc : IRpcLifecycle*) : string
   }
 
   return
-    $"[$(serviceReceived_Obj1 == clientObj1)]" &
-    $"[$(serviceReceived_Obj2 == serviceObj2)]" &
+    service.GetServiceResult() &
     $"[$(clientReceived_Obj1 == clientObj1)]" &
     $"[$(clientReceived_Obj2 == serviceObj2)]";
 }

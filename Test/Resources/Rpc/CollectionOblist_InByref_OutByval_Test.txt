@@ -10,6 +10,11 @@ func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (IService^)
   {
+    override func GetServiceResult() : string
+    {
+      return Print4(xsService);
+    }
+
     override func DoList(xs : observe int[]) : observe int[]
     {
       var xsObj : object = xs;
@@ -58,6 +63,6 @@ func clientMain(lc : IRpcLifecycle*) : string
 
   return
     $"[$(Print4(xsOrigin))]" &
-    $"[$(Print4(xsService))]" &
+    $"[$(service.GetServiceResult())]" &
     $"[$(Print5(xsClient))]";
 }

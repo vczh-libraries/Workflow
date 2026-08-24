@@ -34,9 +34,9 @@ Source inspection confirms the same process-boundary cause. The affected samples
 
 # PROPOSALS
 
-- No.1 Make RPC fixtures process-independent and enforce the index contract
+- No.1 [CONFIRMED] Make RPC fixtures process-independent and enforce the index contract
 
-## No.1 Make RPC fixtures process-independent and enforce the index contract
+## No.1 [CONFIRMED] Make RPC fixtures process-independent and enforce the index contract
 
 Keep the production RPC transport and lifecycle behavior unchanged. The failures come from tests observing service-owned state through same-process module globals, so make those observations part of each affected test service contract instead:
 
@@ -50,3 +50,18 @@ Update `CompilerTest_LoadAndCompile`'s stdio harness generation to include the n
 Remove the C++ compatibility skip list and make both launchers omit the optional skip argument unless the caller explicitly supplies one. Add the destructor portability list at the requested `Test` path and update `Project.md` so a no-skip `StartRpcStdio` run is mandatory alongside UnitTest verification.
 
 ### CODE CHANGE
+
+Implemented the proposed process-independent fixture contracts and regenerated all affected C++ and RPC metadata outputs for Win32 and x64. All 96 collection fixtures now return their service-owned observation through `IService.GetServiceResult`; the event, destructor, local-wrapper, and duplicate-registration fixtures use equivalent service-side result methods tailored to their lifecycle behavior. No production RPC implementation was changed.
+
+The generated stdio driver now receives each decoded `IndexRpc.txt` expectation, prints both values, and terminates immediately through `CHECK_ERROR` when they differ. Driver and service harnesses use ordinary generated headers, and their Visual Studio and Linux build definitions no longer import `Generated_ReflectionRpc`; `VCZH_DEBUG_NO_REFLECTION` remains enabled.
+
+Removed `Test/Resources/RpcStdioTest_CppSkipped.txt`. Both launchers now pass a skip-list argument only when one is explicitly supplied. Added the eight destructor-order-dependent cases to `Test/StartRpcStdio_DtorSkipList.txt` as an opt-in portability list, and documented the mandatory no-skip stdio run in `Project.md`.
+
+### CONFIRMED
+
+- The compiler load-and-compile suite passed 711/711 cases while regenerating both x86 and x64 outputs.
+- Debug x64 rebuilt with 0 warnings and 0 errors after regeneration.
+- `Test/StartRpcStdio.ps1` without a skip list passed all 126/126 `IndexRpc.txt` cases with expected/actual comparison enabled.
+- Fresh Release Win32 and x64 driver/service pairs each passed all 126/126 indexed cases without a skip list.
+- The canonical `C:\Code\VczhLibraries\Tools\Tools\Build.ps1 Workflow` run completed the full Release Win32/x64 UnitTest matrix and TypeScript `tsc --noEmit` check successfully.
+- XML, fixture-count, skip-list, and stale-reference validations passed. `git diff --check` is clean outside generated output (apart from expected LF-to-CRLF warnings); the full generated diff retains the compiler's intentional fixed-column trailing spaces in `Assembly.Rpc.*.txt` disassembly baselines.

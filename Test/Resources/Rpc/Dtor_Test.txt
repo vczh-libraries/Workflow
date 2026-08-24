@@ -9,6 +9,11 @@ func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcDtorTest::IService^)
   {
+    override func GetState() : string
+    {
+      return s;
+    }
+
     override func MakeValue() : IValue^
     {
       return new (RpcDtorTest::IValue^)
@@ -39,10 +44,10 @@ func clientMain(lc : IRpcLifecycle*) : string
   var value = cast (RpcDtorTest::IValue^) valueObj;
   var wrapperObj = cast (system::IRpcWrapperBase^) valueObj;
   wrapperObj = null;
-  var m = $"[$(s)]"; /* s should be "Not Deleted" */
+  var m = $"[$(clientObj.GetState())]";
   value = null;
   valueObj = null; /* valueObj also owns the same wrapper, so drop it before checking the final state */
-  m = $"$(m)[$(s)]"; /* s should be "Deleted" */
+  m = $"$(m)[$(clientObj.GetState())]";
   clientObj = null;
   obj = null;
   return m;

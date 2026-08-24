@@ -3,12 +3,20 @@ using system::*;
 using RpcDtor3Test::*;
 
 
-var s = "";
+var serviceResult = "";
+var clientResult = "";
 
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcDtor3Test::IService^)
   {
+    override func ConsumeServiceResult() : string
+    {
+      var result = serviceResult;
+      serviceResult = "";
+      return result;
+    }
+
     override func ContainValue(value : IValue^) : IContainer^
     {
       var valueObj : object = value;
@@ -20,7 +28,7 @@ func serviceMain(lc : IRpcLifecycle*) : void
       {
         delete
         {
-          s = $"$(s)[IContainer]";
+          serviceResult = $"$(serviceResult)[IContainer]";
         }
 
         override func GetValue() : IValue^
@@ -39,9 +47,16 @@ func MakeValue() : IValue^
   {
     delete
     {
-      s = $"$(s)[IValue]";
+      clientResult = $"$(clientResult)[IValue]";
     }
   };
+}
+
+func ConsumeClientResult() : string
+{
+  var result = clientResult;
+  clientResult = "";
+  return result;
 }
 
 func clientMain(lc : IRpcLifecycle*) : string
@@ -52,6 +67,7 @@ func clientMain(lc : IRpcLifecycle*) : string
     raise "IService(service) should be a wrapper object in clientMain";
   }
   var service = cast (RpcDtor3Test::IService^) serviceObj;
+  var s = "";
   {
     s = $"$(s)[1]";
     var container = service.ContainValue(MakeValue());
@@ -73,8 +89,9 @@ func clientMain(lc : IRpcLifecycle*) : string
       ObjectHold will be called from client to service to free the real container.
       The value wrapper in the real container will be deleted.
       ObjectHold will be called from service to client to free the real value.
-      Destructor of IValue will be called before destructor of IContainer.
+      Destructor of IContainer will be called before destructor of IValue.
     */
+    s = s & service.ConsumeServiceResult() & ConsumeClientResult();
     s = $"$(s)[2]";
   }
   {
@@ -100,12 +117,14 @@ func clientMain(lc : IRpcLifecycle*) : string
       ObjectHold will be called from service to client to free the real value.
       But the real value object is still held at client side.
     */
+    s = s & service.ConsumeServiceResult();
     s = $"$(s)[3]";
     value = null;
     /*
       The real value object is supposed to be deleted now,
       because the client side lifecycle is no longer holding it.
     */
+    s = s & ConsumeClientResult();
     s = $"$(s)[4]";
   }
   return s;

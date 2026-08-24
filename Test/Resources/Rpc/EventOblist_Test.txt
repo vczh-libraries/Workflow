@@ -3,21 +3,22 @@ using system::*;
 using RpcEventOblist::*;
 
 
-var s = "";
+var serviceResult = "";
+var clientResult = "";
 
-func RecordItemChanged(handler : string, index : int, oldCount : int, newCount : int) : void
+func FormatItemChanged(handler : string, index : int, oldCount : int, newCount : int) : string
 {
-  s = $"$(s)[$(handler):$(index),$(oldCount),$(newCount)]";
+  return $"[$(handler):$(index),$(oldCount),$(newCount)]";
 }
 
 func ServiceItemChanged(index : int, oldCount : int, newCount : int) : void
 {
-  RecordItemChanged("serviceMain", index, oldCount, newCount);
+  serviceResult = serviceResult & FormatItemChanged("serviceMain", index, oldCount, newCount);
 }
 
 func ClientItemChanged(index : int, oldCount : int, newCount : int) : void
 {
-  RecordItemChanged("clientMain", index, oldCount, newCount);
+  clientResult = clientResult & FormatItemChanged("clientMain", index, oldCount, newCount);
 }
 
 func Modify(xs : observe int[]) : void
@@ -34,6 +35,11 @@ func serviceMain(lc : IRpcLifecycle*) : void
   var serviceObj = new (RpcEventOblist::IService^)
   {
     var _List : observe int[] = null;
+
+    override func GetServiceResult() : string
+    {
+      return serviceResult;
+    }
 
     override func SetList(xs : observe int[]) : void
     {
@@ -72,5 +78,5 @@ func clientMain(lc : IRpcLifecycle*) : string
   service.WatchHeldList();
   Modify(xs);
 
-  return s;
+  return clientResult & service.GetServiceResult();
 }

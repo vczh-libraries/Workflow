@@ -197,6 +197,7 @@ TEST_FILE
 		List<WString> rpcNames, reflectableAssemblies;
 		Dictionary<WString, WString> assemblyNames;
 		Dictionary<WString, WString> assemblyEntries;
+		Dictionary<WString, WString> assemblyCppEntries;
 		Dictionary<WString, Ptr<List<Ptr<RpcEventBridgeInfo>>>> rpcEventBridgeInfosPerItem;
 		Dictionary<WString, Ptr<List<WString>>> rpcServiceNamesPerItem;
 		LoadSampleIndex(L"Rpc", rpcNames);
@@ -294,6 +295,7 @@ TEST_FILE
 					auto output = GenerateCppFiles(input, &manager);
 					TEST_ASSERT(manager.errors.Count() == 0);
 					assemblyNames.Add(itemName, input->assemblyName);
+					assemblyCppEntries.Add(itemName, output->entryFileName);
 					if (output->containsReflectionInfo)
 					{
 						reflectableAssemblies.Add(input->assemblyName);
@@ -406,7 +408,7 @@ TEST_FILE
 				if (!DecodeRpcName(rpcLine, itemName, itemResult)) continue;
 
 				writer.WriteString(L"#include \"");
-				writer.WriteString(assemblyEntries[itemName]);
+				writer.WriteString(assemblyCppEntries[itemName]);
 				writer.WriteLine(L".h\"");
 			}
 
@@ -451,6 +453,8 @@ TEST_FILE
 					: L"false");
 				writer.WriteString(L">(L\"");
 				writer.WriteString(itemName);
+				writer.WriteString(L"\", L\"");
+				writer.WriteString(itemResult);
 				writer.WriteLine(L"\", serviceCommand, waitingForServices);");
 				writer.WriteLine(L"\t}");
 			}
@@ -470,7 +474,7 @@ TEST_FILE
 				if (!DecodeRpcName(rpcLine, itemName, itemResult)) continue;
 
 				writer.WriteString(L"#include \"");
-				writer.WriteString(assemblyEntries[itemName]);
+				writer.WriteString(assemblyCppEntries[itemName]);
 				writer.WriteLine(L".h\"");
 			}
 

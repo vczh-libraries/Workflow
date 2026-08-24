@@ -61,6 +61,12 @@ func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (IService^)
   {
+    override func GetServiceResult() : string
+    {
+      CheckServiceItems(xsService);
+      return Print(xsService);
+    }
+
     override func DoList(xs : observe IValue^[]) : observe IValue^[]
     {
       var xsObj : object = xs;
@@ -104,12 +110,10 @@ func clientMain(lc : IRpcLifecycle*) : string
 
   var xsClient = xs;
   xs.Add(MakeValue(5));
-
-  CheckServiceItems(xsService);
   CheckClientItems(xsClient);
 
   return
     $"[$(Print(xsOrigin))]" &
-    $"[$(Print(xsService))]" &
+    $"[$(service.GetServiceResult())]" &
     $"[$(Print(xsClient))]";
 }
