@@ -67,7 +67,7 @@ Reorganized the 124 noncompliant fixtures in `Test/Resources/Rpc/*_Test.txt` wit
 
 Added the ownership/layout policy to `Project.md` and `.github/Rules/new-sample-rpc.md`. Regenerated the C++ and expected compiler artifacts exclusively through `CompilerTest_LoadAndCompile`; `Test/Resources/IndexRpc.txt` was not edited.
 
-Extended `Test/StartRpcStdio.ps1` with validated configuration and platform parameters while retaining Debug x64 as the default and preserving optional skip-list behavior. Updated the Tools repository so `Build.ps1 -Project Workflow` launches the Release x64 stdio suite in a child PowerShell process, and `vgo vbuild Workflow` runs `StartRpcStdio.sh` and records failures in the existing Workflow vbuild log.
+Extended `Test/StartRpcStdio.ps1` with validated configuration and platform parameters while retaining Debug x64 as the default and preserving optional skip-list behavior. Updated the Tools repository so `Build.ps1 -Project Workflow` launches the Release x64 stdio suite in a child process using the current PowerShell host executable, which works under both Windows PowerShell and PowerShell 7. `vgo vbuild Workflow` runs `StartRpcStdio.sh` and records failures in the existing Workflow vbuild log.
 
 ### CONFIRMED
 
@@ -76,3 +76,5 @@ The final structural audit covers all 126 indexed fixtures: no module-level vari
 `CompilerTest_LoadAndCompile` regenerated and compiled every fixture for both x86 and x64, passing 711/711 cases on each target. The Debug Win32 and x64 solutions build with 0 warnings and 0 errors. The complete UnitTest matrix passes on both targets: LibraryTest 21/21, CompilerTest_GenerateMetadata 2/2, RuntimeTest 261/261, CppTest 229/229, CppTest_Metaonly 229/229, and CppTest_Reflection 229/229; the compiler load-and-compile run covers both generated targets as noted above. `Test/StartRpcStdio.ps1` passes all 126 cases with no skip list in both Debug Win32 and Debug x64. The TypeScript preparation and `tsc --noEmit` build also pass.
 
 The PowerShell parser accepts both modified `.ps1` files, `bash -n` accepts the modified `vgo`, and all manually edited files pass `git diff --check`. These results confirm that the fixture organization now exposes the real service/client process boundary while preserving behavior, and that both canonical build entry points include the stdio verification requested by the proposal.
+
+The canonical `Tools/Build.ps1 Workflow` run passes the complete Release Win32/x64 build and test matrix, the TypeScript build, all 126 Release x64 stdio cases through the new Tools hook, and release generation. This provides end-to-end confirmation of the Windows orchestration rather than relying only on a direct invocation of the test script.
