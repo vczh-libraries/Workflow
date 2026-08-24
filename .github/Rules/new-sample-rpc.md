@@ -13,6 +13,13 @@ RPC samples are split into `SAMPLE.txt` and `SAMPLE_Test.txt`.
 Verify that `SAMPLE.txt` contains only RPC definitions required for metadata/wrapper generation, and that `SAMPLE_Test.txt` contains all executable logic such as globals, helper functions, `serviceMain`, and `clientMain`.
 Only `SAMPLE` should be listed in `IndexRpc.txt`; both files should be present in `CompilerTest_LoadAndCompile`'s `Resource Files\Rpc` folder.
 
+RPC samples must not rely on module-level state being shared by the service and client. The in-memory harness can hide this mistake, but stdio and other transports run the two sides in different processes.
+
+- Remove unused module-level variables and functions.
+- Move variables and functions used only by the service side into the anonymous service implementation created inside `serviceMain`. Include indirect use when classifying a helper: a helper called only by another service-side helper is also service-only.
+- Keep client-only module-level variables and functions below `serviceMain`.
+- A stateless module-level function may remain shared when both service and client code use it. Do not share a stateful module-level variable across the process boundary.
+
 ## Restriction
 
 Understand what the test case trying to say, you are not allowed to change:

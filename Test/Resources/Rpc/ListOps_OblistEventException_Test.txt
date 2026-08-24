@@ -2,15 +2,15 @@ module Rpc;
 using system::*;
 using RpcListOpsOblistEventException::*;
 
-func CrashItemChanged(index : int, oldCount : int, newCount : int) : void
-{
-  raise $"$(index),$(oldCount),$(newCount)";
-}
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serverObj = new (IServer^)
   {
+    func CrashItemChanged(index : int, oldCount : int, newCount : int) : void
+    {
+      raise $"$(index),$(oldCount),$(newCount)";
+    }
+
     var _List : observe int[] = null;
 
     override func GetOblist() : observe int[]

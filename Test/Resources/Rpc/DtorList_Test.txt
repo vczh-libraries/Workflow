@@ -3,9 +3,6 @@ using system::*;
 using RpcWrapperTest::*;
 using RpcDtorList::*;
 
-
-var s = "";
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcDtorList::IService^)
@@ -40,6 +37,8 @@ func serviceMain(lc : IRpcLifecycle*) : void
   };
   lc.RegisterLocalService(rpc_GetIds()["RpcDtorList::IService"], serviceObj);
 }
+
+var s = "";
 
 func MakeValue() : IValue^
 {

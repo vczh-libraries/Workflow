@@ -2,24 +2,20 @@ module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 
-
-var clientObj1 : IObj1^ = new IObj1^{};
-var serviceObj2 : IObj2^ = new IObj2^{};
-
-var serviceReceived_Obj1 : IObj1^ = null;
-var serviceReceived_Obj2 : IObj2^ = null;
-var clientReceived_Obj1 : IObj1^ = null;
-var clientReceived_Obj2 : IObj2^ = null;
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var service = new (RpcWrapperTest::IService^)
   {
+    var _ServiceObj1 : IObj1^ = new IObj1^{};
+    var _ServiceObj2 : IObj2^ = new IObj2^{};
+    var _ServiceReceived_Obj1 : IObj1^ = null;
+    var _ServiceReceived_Obj2 : IObj2^ = null;
+
     override func GetServiceResult() : string
     {
       return
-        $"[$(serviceReceived_Obj1 == clientObj1)]" &
-        $"[$(serviceReceived_Obj2 == serviceObj2)]";
+        $"[$(_ServiceReceived_Obj1 == _ServiceObj1)]" &
+        $"[$(_ServiceReceived_Obj2 == _ServiceObj2)]";
     }
 
     override func Exchange1(o : IObj1^) : IObj2^
@@ -29,8 +25,8 @@ func serviceMain(lc : IRpcLifecycle*) : void
       {
         raise "IObj1(o) should be a wrapper object in serviceMain";
       }
-      serviceReceived_Obj1 = o;
-      return serviceObj2;
+      _ServiceReceived_Obj1 = o;
+      return _ServiceObj2;
     }
 
     override func Exchange2(o : IObj2^) : IObj1^
@@ -40,12 +36,17 @@ func serviceMain(lc : IRpcLifecycle*) : void
       {
         raise "IObj2(o) should be a local object in serviceMain";
       }
-      serviceReceived_Obj2 = o;
-      return serviceReceived_Obj1;
+      _ServiceReceived_Obj2 = o;
+      return _ServiceReceived_Obj1;
     }
   };
   lc.RegisterLocalService(rpc_GetIds()["RpcWrapperTest::IService"], service);
 }
+
+var clientObj1 : IObj1^ = new IObj1^{};
+var clientObj2 : IObj2^ = new IObj2^{};
+var clientReceived_Obj1 : IObj1^ = null;
+var clientReceived_Obj2 : IObj2^ = null;
 
 func clientMain(lc : IRpcLifecycle*) : string
 {
@@ -72,5 +73,5 @@ func clientMain(lc : IRpcLifecycle*) : string
   return
     service.GetServiceResult() &
     $"[$(clientReceived_Obj1 == clientObj1)]" &
-    $"[$(clientReceived_Obj2 == serviceObj2)]";
+    $"[$(clientReceived_Obj2 == clientObj2)]";
 }

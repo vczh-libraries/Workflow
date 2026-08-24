@@ -2,13 +2,12 @@ module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 
-
-var xsService : (int[])[] = {};
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcCollection::Nested::InByref::OutByref::IService^)
   {
+    var xsService : (int[])[] = {};
+
     override func GetServiceResult() : string
     {
       return Print(xsService);

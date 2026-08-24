@@ -2,13 +2,12 @@ module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 
-
-var xsService : observe int[] = {};
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcCollectionOblist::InByval::OutByval::IService^)
   {
+    var xsService : observe int[] = {};
+
     override func GetServiceResult() : string
     {
       return Print(xsService);

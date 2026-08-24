@@ -3,13 +3,12 @@ using system::*;
 using RpcWrapperTest::*;
 using RpcCollectionOblist::InByval::OutByref::*;
 
-
-var xsService : observe int[] = {};
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (IService^)
   {
+    var xsService : observe int[] = {};
+
     override func GetServiceResult() : string
     {
       return Print5(xsService);

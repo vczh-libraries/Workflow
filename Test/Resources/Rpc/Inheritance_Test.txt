@@ -2,8 +2,6 @@ module Rpc;
 using system::*;
 using RpcInheritance::*;
 
-var s = "";
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcInheritance::IService^)
@@ -75,6 +73,8 @@ func serviceMain(lc : IRpcLifecycle*) : void
   };
   lc.RegisterLocalService(rpc_GetIds()["RpcInheritance::IService"], serviceObj);
 }
+
+var s = "";
 
 func clientMain(lc : IRpcLifecycle*) : string
 {

@@ -3,9 +3,6 @@ using system::*;
 using RpcWrapperTest::*;
 using RpcCollection::Interface::PropDefault::*;
 
-
-var xsService : IValue^[] = {};
-
 func MakeValue(value : int) : IValue^
 {
   return MakeValue($"$(value)");
@@ -41,26 +38,20 @@ func CheckValue(value : IValue^, shouldBeWrapper : bool, name : string) : void
   }
 }
 
-func CheckServiceItems(xs : IValue^[]) : void
-{
-  for (i in range [0, xs.Count))
-  {
-    CheckValue(xs[i], i != 3, $"xsService[$(i)]");
-  }
-}
-
-func CheckClientItems(xs : IValue^[]) : void
-{
-  for (i in range [0, xs.Count))
-  {
-    CheckValue(xs[i], i == 3, $"xsService[$(i)]");
-  }
-}
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (IService^)
   {
+    var xsService : IValue^[] = {};
+
+    func CheckServiceItems(xs : IValue^[]) : void
+    {
+      for (i in range [0, xs.Count))
+      {
+        CheckValue(xs[i], i != 3, $"xsService[$(i)]");
+      }
+    }
+
     var _List : IValue^[] = null;
 
     override func GetServiceResult() : string
@@ -88,6 +79,14 @@ func serviceMain(lc : IRpcLifecycle*) : void
     }
   };
   lc.RegisterLocalService(rpc_GetIds()["RpcCollection::Interface::PropDefault::IService"], serviceObj);
+}
+
+func CheckClientItems(xs : IValue^[]) : void
+{
+  for (i in range [0, xs.Count))
+  {
+    CheckValue(xs[i], i == 3, $"xsService[$(i)]");
+  }
 }
 
 func Print(xs : IValue^[]) : string

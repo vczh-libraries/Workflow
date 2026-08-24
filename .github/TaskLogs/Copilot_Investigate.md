@@ -42,7 +42,7 @@ The baseline Debug x64 solution builds successfully with 0 warnings and 0 errors
 
 # PROPOSALS
 
-- No.1 Make RPC fixture process ownership explicit and make stdio verification canonical
+- No.1 Make RPC fixture process ownership explicit and make stdio verification canonical [CONFIRMED]
 
 ## No.1 Make RPC fixture process ownership explicit and make stdio verification canonical
 
@@ -62,3 +62,17 @@ Make stdio verification part of both canonical build entry points:
 - Allow `Workflow/Test/StartRpcStdio.ps1` to select an explicitly named configuration/platform while retaining Debug x64 as its no-argument default. Invoke it in a child PowerShell process from the Tools Workflow build path using the already-built Release x64 binaries, so the script's deliberate `exit` cannot terminate the parent `Build.ps1` before release generation completes.
 
 ### CODE CHANGE
+
+Reorganized the 124 noncompliant fixtures in `Test/Resources/Rpc/*_Test.txt` without changing their indexed inputs or expected outputs. Service-owned collections, result state, callbacks, and transitively service-only helpers are now members of the anonymous service implementation in `serviceMain`. Client-owned state and handlers now follow `serviceMain`; the only declarations left above it are stateless helpers shared by both processes. Unused declarations were removed. Fixtures that intentionally compare wrapped or local identities now use separately named service and client objects, and destructor fixtures use service-owned collection members so returned closures retain writable state under Workflow's capture rules.
+
+Added the ownership/layout policy to `Project.md` and `.github/Rules/new-sample-rpc.md`. Regenerated the C++ and expected compiler artifacts exclusively through `CompilerTest_LoadAndCompile`; `Test/Resources/IndexRpc.txt` was not edited.
+
+Extended `Test/StartRpcStdio.ps1` with validated configuration and platform parameters while retaining Debug x64 as the default and preserving optional skip-list behavior. Updated the Tools repository so `Build.ps1 -Project Workflow` launches the Release x64 stdio suite in a child PowerShell process, and `vgo vbuild Workflow` runs `StartRpcStdio.sh` and records failures in the existing Workflow vbuild log.
+
+### CONFIRMED
+
+The final structural audit covers all 126 indexed fixtures: no module-level variables remain above `serviceMain`, no unused module-level declarations remain, and the 127 functions still above `serviceMain` are the intended stateless shared helpers (`CheckList`, `CheckValue`, `FormatItemChanged`, `MakeValue`, and `Modify`). `IndexRpc.txt` remains byte-for-byte unchanged at SHA-256 `FDE03E98102BEF91FA1C6E729E04518DED74B3EB167416F95FD5AF1755AE4397`.
+
+`CompilerTest_LoadAndCompile` regenerated and compiled every fixture for both x86 and x64, passing 711/711 cases on each target. The Debug Win32 and x64 solutions build with 0 warnings and 0 errors. The complete UnitTest matrix passes on both targets: LibraryTest 21/21, CompilerTest_GenerateMetadata 2/2, RuntimeTest 261/261, CppTest 229/229, CppTest_Metaonly 229/229, and CppTest_Reflection 229/229; the compiler load-and-compile run covers both generated targets as noted above. `Test/StartRpcStdio.ps1` passes all 126 cases with no skip list in both Debug Win32 and Debug x64. The TypeScript preparation and `tsc --noEmit` build also pass.
+
+The PowerShell parser accepts both modified `.ps1` files, `bash -n` accepts the modified `vgo`, and all manually edited files pass `git diff --check`. These results confirm that the fixture organization now exposes the real service/client process boundary while preserving behavior, and that both canonical build entry points include the stdio verification requested by the proposal.

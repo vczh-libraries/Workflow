@@ -2,29 +2,32 @@ module Rpc;
 using system::*;
 using RpcFailDoubleRegistrationTest::*;
 
-
-var serviceResult = "";
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
+  var typeId = rpc_GetIds()["RpcFailDoubleRegistrationTest::IService"];
   var serviceObj = new (RpcFailDoubleRegistrationTest::IService^)
   {
+    var serviceResult : string = "";
+
     override func GetResult() : string
     {
+      if (serviceResult == "")
+      {
+        try
+        {
+          lc.RegisterLocalService(typeId, cast (RpcFailDoubleRegistrationTest::IService^) this);
+          serviceResult = "[no exception]";
+        }
+        catch (ex)
+        {
+          serviceResult = "[exception]";
+        }
+      }
       return serviceResult;
     }
   };
-  var typeId = rpc_GetIds()["RpcFailDoubleRegistrationTest::IService"];
   lc.RegisterLocalService(typeId, serviceObj);
-  try
-  {
-    lc.RegisterLocalService(typeId, serviceObj);
-    serviceResult = "[no exception]";
-  }
-  catch (ex)
-  {
-    serviceResult = "[exception]";
-  }
+  serviceObj.GetResult();
 }
 
 func clientMain(lc : IRpcLifecycle*) : string

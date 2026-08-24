@@ -2,24 +2,17 @@ module Rpc;
 using system::*;
 using RpcEvent::*;
 
-
-var serviceResult = "";
-var clientResult = "";
-
-func ServiceSomethingHappened(something : string) : void
-{
-  serviceResult = $"$(serviceResult)[serviceMain:$(something)]";
-}
-
-func ClientSomethingHappened(something : string) : void
-{
-  clientResult = $"$(clientResult)[clientMain:$(something)]";
-}
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcEvent::IService^)
   {
+    var serviceResult : string = "";
+
+    func ServiceSomethingHappened(something : string) : void
+    {
+      serviceResult = $"$(serviceResult)[serviceMain:$(something)]";
+    }
+
     override func GetServiceResult() : string
     {
       return serviceResult;
@@ -36,6 +29,13 @@ func serviceMain(lc : IRpcLifecycle*) : void
     }
   };
   lc.RegisterLocalService(rpc_GetIds()["RpcEvent::IService"], serviceObj);
+}
+
+var clientResult = "";
+
+func ClientSomethingHappened(something : string) : void
+{
+  clientResult = $"$(clientResult)[clientMain:$(something)]";
 }
 
 func clientMain(lc : IRpcLifecycle*) : string

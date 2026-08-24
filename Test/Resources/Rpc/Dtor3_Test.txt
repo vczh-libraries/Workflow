@@ -2,18 +2,16 @@ module Rpc;
 using system::*;
 using RpcDtor3Test::*;
 
-
-var serviceResult = "";
-var clientResult = "";
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcDtor3Test::IService^)
   {
+    var serviceResult : string[] = {""};
+
     override func ConsumeServiceResult() : string
     {
-      var result = serviceResult;
-      serviceResult = "";
+      var result = serviceResult[0];
+      serviceResult[0] = "";
       return result;
     }
 
@@ -24,11 +22,12 @@ func serviceMain(lc : IRpcLifecycle*) : void
       {
         raise "IValue(value) should be a wrapper object in serviceMain";
       }
+      var capturedServiceResult = serviceResult;
       return new (RpcDtor3Test::IContainer^)
       {
         delete
         {
-          serviceResult = $"$(serviceResult)[IContainer]";
+          capturedServiceResult[0] = $"$(capturedServiceResult[0])[IContainer]";
         }
 
         override func GetValue() : IValue^
@@ -40,6 +39,8 @@ func serviceMain(lc : IRpcLifecycle*) : void
   };
   lc.RegisterLocalService(rpc_GetIds()["RpcDtor3Test::IService"], serviceObj);
 }
+
+var clientResult = "";
 
 func MakeValue() : IValue^
 {

@@ -2,25 +2,25 @@ module Rpc;
 using system::*;
 using RpcDtor2Test::*;
 
-
-var s = "Not Deleted";
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcDtor2Test::IService^)
   {
+    var state : string[] = {"Not Deleted"};
+
     override func GetState() : string
     {
-      return s;
+      return state[0];
     }
 
     override func MakeValue() : IValue^
     {
+      var capturedState = state;
       return new (RpcDtor2Test::IValue^)
       {
         delete
         {
-          s = "Deleted";
+          capturedState[0] = "Deleted";
         }
       };
     }

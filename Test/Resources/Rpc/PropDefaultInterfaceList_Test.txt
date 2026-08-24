@@ -3,14 +3,6 @@ using system::*;
 using RpcWrapperTest::*;
 using RpcPropDefaultInterfaceList::*;
 
-
-var s = "";
-
-func ClientValueChanged() : void
-{
-  s = $"$(s)[ValueChanged]";
-}
-
 func MakeValue(value : string) : IValue^
 {
   return new (IValue^)
@@ -20,16 +12,6 @@ func MakeValue(value : string) : IValue^
       return value;
     }
   };
-}
-
-func Print(xs : IValue^[]) : string
-{
-  var result = "";
-  for (x in xs)
-  {
-    result = $"$(result)$(x.Value)";
-  }
-  return result;
 }
 
 func CheckValue(value : IValue^, shouldBeWrapper : bool, name : string) : void
@@ -99,6 +81,23 @@ func serviceMain(lc : IRpcLifecycle*) : void
   };
   serviceObj.Value.Add(MakeValue("A"));
   lc.RegisterLocalService(rpc_GetIds()["RpcPropDefaultInterfaceList::IService"], serviceObj);
+}
+
+var s = "";
+
+func ClientValueChanged() : void
+{
+  s = $"$(s)[ValueChanged]";
+}
+
+func Print(xs : IValue^[]) : string
+{
+  var result = "";
+  for (x in xs)
+  {
+    result = $"$(result)$(x.Value)";
+  }
+  return result;
 }
 
 func clientMain(lc : IRpcLifecycle*) : string

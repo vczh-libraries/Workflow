@@ -3,24 +3,6 @@ using system::*;
 using RpcWrapperTest::*;
 using RpcPropDefaultList::*;
 
-
-var s = "";
-
-func ClientValueChanged() : void
-{
-  s = $"$(s)[ValueChanged]";
-}
-
-func Print(xs : string[]) : string
-{
-  var result = "";
-  for (x in xs)
-  {
-    result = $"$(result)$(x)";
-  }
-  return result;
-}
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (IService^)
@@ -48,6 +30,23 @@ func serviceMain(lc : IRpcLifecycle*) : void
     }
   };
   lc.RegisterLocalService(rpc_GetIds()["RpcPropDefaultList::IService"], serviceObj);
+}
+
+var s = "";
+
+func ClientValueChanged() : void
+{
+  s = $"$(s)[ValueChanged]";
+}
+
+func Print(xs : string[]) : string
+{
+  var result = "";
+  for (x in xs)
+  {
+    result = $"$(result)$(x)";
+  }
+  return result;
 }
 
 func clientMain(lc : IRpcLifecycle*) : string

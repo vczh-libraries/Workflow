@@ -99,6 +99,11 @@ When generated files are expected to change, baseline comparison will fail. You 
   - Each `Rpc` sample is split into two files:
     - `Rpc/SAMPLE.txt` contains only RPC definitions and is used to generate RPC metadata and wrappers.
     - `Rpc/SAMPLE_Test.txt` contains the executable test logic, including globals, helpers, `serviceMain`, and `clientMain`; it is loaded together with `SAMPLE.txt` when linking the test assembly.
+  - RPC test logic must make the service/client process boundary explicit even though the in-memory harness loads both sides into one process:
+    - Remove unused module-level variables and functions.
+    - Move variables and functions used only by the service side, including functions reached transitively from service methods, into the anonymous service implementation created inside `serviceMain`.
+    - Keep client-only module-level variables and functions below `serviceMain`.
+    - A stateless module-level function may be shared by service and client code. Stateful module-level variables must not be shared across the service/client boundary.
   - Only `SAMPLE` appears in `IndexRpc.txt`; both files should be included under `Resource Files\Rpc` in `CompilerTest_LoadAndCompile`.
 - `Debugger`: Compiled and executed in `TestDebugger.cpp`, testing against Workflow virtual machine debugger feature.
 - Others: Compiled in `TestSamples.cpp`, test against the Workflow parser.
@@ -138,7 +143,7 @@ If `CompilerTest_LoadAndCompiler` succeeded but subsequent test projects fail:
 
 `RpcStdioTest_Driver` and `RpcStdioTest_Service` are non-interactive CLI test projects for Workflow RPC over `vl::inter_process::stdio_redirection`:
 - Invoke the driver as `RpcStdioTest_Driver <cli-command-to-start-RpcStdioTest_Service> [path-to-SkippedTestCaseListFile]`.
-- After building Debug x64, `Test/StartRpcStdio.ps1 [path-to-SkippedTestCaseListFile]` runs the Windows pair with the matching service path. On Linux or macOS, build both `Test/Linux/RpcStdioTest_*` projects and run `Test/StartRpcStdio.sh [path-to-SkippedTestCaseListFile]`.
+- After building Debug x64, `Test/StartRpcStdio.ps1 [path-to-SkippedTestCaseListFile]` runs the Windows pair with the matching service path. Debug x64 is the default; `-Configuration` and `-Platform` can select another built Windows pair. On Linux or macOS, build both `Test/Linux/RpcStdioTest_*` projects and run `Test/StartRpcStdio.sh [path-to-SkippedTestCaseListFile]`.
 - The optional skipped-test file contains exact `IndexRpc.txt` case names, one per line.
 - When the launchers are called without a skipped-test file, they run every indexed case. `Test/StartRpcStdio_DtorSkipList.txt` is an explicit portability list for providers whose languages do not guarantee deterministic destructor execution; the C++ launchers do not select it automatically.
 - The driver starts a new service process for each non-skipped case and appends the case name to the supplied service command.

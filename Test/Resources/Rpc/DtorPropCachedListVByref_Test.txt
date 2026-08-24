@@ -3,9 +3,71 @@ using system::*;
 using RpcWrapperTest::*;
 using RpcDtorPropCachedListVByref::*;
 
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (IService^)
+  {
+    var serviceResult : string[] = {""};
+
+    func MakeServiceValue(value : string) : IValue^
+    {
+      var capturedServiceResult = serviceResult;
+      return new (IValue^)
+      {
+        delete
+        {
+          capturedServiceResult[0] = $"$(capturedServiceResult[0])[Deleted:$(value)]";
+        }
+      };
+    }
+
+    func MakeServiceValues(value : string) : IValue^[]
+    {
+      var values : IValue^[] = {};
+      values.Add(MakeServiceValue(value));
+      return values;
+    }
+
+    var _Value : IValue^[] = null;
+    var valueInitialized = false;
+
+    func EnsureValue() : void
+    {
+      if (not valueInitialized)
+      {
+        _Value = MakeServiceValues("A");
+        valueInitialized = true;
+      }
+    }
+
+    override func ConsumeServiceResult() : string
+    {
+      var result = serviceResult[0];
+      serviceResult[0] = "";
+      return result;
+    }
+
+    override func GetValue() : IValue^[]
+    {
+      EnsureValue();
+      return _Value;
+    }
+
+    override func SetValue(value : IValue^[]) : void
+    {
+      EnsureValue();
+      _Value = value;
+    }
+
+    override func Signal() : void
+    {
+      ValueChanged();
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcDtorPropCachedListVByref::IService"], serviceObj);
+}
 
 var s = "";
-var serviceResult = "";
 
 func MakeValue(value : string) : IValue^
 {
@@ -23,55 +85,6 @@ func MakeValues(value : string) : IValue^[]
   var values : IValue^[] = {};
   values.Add(MakeValue(value));
   return values;
-}
-
-func MakeServiceValue(value : string) : IValue^
-{
-  return new (IValue^)
-  {
-    delete
-    {
-      serviceResult = $"$(serviceResult)[Deleted:$(value)]";
-    }
-  };
-}
-
-func MakeServiceValues(value : string) : IValue^[]
-{
-  var values : IValue^[] = {};
-  values.Add(MakeServiceValue(value));
-  return values;
-}
-
-func serviceMain(lc : IRpcLifecycle*) : void
-{
-  var serviceObj = new (IService^)
-  {
-    var _Value : IValue^[] = MakeServiceValues("A");
-
-    override func ConsumeServiceResult() : string
-    {
-      var result = serviceResult;
-      serviceResult = "";
-      return result;
-    }
-
-    override func GetValue() : IValue^[]
-    {
-      return _Value;
-    }
-
-    override func SetValue(value : IValue^[]) : void
-    {
-      _Value = value;
-    }
-
-    override func Signal() : void
-    {
-      ValueChanged();
-    }
-  };
-  lc.RegisterLocalService(rpc_GetIds()["RpcDtorPropCachedListVByref::IService"], serviceObj);
 }
 
 func clientMain(lc : IRpcLifecycle*) : string

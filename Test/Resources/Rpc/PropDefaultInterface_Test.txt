@@ -3,14 +3,6 @@ using system::*;
 using RpcWrapperTest::*;
 using RpcPropDefaultInterface::*;
 
-
-var s = "";
-
-func ClientValueChanged() : void
-{
-  s = $"$(s)[ValueChanged]";
-}
-
 func MakeValue(value : string) : IValue^
 {
   return new (IValue^)
@@ -64,6 +56,13 @@ func serviceMain(lc : IRpcLifecycle*) : void
     }
   };
   lc.RegisterLocalService(rpc_GetIds()["RpcPropDefaultInterface::IService"], serviceObj);
+}
+
+var s = "";
+
+func ClientValueChanged() : void
+{
+  s = $"$(s)[ValueChanged]";
 }
 
 func clientMain(lc : IRpcLifecycle*) : string

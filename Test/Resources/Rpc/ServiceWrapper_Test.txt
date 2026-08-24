@@ -2,12 +2,9 @@ module Rpc;
 using system::*;
 using RpcServiceWrapperTest::*;
 
-
-var serviceObj : IService^ = null;
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
-  serviceObj = new (RpcServiceWrapperTest::IService^)
+  var serviceObj = new (RpcServiceWrapperTest::IService^)
   {
     override func Self(obj : IService^) : bool
     {
@@ -16,7 +13,7 @@ func serviceMain(lc : IRpcLifecycle*) : void
       {
         raise "IService(obj) should be a local object in serviceMain";
       }
-      return obj == serviceObj;
+      return obj == cast (RpcServiceWrapperTest::IService^) this;
     }
   };
   lc.RegisterLocalService(rpc_GetIds()["RpcServiceWrapperTest::IService"], serviceObj);
@@ -31,6 +28,6 @@ func clientMain(lc : IRpcLifecycle*) : string
   }
   var clientObj = cast (RpcServiceWrapperTest::IService^) obj;
   return
-    $"[$(clientObj == serviceObj)]" &
+    $"[$(clientObj is null)]" &
     $"[$(clientObj.Self(clientObj))]";
 }

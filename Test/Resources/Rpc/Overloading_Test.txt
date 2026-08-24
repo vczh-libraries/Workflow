@@ -2,9 +2,6 @@ module Rpc;
 using system::*;
 using RpcOverloadingTest::*;
 
-
-var s = "";
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcOverloadingTest::IService^)
@@ -36,6 +33,8 @@ func serviceMain(lc : IRpcLifecycle*) : void
   };
   lc.RegisterLocalService(rpc_GetIds()["RpcOverloadingTest::IService"], serviceObj);
 }
+
+var s = "";
 
 func clientMain(lc : IRpcLifecycle*) : string
 {

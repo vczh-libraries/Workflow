@@ -3,8 +3,6 @@ using system::*;
 using RpcWrapperTest::*;
 using RpcListOpsListException::*;
 
-var s = "";
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcListOpsListException::IService^)
@@ -16,6 +14,8 @@ func serviceMain(lc : IRpcLifecycle*) : void
   };
   lc.RegisterLocalService(rpc_GetIds()["RpcListOpsListException::IService"], serviceObj);
 }
+
+var s = "";
 
 func clientMain(lc : IRpcLifecycle*) : string
 {

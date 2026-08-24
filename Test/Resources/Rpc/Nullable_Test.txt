@@ -2,9 +2,6 @@ module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 
-
-var s = "";
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcNullable::IService^)
@@ -18,6 +15,8 @@ func serviceMain(lc : IRpcLifecycle*) : void
   };
   lc.RegisterLocalService(rpc_GetIds()["RpcNullable::IService"], serviceObj);
 }
+
+var s = "";
 
 func clientMain(lc : IRpcLifecycle*) : string
 {

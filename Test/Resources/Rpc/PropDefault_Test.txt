@@ -2,14 +2,6 @@ module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 
-
-var s = "";
-
-func ClientValueChanged() : void
-{
-  s = $"$(s)[ValueChanged]";
-}
-
 func serviceMain(lc : IRpcLifecycle*) : void
 {
   var serviceObj = new (RpcPropDefault::IService^)
@@ -32,6 +24,13 @@ func serviceMain(lc : IRpcLifecycle*) : void
     }
   };
   lc.RegisterLocalService(rpc_GetIds()["RpcPropDefault::IService"], serviceObj);
+}
+
+var s = "";
+
+func ClientValueChanged() : void
+{
+  s = $"$(s)[ValueChanged]";
 }
 
 func clientMain(lc : IRpcLifecycle*) : string
