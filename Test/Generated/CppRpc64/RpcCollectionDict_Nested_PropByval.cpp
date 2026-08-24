@@ -37,14 +37,12 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionDict_Nested_PropByva
 	vl_workflow_global::Rpc_CollectionDict_Nested_PropByval instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = ::vl::reflection::description::IValueList::Create();
 		instance.rpctype_RpcCollectionDict__Nested__InByval__PropByval__IService = static_cast<::vl::vint64_t>(0L);
 		instance.rpcmethod_RpcCollectionDict__Nested__InByval__PropByval__IService_GetList = static_cast<::vl::vint64_t>(1L);
 		instance.rpcmethod_RpcCollectionDict__Nested__InByval__PropByval__IService_GetServiceResult = static_cast<::vl::vint64_t>(2L);
 		instance.rpcmethod_RpcCollectionDict__Nested__InByval__PropByval__IService_SetList = static_cast<::vl::vint64_t>(3L);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionDict_Nested_PropByval)
 
 namespace vl_workflow_global
@@ -242,12 +240,13 @@ Closures
 
 	__vwsnc1_Rpc_CollectionDict_Nested_PropByval_serviceMain__RpcCollectionDict_Nested_InByval_PropByval_IService::__vwsnc1_Rpc_CollectionDict_Nested_PropByval_serviceMain__RpcCollectionDict_Nested_InByval_PropByval_IService()
 	{
+		this->xsService = ::vl::reflection::description::IValueList::Create();
 		this->_List = ::vl::Ptr<::vl::reflection::description::IValueList>();
 	}
 
 	::vl::WString __vwsnc1_Rpc_CollectionDict_Nested_PropByval_serviceMain__RpcCollectionDict_Nested_InByval_PropByval_IService::GetServiceResult()
 	{
-		return GLOBAL_NAME Print(GLOBAL_NAME xsService);
+		return GLOBAL_NAME Print(xsService);
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueList> __vwsnc1_Rpc_CollectionDict_Nested_PropByval_serviceMain__RpcCollectionDict_Nested_InByval_PropByval_IService::GetList()
@@ -262,7 +261,7 @@ Closures
 		{
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"Parameter xs should be a copied local object in serviceMain"));
 		}
-		(GLOBAL_NAME xsService = xs);
+		(xsService = xs);
 		auto ys = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueDictionary>>(::vl::__vwsn::This(xs.Obj())->Get(static_cast<::vl::vint64_t>(0L)));
 		::vl::__vwsn::This(ys.Obj())->Set(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)), ::vl::__vwsn::Box(::vl::WString::Unmanaged(L"D")));
 		(_List = xs);

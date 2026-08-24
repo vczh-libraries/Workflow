@@ -37,7 +37,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Event)
 	vl_workflow_global::Rpc_Event instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.serviceResult = ::vl::WString::Unmanaged(L"");
 		instance.clientResult = ::vl::WString::Unmanaged(L"");
 		instance.rpctype_RpcEvent__IService = static_cast<::vl::vint64_t>(0L);
 		instance.rpcmethod_RpcEvent__IService_GetServiceResult = static_cast<::vl::vint64_t>(1L);
@@ -46,7 +45,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Event)
 		instance.rpcmethod_RpcEvent__IService_Watch = static_cast<::vl::vint64_t>(4L);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.serviceResult = ::vl::WString::Empty;
 		instance.clientResult = ::vl::WString::Empty;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Event)
 
@@ -56,20 +54,15 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	void Rpc_Event::ServiceSomethingHappened(const ::vl::WString& something)
+	void Rpc_Event::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		(GLOBAL_NAME serviceResult = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME serviceResult) + ::vl::WString::Unmanaged(L"[serviceMain:")) + something) + ::vl::WString::Unmanaged(L"]")));
+		auto serviceObj = ::vl::Ptr<::RpcEvent::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_Event_serviceMain__RpcEvent_IService());
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEvent::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	void Rpc_Event::ClientSomethingHappened(const ::vl::WString& something)
 	{
 		(GLOBAL_NAME clientResult = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME clientResult) + ::vl::WString::Unmanaged(L"[clientMain:")) + something) + ::vl::WString::Unmanaged(L"]")));
-	}
-
-	void Rpc_Event::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
-	{
-		auto serviceObj = ::vl::Ptr<::RpcEvent::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_Event_serviceMain__RpcEvent_IService());
-		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEvent::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Rpc_Event::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)
@@ -263,11 +256,17 @@ Closures
 
 	__vwsnc1_Rpc_Event_serviceMain__RpcEvent_IService::__vwsnc1_Rpc_Event_serviceMain__RpcEvent_IService()
 	{
+		this->serviceResult = ::vl::WString::Unmanaged(L"");
+	}
+
+	void __vwsnc1_Rpc_Event_serviceMain__RpcEvent_IService::ServiceSomethingHappened(const ::vl::WString& something)
+	{
+		(serviceResult = ((((::vl::WString::Unmanaged(L"") + serviceResult) + ::vl::WString::Unmanaged(L"[serviceMain:")) + something) + ::vl::WString::Unmanaged(L"]")));
 	}
 
 	::vl::WString __vwsnc1_Rpc_Event_serviceMain__RpcEvent_IService::GetServiceResult()
 	{
-		return GLOBAL_NAME serviceResult;
+		return serviceResult;
 	}
 
 	void __vwsnc1_Rpc_Event_serviceMain__RpcEvent_IService::MakeItHappen()
@@ -277,7 +276,7 @@ Closures
 
 	void __vwsnc1_Rpc_Event_serviceMain__RpcEvent_IService::Watch()
 	{
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(this)->SomethingHappened, ::vl::Func<void(const ::vl::WString&)>(GLOBAL_OBJ, &GLOBAL_SYMBOL ServiceSomethingHappened));
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(this)->SomethingHappened, ::vl::Func<void(const ::vl::WString&)>(this, &__vwsnc1_Rpc_Event_serviceMain__RpcEvent_IService::ServiceSomethingHappened));
 	}
 
 	//-------------------------------------------------------------------

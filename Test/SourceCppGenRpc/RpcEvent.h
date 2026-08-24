@@ -88,7 +88,6 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::WString serviceResult;
 		::vl::WString clientResult;
 		::vl::vint rpctype_RpcEvent__IService = 0;
 		::vl::vint rpcmethod_RpcEvent__IService_GetServiceResult = 0;
@@ -96,9 +95,8 @@ namespace vl_workflow_global
 		::vl::vint rpcevent_RpcEvent__IService_SomethingHappened = 0;
 		::vl::vint rpcmethod_RpcEvent__IService_Watch = 0;
 
-		void ServiceSomethingHappened(const ::vl::WString& something);
-		void ClientSomethingHappened(const ::vl::WString& something);
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
+		void ClientSomethingHappened(const ::vl::WString& something);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint typeId);
@@ -141,6 +139,8 @@ Closures
 	public:
 		__vwsnc1_Rpc_Event_serviceMain__RpcEvent_IService();
 
+		::vl::WString serviceResult;
+		void ServiceSomethingHappened(const ::vl::WString& something);
 		::vl::WString GetServiceResult() override;
 		void MakeItHappen() override;
 		void Watch() override;

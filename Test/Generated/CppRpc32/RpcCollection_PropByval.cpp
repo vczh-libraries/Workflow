@@ -37,14 +37,12 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Collection_PropByval)
 	vl_workflow_global::Rpc_Collection_PropByval instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = ::vl::reflection::description::IValueList::Create();
 		instance.rpctype_RpcCollection__InByval__PropByval__IService = static_cast<::vl::vint32_t>(0);
 		instance.rpcmethod_RpcCollection__InByval__PropByval__IService_GetList = static_cast<::vl::vint32_t>(1);
 		instance.rpcmethod_RpcCollection__InByval__PropByval__IService_GetServiceResult = static_cast<::vl::vint32_t>(2);
 		instance.rpcmethod_RpcCollection__InByval__PropByval__IService_SetList = static_cast<::vl::vint32_t>(3);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Collection_PropByval)
 
 namespace vl_workflow_global
@@ -239,12 +237,13 @@ Closures
 
 	__vwsnc1_Rpc_Collection_PropByval_serviceMain__RpcCollection_InByval_PropByval_IService::__vwsnc1_Rpc_Collection_PropByval_serviceMain__RpcCollection_InByval_PropByval_IService()
 	{
+		this->xsService = ::vl::reflection::description::IValueList::Create();
 		this->_List = ::vl::Ptr<::vl::reflection::description::IValueList>();
 	}
 
 	::vl::WString __vwsnc1_Rpc_Collection_PropByval_serviceMain__RpcCollection_InByval_PropByval_IService::GetServiceResult()
 	{
-		return GLOBAL_NAME Print(GLOBAL_NAME xsService);
+		return GLOBAL_NAME Print(xsService);
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueList> __vwsnc1_Rpc_Collection_PropByval_serviceMain__RpcCollection_InByval_PropByval_IService::GetList()
@@ -259,7 +258,7 @@ Closures
 		{
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"Parameter xs should be a copied local object in serviceMain"));
 		}
-		(GLOBAL_NAME xsService = xs);
+		(xsService = xs);
 		::vl::__vwsn::This(xs.Obj())->Add(::vl::__vwsn::Box(static_cast<::vl::vint32_t>(4)));
 		(_List = xs);
 	}

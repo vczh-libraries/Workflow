@@ -37,14 +37,12 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionOblist_PropByref)
 	vl_workflow_global::Rpc_CollectionOblist_PropByref instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = ::vl::reflection::description::IValueObservableList::Create();
 		instance.rpctype_RpcCollectionOblist__InByref__PropByref__IService = static_cast<::vl::vint64_t>(0L);
 		instance.rpcmethod_RpcCollectionOblist__InByref__PropByref__IService_GetList = static_cast<::vl::vint64_t>(1L);
 		instance.rpcmethod_RpcCollectionOblist__InByref__PropByref__IService_GetServiceResult = static_cast<::vl::vint64_t>(2L);
 		instance.rpcmethod_RpcCollectionOblist__InByref__PropByref__IService_SetList = static_cast<::vl::vint64_t>(3L);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionOblist_PropByref)
 
 namespace vl_workflow_global
@@ -222,12 +220,13 @@ Closures
 
 	__vwsnc1_Rpc_CollectionOblist_PropByref_serviceMain__RpcCollectionOblist_InByref_PropByref_IService::__vwsnc1_Rpc_CollectionOblist_PropByref_serviceMain__RpcCollectionOblist_InByref_PropByref_IService()
 	{
+		this->xsService = ::vl::reflection::description::IValueObservableList::Create();
 		this->_List = ::vl::Ptr<::vl::reflection::description::IValueObservableList>();
 	}
 
 	::vl::WString __vwsnc1_Rpc_CollectionOblist_PropByref_serviceMain__RpcCollectionOblist_InByref_PropByref_IService::GetServiceResult()
 	{
-		return GLOBAL_NAME Print5(GLOBAL_NAME xsService);
+		return GLOBAL_NAME Print5(xsService);
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsnc1_Rpc_CollectionOblist_PropByref_serviceMain__RpcCollectionOblist_InByref_PropByref_IService::GetList()
@@ -242,7 +241,7 @@ Closures
 		{
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"Parameter xs should be a wrapper object in serviceMain"));
 		}
-		(GLOBAL_NAME xsService = xs);
+		(xsService = xs);
 		::vl::__vwsn::This(xs.Obj())->Add(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)));
 		(_List = xs);
 	}

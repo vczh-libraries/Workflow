@@ -37,7 +37,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionOblist_Interface_Nes
 	vl_workflow_global::Rpc_CollectionOblist_Interface_Nested_Default instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = ::vl::reflection::description::IValueDictionary::Create();
 		instance.rpctype_RpcCollectionOblist__Interface__Nested__Default__IService = static_cast<::vl::vint64_t>(0L);
 		instance.rpcmethod_RpcCollectionOblist__Interface__Nested__Default__IService_DoList = static_cast<::vl::vint64_t>(1L);
 		instance.rpcmethod_RpcCollectionOblist__Interface__Nested__Default__IService_GetServiceResult = static_cast<::vl::vint64_t>(2L);
@@ -45,7 +44,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionOblist_Interface_Nes
 		instance.rpcmethod_RpcCollectionOblist__Interface__Nested__Default__IValue_GetValue = static_cast<::vl::vint64_t>(4L);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionOblist_Interface_Nested_Default)
 
 namespace vl_workflow_global
@@ -78,21 +76,10 @@ Global Functions
 		}
 	}
 
-	void Rpc_CollectionOblist_Interface_Nested_Default::CheckServiceItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
+	void Rpc_CollectionOblist_Interface_Nested_Default::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		auto ys = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueObservableList>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(0L))));
-		{
-			auto __vwsn_for_begin_i = static_cast<::vl::vint64_t>(0L);
-			auto __vwsn_for_end_i = (::vl::__vwsn::This(ys.Obj())->GetCount() - static_cast<::vl::vint64_t>(1L));
-			auto i = __vwsn_for_begin_i;
-			while ((i <= __vwsn_for_end_i))
-			{
-				{
-					GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionOblist::Interface::Nested::Default::IValue>>(::vl::__vwsn::This(ys.Obj())->Get(i)), (i != static_cast<::vl::vint64_t>(3L)), ((::vl::WString::Unmanaged(L"xsService[0][") + ::vl::__vwsn::ToString(i)) + ::vl::WString::Unmanaged(L"]")));
-				}
-				(i = (i + static_cast<::vl::vint64_t>(1L)));
-			}
-		}
+		auto serviceObj = ::vl::Ptr<::RpcCollectionOblist::Interface::Nested::Default::IService>(new ::vl_workflow_global::__vwsnc2_Rpc_CollectionOblist_Interface_Nested_Default_serviceMain__RpcCollectionOblist_Interface_Nested_Default_IService());
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionOblist::Interface::Nested::Default::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	void Rpc_CollectionOblist_Interface_Nested_Default::CheckClientItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
@@ -110,12 +97,6 @@ Global Functions
 				(i = (i + static_cast<::vl::vint64_t>(1L)));
 			}
 		}
-	}
-
-	void Rpc_CollectionOblist_Interface_Nested_Default::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
-	{
-		auto serviceObj = ::vl::Ptr<::RpcCollectionOblist::Interface::Nested::Default::IService>(new ::vl_workflow_global::__vwsnc2_Rpc_CollectionOblist_Interface_Nested_Default_serviceMain__RpcCollectionOblist_Interface_Nested_Default_IService());
-		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionOblist::Interface::Nested::Default::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Rpc_CollectionOblist_Interface_Nested_Default::Print(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
@@ -385,12 +366,30 @@ Closures
 
 	__vwsnc2_Rpc_CollectionOblist_Interface_Nested_Default_serviceMain__RpcCollectionOblist_Interface_Nested_Default_IService::__vwsnc2_Rpc_CollectionOblist_Interface_Nested_Default_serviceMain__RpcCollectionOblist_Interface_Nested_Default_IService()
 	{
+		this->xsService = ::vl::reflection::description::IValueDictionary::Create();
+	}
+
+	void __vwsnc2_Rpc_CollectionOblist_Interface_Nested_Default_serviceMain__RpcCollectionOblist_Interface_Nested_Default_IService::CheckServiceItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
+	{
+		auto ys = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueObservableList>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(0L))));
+		{
+			auto __vwsn_for_begin_i = static_cast<::vl::vint64_t>(0L);
+			auto __vwsn_for_end_i = (::vl::__vwsn::This(ys.Obj())->GetCount() - static_cast<::vl::vint64_t>(1L));
+			auto i = __vwsn_for_begin_i;
+			while ((i <= __vwsn_for_end_i))
+			{
+				{
+					GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionOblist::Interface::Nested::Default::IValue>>(::vl::__vwsn::This(ys.Obj())->Get(i)), (i != static_cast<::vl::vint64_t>(3L)), ((::vl::WString::Unmanaged(L"xsService[0][") + ::vl::__vwsn::ToString(i)) + ::vl::WString::Unmanaged(L"]")));
+				}
+				(i = (i + static_cast<::vl::vint64_t>(1L)));
+			}
+		}
 	}
 
 	::vl::WString __vwsnc2_Rpc_CollectionOblist_Interface_Nested_Default_serviceMain__RpcCollectionOblist_Interface_Nested_Default_IService::GetServiceResult()
 	{
-		GLOBAL_NAME CheckServiceItems(GLOBAL_NAME xsService);
-		return GLOBAL_NAME Print(GLOBAL_NAME xsService);
+		this->CheckServiceItems(xsService);
+		return GLOBAL_NAME Print(xsService);
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnc2_Rpc_CollectionOblist_Interface_Nested_Default_serviceMain__RpcCollectionOblist_Interface_Nested_Default_IService::DoList(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
@@ -400,7 +399,7 @@ Closures
 		{
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"Parameter xs should be a wrapper object in serviceMain"));
 		}
-		(GLOBAL_NAME xsService = xs);
+		(xsService = xs);
 		auto ys = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueObservableList>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(0L))));
 		::vl::__vwsn::This(ys.Obj())->Add(::vl::__vwsn::Box(GLOBAL_NAME MakeValue(static_cast<::vl::vint64_t>(4L))));
 		return xs;

@@ -95,7 +95,6 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::Ptr<::vl::reflection::description::IValueList> xsService;
 		::vl::vint32_t rpctype_RpcCollection__Nested__Default__IService = 0;
 		::vl::vint32_t rpcmethod_RpcCollection__Nested__Default__IService_DoList = 0;
 		::vl::vint32_t rpcmethod_RpcCollection__Nested__Default__IService_GetServiceResult = 0;
@@ -131,6 +130,7 @@ Closures
 	public:
 		__vwsnc1_Rpc_Collection_Nested_Default_serviceMain__RpcCollection_Nested_Default_IService();
 
+		::vl::Ptr<::vl::reflection::description::IValueList> xsService;
 		::vl::WString GetServiceResult() override;
 		::vl::Ptr<::vl::reflection::description::IValueList> DoList(::vl::Ptr<::vl::reflection::description::IValueList> xs) override;
 	};

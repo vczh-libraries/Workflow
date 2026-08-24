@@ -37,7 +37,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Dtor2)
 	vl_workflow_global::Rpc_Dtor2 instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString::Unmanaged(L"Not Deleted");
 		instance.rpctype_RpcDtor2Test__IService = static_cast<::vl::vint32_t>(0);
 		instance.rpcmethod_RpcDtor2Test__IService_GetState = static_cast<::vl::vint32_t>(1);
 		instance.rpcmethod_RpcDtor2Test__IService_MakeValue = static_cast<::vl::vint32_t>(2);
@@ -45,7 +44,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Dtor2)
 		instance.rpctype_RpcDtor2Test__IValue = static_cast<::vl::vint32_t>(4);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.s = ::vl::WString::Empty;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Dtor2)
 
 namespace vl_workflow_global
@@ -300,16 +298,18 @@ Closures
 
 	__vwsnc1_Rpc_Dtor2_serviceMain__RpcDtor2Test_IService::__vwsnc1_Rpc_Dtor2_serviceMain__RpcDtor2Test_IService()
 	{
+		this->state = (::vl::__vwsn::CreateList().Add(::vl::WString::Unmanaged(L"Not Deleted"))).list;
 	}
 
 	::vl::WString __vwsnc1_Rpc_Dtor2_serviceMain__RpcDtor2Test_IService::GetState()
 	{
-		return GLOBAL_NAME s;
+		return ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(state.Obj())->Get(static_cast<::vl::vint32_t>(0)));
 	}
 
 	::vl::Ptr<::RpcDtor2Test::IValue> __vwsnc1_Rpc_Dtor2_serviceMain__RpcDtor2Test_IService::MakeValue()
 	{
-		return ::vl::Ptr<::RpcDtor2Test::IValue>(new ::vl_workflow_global::__vwsnc2_Rpc_Dtor2_serviceMain_MakeValue__RpcDtor2Test_IValue(this));
+		auto capturedState = state;
+		return ::vl::Ptr<::RpcDtor2Test::IValue>(new ::vl_workflow_global::__vwsnc2_Rpc_Dtor2_serviceMain_MakeValue__RpcDtor2Test_IValue(capturedState, this));
 	}
 
 	::vl::Ptr<::RpcDtor2Test::IValue> __vwsnc1_Rpc_Dtor2_serviceMain__RpcDtor2Test_IService::ReviewValue(::vl::Ptr<::RpcDtor2Test::IValue> value)
@@ -324,14 +324,15 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc2_Rpc_Dtor2_serviceMain_MakeValue__RpcDtor2Test_IValue::__vwsnc2_Rpc_Dtor2_serviceMain_MakeValue__RpcDtor2Test_IValue(::RpcDtor2Test::IService* __vwsnctorthis_0)
-		:__vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	__vwsnc2_Rpc_Dtor2_serviceMain_MakeValue__RpcDtor2Test_IValue::__vwsnc2_Rpc_Dtor2_serviceMain_MakeValue__RpcDtor2Test_IValue(::vl::Ptr<::vl::reflection::description::IValueList> __vwsnctor_capturedState, ::RpcDtor2Test::IService* __vwsnctorthis_0)
+		:capturedState(__vwsnctor_capturedState)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
 	__vwsnc2_Rpc_Dtor2_serviceMain_MakeValue__RpcDtor2Test_IValue::~__vwsnc2_Rpc_Dtor2_serviceMain_MakeValue__RpcDtor2Test_IValue()
 	{
-		(GLOBAL_NAME s = ::vl::WString::Unmanaged(L"Deleted"));
+		::vl::__vwsn::This(this->capturedState.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::__vwsn::Box(::vl::WString::Unmanaged(L"Deleted")));
 	}
 
 	//-------------------------------------------------------------------

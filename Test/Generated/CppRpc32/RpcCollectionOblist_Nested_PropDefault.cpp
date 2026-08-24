@@ -37,14 +37,12 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionOblist_Nested_PropDe
 	vl_workflow_global::Rpc_CollectionOblist_Nested_PropDefault instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = ::vl::reflection::description::IValueObservableList::Create();
 		instance.rpctype_RpcCollectionOblist__Nested__PropDefault__IService = static_cast<::vl::vint32_t>(0);
 		instance.rpcmethod_RpcCollectionOblist__Nested__PropDefault__IService_GetList = static_cast<::vl::vint32_t>(1);
 		instance.rpcmethod_RpcCollectionOblist__Nested__PropDefault__IService_GetServiceResult = static_cast<::vl::vint32_t>(2);
 		instance.rpcmethod_RpcCollectionOblist__Nested__PropDefault__IService_SetList = static_cast<::vl::vint32_t>(3);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionOblist_Nested_PropDefault)
 
 namespace vl_workflow_global
@@ -235,12 +233,13 @@ Closures
 
 	__vwsnc1_Rpc_CollectionOblist_Nested_PropDefault_serviceMain__RpcCollectionOblist_Nested_PropDefault_IService::__vwsnc1_Rpc_CollectionOblist_Nested_PropDefault_serviceMain__RpcCollectionOblist_Nested_PropDefault_IService()
 	{
+		this->xsService = ::vl::reflection::description::IValueObservableList::Create();
 		this->_List = ::vl::Ptr<::vl::reflection::description::IValueObservableList>();
 	}
 
 	::vl::WString __vwsnc1_Rpc_CollectionOblist_Nested_PropDefault_serviceMain__RpcCollectionOblist_Nested_PropDefault_IService::GetServiceResult()
 	{
-		return GLOBAL_NAME Print(GLOBAL_NAME xsService);
+		return GLOBAL_NAME Print(xsService);
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsnc1_Rpc_CollectionOblist_Nested_PropDefault_serviceMain__RpcCollectionOblist_Nested_PropDefault_IService::GetList()
@@ -255,7 +254,7 @@ Closures
 		{
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"Parameter xs should be a wrapper object in serviceMain"));
 		}
-		(GLOBAL_NAME xsService = xs);
+		(xsService = xs);
 		auto ys = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueObservableList>>(::vl::__vwsn::This(xs.Obj())->Get(static_cast<::vl::vint32_t>(0)));
 		::vl::__vwsn::This(ys.Obj())->Add(::vl::__vwsn::Box(static_cast<::vl::vint32_t>(4)));
 		(_List = xs);

@@ -121,10 +121,10 @@ namespace vl_workflow_global
 		::vl::vint rpctype_RpcPropDefaultInterface__IValue = 0;
 		::vl::vint rpcmethod_RpcPropDefaultInterface__IValue_GetValue = 0;
 
-		void ClientValueChanged();
 		::vl::Ptr<::RpcPropDefaultInterface::IValue> MakeValue(const ::vl::WString& value);
 		void CheckValue(::vl::Ptr<::RpcPropDefaultInterface::IValue> value, bool shouldBeWrapper, const ::vl::WString& name);
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
+		void ClientValueChanged();
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint typeId);

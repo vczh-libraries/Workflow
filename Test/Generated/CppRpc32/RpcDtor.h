@@ -101,7 +101,6 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::WString s;
 		::vl::vint32_t rpctype_RpcDtorTest__IService = 0;
 		::vl::vint32_t rpcmethod_RpcDtorTest__IService_GetState = 0;
 		::vl::vint32_t rpcmethod_RpcDtorTest__IService_MakeValue = 0;
@@ -157,6 +156,7 @@ Closures
 	public:
 		__vwsnc1_Rpc_Dtor_serviceMain__RpcDtorTest_IService();
 
+		::vl::Ptr<::vl::reflection::description::IValueList> state;
 		::vl::WString GetState() override;
 		::vl::Ptr<::RpcDtorTest::IValue> MakeValue() override;
 	};
@@ -164,9 +164,10 @@ Closures
 	class __vwsnc2_Rpc_Dtor_serviceMain_MakeValue__RpcDtorTest_IValue : public ::vl::Object, public virtual ::RpcDtorTest::IValue
 	{
 	public:
+		::vl::Ptr<::vl::reflection::description::IValueList> capturedState;
 		::RpcDtorTest::IService* __vwsnthis_0;
 
-		__vwsnc2_Rpc_Dtor_serviceMain_MakeValue__RpcDtorTest_IValue(::RpcDtorTest::IService* __vwsnctorthis_0);
+		__vwsnc2_Rpc_Dtor_serviceMain_MakeValue__RpcDtorTest_IValue(::vl::Ptr<::vl::reflection::description::IValueList> __vwsnctor_capturedState, ::RpcDtorTest::IService* __vwsnctorthis_0);
 
 		~__vwsnc2_Rpc_Dtor_serviceMain_MakeValue__RpcDtorTest_IValue();
 	};

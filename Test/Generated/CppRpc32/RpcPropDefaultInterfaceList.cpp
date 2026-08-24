@@ -56,31 +56,9 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	void Rpc_PropDefaultInterfaceList::ClientValueChanged()
-	{
-		(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[ValueChanged]")));
-	}
-
 	::vl::Ptr<::RpcPropDefaultInterfaceList::IValue> Rpc_PropDefaultInterfaceList::MakeValue(const ::vl::WString& value)
 	{
 		return ::vl::Ptr<::RpcPropDefaultInterfaceList::IValue>(new ::vl_workflow_global::__vwsnc1_Rpc_PropDefaultInterfaceList_MakeValue__RpcPropDefaultInterfaceList_IValue(value));
-	}
-
-	::vl::WString Rpc_PropDefaultInterfaceList::Print(::vl::Ptr<::vl::reflection::description::IValueList> xs)
-	{
-		auto result = ::vl::WString::Unmanaged(L"");
-		{
-			auto __vwsn_for_enumerable_x = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs);
-			auto __vwsn_for_enumerator_x = ::vl::__vwsn::This(__vwsn_for_enumerable_x.Obj())->CreateEnumerator();
-			while (::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->Next())
-			{
-				auto x = ::vl::__vwsn::Unbox<::vl::Ptr<::RpcPropDefaultInterfaceList::IValue>>(::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->GetCurrent());
-				{
-					(result = (((::vl::WString::Unmanaged(L"") + result) + ::vl::WString::Unmanaged(L"")) + ::vl::__vwsn::This(x.Obj())->GetValue()));
-				}
-			}
-		}
-		return result;
 	}
 
 	void Rpc_PropDefaultInterfaceList::CheckValue(::vl::Ptr<::RpcPropDefaultInterfaceList::IValue> value, bool shouldBeWrapper, const ::vl::WString& name)
@@ -138,6 +116,28 @@ Global Functions
 		auto serviceObj = ::vl::Ptr<::RpcPropDefaultInterfaceList::IService>(new ::vl_workflow_global::__vwsnc2_Rpc_PropDefaultInterfaceList_serviceMain__RpcPropDefaultInterfaceList_IService());
 		::vl::__vwsn::This(::vl::__vwsn::This(serviceObj.Obj())->GetValue().Obj())->Add(::vl::__vwsn::Box(GLOBAL_NAME MakeValue(::vl::WString::Unmanaged(L"A"))));
 		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterfaceList::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+	}
+
+	void Rpc_PropDefaultInterfaceList::ClientValueChanged()
+	{
+		(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[ValueChanged]")));
+	}
+
+	::vl::WString Rpc_PropDefaultInterfaceList::Print(::vl::Ptr<::vl::reflection::description::IValueList> xs)
+	{
+		auto result = ::vl::WString::Unmanaged(L"");
+		{
+			auto __vwsn_for_enumerable_x = ::vl::Ptr<::vl::reflection::description::IValueEnumerable>(xs);
+			auto __vwsn_for_enumerator_x = ::vl::__vwsn::This(__vwsn_for_enumerable_x.Obj())->CreateEnumerator();
+			while (::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->Next())
+			{
+				auto x = ::vl::__vwsn::Unbox<::vl::Ptr<::RpcPropDefaultInterfaceList::IValue>>(::vl::__vwsn::This(__vwsn_for_enumerator_x.Obj())->GetCurrent());
+				{
+					(result = (((::vl::WString::Unmanaged(L"") + result) + ::vl::WString::Unmanaged(L"")) + ::vl::__vwsn::This(x.Obj())->GetValue()));
+				}
+			}
+		}
+		return result;
 	}
 
 	::vl::WString Rpc_PropDefaultInterfaceList::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)

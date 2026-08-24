@@ -37,7 +37,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionDict_Interface_PropB
 	vl_workflow_global::Rpc_CollectionDict_Interface_PropByval instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = ::vl::reflection::description::IValueDictionary::Create();
 		instance.rpctype_RpcCollectionDict__Interface__InByval__PropByval__IService = static_cast<::vl::vint64_t>(0L);
 		instance.rpcmethod_RpcCollectionDict__Interface__InByval__PropByval__IService_GetList = static_cast<::vl::vint64_t>(1L);
 		instance.rpcmethod_RpcCollectionDict__Interface__InByval__PropByval__IService_GetServiceResult = static_cast<::vl::vint64_t>(2L);
@@ -46,7 +45,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionDict_Interface_PropB
 		instance.rpcmethod_RpcCollectionDict__Interface__InByval__PropByval__IValue_GetValue = static_cast<::vl::vint64_t>(5L);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionDict_Interface_PropByval)
 
 namespace vl_workflow_global
@@ -84,20 +82,10 @@ Global Functions
 		}
 	}
 
-	void Rpc_CollectionDict_Interface_PropByval::CheckServiceItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
+	void Rpc_CollectionDict_Interface_PropByval::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		{
-			auto __vwsn_for_begin_i = static_cast<::vl::vint64_t>(1L);
-			auto __vwsn_for_end_i = ::vl::__vwsn::This(xs.Obj())->GetCount();
-			auto i = __vwsn_for_begin_i;
-			while ((i <= __vwsn_for_end_i))
-			{
-				{
-					GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByval::PropByval::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(i))), (i != static_cast<::vl::vint64_t>(4L)), ((::vl::WString::Unmanaged(L"xsService[") + ::vl::__vwsn::ToString(i)) + ::vl::WString::Unmanaged(L"]")));
-				}
-				(i = (i + static_cast<::vl::vint64_t>(1L)));
-			}
-		}
+		auto serviceObj = ::vl::Ptr<::RpcCollectionDict::Interface::InByval::PropByval::IService>(new ::vl_workflow_global::__vwsnc2_Rpc_CollectionDict_Interface_PropByval_serviceMain__RpcCollectionDict_Interface_InByval_PropByval_IService());
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::InByval::PropByval::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	void Rpc_CollectionDict_Interface_PropByval::CheckClientItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
@@ -114,12 +102,6 @@ Global Functions
 				(i = (i + static_cast<::vl::vint64_t>(1L)));
 			}
 		}
-	}
-
-	void Rpc_CollectionDict_Interface_PropByval::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
-	{
-		auto serviceObj = ::vl::Ptr<::RpcCollectionDict::Interface::InByval::PropByval::IService>(new ::vl_workflow_global::__vwsnc2_Rpc_CollectionDict_Interface_PropByval_serviceMain__RpcCollectionDict_Interface_InByval_PropByval_IService());
-		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollectionDict::Interface::InByval::PropByval::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Rpc_CollectionDict_Interface_PropByval::Print(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
@@ -417,13 +399,30 @@ Closures
 
 	__vwsnc2_Rpc_CollectionDict_Interface_PropByval_serviceMain__RpcCollectionDict_Interface_InByval_PropByval_IService::__vwsnc2_Rpc_CollectionDict_Interface_PropByval_serviceMain__RpcCollectionDict_Interface_InByval_PropByval_IService()
 	{
+		this->xsService = ::vl::reflection::description::IValueDictionary::Create();
 		this->_List = ::vl::Ptr<::vl::reflection::description::IValueDictionary>();
+	}
+
+	void __vwsnc2_Rpc_CollectionDict_Interface_PropByval_serviceMain__RpcCollectionDict_Interface_InByval_PropByval_IService::CheckServiceItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
+	{
+		{
+			auto __vwsn_for_begin_i = static_cast<::vl::vint64_t>(1L);
+			auto __vwsn_for_end_i = ::vl::__vwsn::This(xs.Obj())->GetCount();
+			auto i = __vwsn_for_begin_i;
+			while ((i <= __vwsn_for_end_i))
+			{
+				{
+					GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollectionDict::Interface::InByval::PropByval::IValue>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(i))), (i != static_cast<::vl::vint64_t>(4L)), ((::vl::WString::Unmanaged(L"xsService[") + ::vl::__vwsn::ToString(i)) + ::vl::WString::Unmanaged(L"]")));
+				}
+				(i = (i + static_cast<::vl::vint64_t>(1L)));
+			}
+		}
 	}
 
 	::vl::WString __vwsnc2_Rpc_CollectionDict_Interface_PropByval_serviceMain__RpcCollectionDict_Interface_InByval_PropByval_IService::GetServiceResult()
 	{
-		GLOBAL_NAME CheckServiceItems(GLOBAL_NAME xsService);
-		return GLOBAL_NAME Print(GLOBAL_NAME xsService);
+		this->CheckServiceItems(xsService);
+		return GLOBAL_NAME Print(xsService);
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnc2_Rpc_CollectionDict_Interface_PropByval_serviceMain__RpcCollectionDict_Interface_InByval_PropByval_IService::GetList()
@@ -438,7 +437,7 @@ Closures
 		{
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"Parameter xs should be a copied local object in serviceMain"));
 		}
-		(GLOBAL_NAME xsService = xs);
+		(xsService = xs);
 		::vl::__vwsn::This(xs.Obj())->Set(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)), ::vl::__vwsn::Box(GLOBAL_NAME MakeValue(::vl::WString::Unmanaged(L"D"))));
 		(_List = xs);
 	}

@@ -37,12 +37,10 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_ServiceWrapper)
 	vl_workflow_global::Rpc_ServiceWrapper instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.serviceObj = ::vl::Ptr<::RpcServiceWrapperTest::IService>();
 		instance.rpctype_RpcServiceWrapperTest__IService = static_cast<::vl::vint>(0);
 		instance.rpcmethod_RpcServiceWrapperTest__IService_Self = static_cast<::vl::vint>(1);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.serviceObj = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_ServiceWrapper)
 
 namespace vl_workflow_global
@@ -53,8 +51,8 @@ Global Functions
 
 	void Rpc_ServiceWrapper::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		(GLOBAL_NAME serviceObj = ::vl::Ptr<::RpcServiceWrapperTest::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_ServiceWrapper_serviceMain__RpcServiceWrapperTest_IService()));
-		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcServiceWrapperTest::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(GLOBAL_NAME serviceObj));
+		auto serviceObj = ::vl::Ptr<::RpcServiceWrapperTest::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_ServiceWrapper_serviceMain__RpcServiceWrapperTest_IService());
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcServiceWrapperTest::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Rpc_ServiceWrapper::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)
@@ -65,7 +63,7 @@ Global Functions
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"IService(obj) should be a wrapper object in clientMain"));
 		}
 		auto clientObj = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcServiceWrapperTest::IService>(obj.Obj()));
-		return (((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString((clientObj.Obj() == GLOBAL_NAME serviceObj.Obj()))) + ::vl::WString::Unmanaged(L"]")) + ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(::vl::__vwsn::This(clientObj.Obj())->Self(clientObj))) + ::vl::WString::Unmanaged(L"]")));
+		return (((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString((! static_cast<bool>(clientObj)))) + ::vl::WString::Unmanaged(L"]")) + ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(::vl::__vwsn::This(clientObj.Obj())->Self(clientObj))) + ::vl::WString::Unmanaged(L"]")));
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> Rpc_ServiceWrapper::rpc_GetIds()
@@ -218,7 +216,7 @@ Closures
 		{
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"IService(obj) should be a local object in serviceMain"));
 		}
-		return (obj.Obj() == GLOBAL_NAME serviceObj.Obj());
+		return (obj.Obj() == ::vl::__vwsn::Ensure(::vl::Ptr<::RpcServiceWrapperTest::IService>(this)).Obj());
 	}
 
 	//-------------------------------------------------------------------

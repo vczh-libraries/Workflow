@@ -81,7 +81,6 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::WString serviceResult;
 		::vl::vint rpctype_RpcFailDoubleRegistrationTest__IService = 0;
 		::vl::vint rpcmethod_RpcFailDoubleRegistrationTest__IService_GetResult = 0;
 
@@ -113,8 +112,12 @@ Closures
 	class __vwsnc1_Rpc_FailDoubleRegistration_serviceMain__RpcFailDoubleRegistrationTest_IService : public ::vl::Object, public virtual ::RpcFailDoubleRegistrationTest::IService
 	{
 	public:
-		__vwsnc1_Rpc_FailDoubleRegistration_serviceMain__RpcFailDoubleRegistrationTest_IService();
+		::vl::rpc_controller::IRpcLifecycle* lc;
+		::vl::vint typeId;
 
+		__vwsnc1_Rpc_FailDoubleRegistration_serviceMain__RpcFailDoubleRegistrationTest_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::vint __vwsnctor_typeId);
+
+		::vl::WString serviceResult;
 		::vl::WString GetResult() override;
 	};
 

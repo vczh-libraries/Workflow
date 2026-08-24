@@ -37,13 +37,11 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionOblist_Nested_InByva
 	vl_workflow_global::Rpc_CollectionOblist_Nested_InByval_OutByval instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = ::vl::reflection::description::IValueObservableList::Create();
 		instance.rpctype_RpcCollectionOblist__Nested__InByval__OutByval__IService = static_cast<::vl::vint32_t>(0);
 		instance.rpcmethod_RpcCollectionOblist__Nested__InByval__OutByval__IService_DoList = static_cast<::vl::vint32_t>(1);
 		instance.rpcmethod_RpcCollectionOblist__Nested__InByval__OutByval__IService_GetServiceResult = static_cast<::vl::vint32_t>(2);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_CollectionOblist_Nested_InByval_OutByval)
 
 namespace vl_workflow_global
@@ -237,11 +235,12 @@ Closures
 
 	__vwsnc1_Rpc_CollectionOblist_Nested_InByval_OutByval_serviceMain__RpcCollectionOblist_Nested_InByval_OutByval_IService::__vwsnc1_Rpc_CollectionOblist_Nested_InByval_OutByval_serviceMain__RpcCollectionOblist_Nested_InByval_OutByval_IService()
 	{
+		this->xsService = ::vl::reflection::description::IValueObservableList::Create();
 	}
 
 	::vl::WString __vwsnc1_Rpc_CollectionOblist_Nested_InByval_OutByval_serviceMain__RpcCollectionOblist_Nested_InByval_OutByval_IService::GetServiceResult()
 	{
-		return GLOBAL_NAME Print(GLOBAL_NAME xsService);
+		return GLOBAL_NAME Print(xsService);
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsnc1_Rpc_CollectionOblist_Nested_InByval_OutByval_serviceMain__RpcCollectionOblist_Nested_InByval_OutByval_IService::DoList(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs)
@@ -251,7 +250,7 @@ Closures
 		{
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"Parameter xs should be a copied local object in serviceMain"));
 		}
-		(GLOBAL_NAME xsService = xs);
+		(xsService = xs);
 		auto ys = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueObservableList>>(::vl::__vwsn::This(xs.Obj())->Get(static_cast<::vl::vint32_t>(0)));
 		::vl::__vwsn::This(ys.Obj())->Add(::vl::__vwsn::Box(static_cast<::vl::vint32_t>(4)));
 		return xs;

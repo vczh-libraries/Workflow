@@ -122,7 +122,6 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::WString serviceResult;
 		::vl::WString clientResult;
 		::vl::vint64_t rpctype_RpcDtor3Test__IContainer = 0;
 		::vl::vint64_t rpcmethod_RpcDtor3Test__IContainer_GetValue = 0;
@@ -207,6 +206,7 @@ Closures
 	public:
 		__vwsnc1_Rpc_Dtor3_serviceMain__RpcDtor3Test_IService();
 
+		::vl::Ptr<::vl::reflection::description::IValueList> serviceResult;
 		::vl::WString ConsumeServiceResult() override;
 		::vl::Ptr<::RpcDtor3Test::IContainer> ContainValue(::vl::Ptr<::RpcDtor3Test::IValue> value) override;
 	};
@@ -214,10 +214,11 @@ Closures
 	class __vwsnc2_Rpc_Dtor3_serviceMain_ContainValue__RpcDtor3Test_IContainer : public ::vl::Object, public virtual ::RpcDtor3Test::IContainer
 	{
 	public:
+		::vl::Ptr<::vl::reflection::description::IValueList> capturedServiceResult;
 		::vl::Ptr<::RpcDtor3Test::IValue> value;
 		::RpcDtor3Test::IService* __vwsnthis_0;
 
-		__vwsnc2_Rpc_Dtor3_serviceMain_ContainValue__RpcDtor3Test_IContainer(::vl::Ptr<::RpcDtor3Test::IValue> __vwsnctor_value, ::RpcDtor3Test::IService* __vwsnctorthis_0);
+		__vwsnc2_Rpc_Dtor3_serviceMain_ContainValue__RpcDtor3Test_IContainer(::vl::Ptr<::vl::reflection::description::IValueList> __vwsnctor_capturedServiceResult, ::vl::Ptr<::RpcDtor3Test::IValue> __vwsnctor_value, ::RpcDtor3Test::IService* __vwsnctorthis_0);
 
 		~__vwsnc2_Rpc_Dtor3_serviceMain_ContainValue__RpcDtor3Test_IContainer();
 		::vl::Ptr<::RpcDtor3Test::IValue> GetValue() override;

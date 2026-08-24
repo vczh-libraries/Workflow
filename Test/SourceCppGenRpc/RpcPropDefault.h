@@ -98,8 +98,8 @@ namespace vl_workflow_global
 		::vl::vint rpcmethod_RpcPropDefault__IService_Signal = 0;
 		::vl::vint rpcevent_RpcPropDefault__IService_ValueChanged = 0;
 
-		void ClientValueChanged();
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
+		void ClientValueChanged();
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint typeId);

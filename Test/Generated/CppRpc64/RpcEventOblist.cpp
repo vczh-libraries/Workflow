@@ -37,7 +37,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_EventOblist)
 	vl_workflow_global::Rpc_EventOblist instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.serviceResult = ::vl::WString::Unmanaged(L"");
 		instance.clientResult = ::vl::WString::Unmanaged(L"");
 		instance.rpctype_RpcEventOblist__IService = static_cast<::vl::vint64_t>(0L);
 		instance.rpcmethod_RpcEventOblist__IService_GetServiceResult = static_cast<::vl::vint64_t>(1L);
@@ -46,7 +45,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_EventOblist)
 		instance.rpcmethod_RpcEventOblist__IService_WatchHeldList = static_cast<::vl::vint64_t>(4L);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.serviceResult = ::vl::WString::Empty;
 		instance.clientResult = ::vl::WString::Empty;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_EventOblist)
 
@@ -59,16 +57,6 @@ Global Functions
 	::vl::WString Rpc_EventOblist::FormatItemChanged(const ::vl::WString& handler, ::vl::vint64_t index, ::vl::vint64_t oldCount, ::vl::vint64_t newCount)
 	{
 		return ((((((((::vl::WString::Unmanaged(L"[") + handler) + ::vl::WString::Unmanaged(L":")) + ::vl::__vwsn::ToString(index)) + ::vl::WString::Unmanaged(L",")) + ::vl::__vwsn::ToString(oldCount)) + ::vl::WString::Unmanaged(L",")) + ::vl::__vwsn::ToString(newCount)) + ::vl::WString::Unmanaged(L"]"));
-	}
-
-	void Rpc_EventOblist::ServiceItemChanged(::vl::vint64_t index, ::vl::vint64_t oldCount, ::vl::vint64_t newCount)
-	{
-		(GLOBAL_NAME serviceResult = (GLOBAL_NAME serviceResult + GLOBAL_NAME FormatItemChanged(::vl::WString::Unmanaged(L"serviceMain"), index, oldCount, newCount)));
-	}
-
-	void Rpc_EventOblist::ClientItemChanged(::vl::vint64_t index, ::vl::vint64_t oldCount, ::vl::vint64_t newCount)
-	{
-		(GLOBAL_NAME clientResult = (GLOBAL_NAME clientResult + GLOBAL_NAME FormatItemChanged(::vl::WString::Unmanaged(L"clientMain"), index, oldCount, newCount)));
 	}
 
 	void Rpc_EventOblist::Modify(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs)
@@ -84,6 +72,11 @@ Global Functions
 	{
 		auto serviceObj = ::vl::Ptr<::RpcEventOblist::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_EventOblist_serviceMain__RpcEventOblist_IService());
 		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventOblist::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+	}
+
+	void Rpc_EventOblist::ClientItemChanged(::vl::vint64_t index, ::vl::vint64_t oldCount, ::vl::vint64_t newCount)
+	{
+		(GLOBAL_NAME clientResult = (GLOBAL_NAME clientResult + GLOBAL_NAME FormatItemChanged(::vl::WString::Unmanaged(L"clientMain"), index, oldCount, newCount)));
 	}
 
 	::vl::WString Rpc_EventOblist::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)
@@ -243,12 +236,18 @@ Closures
 
 	__vwsnc1_Rpc_EventOblist_serviceMain__RpcEventOblist_IService::__vwsnc1_Rpc_EventOblist_serviceMain__RpcEventOblist_IService()
 	{
+		this->serviceResult = ::vl::WString::Unmanaged(L"");
 		this->_List = ::vl::Ptr<::vl::reflection::description::IValueObservableList>();
+	}
+
+	void __vwsnc1_Rpc_EventOblist_serviceMain__RpcEventOblist_IService::ServiceItemChanged(::vl::vint64_t index, ::vl::vint64_t oldCount, ::vl::vint64_t newCount)
+	{
+		(serviceResult = (serviceResult + GLOBAL_NAME FormatItemChanged(::vl::WString::Unmanaged(L"serviceMain"), index, oldCount, newCount)));
 	}
 
 	::vl::WString __vwsnc1_Rpc_EventOblist_serviceMain__RpcEventOblist_IService::GetServiceResult()
 	{
-		return GLOBAL_NAME serviceResult;
+		return serviceResult;
 	}
 
 	void __vwsnc1_Rpc_EventOblist_serviceMain__RpcEventOblist_IService::SetList(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs)
@@ -268,7 +267,7 @@ Closures
 
 	void __vwsnc1_Rpc_EventOblist_serviceMain__RpcEventOblist_IService::WatchHeldList()
 	{
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(_List.Obj())->ItemChanged, ::vl::Func<void(::vl::vint64_t, ::vl::vint64_t, ::vl::vint64_t)>(GLOBAL_OBJ, &GLOBAL_SYMBOL ServiceItemChanged));
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(_List.Obj())->ItemChanged, ::vl::Func<void(::vl::vint64_t, ::vl::vint64_t, ::vl::vint64_t)>(this, &__vwsnc1_Rpc_EventOblist_serviceMain__RpcEventOblist_IService::ServiceItemChanged));
 	}
 
 	//-------------------------------------------------------------------

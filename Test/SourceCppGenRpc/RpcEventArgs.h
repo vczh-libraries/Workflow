@@ -94,10 +94,10 @@ namespace vl_workflow_global
 		::vl::vint rpcmethod_RpcEventArgs__IService_MakeItHappen = 0;
 		::vl::vint rpcevent_RpcEventArgs__IService_SomethingHappened = 0;
 
+		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		void Print(::vl::Ptr<::vl::reflection::description::IValueList> values);
 		void Print(::vl::Ptr<::vl::reflection::description::IValueObservableList> values);
 		void RecordSomethingHappened(::vl::Ptr<::vl::reflection::description::IValueList> _xs, ::vl::Ptr<::vl::reflection::description::IValueObservableList> _ys);
-		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint typeId);

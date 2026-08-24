@@ -87,7 +87,6 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::WString serviceResult;
 		::vl::WString clientResult;
 		::vl::vint64_t rpctype_RpcEventOblist__IService = 0;
 		::vl::vint64_t rpcmethod_RpcEventOblist__IService_GetServiceResult = 0;
@@ -96,10 +95,9 @@ namespace vl_workflow_global
 		::vl::vint64_t rpcmethod_RpcEventOblist__IService_WatchHeldList = 0;
 
 		::vl::WString FormatItemChanged(const ::vl::WString& handler, ::vl::vint64_t index, ::vl::vint64_t oldCount, ::vl::vint64_t newCount);
-		void ServiceItemChanged(::vl::vint64_t index, ::vl::vint64_t oldCount, ::vl::vint64_t newCount);
-		void ClientItemChanged(::vl::vint64_t index, ::vl::vint64_t oldCount, ::vl::vint64_t newCount);
 		void Modify(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs);
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
+		void ClientItemChanged(::vl::vint64_t index, ::vl::vint64_t oldCount, ::vl::vint64_t newCount);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint64_t typeId);
@@ -129,6 +127,8 @@ Closures
 	public:
 		__vwsnc1_Rpc_EventOblist_serviceMain__RpcEventOblist_IService();
 
+		::vl::WString serviceResult;
+		void ServiceItemChanged(::vl::vint64_t index, ::vl::vint64_t oldCount, ::vl::vint64_t newCount);
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> _List;
 		::vl::WString GetServiceResult() override;
 		void SetList(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs) override;

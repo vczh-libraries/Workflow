@@ -38,7 +38,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_DtorPropCached)
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Unmanaged(L"");
-		instance.serviceResult = ::vl::WString::Unmanaged(L"");
 		instance.rpctype_RpcDtorPropCached__IService = static_cast<::vl::vint32_t>(0);
 		instance.rpcmethod_RpcDtorPropCached__IService_ConsumeServiceResult = static_cast<::vl::vint32_t>(1);
 		instance.rpcmethod_RpcDtorPropCached__IService_GetValue = static_cast<::vl::vint32_t>(2);
@@ -49,7 +48,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_DtorPropCached)
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
-		instance.serviceResult = ::vl::WString::Empty;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_DtorPropCached)
 
 namespace vl_workflow_global
@@ -58,20 +56,15 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	::vl::Ptr<::RpcDtorPropCached::IValue> Rpc_DtorPropCached::MakeValue(const ::vl::WString& value)
-	{
-		return ::vl::Ptr<::RpcDtorPropCached::IValue>(new ::vl_workflow_global::__vwsnc1_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue(value));
-	}
-
-	::vl::Ptr<::RpcDtorPropCached::IValue> Rpc_DtorPropCached::MakeServiceValue(const ::vl::WString& value)
-	{
-		return ::vl::Ptr<::RpcDtorPropCached::IValue>(new ::vl_workflow_global::__vwsnc2_Rpc_DtorPropCached_MakeServiceValue__RpcDtorPropCached_IValue(value));
-	}
-
 	void Rpc_DtorPropCached::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		auto serviceObj = ::vl::Ptr<::RpcDtorPropCached::IService>(new ::vl_workflow_global::__vwsnc3_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService());
+		auto serviceObj = ::vl::Ptr<::RpcDtorPropCached::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService());
 		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCached::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+	}
+
+	::vl::Ptr<::RpcDtorPropCached::IValue> Rpc_DtorPropCached::MakeValue(const ::vl::WString& value)
+	{
+		return ::vl::Ptr<::RpcDtorPropCached::IValue>(new ::vl_workflow_global::__vwsnc3_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue(value));
 	}
 
 	::vl::WString Rpc_DtorPropCached::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)
@@ -528,55 +521,76 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc1_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue::__vwsnc1_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue(::vl::WString __vwsnctor_value)
-		:value(__vwsnctor_value)
+	__vwsnc1_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService::__vwsnc1_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService()
 	{
+		this->serviceResult = (::vl::__vwsn::CreateList().Add(::vl::WString::Unmanaged(L""))).list;
+		this->_Value = ::vl::Ptr<::RpcDtorPropCached::IValue>();
+		this->valueInitialized = false;
 	}
 
-	__vwsnc1_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue::~__vwsnc1_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue()
+	::vl::Ptr<::RpcDtorPropCached::IValue> __vwsnc1_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService::MakeServiceValue(const ::vl::WString& value)
 	{
-		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[Deleted:")) + value) + ::vl::WString::Unmanaged(L"]")));
+		auto capturedServiceResult = serviceResult;
+		return ::vl::Ptr<::RpcDtorPropCached::IValue>(new ::vl_workflow_global::__vwsnc2_Rpc_DtorPropCached_serviceMain_MakeServiceValue__RpcDtorPropCached_IValue(capturedServiceResult, value, this));
 	}
 
-	//-------------------------------------------------------------------
-
-	__vwsnc2_Rpc_DtorPropCached_MakeServiceValue__RpcDtorPropCached_IValue::__vwsnc2_Rpc_DtorPropCached_MakeServiceValue__RpcDtorPropCached_IValue(::vl::WString __vwsnctor_value)
-		:value(__vwsnctor_value)
+	void __vwsnc1_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService::EnsureValue()
 	{
+		if ((! valueInitialized))
+		{
+			(_Value = this->MakeServiceValue(::vl::WString::Unmanaged(L"A")));
+			(valueInitialized = true);
+		}
 	}
 
-	__vwsnc2_Rpc_DtorPropCached_MakeServiceValue__RpcDtorPropCached_IValue::~__vwsnc2_Rpc_DtorPropCached_MakeServiceValue__RpcDtorPropCached_IValue()
+	::vl::WString __vwsnc1_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService::ConsumeServiceResult()
 	{
-		(GLOBAL_NAME serviceResult = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME serviceResult) + ::vl::WString::Unmanaged(L"[Deleted:")) + value) + ::vl::WString::Unmanaged(L"]")));
-	}
-
-	//-------------------------------------------------------------------
-
-	__vwsnc3_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService::__vwsnc3_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService()
-	{
-		this->_Value = GLOBAL_NAME MakeServiceValue(::vl::WString::Unmanaged(L"A"));
-	}
-
-	::vl::WString __vwsnc3_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService::ConsumeServiceResult()
-	{
-		auto result = GLOBAL_NAME serviceResult;
-		(GLOBAL_NAME serviceResult = ::vl::WString::Unmanaged(L""));
+		auto result = ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(serviceResult.Obj())->Get(static_cast<::vl::vint32_t>(0)));
+		::vl::__vwsn::This(serviceResult.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::__vwsn::Box(::vl::WString::Unmanaged(L"")));
 		return result;
 	}
 
-	::vl::Ptr<::RpcDtorPropCached::IValue> __vwsnc3_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService::GetValue()
+	::vl::Ptr<::RpcDtorPropCached::IValue> __vwsnc1_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService::GetValue()
 	{
+		this->EnsureValue();
 		return _Value;
 	}
 
-	void __vwsnc3_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService::SetValue(::vl::Ptr<::RpcDtorPropCached::IValue> value)
+	void __vwsnc1_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService::SetValue(::vl::Ptr<::RpcDtorPropCached::IValue> value)
 	{
+		this->EnsureValue();
 		(_Value = value);
 	}
 
-	void __vwsnc3_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService::Signal()
+	void __vwsnc1_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService::Signal()
 	{
 		::vl::__vwsn::EventInvoke(this->ValueChanged)();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc2_Rpc_DtorPropCached_serviceMain_MakeServiceValue__RpcDtorPropCached_IValue::__vwsnc2_Rpc_DtorPropCached_serviceMain_MakeServiceValue__RpcDtorPropCached_IValue(::vl::Ptr<::vl::reflection::description::IValueList> __vwsnctor_capturedServiceResult, ::vl::WString __vwsnctor_value, ::RpcDtorPropCached::IService* __vwsnctorthis_0)
+		:capturedServiceResult(__vwsnctor_capturedServiceResult)
+		, value(__vwsnctor_value)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	__vwsnc2_Rpc_DtorPropCached_serviceMain_MakeServiceValue__RpcDtorPropCached_IValue::~__vwsnc2_Rpc_DtorPropCached_serviceMain_MakeServiceValue__RpcDtorPropCached_IValue()
+	{
+		::vl::__vwsn::This(this->capturedServiceResult.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::__vwsn::Box(((((::vl::WString::Unmanaged(L"") + ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(this->capturedServiceResult.Obj())->Get(static_cast<::vl::vint32_t>(0)))) + ::vl::WString::Unmanaged(L"[Deleted:")) + value) + ::vl::WString::Unmanaged(L"]"))));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc3_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue::__vwsnc3_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue(::vl::WString __vwsnctor_value)
+		:value(__vwsnctor_value)
+	{
+	}
+
+	__vwsnc3_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue::~__vwsnc3_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue()
+	{
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[Deleted:")) + value) + ::vl::WString::Unmanaged(L"]")));
 	}
 
 	//-------------------------------------------------------------------

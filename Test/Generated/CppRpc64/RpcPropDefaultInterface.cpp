@@ -56,11 +56,6 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	void Rpc_PropDefaultInterface::ClientValueChanged()
-	{
-		(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[ValueChanged]")));
-	}
-
 	::vl::Ptr<::RpcPropDefaultInterface::IValue> Rpc_PropDefaultInterface::MakeValue(const ::vl::WString& value)
 	{
 		return ::vl::Ptr<::RpcPropDefaultInterface::IValue>(new ::vl_workflow_global::__vwsnc1_Rpc_PropDefaultInterface_MakeValue__RpcPropDefaultInterface_IValue(value));
@@ -89,6 +84,11 @@ Global Functions
 	{
 		auto serviceObj = ::vl::Ptr<::RpcPropDefaultInterface::IService>(new ::vl_workflow_global::__vwsnc2_Rpc_PropDefaultInterface_serviceMain__RpcPropDefaultInterface_IService());
 		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint64_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcPropDefaultInterface::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+	}
+
+	void Rpc_PropDefaultInterface::ClientValueChanged()
+	{
+		(GLOBAL_NAME s = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[ValueChanged]")));
 	}
 
 	::vl::WString Rpc_PropDefaultInterface::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)

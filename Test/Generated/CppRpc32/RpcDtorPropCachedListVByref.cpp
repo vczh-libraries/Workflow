@@ -38,7 +38,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_DtorPropCachedListVByref)
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Unmanaged(L"");
-		instance.serviceResult = ::vl::WString::Unmanaged(L"");
 		instance.rpctype_RpcDtorPropCachedListVByref__IService = static_cast<::vl::vint32_t>(0);
 		instance.rpcmethod_RpcDtorPropCachedListVByref__IService_ConsumeServiceResult = static_cast<::vl::vint32_t>(1);
 		instance.rpcmethod_RpcDtorPropCachedListVByref__IService_GetValue = static_cast<::vl::vint32_t>(2);
@@ -49,7 +48,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_DtorPropCachedListVByref)
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
 		instance.s = ::vl::WString::Empty;
-		instance.serviceResult = ::vl::WString::Empty;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_DtorPropCachedListVByref)
 
 namespace vl_workflow_global
@@ -58,9 +56,15 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
+	void Rpc_DtorPropCachedListVByref::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
+	{
+		auto serviceObj = ::vl::Ptr<::RpcDtorPropCachedListVByref::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService());
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCachedListVByref::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+	}
+
 	::vl::Ptr<::RpcDtorPropCachedListVByref::IValue> Rpc_DtorPropCachedListVByref::MakeValue(const ::vl::WString& value)
 	{
-		return ::vl::Ptr<::RpcDtorPropCachedListVByref::IValue>(new ::vl_workflow_global::__vwsnc1_Rpc_DtorPropCachedListVByref_MakeValue__RpcDtorPropCachedListVByref_IValue(value));
+		return ::vl::Ptr<::RpcDtorPropCachedListVByref::IValue>(new ::vl_workflow_global::__vwsnc3_Rpc_DtorPropCachedListVByref_MakeValue__RpcDtorPropCachedListVByref_IValue(value));
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueList> Rpc_DtorPropCachedListVByref::MakeValues(const ::vl::WString& value)
@@ -68,24 +72,6 @@ Global Functions
 		auto values = ::vl::reflection::description::IValueList::Create();
 		::vl::__vwsn::This(values.Obj())->Add(::vl::__vwsn::Box(GLOBAL_NAME MakeValue(value)));
 		return values;
-	}
-
-	::vl::Ptr<::RpcDtorPropCachedListVByref::IValue> Rpc_DtorPropCachedListVByref::MakeServiceValue(const ::vl::WString& value)
-	{
-		return ::vl::Ptr<::RpcDtorPropCachedListVByref::IValue>(new ::vl_workflow_global::__vwsnc2_Rpc_DtorPropCachedListVByref_MakeServiceValue__RpcDtorPropCachedListVByref_IValue(value));
-	}
-
-	::vl::Ptr<::vl::reflection::description::IValueList> Rpc_DtorPropCachedListVByref::MakeServiceValues(const ::vl::WString& value)
-	{
-		auto values = ::vl::reflection::description::IValueList::Create();
-		::vl::__vwsn::This(values.Obj())->Add(::vl::__vwsn::Box(GLOBAL_NAME MakeServiceValue(value)));
-		return values;
-	}
-
-	void Rpc_DtorPropCachedListVByref::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
-	{
-		auto serviceObj = ::vl::Ptr<::RpcDtorPropCachedListVByref::IService>(new ::vl_workflow_global::__vwsnc3_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService());
-		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcDtorPropCachedListVByref::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Rpc_DtorPropCachedListVByref::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)
@@ -542,55 +528,83 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc1_Rpc_DtorPropCachedListVByref_MakeValue__RpcDtorPropCachedListVByref_IValue::__vwsnc1_Rpc_DtorPropCachedListVByref_MakeValue__RpcDtorPropCachedListVByref_IValue(::vl::WString __vwsnctor_value)
-		:value(__vwsnctor_value)
+	__vwsnc1_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService::__vwsnc1_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService()
 	{
+		this->serviceResult = (::vl::__vwsn::CreateList().Add(::vl::WString::Unmanaged(L""))).list;
+		this->_Value = ::vl::Ptr<::vl::reflection::description::IValueList>();
+		this->valueInitialized = false;
 	}
 
-	__vwsnc1_Rpc_DtorPropCachedListVByref_MakeValue__RpcDtorPropCachedListVByref_IValue::~__vwsnc1_Rpc_DtorPropCachedListVByref_MakeValue__RpcDtorPropCachedListVByref_IValue()
+	::vl::Ptr<::RpcDtorPropCachedListVByref::IValue> __vwsnc1_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService::MakeServiceValue(const ::vl::WString& value)
 	{
-		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[Deleted:")) + value) + ::vl::WString::Unmanaged(L"]")));
+		auto capturedServiceResult = serviceResult;
+		return ::vl::Ptr<::RpcDtorPropCachedListVByref::IValue>(new ::vl_workflow_global::__vwsnc2_Rpc_DtorPropCachedListVByref_serviceMain_MakeServiceValue__RpcDtorPropCachedListVByref_IValue(capturedServiceResult, value, this));
 	}
 
-	//-------------------------------------------------------------------
-
-	__vwsnc2_Rpc_DtorPropCachedListVByref_MakeServiceValue__RpcDtorPropCachedListVByref_IValue::__vwsnc2_Rpc_DtorPropCachedListVByref_MakeServiceValue__RpcDtorPropCachedListVByref_IValue(::vl::WString __vwsnctor_value)
-		:value(__vwsnctor_value)
+	::vl::Ptr<::vl::reflection::description::IValueList> __vwsnc1_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService::MakeServiceValues(const ::vl::WString& value)
 	{
+		auto values = ::vl::reflection::description::IValueList::Create();
+		::vl::__vwsn::This(values.Obj())->Add(::vl::__vwsn::Box(this->MakeServiceValue(value)));
+		return values;
 	}
 
-	__vwsnc2_Rpc_DtorPropCachedListVByref_MakeServiceValue__RpcDtorPropCachedListVByref_IValue::~__vwsnc2_Rpc_DtorPropCachedListVByref_MakeServiceValue__RpcDtorPropCachedListVByref_IValue()
+	void __vwsnc1_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService::EnsureValue()
 	{
-		(GLOBAL_NAME serviceResult = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME serviceResult) + ::vl::WString::Unmanaged(L"[Deleted:")) + value) + ::vl::WString::Unmanaged(L"]")));
+		if ((! valueInitialized))
+		{
+			(_Value = this->MakeServiceValues(::vl::WString::Unmanaged(L"A")));
+			(valueInitialized = true);
+		}
 	}
 
-	//-------------------------------------------------------------------
-
-	__vwsnc3_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService::__vwsnc3_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService()
+	::vl::WString __vwsnc1_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService::ConsumeServiceResult()
 	{
-		this->_Value = GLOBAL_NAME MakeServiceValues(::vl::WString::Unmanaged(L"A"));
-	}
-
-	::vl::WString __vwsnc3_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService::ConsumeServiceResult()
-	{
-		auto result = GLOBAL_NAME serviceResult;
-		(GLOBAL_NAME serviceResult = ::vl::WString::Unmanaged(L""));
+		auto result = ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(serviceResult.Obj())->Get(static_cast<::vl::vint32_t>(0)));
+		::vl::__vwsn::This(serviceResult.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::__vwsn::Box(::vl::WString::Unmanaged(L"")));
 		return result;
 	}
 
-	::vl::Ptr<::vl::reflection::description::IValueList> __vwsnc3_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService::GetValue()
+	::vl::Ptr<::vl::reflection::description::IValueList> __vwsnc1_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService::GetValue()
 	{
+		this->EnsureValue();
 		return _Value;
 	}
 
-	void __vwsnc3_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService::SetValue(::vl::Ptr<::vl::reflection::description::IValueList> value)
+	void __vwsnc1_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService::SetValue(::vl::Ptr<::vl::reflection::description::IValueList> value)
 	{
+		this->EnsureValue();
 		(_Value = value);
 	}
 
-	void __vwsnc3_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService::Signal()
+	void __vwsnc1_Rpc_DtorPropCachedListVByref_serviceMain__RpcDtorPropCachedListVByref_IService::Signal()
 	{
 		::vl::__vwsn::EventInvoke(this->ValueChanged)();
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc2_Rpc_DtorPropCachedListVByref_serviceMain_MakeServiceValue__RpcDtorPropCachedListVByref_IValue::__vwsnc2_Rpc_DtorPropCachedListVByref_serviceMain_MakeServiceValue__RpcDtorPropCachedListVByref_IValue(::vl::Ptr<::vl::reflection::description::IValueList> __vwsnctor_capturedServiceResult, ::vl::WString __vwsnctor_value, ::RpcDtorPropCachedListVByref::IService* __vwsnctorthis_0)
+		:capturedServiceResult(__vwsnctor_capturedServiceResult)
+		, value(__vwsnctor_value)
+		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
+	{
+	}
+
+	__vwsnc2_Rpc_DtorPropCachedListVByref_serviceMain_MakeServiceValue__RpcDtorPropCachedListVByref_IValue::~__vwsnc2_Rpc_DtorPropCachedListVByref_serviceMain_MakeServiceValue__RpcDtorPropCachedListVByref_IValue()
+	{
+		::vl::__vwsn::This(this->capturedServiceResult.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::__vwsn::Box(((((::vl::WString::Unmanaged(L"") + ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(this->capturedServiceResult.Obj())->Get(static_cast<::vl::vint32_t>(0)))) + ::vl::WString::Unmanaged(L"[Deleted:")) + value) + ::vl::WString::Unmanaged(L"]"))));
+	}
+
+	//-------------------------------------------------------------------
+
+	__vwsnc3_Rpc_DtorPropCachedListVByref_MakeValue__RpcDtorPropCachedListVByref_IValue::__vwsnc3_Rpc_DtorPropCachedListVByref_MakeValue__RpcDtorPropCachedListVByref_IValue(::vl::WString __vwsnctor_value)
+		:value(__vwsnctor_value)
+	{
+	}
+
+	__vwsnc3_Rpc_DtorPropCachedListVByref_MakeValue__RpcDtorPropCachedListVByref_IValue::~__vwsnc3_Rpc_DtorPropCachedListVByref_MakeValue__RpcDtorPropCachedListVByref_IValue()
+	{
+		(GLOBAL_NAME s = ((((::vl::WString::Unmanaged(L"") + GLOBAL_NAME s) + ::vl::WString::Unmanaged(L"[Deleted:")) + value) + ::vl::WString::Unmanaged(L"]")));
 	}
 
 	//-------------------------------------------------------------------

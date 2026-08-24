@@ -31,9 +31,9 @@ namespace vl_workflow_global
 	class __vwsnc10_Rpc_DtorPropCached_rpcops_IRpcObjectOpsJson__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc11_Rpc_DtorPropCached_rpcops_IRpcObjectEventOpsJson__vl_rpc_controller_IRpcObjectEventOps;
 	class __vwsnc12_Rpc_DtorPropCached_rpcops_IOps_CreateJson__rpcops_IOps_Rpc_DtorPropCached;
-	class __vwsnc1_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue;
-	class __vwsnc2_Rpc_DtorPropCached_MakeServiceValue__RpcDtorPropCached_IValue;
-	class __vwsnc3_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService;
+	class __vwsnc1_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService;
+	class __vwsnc2_Rpc_DtorPropCached_serviceMain_MakeServiceValue__RpcDtorPropCached_IValue;
+	class __vwsnc3_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue;
 	class __vwsnc4_Rpc_DtorPropCached_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps;
 	class __vwsnc5_Rpc_DtorPropCached_rpcops_IRpcObjectEventOps__vl_rpc_controller_IRpcObjectEventOps;
 	class __vwsnc6_Rpc_DtorPropCached_rpcops_IOps_Create__rpcops_IOps_Rpc_DtorPropCached;
@@ -114,7 +114,6 @@ namespace vl_workflow_global
 	public:
 
 		::vl::WString s;
-		::vl::WString serviceResult;
 		::vl::vint32_t rpctype_RpcDtorPropCached__IService = 0;
 		::vl::vint32_t rpcmethod_RpcDtorPropCached__IService_ConsumeServiceResult = 0;
 		::vl::vint32_t rpcmethod_RpcDtorPropCached__IService_GetValue = 0;
@@ -123,9 +122,8 @@ namespace vl_workflow_global
 		::vl::vint32_t rpcevent_RpcDtorPropCached__IService_ValueChanged = 0;
 		::vl::vint32_t rpctype_RpcDtorPropCached__IValue = 0;
 
-		::vl::Ptr<::RpcDtorPropCached::IValue> MakeValue(const ::vl::WString& value);
-		::vl::Ptr<::RpcDtorPropCached::IValue> MakeServiceValue(const ::vl::WString& value);
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
+		::vl::Ptr<::RpcDtorPropCached::IValue> MakeValue(const ::vl::WString& value);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
 		bool rpcwrapper_IsInterfaceTypeId(::vl::vint32_t typeId);
@@ -216,36 +214,42 @@ Closures
 		void InvokeEvent_RpcDtorPropCached__IService_ValueChanged(::vl::rpc_controller::RpcObjectReference ref) override;
 	};
 
-	class __vwsnc1_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue : public ::vl::Object, public virtual ::RpcDtorPropCached::IValue
+	class __vwsnc1_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService : public ::vl::Object, public virtual ::RpcDtorPropCached::IService
 	{
 	public:
-		::vl::WString value;
+		__vwsnc1_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService();
 
-		__vwsnc1_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue(::vl::WString __vwsnctor_value);
-
-		~__vwsnc1_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue();
-	};
-
-	class __vwsnc2_Rpc_DtorPropCached_MakeServiceValue__RpcDtorPropCached_IValue : public ::vl::Object, public virtual ::RpcDtorPropCached::IValue
-	{
-	public:
-		::vl::WString value;
-
-		__vwsnc2_Rpc_DtorPropCached_MakeServiceValue__RpcDtorPropCached_IValue(::vl::WString __vwsnctor_value);
-
-		~__vwsnc2_Rpc_DtorPropCached_MakeServiceValue__RpcDtorPropCached_IValue();
-	};
-
-	class __vwsnc3_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService : public ::vl::Object, public virtual ::RpcDtorPropCached::IService
-	{
-	public:
-		__vwsnc3_Rpc_DtorPropCached_serviceMain__RpcDtorPropCached_IService();
-
+		::vl::Ptr<::vl::reflection::description::IValueList> serviceResult;
+		::vl::Ptr<::RpcDtorPropCached::IValue> MakeServiceValue(const ::vl::WString& value);
 		::vl::Ptr<::RpcDtorPropCached::IValue> _Value;
+		bool valueInitialized = false;
+		void EnsureValue();
 		::vl::WString ConsumeServiceResult() override;
 		::vl::Ptr<::RpcDtorPropCached::IValue> GetValue() override;
 		void SetValue(::vl::Ptr<::RpcDtorPropCached::IValue> value) override;
 		void Signal() override;
+	};
+
+	class __vwsnc2_Rpc_DtorPropCached_serviceMain_MakeServiceValue__RpcDtorPropCached_IValue : public ::vl::Object, public virtual ::RpcDtorPropCached::IValue
+	{
+	public:
+		::vl::Ptr<::vl::reflection::description::IValueList> capturedServiceResult;
+		::vl::WString value;
+		::RpcDtorPropCached::IService* __vwsnthis_0;
+
+		__vwsnc2_Rpc_DtorPropCached_serviceMain_MakeServiceValue__RpcDtorPropCached_IValue(::vl::Ptr<::vl::reflection::description::IValueList> __vwsnctor_capturedServiceResult, ::vl::WString __vwsnctor_value, ::RpcDtorPropCached::IService* __vwsnctorthis_0);
+
+		~__vwsnc2_Rpc_DtorPropCached_serviceMain_MakeServiceValue__RpcDtorPropCached_IValue();
+	};
+
+	class __vwsnc3_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue : public ::vl::Object, public virtual ::RpcDtorPropCached::IValue
+	{
+	public:
+		::vl::WString value;
+
+		__vwsnc3_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue(::vl::WString __vwsnctor_value);
+
+		~__vwsnc3_Rpc_DtorPropCached_MakeValue__RpcDtorPropCached_IValue();
 	};
 
 	class __vwsnc4_Rpc_DtorPropCached_rpcops_IRpcObjectOps__vl_rpc_controller_IRpcObjectOps : public ::vl::Object, public virtual ::vl::rpc_controller::IRpcObjectOps

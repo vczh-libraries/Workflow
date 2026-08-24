@@ -37,13 +37,11 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Collection_Nested_InByref_OutB
 	vl_workflow_global::Rpc_Collection_Nested_InByref_OutByval instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = ::vl::reflection::description::IValueList::Create();
 		instance.rpctype_RpcCollection__Nested__InByref__OutByval__IService = static_cast<::vl::vint32_t>(0);
 		instance.rpcmethod_RpcCollection__Nested__InByref__OutByval__IService_DoList = static_cast<::vl::vint32_t>(1);
 		instance.rpcmethod_RpcCollection__Nested__InByref__OutByval__IService_GetServiceResult = static_cast<::vl::vint32_t>(2);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Collection_Nested_InByref_OutByval)
 
 namespace vl_workflow_global
@@ -237,11 +235,12 @@ Closures
 
 	__vwsnc1_Rpc_Collection_Nested_InByref_OutByval_serviceMain__RpcCollection_Nested_InByref_OutByval_IService::__vwsnc1_Rpc_Collection_Nested_InByref_OutByval_serviceMain__RpcCollection_Nested_InByref_OutByval_IService()
 	{
+		this->xsService = ::vl::reflection::description::IValueList::Create();
 	}
 
 	::vl::WString __vwsnc1_Rpc_Collection_Nested_InByref_OutByval_serviceMain__RpcCollection_Nested_InByref_OutByval_IService::GetServiceResult()
 	{
-		return GLOBAL_NAME Print(GLOBAL_NAME xsService);
+		return GLOBAL_NAME Print(xsService);
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueList> __vwsnc1_Rpc_Collection_Nested_InByref_OutByval_serviceMain__RpcCollection_Nested_InByref_OutByval_IService::DoList(::vl::Ptr<::vl::reflection::description::IValueList> xs)
@@ -251,7 +250,7 @@ Closures
 		{
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"Parameter xs should be a wrapper object in serviceMain"));
 		}
-		(GLOBAL_NAME xsService = xs);
+		(xsService = xs);
 		auto ys = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueList>>(::vl::__vwsn::This(xs.Obj())->Get(static_cast<::vl::vint32_t>(0)));
 		::vl::__vwsn::This(ys.Obj())->Add(::vl::__vwsn::Box(static_cast<::vl::vint32_t>(4)));
 		return xs;

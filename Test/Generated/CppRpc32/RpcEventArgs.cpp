@@ -57,6 +57,12 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
+	void Rpc_EventArgs::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
+	{
+		auto serviceObj = ::vl::Ptr<::RpcEventArgs::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_EventArgs_serviceMain__RpcEventArgs_IService());
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventArgs::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
+	}
+
 	void Rpc_EventArgs::Print(::vl::Ptr<::vl::reflection::description::IValueList> values)
 	{
 		{
@@ -91,12 +97,6 @@ Global Functions
 	{
 		(GLOBAL_NAME receivedXs = _xs);
 		(GLOBAL_NAME receivedYs = _ys);
-	}
-
-	void Rpc_EventArgs::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
-	{
-		auto serviceObj = ::vl::Ptr<::RpcEventArgs::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_EventArgs_serviceMain__RpcEventArgs_IService());
-		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcEventArgs::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Rpc_EventArgs::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)

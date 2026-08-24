@@ -84,7 +84,6 @@ namespace vl_workflow_global
 		::vl::vint32_t rpctype_RpcListOpsOblistEventException__IServer = 0;
 		::vl::vint32_t rpcmethod_RpcListOpsOblistEventException__IServer_GetOblist = 0;
 
-		void CrashItemChanged(::vl::vint32_t index, ::vl::vint32_t oldCount, ::vl::vint32_t newCount);
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
@@ -115,6 +114,7 @@ Closures
 	public:
 		__vwsnc1_Rpc_ListOps_OblistEventException_serviceMain__RpcListOpsOblistEventException_IServer();
 
+		void CrashItemChanged(::vl::vint32_t index, ::vl::vint32_t oldCount, ::vl::vint32_t newCount);
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> _List;
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> GetOblist() override;
 	};

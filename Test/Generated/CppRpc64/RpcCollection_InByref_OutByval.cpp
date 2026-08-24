@@ -37,13 +37,11 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Collection_InByref_OutByval)
 	vl_workflow_global::Rpc_Collection_InByref_OutByval instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = ::vl::reflection::description::IValueList::Create();
 		instance.rpctype_RpcCollection__InByref__OutByval__IService = static_cast<::vl::vint64_t>(0L);
 		instance.rpcmethod_RpcCollection__InByref__OutByval__IService_DoList = static_cast<::vl::vint64_t>(1L);
 		instance.rpcmethod_RpcCollection__InByref__OutByval__IService_GetServiceResult = static_cast<::vl::vint64_t>(2L);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Collection_InByref_OutByval)
 
 namespace vl_workflow_global
@@ -229,11 +227,12 @@ Closures
 
 	__vwsnc1_Rpc_Collection_InByref_OutByval_serviceMain__RpcCollection_InByref_OutByval_IService::__vwsnc1_Rpc_Collection_InByref_OutByval_serviceMain__RpcCollection_InByref_OutByval_IService()
 	{
+		this->xsService = ::vl::reflection::description::IValueList::Create();
 	}
 
 	::vl::WString __vwsnc1_Rpc_Collection_InByref_OutByval_serviceMain__RpcCollection_InByref_OutByval_IService::GetServiceResult()
 	{
-		return GLOBAL_NAME Print4(GLOBAL_NAME xsService);
+		return GLOBAL_NAME Print4(xsService);
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueList> __vwsnc1_Rpc_Collection_InByref_OutByval_serviceMain__RpcCollection_InByref_OutByval_IService::DoList(::vl::Ptr<::vl::reflection::description::IValueList> xs)
@@ -243,7 +242,7 @@ Closures
 		{
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"Parameter xs should be a wrapper object in serviceMain"));
 		}
-		(GLOBAL_NAME xsService = xs);
+		(xsService = xs);
 		::vl::__vwsn::This(xs.Obj())->Add(::vl::__vwsn::Box(static_cast<::vl::vint64_t>(4L)));
 		return xs;
 	}

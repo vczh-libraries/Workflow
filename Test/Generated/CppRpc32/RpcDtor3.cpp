@@ -37,7 +37,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Dtor3)
 	vl_workflow_global::Rpc_Dtor3 instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.serviceResult = ::vl::WString::Unmanaged(L"");
 		instance.clientResult = ::vl::WString::Unmanaged(L"");
 		instance.rpctype_RpcDtor3Test__IContainer = static_cast<::vl::vint32_t>(0);
 		instance.rpcmethod_RpcDtor3Test__IContainer_GetValue = static_cast<::vl::vint32_t>(1);
@@ -47,7 +46,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Dtor3)
 		instance.rpctype_RpcDtor3Test__IValue = static_cast<::vl::vint32_t>(5);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.serviceResult = ::vl::WString::Empty;
 		instance.clientResult = ::vl::WString::Empty;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Dtor3)
 
@@ -451,12 +449,13 @@ Closures
 
 	__vwsnc1_Rpc_Dtor3_serviceMain__RpcDtor3Test_IService::__vwsnc1_Rpc_Dtor3_serviceMain__RpcDtor3Test_IService()
 	{
+		this->serviceResult = (::vl::__vwsn::CreateList().Add(::vl::WString::Unmanaged(L""))).list;
 	}
 
 	::vl::WString __vwsnc1_Rpc_Dtor3_serviceMain__RpcDtor3Test_IService::ConsumeServiceResult()
 	{
-		auto result = GLOBAL_NAME serviceResult;
-		(GLOBAL_NAME serviceResult = ::vl::WString::Unmanaged(L""));
+		auto result = ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(serviceResult.Obj())->Get(static_cast<::vl::vint32_t>(0)));
+		::vl::__vwsn::This(serviceResult.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::__vwsn::Box(::vl::WString::Unmanaged(L"")));
 		return result;
 	}
 
@@ -467,20 +466,22 @@ Closures
 		{
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"IValue(value) should be a wrapper object in serviceMain"));
 		}
-		return ::vl::Ptr<::RpcDtor3Test::IContainer>(new ::vl_workflow_global::__vwsnc2_Rpc_Dtor3_serviceMain_ContainValue__RpcDtor3Test_IContainer(value, this));
+		auto capturedServiceResult = serviceResult;
+		return ::vl::Ptr<::RpcDtor3Test::IContainer>(new ::vl_workflow_global::__vwsnc2_Rpc_Dtor3_serviceMain_ContainValue__RpcDtor3Test_IContainer(capturedServiceResult, value, this));
 	}
 
 	//-------------------------------------------------------------------
 
-	__vwsnc2_Rpc_Dtor3_serviceMain_ContainValue__RpcDtor3Test_IContainer::__vwsnc2_Rpc_Dtor3_serviceMain_ContainValue__RpcDtor3Test_IContainer(::vl::Ptr<::RpcDtor3Test::IValue> __vwsnctor_value, ::RpcDtor3Test::IService* __vwsnctorthis_0)
-		:value(__vwsnctor_value)
+	__vwsnc2_Rpc_Dtor3_serviceMain_ContainValue__RpcDtor3Test_IContainer::__vwsnc2_Rpc_Dtor3_serviceMain_ContainValue__RpcDtor3Test_IContainer(::vl::Ptr<::vl::reflection::description::IValueList> __vwsnctor_capturedServiceResult, ::vl::Ptr<::RpcDtor3Test::IValue> __vwsnctor_value, ::RpcDtor3Test::IService* __vwsnctorthis_0)
+		:capturedServiceResult(__vwsnctor_capturedServiceResult)
+		, value(__vwsnctor_value)
 		, __vwsnthis_0(::vl::__vwsn::This(__vwsnctorthis_0))
 	{
 	}
 
 	__vwsnc2_Rpc_Dtor3_serviceMain_ContainValue__RpcDtor3Test_IContainer::~__vwsnc2_Rpc_Dtor3_serviceMain_ContainValue__RpcDtor3Test_IContainer()
 	{
-		(GLOBAL_NAME serviceResult = ((::vl::WString::Unmanaged(L"") + GLOBAL_NAME serviceResult) + ::vl::WString::Unmanaged(L"[IContainer]")));
+		::vl::__vwsn::This(this->capturedServiceResult.Obj())->Set(static_cast<::vl::vint32_t>(0), ::vl::__vwsn::Box(((::vl::WString::Unmanaged(L"") + ::vl::__vwsn::Unbox<::vl::WString>(::vl::__vwsn::This(this->capturedServiceResult.Obj())->Get(static_cast<::vl::vint32_t>(0)))) + ::vl::WString::Unmanaged(L"[IContainer]"))));
 	}
 
 	::vl::Ptr<::RpcDtor3Test::IValue> __vwsnc2_Rpc_Dtor3_serviceMain_ContainValue__RpcDtor3Test_IContainer::GetValue()

@@ -49,11 +49,6 @@ namespace vl_workflow_global
 Global Functions
 ***********************************************************************/
 
-	void Rpc_ListOps_OblistEventException::CrashItemChanged(::vl::vint64_t index, ::vl::vint64_t oldCount, ::vl::vint64_t newCount)
-	{
-		throw ::vl::Exception((((((::vl::WString::Unmanaged(L"") + ::vl::__vwsn::ToString(index)) + ::vl::WString::Unmanaged(L",")) + ::vl::__vwsn::ToString(oldCount)) + ::vl::WString::Unmanaged(L",")) + ::vl::__vwsn::ToString(newCount)));
-	}
-
 	void Rpc_ListOps_OblistEventException::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
 		auto serverObj = ::vl::Ptr<::RpcListOpsOblistEventException::IServer>(new ::vl_workflow_global::__vwsnc1_Rpc_ListOps_OblistEventException_serviceMain__RpcListOpsOblistEventException_IServer());
@@ -224,10 +219,15 @@ Closures
 		this->_List = ::vl::Ptr<::vl::reflection::description::IValueObservableList>();
 	}
 
+	void __vwsnc1_Rpc_ListOps_OblistEventException_serviceMain__RpcListOpsOblistEventException_IServer::CrashItemChanged(::vl::vint64_t index, ::vl::vint64_t oldCount, ::vl::vint64_t newCount)
+	{
+		throw ::vl::Exception((((((::vl::WString::Unmanaged(L"") + ::vl::__vwsn::ToString(index)) + ::vl::WString::Unmanaged(L",")) + ::vl::__vwsn::ToString(oldCount)) + ::vl::WString::Unmanaged(L",")) + ::vl::__vwsn::ToString(newCount)));
+	}
+
 	::vl::Ptr<::vl::reflection::description::IValueObservableList> __vwsnc1_Rpc_ListOps_OblistEventException_serviceMain__RpcListOpsOblistEventException_IServer::GetOblist()
 	{
 		(_List = ::vl::reflection::description::IValueObservableList::Create());
-		::vl::__vwsn::EventAttach(::vl::__vwsn::This(_List.Obj())->ItemChanged, ::vl::Func<void(::vl::vint64_t, ::vl::vint64_t, ::vl::vint64_t)>(GLOBAL_OBJ, &GLOBAL_SYMBOL CrashItemChanged));
+		::vl::__vwsn::EventAttach(::vl::__vwsn::This(_List.Obj())->ItemChanged, ::vl::Func<void(::vl::vint64_t, ::vl::vint64_t, ::vl::vint64_t)>(this, &__vwsnc1_Rpc_ListOps_OblistEventException_serviceMain__RpcListOpsOblistEventException_IServer::CrashItemChanged));
 		return _List;
 	}
 

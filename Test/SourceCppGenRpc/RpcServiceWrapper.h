@@ -81,7 +81,6 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::Ptr<::RpcServiceWrapperTest::IService> serviceObj;
 		::vl::vint rpctype_RpcServiceWrapperTest__IService = 0;
 		::vl::vint rpcmethod_RpcServiceWrapperTest__IService_Self = 0;
 

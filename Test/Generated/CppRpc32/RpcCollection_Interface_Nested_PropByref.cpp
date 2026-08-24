@@ -37,7 +37,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Collection_Interface_Nested_Pr
 	vl_workflow_global::Rpc_Collection_Interface_Nested_PropByref instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = ::vl::reflection::description::IValueDictionary::Create();
 		instance.rpctype_RpcCollection__Interface__Nested__InByref__PropByref__IService = static_cast<::vl::vint32_t>(0);
 		instance.rpcmethod_RpcCollection__Interface__Nested__InByref__PropByref__IService_GetList = static_cast<::vl::vint32_t>(1);
 		instance.rpcmethod_RpcCollection__Interface__Nested__InByref__PropByref__IService_GetServiceResult = static_cast<::vl::vint32_t>(2);
@@ -46,7 +45,6 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Collection_Interface_Nested_Pr
 		instance.rpcmethod_RpcCollection__Interface__Nested__InByref__PropByref__IValue_GetValue = static_cast<::vl::vint32_t>(5);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.xsService = nullptr;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_Collection_Interface_Nested_PropByref)
 
 namespace vl_workflow_global
@@ -79,21 +77,10 @@ Global Functions
 		}
 	}
 
-	void Rpc_Collection_Interface_Nested_PropByref::CheckServiceItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
+	void Rpc_Collection_Interface_Nested_PropByref::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		auto ys = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueList>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint32_t>(0))));
-		{
-			auto __vwsn_for_begin_i = static_cast<::vl::vint32_t>(0);
-			auto __vwsn_for_end_i = (::vl::__vwsn::This(ys.Obj())->GetCount() - static_cast<::vl::vint32_t>(1));
-			auto i = __vwsn_for_begin_i;
-			while ((i <= __vwsn_for_end_i))
-			{
-				{
-					GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollection::Interface::Nested::InByref::PropByref::IValue>>(::vl::__vwsn::This(ys.Obj())->Get(i)), (i != static_cast<::vl::vint32_t>(3)), ((::vl::WString::Unmanaged(L"xsService[0][") + ::vl::__vwsn::ToString(i)) + ::vl::WString::Unmanaged(L"]")));
-				}
-				(i = (i + static_cast<::vl::vint32_t>(1)));
-			}
-		}
+		auto serviceObj = ::vl::Ptr<::RpcCollection::Interface::Nested::InByref::PropByref::IService>(new ::vl_workflow_global::__vwsnc2_Rpc_Collection_Interface_Nested_PropByref_serviceMain__RpcCollection_Interface_Nested_InByref_PropByref_IService());
+		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollection::Interface::Nested::InByref::PropByref::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	void Rpc_Collection_Interface_Nested_PropByref::CheckClientItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
@@ -111,12 +98,6 @@ Global Functions
 				(i = (i + static_cast<::vl::vint32_t>(1)));
 			}
 		}
-	}
-
-	void Rpc_Collection_Interface_Nested_PropByref::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
-	{
-		auto serviceObj = ::vl::Ptr<::RpcCollection::Interface::Nested::InByref::PropByref::IService>(new ::vl_workflow_global::__vwsnc2_Rpc_Collection_Interface_Nested_PropByref_serviceMain__RpcCollection_Interface_Nested_InByref_PropByref_IService());
-		::vl::__vwsn::This(lc)->RegisterLocalService(::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcCollection::Interface::Nested::InByref::PropByref::IService")))), ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
 	}
 
 	::vl::WString Rpc_Collection_Interface_Nested_PropByref::Print(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
@@ -398,13 +379,31 @@ Closures
 
 	__vwsnc2_Rpc_Collection_Interface_Nested_PropByref_serviceMain__RpcCollection_Interface_Nested_InByref_PropByref_IService::__vwsnc2_Rpc_Collection_Interface_Nested_PropByref_serviceMain__RpcCollection_Interface_Nested_InByref_PropByref_IService()
 	{
+		this->xsService = ::vl::reflection::description::IValueDictionary::Create();
 		this->_List = ::vl::Ptr<::vl::reflection::description::IValueDictionary>();
+	}
+
+	void __vwsnc2_Rpc_Collection_Interface_Nested_PropByref_serviceMain__RpcCollection_Interface_Nested_InByref_PropByref_IService::CheckServiceItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs)
+	{
+		auto ys = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueList>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint32_t>(0))));
+		{
+			auto __vwsn_for_begin_i = static_cast<::vl::vint32_t>(0);
+			auto __vwsn_for_end_i = (::vl::__vwsn::This(ys.Obj())->GetCount() - static_cast<::vl::vint32_t>(1));
+			auto i = __vwsn_for_begin_i;
+			while ((i <= __vwsn_for_end_i))
+			{
+				{
+					GLOBAL_NAME CheckValue(::vl::__vwsn::Unbox<::vl::Ptr<::RpcCollection::Interface::Nested::InByref::PropByref::IValue>>(::vl::__vwsn::This(ys.Obj())->Get(i)), (i != static_cast<::vl::vint32_t>(3)), ((::vl::WString::Unmanaged(L"xsService[0][") + ::vl::__vwsn::ToString(i)) + ::vl::WString::Unmanaged(L"]")));
+				}
+				(i = (i + static_cast<::vl::vint32_t>(1)));
+			}
+		}
 	}
 
 	::vl::WString __vwsnc2_Rpc_Collection_Interface_Nested_PropByref_serviceMain__RpcCollection_Interface_Nested_InByref_PropByref_IService::GetServiceResult()
 	{
-		GLOBAL_NAME CheckServiceItems(GLOBAL_NAME xsService);
-		return GLOBAL_NAME Print(GLOBAL_NAME xsService);
+		this->CheckServiceItems(xsService);
+		return GLOBAL_NAME Print(xsService);
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> __vwsnc2_Rpc_Collection_Interface_Nested_PropByref_serviceMain__RpcCollection_Interface_Nested_InByref_PropByref_IService::GetList()
@@ -419,7 +418,7 @@ Closures
 		{
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"Parameter xs should be a wrapper object in serviceMain"));
 		}
-		(GLOBAL_NAME xsService = xs);
+		(xsService = xs);
 		auto ys = ::vl::__vwsn::Unbox<::vl::Ptr<::vl::reflection::description::IValueList>>(::vl::__vwsn::This(xs.Obj())->Get(::vl::__vwsn::Box(static_cast<::vl::vint32_t>(0))));
 		::vl::__vwsn::This(ys.Obj())->Add(::vl::__vwsn::Box(GLOBAL_NAME MakeValue(static_cast<::vl::vint32_t>(4))));
 		(_List = xs);

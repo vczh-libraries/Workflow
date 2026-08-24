@@ -122,7 +122,6 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::Ptr<::vl::reflection::description::IValueObservableList> xsService;
 		::vl::vint32_t rpctype_RpcCollectionOblist__Interface__InByref__OutByval__IService = 0;
 		::vl::vint32_t rpcmethod_RpcCollectionOblist__Interface__InByref__OutByval__IService_DoList = 0;
 		::vl::vint32_t rpcmethod_RpcCollectionOblist__Interface__InByref__OutByval__IService_GetServiceResult = 0;
@@ -132,9 +131,8 @@ namespace vl_workflow_global
 		::vl::Ptr<::RpcCollectionOblist::Interface::InByref::OutByval::IValue> MakeValue(::vl::vint32_t value);
 		::vl::Ptr<::RpcCollectionOblist::Interface::InByref::OutByval::IValue> MakeValue(const ::vl::WString& value);
 		void CheckValue(::vl::Ptr<::RpcCollectionOblist::Interface::InByref::OutByval::IValue> value, bool shouldBeWrapper, const ::vl::WString& name);
-		void CheckServiceItems(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs);
-		void CheckClientItems(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs);
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
+		void CheckClientItems(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs);
 		::vl::WString Print(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
@@ -196,6 +194,8 @@ Closures
 	public:
 		__vwsnc2_Rpc_CollectionOblist_Interface_InByref_OutByval_serviceMain__RpcCollectionOblist_Interface_InByref_OutByval_IService();
 
+		::vl::Ptr<::vl::reflection::description::IValueObservableList> xsService;
+		void CheckServiceItems(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs);
 		::vl::WString GetServiceResult() override;
 		::vl::Ptr<::vl::reflection::description::IValueObservableList> DoList(::vl::Ptr<::vl::reflection::description::IValueObservableList> xs) override;
 	};

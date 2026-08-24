@@ -37,12 +37,10 @@ BEGIN_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_FailDoubleRegistration)
 	vl_workflow_global::Rpc_FailDoubleRegistration instance;
 	INITIALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.serviceResult = ::vl::WString::Unmanaged(L"");
 		instance.rpctype_RpcFailDoubleRegistrationTest__IService = static_cast<::vl::vint32_t>(0);
 		instance.rpcmethod_RpcFailDoubleRegistrationTest__IService_GetResult = static_cast<::vl::vint32_t>(1);
 	FINALIZE_GLOBAL_STORAGE_CLASS
 
-		instance.serviceResult = ::vl::WString::Empty;
 END_GLOBAL_STORAGE_CLASS(vl_workflow_global_Rpc_FailDoubleRegistration)
 
 namespace vl_workflow_global
@@ -53,23 +51,10 @@ Global Functions
 
 	void Rpc_FailDoubleRegistration::serviceMain(::vl::rpc_controller::IRpcLifecycle* lc)
 	{
-		auto serviceObj = ::vl::Ptr<::RpcFailDoubleRegistrationTest::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_FailDoubleRegistration_serviceMain__RpcFailDoubleRegistrationTest_IService());
 		auto typeId = ::vl::__vwsn::Unbox<::vl::vint32_t>(::vl::__vwsn::This(GLOBAL_NAME rpc_GetIds().Obj())->Get(::vl::__vwsn::Box(::vl::WString::Unmanaged(L"RpcFailDoubleRegistrationTest::IService"))));
+		auto serviceObj = ::vl::Ptr<::RpcFailDoubleRegistrationTest::IService>(new ::vl_workflow_global::__vwsnc1_Rpc_FailDoubleRegistration_serviceMain__RpcFailDoubleRegistrationTest_IService(lc, typeId));
 		::vl::__vwsn::This(lc)->RegisterLocalService(typeId, ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
-		try
-		{
-			{
-				::vl::__vwsn::This(lc)->RegisterLocalService(typeId, ::vl::Ptr<::vl::reflection::IDescriptable>(serviceObj));
-				(GLOBAL_NAME serviceResult = ::vl::WString::Unmanaged(L"[no exception]"));
-			}
-		}
-		catch(const ::vl::Exception& __vwsne_0)
-		{
-			auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
-			{
-				(GLOBAL_NAME serviceResult = ::vl::WString::Unmanaged(L"[exception]"));
-			}
-		}
+		::vl::__vwsn::This(serviceObj.Obj())->GetResult();
 	}
 
 	::vl::WString Rpc_FailDoubleRegistration::clientMain(::vl::rpc_controller::IRpcLifecycle* lc)
@@ -217,13 +202,33 @@ Closures
 
 	//-------------------------------------------------------------------
 
-	__vwsnc1_Rpc_FailDoubleRegistration_serviceMain__RpcFailDoubleRegistrationTest_IService::__vwsnc1_Rpc_FailDoubleRegistration_serviceMain__RpcFailDoubleRegistrationTest_IService()
+	__vwsnc1_Rpc_FailDoubleRegistration_serviceMain__RpcFailDoubleRegistrationTest_IService::__vwsnc1_Rpc_FailDoubleRegistration_serviceMain__RpcFailDoubleRegistrationTest_IService(::vl::rpc_controller::IRpcLifecycle* __vwsnctor_lc, ::vl::vint32_t __vwsnctor_typeId)
+		:lc(__vwsnctor_lc)
+		, typeId(__vwsnctor_typeId)
 	{
+		this->serviceResult = ::vl::WString::Unmanaged(L"");
 	}
 
 	::vl::WString __vwsnc1_Rpc_FailDoubleRegistration_serviceMain__RpcFailDoubleRegistrationTest_IService::GetResult()
 	{
-		return GLOBAL_NAME serviceResult;
+		if ((serviceResult == ::vl::WString::Unmanaged(L"")))
+		{
+			try
+			{
+				{
+					::vl::__vwsn::This(lc)->RegisterLocalService(this->typeId, ::vl::Ptr<::vl::reflection::IDescriptable>(::vl::__vwsn::Ensure(::vl::Ptr<::RpcFailDoubleRegistrationTest::IService>(this))));
+					(serviceResult = ::vl::WString::Unmanaged(L"[no exception]"));
+				}
+			}
+			catch(const ::vl::Exception& __vwsne_0)
+			{
+				auto ex = ::vl::reflection::description::IValueException::Create(__vwsne_0.Message());
+				{
+					(serviceResult = ::vl::WString::Unmanaged(L"[exception]"));
+				}
+			}
+		}
+		return serviceResult;
 	}
 
 	//-------------------------------------------------------------------

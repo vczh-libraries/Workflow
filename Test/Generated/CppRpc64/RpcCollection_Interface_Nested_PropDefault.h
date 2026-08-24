@@ -124,7 +124,6 @@ namespace vl_workflow_global
 	{
 	public:
 
-		::vl::Ptr<::vl::reflection::description::IValueDictionary> xsService;
 		::vl::vint64_t rpctype_RpcCollection__Interface__Nested__PropDefault__IService = 0;
 		::vl::vint64_t rpcmethod_RpcCollection__Interface__Nested__PropDefault__IService_GetList = 0;
 		::vl::vint64_t rpcmethod_RpcCollection__Interface__Nested__PropDefault__IService_GetServiceResult = 0;
@@ -134,9 +133,8 @@ namespace vl_workflow_global
 
 		::vl::Ptr<::RpcCollection::Interface::Nested::PropDefault::IValue> MakeValue(::vl::vint64_t value);
 		void CheckValue(::vl::Ptr<::RpcCollection::Interface::Nested::PropDefault::IValue> value, bool shouldBeWrapper, const ::vl::WString& name);
-		void CheckServiceItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs);
-		void CheckClientItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs);
 		void serviceMain(::vl::rpc_controller::IRpcLifecycle* lc);
+		void CheckClientItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs);
 		::vl::WString Print(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs);
 		::vl::WString clientMain(::vl::rpc_controller::IRpcLifecycle* lc);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> rpc_GetIds();
@@ -199,6 +197,8 @@ Closures
 	public:
 		__vwsnc2_Rpc_Collection_Interface_Nested_PropDefault_serviceMain__RpcCollection_Interface_Nested_PropDefault_IService();
 
+		::vl::Ptr<::vl::reflection::description::IValueDictionary> xsService;
+		void CheckServiceItems(::vl::Ptr<::vl::reflection::description::IValueDictionary> xs);
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> _List;
 		::vl::WString GetServiceResult() override;
 		::vl::Ptr<::vl::reflection::description::IValueDictionary> GetList() override;
