@@ -22,5 +22,8 @@ In `TestRpcCompiler.cpp` in `CompileRpcSample`, after all input are parsed, call
   
 Additionally:
 - Update `Project.md` and `.github/Rules/new-sample-rpc.md` to say the new pattern. We still want that `clientMain` and `serviceMain` could run in different process, that's why they don't share any variable.
+  - In `new-sample-rpc.md` move the pattern about rpc sample to a new section `## Rpc Sample Convention`.
+  - In `Project.md`, we don't repeat the information, instead we should refer to `## Rpc Sample Convention` in `new-sample-rpc.md`. Remove duplicated things about rpc sample convention in `Project.md`.
+- Update the demo in the task template `TaskTemplate_NewSample.md` to follow the new pattern.
 - Since no semantic in test cases is actually changed, I would expect `IndexRpc.txt` should not be touched as the result should just be the same.
 - To verify, both `StartRpcStdio.ps1` and `UnitTest` should be executed and ensure every single case passes.
