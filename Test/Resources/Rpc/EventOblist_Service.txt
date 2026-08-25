@@ -1,0 +1,51 @@
+module Rpc;
+using system::*;
+using RpcEventOblist::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcEventOblist::IService^)
+  {
+    var serviceResult : string = "";
+    var itemChangedHandler : system::reflection::EventHandler^ = null;
+
+    func ServiceItemChanged(index : int, oldCount : int, newCount : int) : void
+    {
+      serviceResult = serviceResult & FormatItemChanged("serviceMain", index, oldCount, newCount);
+    }
+
+    var _List : observe int[] = null;
+
+    override func GetServiceResult() : string
+    {
+      if (itemChangedHandler is not null)
+      {
+        detach(_List.ItemChanged, itemChangedHandler);
+        itemChangedHandler = null;
+      }
+      return serviceResult;
+    }
+
+    override func SetList(xs : observe int[]) : void
+    {
+      var xsObj : object = xs;
+      if ((xsObj as (system::IRpcWrapperBase^) is null))
+      {
+        raise "Parameter xs should be a wrapper object in serviceMain";
+      }
+
+      _List = xs;
+    }
+
+    override func ModifyHeldList() : void
+    {
+      Modify(_List);
+    }
+
+    override func WatchHeldList() : void
+    {
+      itemChangedHandler = attach(_List.ItemChanged, ServiceItemChanged);
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcEventOblist::IService"], serviceObj);
+}

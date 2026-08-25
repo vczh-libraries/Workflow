@@ -1,0 +1,36 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+
+var clientObj1 : IObj1^ = new IObj1^{};
+var clientObj2 : IObj2^ = new IObj2^{};
+var clientReceived_Obj1 : IObj1^ = null;
+var clientReceived_Obj2 : IObj2^ = null;
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var obj = lc.RequestService("RpcWrapperTest::IService");
+  if ((obj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "IService(obj) should be a wrapper object in clientMain";
+  }
+  var service = cast (RpcWrapperTest::IService^) obj;
+
+  clientReceived_Obj2 = service.Exchange1(clientObj1);
+  var wrapperObj : object = clientReceived_Obj2;
+  if ((wrapperObj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "IObj2(clientReceived_Obj2) should be a wrapper object in clientMain";
+  }
+  clientReceived_Obj1 = service.Exchange2(clientReceived_Obj2);
+  wrapperObj = clientReceived_Obj1;
+  if ((wrapperObj as (system::IRpcWrapperBase^) is not null))
+  {
+    raise "IObj1(clientReceived_Obj1) should be a local object in clientMain";
+  }
+
+  return
+    service.GetServiceResult() &
+    $"[$(clientReceived_Obj1 == clientObj1)]" &
+    $"[$(clientReceived_Obj2 == clientObj2)]";
+}

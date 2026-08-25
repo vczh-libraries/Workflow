@@ -386,6 +386,6 @@ Keep the event-handler wiring in a shared out-of-line ChatBot helper so the serv
 
 ## Place RPC fixture state on the process that owns it
 
-In `Test/Resources/Rpc/*_Test.txt`, make the service/client process boundary visible even when the in-memory harness would allow a module global to appear shared. Move service-only state and helpers, including transitively reached helpers, into the anonymous service implementation created inside `serviceMain`. Move client-only state and helpers below `serviceMain`, keep only genuinely stateless cross-process helpers above it, and remove unused declarations.
+Make the service/client process boundary visible even when the in-memory harness loads all fixture modules into one process. Keep `SAMPLE_Service.txt` limited to the top-level `serviceMain` declaration, with service-only state and helpers, including transitively reached helpers, inside its anonymous service implementation. Keep `SAMPLE_Client.txt` limited to `clientMain` and client-only declarations. Put only genuinely stateless cross-process helpers in `SAMPLE.txt`, never top-level variables, and remove unused declarations.
 
 When a fixture intentionally compares local and wrapped identities, use separately named service-owned and client-owned objects instead of declarations that imply shared memory. This reorganization must preserve `IndexRpc.txt` byte-for-byte and regenerate derived outputs through `CompilerTest_LoadAndCompile`.

@@ -96,15 +96,7 @@ When generated files are expected to change, baseline comparison will fail. You 
 - `Runtime`: Compiled in `TestRuntimeCompile.cpp` and loaded in `TestRuntime.cpp`, testing against attribute metadata.
 - `Codegen`: Compiled in `TestCodegen.cpp` and executed in `TestRuntime.cpp`, testing against binary generation and virtual machine execution.
 - `Rpc`: Compiled in `TestRpcCompile.cpp` and executed in `TestRpc.cpp`, testing against RPC feature.
-  - Each `Rpc` sample is split into two files:
-    - `Rpc/SAMPLE.txt` contains only RPC definitions and is used to generate RPC metadata and wrappers.
-    - `Rpc/SAMPLE_Test.txt` contains the executable test logic, including globals, helpers, `serviceMain`, and `clientMain`; it is loaded together with `SAMPLE.txt` when linking the test assembly.
-  - RPC test logic must make the service/client process boundary explicit even though the in-memory harness loads both sides into one process:
-    - Remove unused module-level variables and functions.
-    - Move variables and functions used only by the service side, including functions reached transitively from service methods, into the anonymous service implementation created inside `serviceMain`.
-    - Keep client-only module-level variables and functions below `serviceMain`.
-    - A stateless module-level function may be shared by service and client code. Stateful module-level variables must not be shared across the service/client boundary.
-  - Only `SAMPLE` appears in `IndexRpc.txt`; both files should be included under `Resource Files\Rpc` in `CompilerTest_LoadAndCompile`.
+  - Follow [Rpc Sample Convention](./.github/Rules/new-sample-rpc.md#rpc-sample-convention) for the required file layout and process boundary.
 - `Debugger`: Compiled and executed in `TestDebugger.cpp`, testing against Workflow virtual machine debugger feature.
 - Others: Compiled in `TestSamples.cpp`, test against the Workflow parser.
 

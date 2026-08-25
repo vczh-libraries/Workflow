@@ -3,22 +3,25 @@
 Checkout `new-samples.md` and follow the instructions.
 If the current implemention is correct, the added samples should just pass the test.
 
+## Rpc Sample Convention
+
+RPC samples are split into three files:
+
+- `SAMPLE.txt` contains RPC interfaces and stateless functions shared by the service and client. It must not contain top-level variables.
+- `SAMPLE_Service.txt` contains only the top-level `serviceMain` function. Variables and functions used only by the service, including indirect use through other service helpers, belong inside the anonymous service implementation created in `serviceMain`.
+- `SAMPLE_Client.txt` contains `clientMain` and all variables and functions used only by the client, including indirect use through other client helpers.
+
+The service and client can run in different processes. They must not share variables, even though the in-memory test harness loads all three files into one process. Stateless functions may remain in `SAMPLE.txt` only when both `serviceMain` and `clientMain` use them directly or indirectly. Remove unused declarations.
+
+Only `SAMPLE` should be listed in `IndexRpc.txt`. All three files should be present in `CompilerTest_LoadAndCompile` under `Resource Files\Rpc`.
+
 ## Verifying Samples
 
 Workflow script syntax and semantic should be intuitive.
 During reading the sample, you should verify it with the goal of the task.
 Ensure all logs or exceptions in the sample accurately reflected the intention of the design.
 Ensure the expected result would be what users would expect.
-RPC samples are split into `SAMPLE.txt` and `SAMPLE_Test.txt`.
-Verify that `SAMPLE.txt` contains only RPC definitions required for metadata/wrapper generation, and that `SAMPLE_Test.txt` contains all executable logic such as globals, helper functions, `serviceMain`, and `clientMain`.
-Only `SAMPLE` should be listed in `IndexRpc.txt`; both files should be present in `CompilerTest_LoadAndCompile`'s `Resource Files\Rpc` folder.
-
-RPC samples must not rely on module-level state being shared by the service and client. The in-memory harness can hide this mistake, but stdio and other transports run the two sides in different processes.
-
-- Remove unused module-level variables and functions.
-- Move variables and functions used only by the service side into the anonymous service implementation created inside `serviceMain`. Include indirect use when classifying a helper: a helper called only by another service-side helper is also service-only.
-- Keep client-only module-level variables and functions below `serviceMain`.
-- A stateless module-level function may remain shared when both service and client code use it. Do not share a stateful module-level variable across the process boundary.
+Verify that every RPC sample follows the `Rpc Sample Convention`.
 
 ## Restriction
 

@@ -1,0 +1,44 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+
+var s = "";
+
+var receivedXs : int[] = null;
+
+var receivedYs : observe int[] = null;
+
+func Print(values : int[]) : void
+{
+  for (x in values)
+  {
+    s = $"$(s)[$(x)]";
+  }
+}
+
+func Print(values : observe int[]) : void
+{
+  for (x in values)
+  {
+    s = $"$(s)[$(x)]";
+  }
+}
+
+func RecordSomethingHappened(_xs : int[], _ys : observe int[]) : void
+{
+  receivedXs = _xs;
+  receivedYs = _ys;
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (RpcEventArgs::IService^) lc.RequestService("RpcEventArgs::IService");
+  attach(service.SomethingHappened, RecordSomethingHappened);
+
+  service.MakeItHappen();
+  service.AddElement();
+  Print(receivedXs);
+  Print(receivedYs);
+
+  return s;
+}

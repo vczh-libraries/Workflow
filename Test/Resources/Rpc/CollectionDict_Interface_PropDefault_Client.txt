@@ -1,0 +1,47 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcCollectionDict::Interface::PropDefault::*;
+
+func CheckClientItems(xs : IValue^[int]) : void
+{
+  for (i in range [1, xs.Count])
+  {
+    CheckValue(xs[i], i == 4, $"xsService[$(i)]");
+  }
+}
+
+func Print(xs : IValue^[int]) : string
+{
+  var result = "";
+  for (key in range [1, xs.Count])
+  {
+    result = $"$(result)$(key)$(xs[key].Value)";
+  }
+  return result;
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var xsOrigin : IValue^[int] = {};
+  xsOrigin.Set(1, MakeValue("A"));
+  xsOrigin.Set(2, MakeValue("B"));
+  xsOrigin.Set(3, MakeValue("C"));
+  var service = cast (IService^) lc.RequestService("RpcCollectionDict::Interface::PropDefault::IService");
+  service.List = xsOrigin;
+  var xs = service.List;
+
+  if (xs != xsOrigin)
+  {
+    raise "Return value xs should be the original parameter object in clientMain";
+  }
+
+  var xsClient = xs;
+  xs.Set(5, MakeValue("E"));
+  CheckClientItems(xsClient);
+
+  return
+    $"[$(Print(xsOrigin))]" &
+    $"[$(service.GetServiceResult())]" &
+    $"[$(Print(xsClient))]";
+}

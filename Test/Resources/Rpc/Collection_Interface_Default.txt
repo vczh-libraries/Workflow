@@ -27,3 +27,38 @@ namespace RpcCollection
     }
   }
 }
+
+func MakeValue(value : int) : IValue^
+{
+  return MakeValue($"$(value)");
+}
+
+func MakeValue(value : string) : IValue^
+{
+  return new (IValue^)
+  {
+    override func GetValue() : string
+    {
+      return value;
+    }
+  };
+}
+
+func CheckValue(value : IValue^, shouldBeWrapper : bool, name : string) : void
+{
+  var valueObj : object = value;
+  if (shouldBeWrapper)
+  {
+    if ((valueObj as (system::IRpcWrapperBase^) is null))
+    {
+      raise $"$(name) should be a wrapper object";
+    }
+  }
+  else
+  {
+    if ((valueObj as (system::IRpcWrapperBase^) is not null))
+    {
+      raise $"$(name) should be a local object";
+    }
+  }
+}

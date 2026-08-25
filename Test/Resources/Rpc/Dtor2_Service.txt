@@ -1,0 +1,39 @@
+module Rpc;
+using system::*;
+using RpcDtor2Test::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcDtor2Test::IService^)
+  {
+    var state : string[] = {"Not Deleted"};
+
+    override func GetState() : string
+    {
+      return state[0];
+    }
+
+    override func MakeValue() : IValue^
+    {
+      var capturedState = state;
+      return new (RpcDtor2Test::IValue^)
+      {
+        delete
+        {
+          capturedState[0] = "Deleted";
+        }
+      };
+    }
+
+    override func ReviewValue(value : IValue^) : IValue^
+    {
+      var valueObj : object = value;
+      if ((valueObj as (system::IRpcWrapperBase^) is not null))
+      {
+        raise "IValue(value) should be a local object in serviceMain";
+      }
+      return value;
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcDtor2Test::IService"], serviceObj);
+}

@@ -1,0 +1,61 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcDtorPropCached::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (IService^)
+  {
+    var serviceResult : string[] = {""};
+
+    func MakeServiceValue(value : string) : IValue^
+    {
+      var capturedServiceResult = serviceResult;
+      return new (IValue^)
+      {
+        delete
+        {
+          capturedServiceResult[0] = $"$(capturedServiceResult[0])[Deleted:$(value)]";
+        }
+      };
+    }
+
+    var _Value : IValue^ = null;
+    var valueInitialized = false;
+
+    func EnsureValue() : void
+    {
+      if (not valueInitialized)
+      {
+        _Value = MakeServiceValue("A");
+        valueInitialized = true;
+      }
+    }
+
+    override func ConsumeServiceResult() : string
+    {
+      var result = serviceResult[0];
+      serviceResult[0] = "";
+      return result;
+    }
+
+    override func GetValue() : IValue^
+    {
+      EnsureValue();
+      return _Value;
+    }
+
+    override func SetValue(value : IValue^) : void
+    {
+      EnsureValue();
+      _Value = value;
+    }
+
+    override func Signal() : void
+    {
+      ValueChanged();
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcDtorPropCached::IService"], serviceObj);
+}

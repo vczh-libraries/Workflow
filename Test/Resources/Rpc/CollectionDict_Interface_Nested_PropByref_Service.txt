@@ -1,0 +1,49 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcCollectionDict::Interface::Nested::InByref::PropByref::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (IService^)
+  {
+    var xsService : IValue^[int][int] = {};
+
+    func CheckServiceItems(xs : IValue^[int][int]) : void
+    {
+      var ys = xs[0];
+      for (i in range [1, ys.Count])
+      {
+        CheckValue(ys[i], i != 4, $"xsService[0][$(i)]");
+      }
+    }
+
+    var _List : IValue^[int][int] = null;
+
+    override func GetServiceResult() : string
+    {
+      CheckServiceItems(xsService);
+      return Print(xsService);
+    }
+
+    override func GetList() : IValue^[int][int]
+    {
+      return _List;
+    }
+
+    override func SetList(xs : IValue^[int][int]) : void
+    {
+      var xsObj : object = xs;
+      if ((xsObj as (system::IRpcWrapperBase^) is null))
+      {
+        raise "Parameter xs should be a wrapper object in serviceMain";
+      }
+
+      xsService = xs;
+      var ys = xs[0];
+      ys.Set(4, MakeValue("D"));
+      _List = xs;
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcCollectionDict::Interface::Nested::InByref::PropByref::IService"], serviceObj);
+}

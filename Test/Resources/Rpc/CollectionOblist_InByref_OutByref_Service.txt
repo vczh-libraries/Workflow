@@ -1,0 +1,31 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcCollectionOblist::InByref::OutByref::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (IService^)
+  {
+    var xsService : observe int[] = {};
+
+    override func GetServiceResult() : string
+    {
+      return Print5(xsService);
+    }
+
+    override func DoList(xs : observe int[]) : observe int[]
+    {
+      var xsObj : object = xs;
+      if ((xsObj as (system::IRpcWrapperBase^) is null))
+      {
+        raise "Parameter xs should be a wrapper object in serviceMain";
+      }
+
+      xsService = xs;
+      xs.Add(4);
+      return xs;
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcCollectionOblist::InByref::OutByref::IService"], serviceObj);
+}

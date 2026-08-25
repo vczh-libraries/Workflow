@@ -1,0 +1,29 @@
+module Rpc;
+using system::*;
+using RpcInheritance::*;
+
+var s = "";
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (RpcInheritance::IService^) lc.RequestService("RpcInheritance::IService");
+
+  var one = service.CreateOne();
+  s = $"$(s)[$(one.Value)]";
+  one.SetOneValue();
+  s = $"$(s)[$(one.Value)]";
+
+  var two = service.CreateTwo();
+  s = $"$(s)[$(two.Value)]";
+  two.SetTwoValue();
+  s = $"$(s)[$(two.Value)]";
+
+  var derived = service.CreateDerived();
+  s = $"$(s)[$(derived.Value)]";
+  var value = cast (RpcInheritance::IValue^) derived;
+  s = $"$(s)[$(value.Value)]";
+  derived.SetDerivedValue();
+  s = $"$(s)[$(derived.Value)]";
+
+  return s;
+}

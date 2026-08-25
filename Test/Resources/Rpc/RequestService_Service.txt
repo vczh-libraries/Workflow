@@ -1,0 +1,14 @@
+module Rpc;
+using system::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var service = new (RpcTest::IService^)
+  {
+    override func GetText() : string
+    {
+      return "Hello";
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcTest::IService"], service);
+}

@@ -1,0 +1,40 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcDtorList2::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcDtorList2::IService^)
+  {
+    var _List : IValue^[] = null;
+    var _Value : IValue^ = null;
+
+    override func Make() : IValue^[]
+    {
+      _List = {};
+      return _List;
+    }
+
+    override func Clear() : void
+    {
+      _List.Clear();
+    }
+
+    override func Hold() : void
+    {
+      _Value = _List[0];
+      var xsObj : object = _Value;
+      if ((xsObj as (system::IRpcWrapperBase^) is null))
+      {
+        raise "List element should be a wrapper object in serviceMain";
+      }
+    }
+
+    override func Unhold() : void
+    {
+      _Value = null;
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcDtorList2::IService"], serviceObj);
+}

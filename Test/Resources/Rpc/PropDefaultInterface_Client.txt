@@ -1,0 +1,44 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcPropDefaultInterface::*;
+
+var s = "";
+
+func ClientValueChanged() : void
+{
+  s = $"$(s)[ValueChanged]";
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (IService^) lc.RequestService("RpcPropDefaultInterface::IService");
+  attach(service.ValueChanged, ClientValueChanged);
+
+  var valueA = service.Value;
+  CheckValue(valueA, true, "service.Value before SetValue");
+  s = $"$(s)[$(valueA.Value)]";
+
+  var valueB = MakeValue("B");
+  CheckValue(valueB, false, "valueB");
+  service.SetValue(valueB);
+
+  var valueCached = service.Value;
+  if (valueCached != valueA)
+  {
+    raise "Cached value should be the original wrapper object in clientMain";
+  }
+  CheckValue(valueCached, true, "service.Value before ValueChanged");
+  s = $"$(s)[$(valueCached.Value)]";
+
+  service.Signal();
+  var value = service.Value;
+  if (value != valueB)
+  {
+    raise "Value should be the original local object in clientMain";
+  }
+  CheckValue(value, false, "service.Value after ValueChanged");
+  s = $"$(s)[$(value.Value)]";
+
+  return s;
+}

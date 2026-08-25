@@ -1,0 +1,35 @@
+module Rpc;
+using system::*;
+using RpcOverloadingTest::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcOverloadingTest::IService^)
+  {
+    override func ToStringInt(value : int) : string
+    {
+      return $"$(value)";
+    }
+
+    override func ToString(value : bool) : string
+    {
+      return $"$(value)";
+    }
+
+    override func ToString(value : string) : string
+    {
+      return value;
+    }
+
+    override func ToString(value : IStringRepresentable^) : string
+    {
+      return value.StringValue;
+    }
+
+    override func ToString(value1 : int, value2 : bool, value3 : string, value4 : IStringRepresentable^) : string
+    {
+      return $"$(value1),$(value2),$(value3),$(value4.StringValue)";
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcOverloadingTest::IService"], serviceObj);
+}

@@ -1,0 +1,29 @@
+module Rpc;
+using system::*;
+using RpcDtorTest::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcDtorTest::IService^)
+  {
+    var state : string[] = {"Not Deleted"};
+
+    override func GetState() : string
+    {
+      return state[0];
+    }
+
+    override func MakeValue() : IValue^
+    {
+      var capturedState = state;
+      return new (RpcDtorTest::IValue^)
+      {
+        delete
+        {
+          capturedState[0] = "Deleted";
+        }
+      };
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcDtorTest::IService"], serviceObj);
+}

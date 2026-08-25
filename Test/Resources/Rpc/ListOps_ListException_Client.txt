@@ -1,0 +1,20 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcListOpsListException::*;
+
+var s = "";
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (RpcListOpsListException::IService^) lc.RequestService("RpcListOpsListException::IService");
+  try
+  {
+    service.DoSomethingWrong({});
+  }
+  catch (ex)
+  {
+    s = ex.Message;
+  }
+  return s;
+}

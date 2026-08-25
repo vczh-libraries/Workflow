@@ -1,0 +1,26 @@
+module Rpc;
+using system::*;
+using RpcInheritanceMethodException::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcInheritanceMethodException::IService^)
+  {
+    override func CreateDerived() : IDerived^
+    {
+      return new IDerived^
+      {
+        override func SetOneValue() : void
+        {
+          raise "DoNotSetOneValue";
+        }
+
+        override func SetTwoValue() : void
+        {
+          raise "DoNotSetTwoValue";
+        }
+      };
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcInheritanceMethodException::IService"], serviceObj);
+}

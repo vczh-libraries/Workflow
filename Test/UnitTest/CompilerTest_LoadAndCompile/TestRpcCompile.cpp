@@ -95,15 +95,59 @@ static Ptr<List<WString>> CollectRpcServiceNames(WfLexicalScopeManager& manager)
 	return serviceNames;
 }
 
-static void CompileRpcSample(WfLexicalScopeManager& manager, const WString& itemName, const WString& sample, Ptr<WfModule>& wrapperModule, Ptr<WfModule>& wrapperJsonModule)
+static void VerifyRpcSample(Ptr<WfModule> definitionModule, Ptr<WfModule> clientModule, Ptr<WfModule> serviceModule)
+{
+	TEST_ASSERT(serviceModule->declarations.Count() == 1);
+	auto serviceMain = serviceModule->declarations[0].Cast<WfFunctionDeclaration>();
+	TEST_ASSERT(serviceMain);
+	TEST_ASSERT(serviceMain->name.value == L"serviceMain");
+
+	bool clientMainExists = false;
+	for (auto declaration : clientModule->declarations)
+	{
+		if (auto function = declaration.Cast<WfFunctionDeclaration>())
+		{
+			if (function->name.value == L"clientMain")
+			{
+				clientMainExists = true;
+				break;
+			}
+		}
+	}
+	TEST_ASSERT(clientMainExists);
+
+	for (auto declaration : definitionModule->declarations)
+	{
+		TEST_ASSERT(!declaration.Cast<WfVariableDeclaration>());
+	}
+}
+
+static void CompileRpcSample(
+	WfLexicalScopeManager& manager,
+	const WString& itemName,
+	const WString& definitionSample,
+	const WString& clientSample,
+	const WString& serviceSample,
+	Ptr<WfModule>& wrapperModule,
+	Ptr<WfModule>& wrapperJsonModule
+)
 {
 	manager.Clear(true, true);
 
-	auto module = ParseModule(sample, GetWorkflowParser());
-	TEST_ASSERT(module);
+	auto definitionModule = ParseModule(definitionSample, GetWorkflowParser());
+	TEST_ASSERT(definitionModule);
 	TEST_ASSERT(manager.errors.Count() == 0);
 
-	manager.AddModule(module);
+	auto clientModule = ParseModule(clientSample, GetWorkflowParser());
+	TEST_ASSERT(clientModule);
+	TEST_ASSERT(manager.errors.Count() == 0);
+
+	auto serviceModule = ParseModule(serviceSample, GetWorkflowParser());
+	TEST_ASSERT(serviceModule);
+	TEST_ASSERT(manager.errors.Count() == 0);
+	VerifyRpcSample(definitionModule, clientModule, serviceModule);
+
+	manager.AddModule(definitionModule);
 	manager.Rebuild(true);
 	TEST_ASSERT(manager.errors.Count() == 0);
 	TEST_ASSERT(manager.rpcMetadata);
@@ -145,7 +189,7 @@ static void VerifyRpcMetadata(WfLexicalScopeManager& manager)
 	TEST_ASSERT(expectedMetadata == actualMetadata);
 }
 
-static Ptr<WfModule> MergeRpcSampleModulesForLog(Ptr<WfModule> definitionModule, Ptr<WfModule> testModule)
+static Ptr<WfModule> MergeRpcSampleModulesForLog(Ptr<WfModule> definitionModule, Ptr<WfModule> clientModule, Ptr<WfModule> serviceModule)
 {
 	auto module = Ptr(new WfModule);
 	module->moduleType = definitionModule->moduleType;
@@ -158,14 +202,72 @@ static Ptr<WfModule> MergeRpcSampleModulesForLog(Ptr<WfModule> definitionModule,
 	{
 		module->declarations.Add(declaration);
 	}
-	for (auto declaration : testModule->declarations)
+	for (auto declaration : serviceModule->declarations)
+	{
+		module->declarations.Add(declaration);
+	}
+	for (auto declaration : clientModule->declarations)
 	{
 		module->declarations.Add(declaration);
 	}
 	return module;
 }
 
-static void LinkRpcSample(WfLexicalScopeManager& manager, const WString& itemName, const WString& definitionSample, const WString& testSample, Ptr<WfModule> wrapperModule, Ptr<WfModule> wrapperJsonModule)
+static Ptr<WfModule> CreateRpcDefinitionModuleForLink(Ptr<WfModule> definitionModule)
+{
+	auto module = Ptr(new WfModule);
+	module->moduleType = definitionModule->moduleType;
+	module->name = definitionModule->name;
+	for (auto path : definitionModule->paths)
+	{
+		module->paths.Add(path);
+	}
+	for (auto declaration : definitionModule->declarations)
+	{
+		if (!declaration.Cast<WfFunctionDeclaration>())
+		{
+			module->declarations.Add(declaration);
+		}
+	}
+	return module;
+}
+
+static Ptr<WfModule> CreateRpcTestModuleForLink(Ptr<WfModule> definitionModule, Ptr<WfModule> clientModule, Ptr<WfModule> serviceModule)
+{
+	auto module = Ptr(new WfModule);
+	module->moduleType = serviceModule->moduleType;
+	module->name = serviceModule->name;
+	for (auto path : serviceModule->paths)
+	{
+		module->paths.Add(path);
+	}
+	for (auto declaration : definitionModule->declarations)
+	{
+		if (declaration.Cast<WfFunctionDeclaration>())
+		{
+			module->declarations.Add(declaration);
+		}
+	}
+	for (auto declaration : serviceModule->declarations)
+	{
+		module->declarations.Add(declaration);
+	}
+	for (auto declaration : clientModule->declarations)
+	{
+		module->declarations.Add(declaration);
+	}
+	return module;
+}
+
+static void LinkRpcSample(
+	WfLexicalScopeManager& manager,
+	const WString& itemName,
+	const WString& definitionSample,
+	const WString& clientSample,
+	const WString& serviceSample,
+	Ptr<WfModule> wrapperModule,
+	Ptr<WfModule> wrapperJsonModule
+)
 {
 	manager.Clear(true, true);
 
@@ -173,18 +275,28 @@ static void LinkRpcSample(WfLexicalScopeManager& manager, const WString& itemNam
 	TEST_ASSERT(definitionModule);
 	TEST_ASSERT(manager.errors.Count() == 0);
 
-	auto testModule = ParseModule(testSample, GetWorkflowParser());
-	TEST_ASSERT(testModule);
+	auto clientModule = ParseModule(clientSample, GetWorkflowParser());
+	TEST_ASSERT(clientModule);
+	TEST_ASSERT(manager.errors.Count() == 0);
+
+	auto serviceModule = ParseModule(serviceSample, GetWorkflowParser());
+	TEST_ASSERT(serviceModule);
 	TEST_ASSERT(manager.errors.Count() == 0);
 	TEST_ASSERT(wrapperModule);
 	TEST_ASSERT(wrapperJsonModule);
 
-	manager.AddModule(definitionModule);
-	manager.AddModule(testModule);
+	manager.AddModule(CreateRpcDefinitionModuleForLink(definitionModule));
+	manager.AddModule(CreateRpcTestModuleForLink(definitionModule, clientModule, serviceModule));
 	manager.AddModule(wrapperModule);
 	manager.AddModule(wrapperJsonModule);
 	manager.Rebuild(true, nullptr, false);
-	LogSampleParseResult(L"Rpc", itemName, definitionSample + L"\r\n" + testSample, MergeRpcSampleModulesForLog(definitionModule, testModule), &manager);
+	LogSampleParseResult(
+		L"Rpc",
+		itemName,
+		definitionSample + L"\r\n" + serviceSample + L"\r\n" + clientSample,
+		MergeRpcSampleModulesForLog(definitionModule, clientModule, serviceModule),
+		&manager
+	);
 	TEST_ASSERT(manager.errors.Count() == 0);
 }
 
@@ -211,11 +323,20 @@ TEST_FILE
 			{
 				TEST_PRINT(itemName);
 				auto definitionSample = LoadSample(L"Rpc", itemName);
-				auto testSample = LoadSample(L"Rpc", itemName + L"_Test");
+				auto clientSample = LoadSample(L"Rpc", itemName + L"_Client");
+				auto serviceSample = LoadSample(L"Rpc", itemName + L"_Service");
 				Ptr<WfModule> wrapperModule;
 				Ptr<WfModule> wrapperJsonModule;
 
-				CompileRpcSample(manager, itemName, definitionSample, wrapperModule, wrapperJsonModule);
+				CompileRpcSample(
+					manager,
+					itemName,
+					definitionSample,
+					clientSample,
+					serviceSample,
+					wrapperModule,
+					wrapperJsonModule
+				);
 				VerifyRpcMetadata(manager);
 				{
 					rpcEventBridgeInfosPerItem.Add(itemName, CollectRpcEventBridgeInfos(manager, itemName));
@@ -275,7 +396,15 @@ TEST_FILE
 					jsonWriter.WriteString(wrapperJsonString);
 				}
 
-				LinkRpcSample(manager, itemName, definitionSample, testSample, wrapperModule, wrapperJsonModule);
+				LinkRpcSample(
+					manager,
+					itemName,
+					definitionSample,
+					clientSample,
+					serviceSample,
+					wrapperModule,
+					wrapperJsonModule
+				);
 
 				auto assembly = GenerateAssembly(&manager);
 				TEST_ASSERT(assembly);
@@ -285,7 +414,10 @@ TEST_FILE
 					auto input = Ptr(new WfCppInput(MakeRpcCppAssemblyName(itemName)));
 					input->multiFile = WfCppFileSwitch::OnDemand;
 					input->reflection = WfCppFileSwitch::OnDemand;
-					input->comment = L"Source: ../Resources/Rpc/" + itemName + L".txt; ../Resources/Rpc/" + itemName + L"_Test.txt";
+					input->comment =
+						L"Source: ../Resources/Rpc/" + itemName +
+						L".txt; ../Resources/Rpc/" + itemName +
+						L"_Client.txt; ../Resources/Rpc/" + itemName + L"_Service.txt";
 					input->includeFileName = L"Rpc" + itemName + L"Includes";
 					input->reflectionFileName = L"Rpc" + itemName + L"Reflection";
 					input->defaultFileName = L"Rpc" + itemName;

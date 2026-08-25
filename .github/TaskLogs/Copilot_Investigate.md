@@ -49,14 +49,29 @@ The structural reproduction found 126 legacy `*_Test.txt` files and no `*_Client
 
 # PROPOSALS
 
-- No.1 Split fixtures by process and validate parsed modules
+- No.1 Split fixtures by process and validate parsed modules [CONFIRMED]
 
 ## No.1 Split fixtures by process and validate parsed modules
 
 Replace every legacy `SAMPLE_Test.txt` with `SAMPLE_Client.txt` and `SAMPLE_Service.txt`. Preserve the existing module preamble in both process-specific files, move the complete `serviceMain` declaration into the service file, move all declarations after `serviceMain` into the client file, and move stateless shared functions that currently precede `serviceMain` into `SAMPLE.txt`. The previous RPC-fixture refactor already nested service-only state and helpers inside `serviceMain`, placed client-only declarations after it, and left only stateless cross-process helpers before it, so this split preserves behavior while making ownership explicit.
 
-Update `TestRpcCompile.cpp` to parse all three inputs before compilation, call a new `VerifyRpcSample` on the parsed modules, compile RPC metadata from the definition/shared module only, and link all three source modules with the generated wrapper modules. The verifier will inspect direct module declarations: the service module must contain exactly one `WfFunctionDeclaration` named `serviceMain`, the client module must contain a `WfFunctionDeclaration` named `clientMain`, and the definition/shared module must not contain a `WfVariableDeclaration`.
+Update `TestRpcCompile.cpp` to parse all three inputs before compilation, call a new `VerifyRpcSample` on the parsed modules, and compile RPC metadata from the definition/shared module only. Reparse fresh syntax trees for linking and reconstruct the historical definition/test module layout before adding the generated wrapper modules, so the source ownership split does not alter declaration order or runtime assembly layout. The verifier will inspect direct module declarations: the service module must contain exactly one `WfFunctionDeclaration` named `serviceMain`, the client module must contain a `WfFunctionDeclaration` named `clientMain`, and the definition/shared module must not contain a `WfVariableDeclaration`.
 
 Replace every legacy resource entry in the `CompilerTest_LoadAndCompile` project and filters with explicit client and service entries. Update generated-source comments to list the three inputs. Document the convention once in `new-sample-rpc.md`, make `Project.md` refer to it, and update the reusable sample guidance/template to avoid contradictory two-file instructions.
 
 ### CODE CHANGE
+
+- Replaced all 126 `SAMPLE_Test.txt` fixtures with `SAMPLE_Client.txt` and `SAMPLE_Service.txt`. Moved 51 groups of shared stateless functions into their existing `SAMPLE.txt` definition modules. A normalized-text audit reconstructed every new file from the previous committed inputs and confirmed that no fixture logic changed.
+- Added `VerifyRpcSample` to `TestRpcCompile.cpp`, parsed all three modules in `CompileRpcSample`, and invoked verification immediately after parsing. `LinkRpcSample` reparses fresh syntax trees and reconstructs the historical definition/test module layout before linking the flat and JSON wrappers, preserving declaration order and generated behavior while keeping the source files process-specific. Updated generated-source comments to name all three source files.
+- Replaced all 126 legacy RPC resource entries in both `CompilerTest_LoadAndCompile.vcxproj` and its filters with explicit client and service entries. XML parsing and a static file-layout audit confirmed 126 definition, 126 client, and 126 service files with no legacy files.
+- Centralized the three-file/process-ownership rules in `new-sample-rpc.md`, replaced the duplicated `Project.md` text with a link, and aligned `new-sample.md`, the learning documents, and `TaskTemplate_NewSample.md` with the new convention.
+- Made the two observable-list event fixtures retain and detach their event-handler tokens at their terminal paths. This removes the reference cycles exposed by the complete leak-checked runtime matrix without changing their indexed output.
+- Preserved `Test/Resources/IndexRpc.txt` byte-for-byte.
+
+### CONFIRMED
+
+The proposal implements and enforces the requested ownership boundary for every indexed RPC sample. The resource and project audits found 126 definition files, 126 client files, 126 service files, and no legacy `SAMPLE_Test.txt` files; both project XML files parsed successfully and contain exactly 126 client and 126 service entries. `CompilerTest_LoadAndCompile` exercised `VerifyRpcSample` for every fixture and passed 711/711 cases on both x64 and Win32. `IndexRpc.txt` retained SHA-256 `FDE03E98102BEF91FA1C6E729E04518DED74B3EB167416F95FD5AF1755AE4397`.
+
+Both Debug builds completed with zero warnings and zero errors. The complete leak-checked unit-test matrix passed on x64 and Win32: `LibraryTest` 21/21, `CompilerTest_GenerateMetadata` 2/2, `CompilerTest_LoadAndCompile` 711/711, `RuntimeTest` 261/261, and each of `CppTest`, `CppTest_Metaonly`, and `CppTest_Reflection` 229/229. No memory leak was reported. The no-skip stdio RPC suite matched the expected output for all 126 cases on both platforms. TypeScript preparation and `npm run build` also passed.
+
+Generated-output review found the expected parsing-log updates for all 126 samples on both platforms. The generated C++ changes are provenance-only except for the two explicit event-handler lifecycle fixes, and assembly changes are limited to those same two fixtures on x64 and Win32. No stale `_Test` resource references remain in the active guidance or compiler project, and the fixed-width generated assembly listings are the only changed files reported by the whitespace audit.

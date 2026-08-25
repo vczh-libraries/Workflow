@@ -1,0 +1,16 @@
+module Rpc;
+using system::*;
+using RpcServiceWrapperTest::*;
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var obj = lc.RequestService("RpcServiceWrapperTest::IService");
+  if ((obj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "IService(obj) should be a wrapper object in clientMain";
+  }
+  var clientObj = cast (RpcServiceWrapperTest::IService^) obj;
+  return
+    $"[$(clientObj is null)]" &
+    $"[$(clientObj.Self(clientObj))]";
+}

@@ -1,0 +1,32 @@
+module Rpc;
+using system::*;
+using RpcEvent::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcEvent::IService^)
+  {
+    var serviceResult : string = "";
+
+    func ServiceSomethingHappened(something : string) : void
+    {
+      serviceResult = $"$(serviceResult)[serviceMain:$(something)]";
+    }
+
+    override func GetServiceResult() : string
+    {
+      return serviceResult;
+    }
+
+    override func MakeItHappen() : void
+    {
+      SomethingHappened("A");
+    }
+
+    override func Watch() : void
+    {
+      attach(SomethingHappened, ServiceSomethingHappened);
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcEvent::IService"], serviceObj);
+}

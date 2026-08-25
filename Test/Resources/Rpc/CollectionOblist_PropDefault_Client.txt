@@ -1,0 +1,34 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+
+func Print(xs : observe int[]) : string
+{
+  var result = "";
+  for (x in xs)
+  {
+    result = $"$(result)$(x)";
+  }
+  return result;
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var xsOrigin : observe int[] = {1 2 3};
+  var service = cast (RpcCollectionOblist::PropDefault::IService^) lc.RequestService("RpcCollectionOblist::PropDefault::IService");
+  service.List = xsOrigin;
+  var xs = service.List;
+
+  if (xs != xsOrigin)
+  {
+    raise "Return value xs should be the original parameter object in clientMain";
+  }
+
+  var xsClient = xs;
+  xs.Add(5);
+
+  return
+    $"[$(Print(xsOrigin))]" &
+    $"[$(service.GetServiceResult())]" &
+    $"[$(Print(xsClient))]";
+}

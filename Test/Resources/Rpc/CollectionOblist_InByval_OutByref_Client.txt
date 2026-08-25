@@ -1,0 +1,35 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcCollectionOblist::InByval::OutByref::*;
+
+func Print3(xs : observe int[]) : string
+{
+  return $"$(xs[0])$(xs[1])$(xs[2])";
+}
+
+func Print5(xs : observe int[]) : string
+{
+  return $"$(xs[0])$(xs[1])$(xs[2])$(xs[3])$(xs[4])";
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var xsOrigin : observe int[] = {1 2 3};
+  var service = cast (IService^) lc.RequestService("RpcCollectionOblist::InByval::OutByref::IService");
+  var xs = service.DoList(xsOrigin);
+  var xsObj : object = xs;
+
+  if ((xsObj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "Return value xs should be a wrapper object in clientMain";
+  }
+
+  var xsClient = xs;
+  xs.Add(5);
+
+  return
+    $"[$(Print3(xsOrigin))]" &
+    $"[$(service.GetServiceResult())]" &
+    $"[$(Print5(xsClient))]";
+}

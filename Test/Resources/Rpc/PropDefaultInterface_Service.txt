@@ -1,0 +1,29 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcPropDefaultInterface::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (IService^)
+  {
+    var _Value : IValue^ = MakeValue("A");
+
+    override func GetValue() : IValue^
+    {
+      return _Value;
+    }
+
+    override func SetValue(value : IValue^) : void
+    {
+      CheckValue(value, true, "Parameter value in serviceMain");
+      _Value = value;
+    }
+
+    override func Signal() : void
+    {
+      ValueChanged();
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcPropDefaultInterface::IService"], serviceObj);
+}

@@ -1,0 +1,16 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcListOpsDictionaryException::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcListOpsDictionaryException::IService^)
+  {
+    override func DoSomethingWrong(xs : int[string]) : int
+    {
+      return xs["Anyway"];
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcListOpsDictionaryException::IService"], serviceObj);
+}

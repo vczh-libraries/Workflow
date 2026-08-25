@@ -1,0 +1,28 @@
+module Rpc;
+using system::*;
+using RpcListOpsOblistEventException::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serverObj = new (IServer^)
+  {
+    var itemChangedHandler : system::reflection::EventHandler^ = null;
+
+    func CrashItemChanged(index : int, oldCount : int, newCount : int) : void
+    {
+      detach(_List.ItemChanged, itemChangedHandler);
+      itemChangedHandler = null;
+      raise $"$(index),$(oldCount),$(newCount)";
+    }
+
+    var _List : observe int[] = null;
+
+    override func GetOblist() : observe int[]
+    {
+      _List = {};
+      itemChangedHandler = attach(_List.ItemChanged, CrashItemChanged);
+      return _List;
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcListOpsOblistEventException::IServer"], serverObj);
+}

@@ -1,0 +1,41 @@
+module Rpc;
+using system::*;
+using RpcDtor3Test::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcDtor3Test::IService^)
+  {
+    var serviceResult : string[] = {""};
+
+    override func ConsumeServiceResult() : string
+    {
+      var result = serviceResult[0];
+      serviceResult[0] = "";
+      return result;
+    }
+
+    override func ContainValue(value : IValue^) : IContainer^
+    {
+      var valueObj : object = value;
+      if ((valueObj as (system::IRpcWrapperBase^) is null))
+      {
+        raise "IValue(value) should be a wrapper object in serviceMain";
+      }
+      var capturedServiceResult = serviceResult;
+      return new (RpcDtor3Test::IContainer^)
+      {
+        delete
+        {
+          capturedServiceResult[0] = $"$(capturedServiceResult[0])[IContainer]";
+        }
+
+        override func GetValue() : IValue^
+        {
+          return value;
+        }
+      };
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcDtor3Test::IService"], serviceObj);
+}

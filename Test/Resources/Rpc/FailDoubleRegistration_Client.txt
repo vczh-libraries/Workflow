@@ -1,0 +1,9 @@
+module Rpc;
+using system::*;
+using RpcFailDoubleRegistrationTest::*;
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (RpcFailDoubleRegistrationTest::IService^) lc.RequestService("RpcFailDoubleRegistrationTest::IService");
+  return service.GetResult();
+}

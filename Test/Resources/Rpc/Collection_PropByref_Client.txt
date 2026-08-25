@@ -1,0 +1,30 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using RpcCollection::InByref::PropByref::*;
+
+func Print5(xs : int[]) : string
+{
+  return $"$(xs[0])$(xs[1])$(xs[2])$(xs[3])$(xs[4])";
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var xsOrigin = {1 2 3};
+  var service = cast (IService^) lc.RequestService("RpcCollection::InByref::PropByref::IService");
+  service.List = xsOrigin;
+  var xs = service.List;
+
+  if (xs != xsOrigin)
+  {
+    raise "Return value xs should be the original parameter object in clientMain";
+  }
+
+  var xsClient = xs;
+  xs.Add(5);
+
+  return
+    $"[$(Print5(xsOrigin))]" &
+    $"[$(service.GetServiceResult())]" &
+    $"[$(Print5(xsClient))]";
+}

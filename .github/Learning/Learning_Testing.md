@@ -113,7 +113,7 @@ When `Release/Rpc.d.ts` is the canonical shared dispatcher schema, `Test/TypeScr
 
 ## Split RPC sample definitions and tests consistently
 
-Split RPC samples into `Rpc/SAMPLE.txt` for RPC definitions only and `Rpc/SAMPLE_Test.txt` for executable test logic such as globals, helpers, `serviceMain`, and `clientMain`. Add only `SAMPLE=expected` to `IndexRpc.txt`, but include both files under `Resource Files/Rpc` in `CompilerTest_LoadAndCompile`.
+Split RPC samples into `Rpc/SAMPLE.txt` for RPC interfaces and shared stateless functions, `Rpc/SAMPLE_Client.txt` for `clientMain` and client-only declarations, and `Rpc/SAMPLE_Service.txt` for the sole top-level `serviceMain` declaration. Add only `SAMPLE=expected` to `IndexRpc.txt`, but include all three files under `Resource Files/Rpc` in `CompilerTest_LoadAndCompile`.
 
 ## Use 2-space indentation in Workflow sample files
 

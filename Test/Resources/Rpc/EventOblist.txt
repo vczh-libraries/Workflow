@@ -14,3 +14,17 @@ namespace RpcEventOblist
     func WatchHeldList() : void;
   }
 }
+
+func FormatItemChanged(handler : string, index : int, oldCount : int, newCount : int) : string
+{
+  return $"[$(handler):$(index),$(oldCount),$(newCount)]";
+}
+
+func Modify(xs : observe int[]) : void
+{
+  xs.Add(10);
+  xs.Insert(1, 20);
+  xs.Set(0, 30);
+  xs.RemoveAt(1);
+  xs.Clear();
+}

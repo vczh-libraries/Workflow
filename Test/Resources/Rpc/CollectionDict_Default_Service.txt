@@ -1,0 +1,30 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcCollectionDict::Default::IService^)
+  {
+    var xsService : string[int] = {};
+
+    override func GetServiceResult() : string
+    {
+      return Print(xsService);
+    }
+
+    override func DoList(xs : string[int]) : string[int]
+    {
+      var xsObj : object = xs;
+      if ((xsObj as (system::IRpcWrapperBase^) is not null))
+      {
+        raise "Parameter xs should be a copied local object in serviceMain";
+      }
+
+      xsService = xs;
+      xs.Set(4, "D");
+      return xs;
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcCollectionDict::Default::IService"], serviceObj);
+}

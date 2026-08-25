@@ -1,0 +1,20 @@
+module Rpc;
+using system::*;
+using RpcListOpsOblistEventException::*;
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var server = cast (IServer^) lc.RequestService("RpcListOpsOblistEventException::IServer");
+  var xs = server.GetOblist();
+
+  try
+  {
+    xs.Add(0);
+  }
+  catch (ex)
+  {
+    return ex.Message;
+  }
+
+  return "No Exception";
+}

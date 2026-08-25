@@ -4,11 +4,12 @@ Follow
 - `.github\Rules\document-and-commit.md`
 to add new samples, indentation should be double spaces no matter how the code below is written:
 
-RPC samples are split into two files:
-- `Rpc\SAMPLE.txt` contains only RPC definitions.
-- `Rpc\SAMPLE_Test.txt` contains executable test logic, including globals, helpers, `serviceMain`, and `clientMain`.
+RPC samples are split into three files:
+- `Rpc\SAMPLE.txt` contains RPC interfaces and shared stateless functions, with no top-level variables.
+- `Rpc\SAMPLE_Client.txt` contains `clientMain` and client-only declarations.
+- `Rpc\SAMPLE_Service.txt` contains only `serviceMain` as a top-level declaration.
 
-Only `SAMPLE` is added to `IndexRpc.txt`. Both files must appear in `CompilerTest_LoadAndCompile` under `Resource Files\Rpc`.
+Only `SAMPLE` is added to `IndexRpc.txt`. All three files must appear in `CompilerTest_LoadAndCompile` under `Resource Files\Rpc`.
 
 ## Goal
 
@@ -62,15 +63,13 @@ namespace YourFavoriteNamespace // use RpcInheritance
 }
 ```
 
-## Sample Rpc\Inheritance_Test.txt
+## Sample Rpc\Inheritance_Service.txt
 
 ```Workflow
 module Rpc;
 using system::*;
 using RpcWrapperTest::*;
 using YourFavoriteNamespace::*;
-
-var s = "";
 
 func serviceMain(lc : IRpcLifecycle*) : void
 {
@@ -103,6 +102,17 @@ func serviceMain(lc : IRpcLifecycle*) : void
 	};
 	lc.RegisterService("YourFavoriteNamespace::IService", serviceObj);
 }
+```
+
+## Sample Rpc\Inheritance_Client.txt
+
+```Workflow
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+using YourFavoriteNamespace::*;
+
+var s = "";
 
 func clientMain(lc : IRpcLifecycle*) : string
 {

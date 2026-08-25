@@ -1,0 +1,24 @@
+module Rpc;
+using system::*;
+using RpcEvent::*;
+
+var clientResult = "";
+
+func ClientSomethingHappened(something : string) : void
+{
+  clientResult = $"$(clientResult)[clientMain:$(something)]";
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (RpcEvent::IService^) lc.RequestService("RpcEvent::IService");
+
+  var handler = attach(service.SomethingHappened, ClientSomethingHappened);
+  service.MakeItHappen();
+  detach(service.SomethingHappened, handler);
+
+  service.Watch();
+  service.SomethingHappened("B");
+
+  return clientResult & service.GetServiceResult();
+}

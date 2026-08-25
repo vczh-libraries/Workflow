@@ -1,0 +1,26 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+
+var s = "";
+
+func ClientValueChanged() : void
+{
+  s = $"$(s)[ValueChanged]";
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (RpcPropCached::IService^) lc.RequestService("RpcPropCached::IService");
+  attach(service.ValueChanged, ClientValueChanged);
+
+  s = $"$(s)[$(service.Value)]";
+
+  service.SetValue("B");
+  s = $"$(s)[$(service.Value)]";
+
+  service.Signal();
+  s = $"$(s)[$(service.Value)]";
+
+  return s;
+}

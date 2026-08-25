@@ -1,0 +1,27 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcPropCached::IService^)
+  {
+    var _Value : string = "A";
+
+    override func GetValue() : string
+    {
+      return _Value;
+    }
+
+    override func SetValue(value : string) : void
+    {
+      _Value = value;
+    }
+
+    override func Signal() : void
+    {
+      ValueChanged();
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcPropCached::IService"], serviceObj);
+}

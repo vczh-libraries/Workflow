@@ -1,0 +1,28 @@
+module Rpc;
+using system::*;
+using RpcDtorTest::*;
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var obj = lc.RequestService("RpcDtorTest::IService");
+  if ((obj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "IService(obj) should be a wrapper object in clientMain";
+  }
+  var clientObj = cast (RpcDtorTest::IService^) obj;
+  var valueObj : object = clientObj.MakeValue();
+  if ((valueObj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "IValue(valueObj) should be a wrapper object in clientMain";
+  }
+  var value = cast (RpcDtorTest::IValue^) valueObj;
+  var wrapperObj = cast (system::IRpcWrapperBase^) valueObj;
+  wrapperObj = null;
+  var m = $"[$(clientObj.GetState())]";
+  value = null;
+  valueObj = null; /* valueObj also owns the same wrapper, so drop it before checking the final state */
+  m = $"$(m)[$(clientObj.GetState())]";
+  clientObj = null;
+  obj = null;
+  return m;
+}

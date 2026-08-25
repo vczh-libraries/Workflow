@@ -1,0 +1,17 @@
+module Rpc;
+using system::*;
+using RpcWrapperTest::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcNullable::IService^)
+  {
+    override func Print(value : string?, v : RpcNullable::IValue^) : string
+    {
+      var nullableText = value is null ? "null" : cast string value;
+      var valueText = v is null ? "null" : v.Value;
+      return "[" & nullableText & "][" & valueText & "]";
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcNullable::IService"], serviceObj);
+}

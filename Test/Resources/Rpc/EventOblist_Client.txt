@@ -1,0 +1,26 @@
+module Rpc;
+using system::*;
+using RpcEventOblist::*;
+
+var clientResult = "";
+
+func ClientItemChanged(index : int, oldCount : int, newCount : int) : void
+{
+  clientResult = clientResult & FormatItemChanged("clientMain", index, oldCount, newCount);
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var xs : observe int[] = {};
+  var service = cast (RpcEventOblist::IService^) lc.RequestService("RpcEventOblist::IService");
+  service.SetList(xs);
+
+  var handler = attach(xs.ItemChanged, ClientItemChanged);
+  service.ModifyHeldList();
+  detach(xs.ItemChanged, handler);
+
+  service.WatchHeldList();
+  Modify(xs);
+
+  return clientResult & service.GetServiceResult();
+}
