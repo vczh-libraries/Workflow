@@ -48,3 +48,15 @@ The current compiler harness only loads `SAMPLE.txt` and `SAMPLE_Test.txt`, so i
 The structural reproduction found 126 legacy `*_Test.txt` files and no `*_Client.txt` or `*_Service.txt` files. Its explicit three-file-convention assertion failed. `TestRpcCompile.cpp` also loads only `itemName + L"_Test"` and has no `VerifyRpcSample`, confirming that the requested layout and invariants are not implemented.
 
 # PROPOSALS
+
+- No.1 Split fixtures by process and validate parsed modules
+
+## No.1 Split fixtures by process and validate parsed modules
+
+Replace every legacy `SAMPLE_Test.txt` with `SAMPLE_Client.txt` and `SAMPLE_Service.txt`. Preserve the existing module preamble in both process-specific files, move the complete `serviceMain` declaration into the service file, move all declarations after `serviceMain` into the client file, and move stateless shared functions that currently precede `serviceMain` into `SAMPLE.txt`. The previous RPC-fixture refactor already nested service-only state and helpers inside `serviceMain`, placed client-only declarations after it, and left only stateless cross-process helpers before it, so this split preserves behavior while making ownership explicit.
+
+Update `TestRpcCompile.cpp` to parse all three inputs before compilation, call a new `VerifyRpcSample` on the parsed modules, compile RPC metadata from the definition/shared module only, and link all three source modules with the generated wrapper modules. The verifier will inspect direct module declarations: the service module must contain exactly one `WfFunctionDeclaration` named `serviceMain`, the client module must contain a `WfFunctionDeclaration` named `clientMain`, and the definition/shared module must not contain a `WfVariableDeclaration`.
+
+Replace every legacy resource entry in the `CompilerTest_LoadAndCompile` project and filters with explicit client and service entries. Update generated-source comments to list the three inputs. Document the convention once in `new-sample-rpc.md`, make `Project.md` refer to it, and update the reusable sample guidance/template to avoid contradictory two-file instructions.
+
+### CODE CHANGE
