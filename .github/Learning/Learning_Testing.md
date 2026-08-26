@@ -12,9 +12,9 @@
 - Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder [5]
 - RPC byref/byval container samples must verify wrapper/copy semantics at every level [5]
 - Pure refactors should not touch generated RPC outputs [5]
-- Split RPC sample definitions and tests consistently [4]
+- Split RPC sample definitions and tests consistently [5]
+- Keep split-process RPC fixtures independent and enforce `IndexRpc.txt` [4]
 - Type-check shared `Rpc.d.ts` standalone [3]
-- Keep split-process RPC fixtures independent and enforce `IndexRpc.txt` [3]
 - Workflow analyzer error tests may change values when preserving the error code [1]
 - Workflow samples use `raise`, not `throw` [1]
 - Workflow range syntax for inclusive generated loops is `range [1, xs.Count]` [1]
@@ -115,6 +115,8 @@ When `Release/Rpc.d.ts` is the canonical shared dispatcher schema, `Test/TypeScr
 
 Split RPC samples into `Rpc/SAMPLE.txt` for RPC interfaces and shared stateless functions, `Rpc/SAMPLE_Client.txt` for `clientMain` and client-only declarations, and `Rpc/SAMPLE_Service.txt` for the sole top-level `serviceMain` declaration. Add only `SAMPLE=expected` to `IndexRpc.txt`, but include all three files under `Resource Files/Rpc` in `CompilerTest_LoadAndCompile`.
 
+Have `CompileRpcSample` parse all three modules and call `VerifyRpcSample` immediately after parsing. Verify only the direct module shape: the service module's sole top-level declaration is a function named `serviceMain`; the client module contains a top-level function named `clientMain` but may contain other declarations; and the definition/shared module has no top-level variable declaration. Signatures do not need separate checks. Keep `.github/Rules/new-sample-rpc.md#rpc-sample-convention` canonical; `Project.md` should link to it instead of duplicating it, and sample guidance and templates should follow it.
+
 ## Use 2-space indentation in Workflow sample files
 
 When adding or updating Workflow samples, indent the sample body with 2 spaces even if provided draft snippets use a wider indent. Keep requested semantics intact while normalizing sample formatting to the repo preference.
@@ -168,6 +170,8 @@ Also scan for stale class and file names after dispatcher splits or renames, inc
 Generate driver and service dispatchers for every indexed case, keep provider stdout reserved for framed protocol traffic, and pass the decoded `IndexRpc.txt` expectation into the driver harness. Compare the complete `clientMain` result exactly and fail immediately on mismatches, exceptions, disconnection, malformed messages, or lifecycle failures.
 
 The C++ launchers must run every indexed case when no skip list is supplied; do not hide broken fixtures behind a default C++ compatibility list. Keep the destructor-order skip list opt-in for providers in languages that cannot guarantee deterministic destructor execution, and never select it automatically for C++ verification.
+
+For a source-layout-only fixture refactor, keep `Test/Resources/IndexRpc.txt` byte-for-byte unchanged and verify behavior with the full required UnitTest matrix plus `Test/StartRpcStdio.ps1` or `Test/StartRpcStdio.sh` without a skip list so every indexed case runs.
 
 ## Keep Workflow stdio launchers repository-relative and interactive
 
