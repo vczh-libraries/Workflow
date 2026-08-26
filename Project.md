@@ -1,5 +1,9 @@
 # General Instruction
 
+## Maintaining Tools
+
+If the behavior of `REPO-ROOT/Tools/CppMerge` changes, update `REPO-ROOT/.github/KnowledgeBase/KB_Workflow_Design_CppMerge.md`.
+
 ## Solution to Work On
 
 You are working on the solution `REPO-ROOT/Test/UnitTest/UnitTest.sln`,
