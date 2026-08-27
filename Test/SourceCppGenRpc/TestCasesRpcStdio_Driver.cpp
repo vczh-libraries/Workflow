@@ -113,6 +113,7 @@
 #include "RpcInheritance_MethodException.h"
 #include "RpcInheritance_EventException.h"
 #include "RpcLocalAndWrapper.h"
+#include "RpcLocalAndWrapper_SharedMemsp.h"
 #include "RpcNullable.h"
 #include "RpcOverloading.h"
 #include "RpcPrimitiveTypes.h"
@@ -124,6 +125,7 @@
 #include "RpcPropDynamic.h"
 #include "RpcRequestService.h"
 #include "RpcServiceWrapper.h"
+#include "RpcServiceWrapper_SharedMemsp.h"
 #include "../Source/TestCasesRpcStdio_Driver.h"
 
 using namespace vl;
@@ -1280,7 +1282,17 @@ void RunTestCasesRpcStdio_Driver(const WString& serviceCommand, const SortedList
 	{
 		List<WString> waitingForServices;
 		waitingForServices.Add(L"RpcWrapperTest::IService");
-		RunRpcStdioTestCase<::vl_workflow_global::Rpc_LocalAndWrapper, false>(L"LocalAndWrapper", L"[false][true][true][false]", serviceCommand, waitingForServices);
+		RunRpcStdioTestCase<::vl_workflow_global::Rpc_LocalAndWrapper, false>(L"LocalAndWrapper", L"[true][true]", serviceCommand, waitingForServices);
+	}
+	if (skippedTestCases.Contains(L"LocalAndWrapper_SharedMemsp"))
+	{
+		PrintRpcStdioSkippedTestCase(L"LocalAndWrapper_SharedMemsp");
+	}
+	else
+	{
+		List<WString> waitingForServices;
+		waitingForServices.Add(L"RpcWrapperSharedMemspTest::IService");
+		RunRpcStdioTestCase<::vl_workflow_global::Rpc_LocalAndWrapper_SharedMemsp, false>(L"LocalAndWrapper_SharedMemsp", L"[false][true][true][false]", serviceCommand, waitingForServices);
 	}
 	if (skippedTestCases.Contains(L"Nullable"))
 	{
@@ -1390,6 +1402,16 @@ void RunTestCasesRpcStdio_Driver(const WString& serviceCommand, const SortedList
 	{
 		List<WString> waitingForServices;
 		waitingForServices.Add(L"RpcServiceWrapperTest::IService");
-		RunRpcStdioTestCase<::vl_workflow_global::Rpc_ServiceWrapper, false>(L"ServiceWrapper", L"[false][true]", serviceCommand, waitingForServices);
+		RunRpcStdioTestCase<::vl_workflow_global::Rpc_ServiceWrapper, false>(L"ServiceWrapper", L"[true]", serviceCommand, waitingForServices);
+	}
+	if (skippedTestCases.Contains(L"ServiceWrapper_SharedMemsp"))
+	{
+		PrintRpcStdioSkippedTestCase(L"ServiceWrapper_SharedMemsp");
+	}
+	else
+	{
+		List<WString> waitingForServices;
+		waitingForServices.Add(L"RpcServiceWrapperSharedMemspTest::IService");
+		RunRpcStdioTestCase<::vl_workflow_global::Rpc_ServiceWrapper_SharedMemsp, false>(L"ServiceWrapper_SharedMemsp", L"[false][true]", serviceCommand, waitingForServices);
 	}
 }

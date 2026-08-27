@@ -63,7 +63,7 @@ Global Functions
 			throw ::vl::Exception(::vl::WString::Unmanaged(L"IService(obj) should be a wrapper object in clientMain"));
 		}
 		auto clientObj = ::vl::__vwsn::Ensure(::vl::__vwsn::SharedPtrCast<::RpcServiceWrapperTest::IService>(obj.Obj()));
-		return (((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString((! static_cast<bool>(clientObj)))) + ::vl::WString::Unmanaged(L"]")) + ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(::vl::__vwsn::This(clientObj.Obj())->Self(clientObj))) + ::vl::WString::Unmanaged(L"]")));
+		return ((::vl::WString::Unmanaged(L"[") + ::vl::__vwsn::ToString(::vl::__vwsn::This(clientObj.Obj())->Self(clientObj))) + ::vl::WString::Unmanaged(L"]"));
 	}
 
 	::vl::Ptr<::vl::reflection::description::IValueDictionary> Rpc_ServiceWrapper::rpc_GetIds()

@@ -113,6 +113,7 @@
 #include "RpcInheritance_MethodExceptionReflection.h"
 #include "RpcInheritance_EventExceptionReflection.h"
 #include "RpcLocalAndWrapperReflection.h"
+#include "RpcLocalAndWrapper_SharedMemspReflection.h"
 #include "RpcNullableReflection.h"
 #include "RpcOverloadingReflection.h"
 #include "RpcPrimitiveTypesReflection.h"
@@ -124,6 +125,7 @@
 #include "RpcPropDynamicReflection.h"
 #include "RpcRequestServiceReflection.h"
 #include "RpcServiceWrapperReflection.h"
+#include "RpcServiceWrapper_SharedMemspReflection.h"
 #include "../Source/RpcDualLifecycleMock.h"
 #include "../Source/TestCasesRpc.h"
 
@@ -252,6 +254,7 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_Inheritance_MethodExceptionTypes();
 	 LoadRpc_Inheritance_EventExceptionTypes();
 	 LoadRpc_LocalAndWrapperTypes();
+	 LoadRpc_LocalAndWrapper_SharedMemspTypes();
 	 LoadRpc_NullableTypes();
 	 LoadRpc_OverloadingTypes();
 	 LoadRpc_PrimitiveTypesTypes();
@@ -263,6 +266,7 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_PropDynamicTypes();
 	 LoadRpc_RequestServiceTypes();
 	 LoadRpc_ServiceWrapperTypes();
+	 LoadRpc_ServiceWrapper_SharedMemspTypes();
 }
 
 TEST_FILE
@@ -840,7 +844,12 @@ TEST_CASE(L"Rpc:Inheritance_EventException")
 
 TEST_CASE(L"Rpc:LocalAndWrapper")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_LocalAndWrapper, false>(L"LocalAndWrapper", L"[false][true][true][false]");
+	RunRpcTestCase<::vl_workflow_global::Rpc_LocalAndWrapper, false>(L"LocalAndWrapper", L"[true][true]");
+});
+
+TEST_CASE(L"Rpc:LocalAndWrapper_SharedMemsp")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_LocalAndWrapper_SharedMemsp, false>(L"LocalAndWrapper_SharedMemsp", L"[false][true][true][false]");
 });
 
 TEST_CASE(L"Rpc:Nullable")
@@ -895,6 +904,11 @@ TEST_CASE(L"Rpc:RequestService")
 
 TEST_CASE(L"Rpc:ServiceWrapper")
 {
-	RunRpcTestCase<::vl_workflow_global::Rpc_ServiceWrapper, false>(L"ServiceWrapper", L"[false][true]");
+	RunRpcTestCase<::vl_workflow_global::Rpc_ServiceWrapper, false>(L"ServiceWrapper", L"[true]");
+});
+
+TEST_CASE(L"Rpc:ServiceWrapper_SharedMemsp")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_ServiceWrapper_SharedMemsp, false>(L"ServiceWrapper_SharedMemsp", L"[false][true]");
 });
 }

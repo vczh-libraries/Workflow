@@ -113,6 +113,7 @@
 #include "RpcInheritance_MethodException.h"
 #include "RpcInheritance_EventException.h"
 #include "RpcLocalAndWrapper.h"
+#include "RpcLocalAndWrapper_SharedMemsp.h"
 #include "RpcNullable.h"
 #include "RpcOverloading.h"
 #include "RpcPrimitiveTypes.h"
@@ -124,6 +125,7 @@
 #include "RpcPropDynamic.h"
 #include "RpcRequestService.h"
 #include "RpcServiceWrapper.h"
+#include "RpcServiceWrapper_SharedMemsp.h"
 #include "../Source/TestCasesRpcStdio_Service.h"
 
 using namespace vl;
@@ -706,6 +708,11 @@ void RunTestCasesRpcStdio_Service(const WString& itemName)
 		RunRpcStdioService<::vl_workflow_global::Rpc_LocalAndWrapper, false>();
 		return;
 	}
+	if (itemName == L"LocalAndWrapper_SharedMemsp")
+	{
+		RunRpcStdioService<::vl_workflow_global::Rpc_LocalAndWrapper_SharedMemsp, false>();
+		return;
+	}
 	if (itemName == L"Nullable")
 	{
 		RunRpcStdioService<::vl_workflow_global::Rpc_Nullable, false>();
@@ -759,6 +766,11 @@ void RunTestCasesRpcStdio_Service(const WString& itemName)
 	if (itemName == L"ServiceWrapper")
 	{
 		RunRpcStdioService<::vl_workflow_global::Rpc_ServiceWrapper, false>();
+		return;
+	}
+	if (itemName == L"ServiceWrapper_SharedMemsp")
+	{
+		RunRpcStdioService<::vl_workflow_global::Rpc_ServiceWrapper_SharedMemsp, false>();
 		return;
 	}
 	CHECK_FAIL(L"Unknown RPC stdio test case.");
