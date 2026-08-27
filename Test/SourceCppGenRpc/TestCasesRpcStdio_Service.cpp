@@ -109,6 +109,7 @@
 #include "RpcListOps_ListException.h"
 #include "RpcListOps_OblistEventException.h"
 #include "RpcFailDoubleRegistration.h"
+#include "RpcFailDoubleRegistration_SharedMemsp.h"
 #include "RpcInheritance.h"
 #include "RpcInheritance_MethodException.h"
 #include "RpcInheritance_EventException.h"
@@ -686,6 +687,11 @@ void RunTestCasesRpcStdio_Service(const WString& itemName)
 	if (itemName == L"FailDoubleRegistration")
 	{
 		RunRpcStdioService<::vl_workflow_global::Rpc_FailDoubleRegistration, false>();
+		return;
+	}
+	if (itemName == L"FailDoubleRegistration_SharedMemsp")
+	{
+		RunRpcStdioService<::vl_workflow_global::Rpc_FailDoubleRegistration_SharedMemsp, false>();
 		return;
 	}
 	if (itemName == L"Inheritance")

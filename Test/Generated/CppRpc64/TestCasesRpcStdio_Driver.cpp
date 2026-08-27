@@ -109,6 +109,7 @@
 #include "RpcListOps_ListException.h"
 #include "RpcListOps_OblistEventException.h"
 #include "RpcFailDoubleRegistration.h"
+#include "RpcFailDoubleRegistration_SharedMemsp.h"
 #include "RpcInheritance.h"
 #include "RpcInheritance_MethodException.h"
 #include "RpcInheritance_EventException.h"
@@ -1243,6 +1244,16 @@ void RunTestCasesRpcStdio_Driver(const WString& serviceCommand, const SortedList
 		List<WString> waitingForServices;
 		waitingForServices.Add(L"RpcFailDoubleRegistrationTest::IService");
 		RunRpcStdioTestCase<::vl_workflow_global::Rpc_FailDoubleRegistration, false>(L"FailDoubleRegistration", L"[exception]", serviceCommand, waitingForServices);
+	}
+	if (skippedTestCases.Contains(L"FailDoubleRegistration_SharedMemsp"))
+	{
+		PrintRpcStdioSkippedTestCase(L"FailDoubleRegistration_SharedMemsp");
+	}
+	else
+	{
+		List<WString> waitingForServices;
+		waitingForServices.Add(L"RpcFailDoubleRegistrationSharedMemspTest::IService");
+		RunRpcStdioTestCase<::vl_workflow_global::Rpc_FailDoubleRegistration_SharedMemsp, false>(L"FailDoubleRegistration_SharedMemsp", L"[call][service:Received 1st][client:Received 2nd][call][service:Received 1st][exception][call][exception][call][exception]", serviceCommand, waitingForServices);
 	}
 	if (skippedTestCases.Contains(L"Inheritance"))
 	{

@@ -109,6 +109,7 @@
 #include "RpcListOps_ListExceptionReflection.h"
 #include "RpcListOps_OblistEventExceptionReflection.h"
 #include "RpcFailDoubleRegistrationReflection.h"
+#include "RpcFailDoubleRegistration_SharedMemspReflection.h"
 #include "RpcInheritanceReflection.h"
 #include "RpcInheritance_MethodExceptionReflection.h"
 #include "RpcInheritance_EventExceptionReflection.h"
@@ -250,6 +251,7 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_ListOps_ListExceptionTypes();
 	 LoadRpc_ListOps_OblistEventExceptionTypes();
 	 LoadRpc_FailDoubleRegistrationTypes();
+	 LoadRpc_FailDoubleRegistration_SharedMemspTypes();
 	 LoadRpc_InheritanceTypes();
 	 LoadRpc_Inheritance_MethodExceptionTypes();
 	 LoadRpc_Inheritance_EventExceptionTypes();
@@ -825,6 +827,11 @@ TEST_CASE(L"Rpc:ListOps_OblistEventException")
 TEST_CASE(L"Rpc:FailDoubleRegistration")
 {
 	RunRpcTestCase<::vl_workflow_global::Rpc_FailDoubleRegistration, false>(L"FailDoubleRegistration", L"[exception]");
+});
+
+TEST_CASE(L"Rpc:FailDoubleRegistration_SharedMemsp")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_FailDoubleRegistration_SharedMemsp, false>(L"FailDoubleRegistration_SharedMemsp", L"[call][service:Received 1st][client:Received 2nd][call][service:Received 1st][exception][call][exception][call][exception]");
 });
 
 TEST_CASE(L"Rpc:Inheritance")
