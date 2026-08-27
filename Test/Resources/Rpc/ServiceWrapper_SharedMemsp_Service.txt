@@ -1,0 +1,20 @@
+module Rpc;
+using system::*;
+using RpcServiceWrapperSharedMemspTest::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  serviceObj = new (RpcServiceWrapperSharedMemspTest::IService^)
+  {
+    override func Self(obj : IService^) : bool
+    {
+      var wrapperObj : object = obj;
+      if ((wrapperObj as (system::IRpcWrapperBase^) is not null))
+      {
+        raise "IService(obj) should be a local object in serviceMain";
+      }
+      return obj == serviceObj;
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcServiceWrapperSharedMemspTest::IService"], serviceObj);
+}

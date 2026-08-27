@@ -13,6 +13,8 @@ RPC samples are split into three files:
 
 The service and client can run in different processes. They must not share variables, even though the in-memory test harness loads all three files into one process. Stateless functions may remain in `SAMPLE.txt` only when both `serviceMain` and `clientMain` use them directly or indirectly. Remove unused declarations.
 
+Cases named `*_SharedMemsp` are the explicit exception. They test behavior that requires `clientMain` and `serviceMain` to run in the same memory space, so `serviceMain` may intentionally reference module variables declared with the client-side test state. Such cases must be the only entries in `Test/StartRpcStdio_SharedMemspSkipList.txt`, which is used by native C++ stdio verification, and must also be listed in `Test/StartRpcStdio_DtorSkipList.txt` for split-process language providers that cannot guarantee deterministic destruction. Do not use the suffix for behavior that can be asserted through the RPC service contract.
+
 Only `SAMPLE` should be listed in `IndexRpc.txt`. All three files should be present in `CompilerTest_LoadAndCompile` under `Resource Files\Rpc`.
 
 ## Verifying Samples
@@ -21,7 +23,7 @@ Workflow script syntax and semantic should be intuitive.
 During reading the sample, you should verify it with the goal of the task.
 Ensure all logs or exceptions in the sample accurately reflected the intention of the design.
 Ensure the expected result would be what users would expect.
-Verify that every RPC sample follows the `Rpc Sample Convention`.
+Verify that every RPC sample follows the `Rpc Sample Convention`, including the narrow `*_SharedMemsp` exception.
 
 ## Restriction
 

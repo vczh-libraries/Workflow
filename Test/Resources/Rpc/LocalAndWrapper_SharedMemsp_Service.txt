@@ -1,18 +1,16 @@
 module Rpc;
 using system::*;
-using RpcWrapperTest::*;
+using RpcWrapperSharedMemspTest::*;
 
 func serviceMain(lc : IRpcLifecycle*) : void
 {
-  var service = new (RpcWrapperTest::IService^)
+  var service = new (RpcWrapperSharedMemspTest::IService^)
   {
-    var _ServiceObj2 : IObj2^ = new IObj2^{};
-    var _ServiceReceived_Obj1 : IObj1^ = null;
-    var _ServiceReceived_Obj2 : IObj2^ = null;
-
     override func GetServiceResult() : string
     {
-      return $"[$(_ServiceReceived_Obj2 == _ServiceObj2)]";
+      return
+        $"[$(serviceReceived_Obj1 == clientObj1)]" &
+        $"[$(serviceReceived_Obj2 == serviceObj2)]";
     }
 
     override func Exchange1(o : IObj1^) : IObj2^
@@ -22,8 +20,8 @@ func serviceMain(lc : IRpcLifecycle*) : void
       {
         raise "IObj1(o) should be a wrapper object in serviceMain";
       }
-      _ServiceReceived_Obj1 = o;
-      return _ServiceObj2;
+      serviceReceived_Obj1 = o;
+      return serviceObj2;
     }
 
     override func Exchange2(o : IObj2^) : IObj1^
@@ -33,9 +31,9 @@ func serviceMain(lc : IRpcLifecycle*) : void
       {
         raise "IObj2(o) should be a local object in serviceMain";
       }
-      _ServiceReceived_Obj2 = o;
-      return _ServiceReceived_Obj1;
+      serviceReceived_Obj2 = o;
+      return serviceReceived_Obj1;
     }
   };
-  lc.RegisterLocalService(rpc_GetIds()["RpcWrapperTest::IService"], service);
+  lc.RegisterLocalService(rpc_GetIds()["RpcWrapperSharedMemspTest::IService"], service);
 }

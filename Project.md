@@ -47,7 +47,7 @@ Here is a list of unit test projects in `REPO-ROOT/Test/UnitTest/{NAME}/{NAME}.v
 - `RpcStdioTest_Driver`: Runs every indexed RPC sample through a fresh `RpcStdioTest_Service` child process connected by standard-input/standard-output redirection.
 - `RpcStdioTest_Service`: Hosts exactly one indexed RPC sample as the provider side of the standard-input/standard-output RPC test.
 
-Running `Test/StartRpcStdio.ps1` on Windows, or `Test/StartRpcStdio.sh` on Linux and macOS, without a skip list is always required together with the UnitTest projects.
+Running `Test/StartRpcStdio.ps1 Test/StartRpcStdio_SharedMemspSkipList.txt` on Windows, or `Test/StartRpcStdio.sh Test/StartRpcStdio_SharedMemspSkipList.txt` on Linux and macOS, is always required together with the UnitTest projects. The native C++ provider runs the destructor cases and skips only the intentional `*_SharedMemsp` fixtures that cannot run across the stdio process boundary.
 
 In `REPO-ROOT/Test/TypeScript` there is a TypeScript package, it will becomes available after running `CompilerTest_LoadAndCompiler` and `CppTest`. You need to run `prepare.ps1` followed by `npm run build` and ensure you don't see any error. This project verifies if JSON serialization of Workflow RPC is properly implemented.
 
@@ -70,7 +70,7 @@ The correct order to run them is:
 - Run `RuntimeTest` for Win32 and x64.
 - Run `CppTest`, `CppTest_Metaonly` and `CppTest_Reflection` for Win32 and x64.
 - Run `RpcStdioTest_Driver` for Win32 and x64, starting the `RpcStdioTest_Service` executable of the matching configuration and platform.
-- Run `Test/StartRpcStdio.ps1` on Windows, or `Test/StartRpcStdio.sh` on Linux and macOS, without a skip list so every `IndexRpc.txt` case is verified through separate processes.
+- Run `Test/StartRpcStdio.ps1 Test/StartRpcStdio_SharedMemspSkipList.txt` on Windows, or `Test/StartRpcStdio.sh Test/StartRpcStdio_SharedMemspSkipList.txt` on Linux and macOS, so every cross-process-compatible `IndexRpc.txt` case is verified through separate native C++ processes.
 - When you believe that all test projects should run, call `..\Tools\Tools\Build.ps1 Workflow` to test against everything.
   - It does not write any building or execution log.
   - It stops at the first failure.
@@ -141,7 +141,7 @@ If `CompilerTest_LoadAndCompiler` succeeded but subsequent test projects fail:
 - Invoke the driver as `RpcStdioTest_Driver <cli-command-to-start-RpcStdioTest_Service> [path-to-SkippedTestCaseListFile]`.
 - After building Debug x64, `Test/StartRpcStdio.ps1 [path-to-SkippedTestCaseListFile]` runs the Windows pair with the matching service path. Debug x64 is the default; `-Configuration` and `-Platform` can select another built Windows pair. On Linux or macOS, build both `Test/Linux/RpcStdioTest_*` projects and run `Test/StartRpcStdio.sh [path-to-SkippedTestCaseListFile]`.
 - The optional skipped-test file contains exact `IndexRpc.txt` case names, one per line.
-- When the launchers are called without a skipped-test file, they run every indexed case. `Test/StartRpcStdio_DtorSkipList.txt` is an explicit portability list for providers whose languages do not guarantee deterministic destructor execution; the C++ launchers do not select it automatically.
+- When the launchers are called without a skipped-test file, they attempt every indexed case. Use `Test/StartRpcStdio_SharedMemspSkipList.txt` with the native C++ provider; it skips only `*_SharedMemsp` cases whose assertions require `clientMain` and `serviceMain` to share one memory space. `Test/StartRpcStdio_DtorSkipList.txt` additionally skips destructor cases for providers whose languages do not guarantee deterministic destruction. The launchers do not select either list automatically.
 - The driver starts a new service process for each non-skipped case and appends the case name to the supplied service command.
 - The driver reports the expected `IndexRpc.txt` value and the value returned by each case's `clientMain`; mismatches, exceptions, and protocol failures terminate the test process.
 - The service accepts exactly one case name, runs that case's `serviceMain`, and reserves standard output for the channel protocol.

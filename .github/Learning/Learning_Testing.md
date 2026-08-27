@@ -31,7 +31,7 @@
 - Verify Workflow library file moves with stale-reference scans [1]
 - Keep Workflow stdio launchers repository-relative and interactive [1]
 - Format nested MSBuild source items for portable vmake parsing [1]
-- Run the no-skip RPC stdio suite in canonical Workflow builds [1]
+- Run the cross-process-compatible RPC stdio suite in canonical Workflow builds [1]
 
 # Refinements
 
@@ -169,7 +169,7 @@ Also scan for stale class and file names after dispatcher splits or renames, inc
 
 Generate driver and service dispatchers for every indexed case, keep provider stdout reserved for framed protocol traffic, and pass the decoded `IndexRpc.txt` expectation into the driver harness. Compare the complete `clientMain` result exactly and fail immediately on mismatches, exceptions, disconnection, malformed messages, or lifecycle failures.
 
-The C++ launchers must run every indexed case when no skip list is supplied; do not hide broken fixtures behind a default C++ compatibility list. Keep the destructor-order skip list opt-in for providers in languages that cannot guarantee deterministic destructor execution, and never select it automatically for C++ verification.
+The C++ launchers must attempt every indexed case when no skip list is supplied; do not hide broken fixtures behind a default C++ compatibility list. Use the explicit `StartRpcStdio_SharedMemspSkipList.txt` for native full-suite verification so destructor cases still run and only `*_SharedMemsp` fixtures are excluded. Providers in languages without deterministic destruction use `StartRpcStdio_DtorSkipList.txt`, which also includes the shared-memory-only fixtures.
 
 For a source-layout-only fixture refactor, keep `Test/Resources/IndexRpc.txt` byte-for-byte unchanged and verify behavior with the full required UnitTest matrix plus `Test/StartRpcStdio.ps1` or `Test/StartRpcStdio.sh` without a skip list so every indexed case runs.
 
@@ -185,8 +185,8 @@ When a `ClCompile Include` item needs a nested element such as `/bigobj` `Additi
 
 After changing this layout, regenerate through `.github/Ubuntu/build.sh` and confirm the source appears in the portable source list and link command; valid MSBuild XML alone does not verify the Linux makefile-generation path.
 
-## Run the no-skip RPC stdio suite in canonical Workflow builds
+## Run the cross-process-compatible RPC stdio suite in canonical Workflow builds
 
-Run `Test/StartRpcStdio.ps1` or `Test/StartRpcStdio.sh` without a skip list as required verification alongside the Workflow UnitTest projects. The canonical Tools build paths must include this suite: the Unix `vgo vbuild Workflow` path after its vmake projects, and the Windows `Build.ps1 -Project Workflow` path against the already-built Release x64 binaries.
+Run `Test/StartRpcStdio.ps1 Test/StartRpcStdio_SharedMemspSkipList.txt` or `Test/StartRpcStdio.sh Test/StartRpcStdio_SharedMemspSkipList.txt` as required verification alongside the Workflow UnitTest projects. The canonical Tools build paths must include this cross-process-compatible suite: the Unix `vgo vbuild Workflow` path after its vmake projects, and the Windows `Build.ps1 -Project Workflow` path against the already-built Release x64 binaries.
 
 Allow the PowerShell launcher to select an explicit configuration and platform while keeping Debug x64 as its direct-use default. Invoke it in a child PowerShell process from the canonical Windows build because the launcher's deliberate `exit` must not terminate the parent before release generation finishes; propagate any nonzero result through the existing build failure path.

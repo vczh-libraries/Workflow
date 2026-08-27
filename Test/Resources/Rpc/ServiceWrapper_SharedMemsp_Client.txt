@@ -1,0 +1,18 @@
+module Rpc;
+using system::*;
+using RpcServiceWrapperSharedMemspTest::*;
+
+var serviceObj : IService^ = null;
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var obj = lc.RequestService("RpcServiceWrapperSharedMemspTest::IService");
+  if ((obj as (system::IRpcWrapperBase^) is null))
+  {
+    raise "IService(obj) should be a wrapper object in clientMain";
+  }
+  var clientObj = cast (RpcServiceWrapperSharedMemspTest::IService^) obj;
+  return
+    $"[$(clientObj == serviceObj)]" &
+    $"[$(clientObj.Self(clientObj))]";
+}

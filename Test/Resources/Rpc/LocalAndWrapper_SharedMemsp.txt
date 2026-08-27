@@ -1,0 +1,21 @@
+module Rpc;
+using system::*;
+using RpcWrapperSharedMemspTest::*;
+
+namespace RpcWrapperSharedMemspTest
+{
+  @rpc:Interface
+  interface IObj1{}
+
+  @rpc:Interface
+  interface IObj2{}
+
+  @rpc:Interface
+  @rpc:Ctor
+  interface IService
+  {
+    func GetServiceResult() : string;
+    func Exchange1(o : IObj1^) : IObj2^;
+    func Exchange2(o : IObj2^) : IObj1^;
+  }
+}
