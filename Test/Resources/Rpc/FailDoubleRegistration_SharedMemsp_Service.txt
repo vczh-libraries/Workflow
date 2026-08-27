@@ -1,0 +1,17 @@
+module Rpc;
+using system::*;
+using RpcFailDoubleRegistrationSharedMemspTest::*;
+
+func serviceMain(lc : IRpcLifecycle*) : void
+{
+  var serviceObj = new (RpcFailDoubleRegistrationSharedMemspTest::IService^)
+  {
+    override func SetObject(obj : IObject^, index : int) : IObject^
+    {
+      registrationLog = $"$(registrationLog)[service:Received $(obj.Name)]";
+      held.Add(obj);
+      return objs[index];
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcFailDoubleRegistrationSharedMemspTest::IService"], serviceObj);
+}

@@ -1,0 +1,61 @@
+module Rpc;
+using system::*;
+using RpcFailDoubleRegistrationSharedMemspTest::*;
+
+func MakeObject(name : string) : IObject^
+{
+  return new (RpcFailDoubleRegistrationSharedMemspTest::IObject^)
+  {
+    override func GetName() : string
+    {
+      return name;
+    }
+  };
+}
+
+var objs : IObject^[] = { MakeObject("1st"); MakeObject("2nd"); };
+var held : IObject^[] = {};
+var registrationLog : string = "";
+
+func CallService(service : RpcFailDoubleRegistrationSharedMemspTest::IService^, indexParameter : int, indexReturn : int) : void
+{
+  registrationLog = $"$(registrationLog)[call]";
+  try
+  {
+    var obj = service.SetObject(objs[indexParameter], indexReturn);
+    registrationLog = $"$(registrationLog)[client:Received $(obj.Name)]";
+    held.Add(obj);
+  }
+  catch (ex)
+  {
+    registrationLog = $"$(registrationLog)[exception]";
+  }
+}
+
+func clientMain(lc : IRpcLifecycle*) : string
+{
+  var service = cast (RpcFailDoubleRegistrationSharedMemspTest::IService^) lc.RequestService("RpcFailDoubleRegistrationSharedMemspTest::IService");
+
+  /*
+    A call to make client owns 1st and service owns 2nd.
+    Because which lifecycle owning an object depends on which lifecycle touching it earlier.
+  */
+  CallService(service, 0, 1);
+
+  /*
+    serviceMain returning objs[0] triggers error.
+  */
+  CallService(service, 0, 0);
+
+  /*
+    clientMain passing objs[1] triggers error.
+  */
+  CallService(service, 1, 0);
+  CallService(service, 1, 1);
+
+  /*
+    Return the log which could tell the timing of exception.
+    The actual message of the exception does not matter.
+  */
+  return registrationLog;
+}
