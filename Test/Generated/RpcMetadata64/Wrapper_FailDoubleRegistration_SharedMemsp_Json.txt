@@ -1,0 +1,161 @@
+﻿module RpcMetadataJson;
+
+func rpcjson_Serialize(value : object) : (system::JsonNode^)
+{
+    return system::IRpcLifecycle::JsonSerializePredefinedTypes(value, rpcjson_Serialize);
+}
+
+func rpcjson_Deserialize(node : system::JsonNode^) : (object)
+{
+    var object = (node as (system::JsonObject^));
+    if (object is not null)
+    {
+        var jsonFieldValue0 : system::JsonNode^ = null;
+        for (jsonField1 in object.fields)
+        {
+            if ((jsonField1.name.value == "$"))
+            (jsonFieldValue0 = jsonField1.value);
+        }
+        if (jsonFieldValue0 is not null)
+        {
+            var keyword = (cast (system::JsonString^) jsonFieldValue0).content.value;
+            switch (keyword)
+            {
+            }
+        }
+    }
+    return system::IRpcLifecycle::JsonDeserializePredefinedTypes(node, rpcjson_Deserialize);
+}
+
+func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
+{
+    return new (system::IRpcSerializer^)
+    {
+        override func Serialize(value : object) : (object)
+        {
+            var result = rpcjson_Serialize(value);
+            return result;
+        }
+
+        override func Deserialize(value : object) : (object)
+        {
+            return rpcjson_Deserialize((cast (system::JsonNode^) value));
+        }
+    };
+}
+
+func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+{
+    return new (system::IRpcObjectOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _slot : int = 0;
+
+        var _byvalReturnValues : object[int] = {};
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            var unknownId : bool = false;
+            try
+            switch (methodId)
+            {
+                case rpcmethod_RpcFailDoubleRegistrationSharedMemspTest__IObject_GetName:
+                {
+                    var target = (cast (RpcFailDoubleRegistrationSharedMemspTest::IObject^) _lc.RefToPtr(ref));
+                    var jsonString0 = new (system::JsonString^)();
+                    (jsonString0.content = {value : (cast (string) target.GetName());});
+                    return jsonString0;
+                }
+                case rpcmethod_RpcFailDoubleRegistrationSharedMemspTest__IService_SetObject:
+                {
+                    var target = (cast (RpcFailDoubleRegistrationSharedMemspTest::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 = rpcjson_Deserialize((cast (system::JsonNode^) arguments[0]));
+                    var jsonValue1 = (cast (::system::Int64) (cast (string) rpcjson_Deserialize((cast (system::JsonNode^) arguments[1]))));
+                    var jsonValue2 = system::IRpcLifecycle::RpcBoxByval(target.SetObject((system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc) as (::RpcFailDoubleRegistrationSharedMemspTest::IObject^)), jsonValue1), _lc);
+                    var jsonNode3 = rpcjson_Serialize(jsonValue2);
+                    return jsonNode3;
+                }
+                default:
+                (unknownId = true);
+            }
+            catch (ex)
+            {
+                return rpcjson_Serialize({message : ex.Message;} of (system::RpcException));
+            }
+            if (unknownId)
+            {
+                raise "Unknown RPC method id.";
+            }
+            return rpcjson_Serialize(null);
+        }
+
+        override func EndInvokeMethod(slot : int) : (void)
+        {
+            _byvalReturnValues.Remove(slot);
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _lc.LocalObjectHold(ref, remoteClientId);
+            }
+            else
+            {
+                _lc.LocalObjectUnhold(ref, remoteClientId);
+            }
+        }
+    };
+}
+
+func rpcops_IRpcObjectEventOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+{
+    return new (system::IRpcObjectEventOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (object)
+        {
+            raise "Unknown RPC event id.";
+        }
+    };
+}
+
+func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_FailDoubleRegistration_SharedMemsp^)
+{
+    return new (rpcops_IOps_Rpc_FailDoubleRegistration_SharedMemsp^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcFailDoubleRegistrationSharedMemspTest__IObject_GetName(ref : system::RpcObjectReference) : (::system::String)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcFailDoubleRegistrationSharedMemspTest__IObject_GetName, arguments);
+            var jsonResult = (cast (system::JsonNode^) invokeResult);
+            var methodResult = rpcjson_Deserialize(jsonResult);
+            system::IRpcLifecycle::ReadMethodException(methodResult);
+            var jsonValue0 = (cast (::system::String) rpcjson_Deserialize(jsonResult));
+            return jsonValue0;
+        }
+
+        override func InvokeMethod_RpcFailDoubleRegistrationSharedMemspTest__IService_SetObject(ref : system::RpcObjectReference, arg_obj : ::RpcFailDoubleRegistrationSharedMemspTest::IObject^, arg_index : ::system::Int64) : (::RpcFailDoubleRegistrationSharedMemspTest::IObject^)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(2);
+            var jsonValue0 = system::IRpcLifecycle::RpcBoxByval(arg_obj, _lc);
+            var jsonNode1 = rpcjson_Serialize(jsonValue0);
+            arguments.Set(0, jsonNode1);
+            var jsonNumber2 = new (system::JsonNumber^)();
+            (jsonNumber2.content = {value : (cast (string) arg_index);});
+            arguments.Set(1, jsonNumber2);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcFailDoubleRegistrationSharedMemspTest__IService_SetObject, arguments);
+            var jsonResult = (cast (system::JsonNode^) invokeResult);
+            var methodResult = rpcjson_Deserialize(jsonResult);
+            system::IRpcLifecycle::ReadMethodException(methodResult);
+            var jsonValue3 = rpcjson_Deserialize(jsonResult);
+            return (system::IRpcLifecycle::RpcUnboxByval(jsonValue3, _lc) as (::RpcFailDoubleRegistrationSharedMemspTest::IObject^));
+        }
+    };
+}

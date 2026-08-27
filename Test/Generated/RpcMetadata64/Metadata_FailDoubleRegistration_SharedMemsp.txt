@@ -1,0 +1,28 @@
+﻿module RpcMetadata;
+
+namespace RpcFailDoubleRegistrationSharedMemspTest
+{
+    @rpc:Interface
+    @rpc:IdString("RpcFailDoubleRegistrationSharedMemspTest::IObject")
+    @rpc:IdNumber(0)
+    interface IObject
+    {
+        @rpc:Dynamic
+        prop Name : ::system::String{GetName}
+
+        @rpc:IdString("RpcFailDoubleRegistrationSharedMemspTest::IObject.GetName")
+        @rpc:IdNumber(1)
+        func GetName() : (::system::String);
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    @rpc:IdString("RpcFailDoubleRegistrationSharedMemspTest::IService")
+    @rpc:IdNumber(2)
+    interface IService
+    {
+        @rpc:IdString("RpcFailDoubleRegistrationSharedMemspTest::IService.SetObject")
+        @rpc:IdNumber(3)
+        func SetObject(obj : ::RpcFailDoubleRegistrationSharedMemspTest::IObject^, index : ::system::Int64) : (::RpcFailDoubleRegistrationSharedMemspTest::IObject^);
+    }
+}
