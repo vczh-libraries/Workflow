@@ -1,0 +1,37 @@
+﻿module RpcMetadata;
+
+namespace RpcWrapperSharedMemspTest
+{
+    @rpc:Interface
+    @rpc:IdString("RpcWrapperSharedMemspTest::IObj1")
+    @rpc:IdNumber(0)
+    interface IObj1
+    {
+    }
+
+    @rpc:Interface
+    @rpc:IdString("RpcWrapperSharedMemspTest::IObj2")
+    @rpc:IdNumber(1)
+    interface IObj2
+    {
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    @rpc:IdString("RpcWrapperSharedMemspTest::IService")
+    @rpc:IdNumber(2)
+    interface IService
+    {
+        @rpc:IdString("RpcWrapperSharedMemspTest::IService.Exchange1")
+        @rpc:IdNumber(3)
+        func Exchange1(o : ::RpcWrapperSharedMemspTest::IObj1^) : (::RpcWrapperSharedMemspTest::IObj2^);
+
+        @rpc:IdString("RpcWrapperSharedMemspTest::IService.Exchange2")
+        @rpc:IdNumber(4)
+        func Exchange2(o : ::RpcWrapperSharedMemspTest::IObj2^) : (::RpcWrapperSharedMemspTest::IObj1^);
+
+        @rpc:IdString("RpcWrapperSharedMemspTest::IService.GetServiceResult")
+        @rpc:IdNumber(5)
+        func GetServiceResult() : (::system::String);
+    }
+}

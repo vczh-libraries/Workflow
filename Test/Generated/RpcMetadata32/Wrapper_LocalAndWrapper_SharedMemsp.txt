@@ -1,0 +1,328 @@
+﻿module RpcMetadata;
+
+var rpctype_RpcWrapperSharedMemspTest__IObj1 : int = 0;
+
+var rpctype_RpcWrapperSharedMemspTest__IObj2 : int = 1;
+
+var rpctype_RpcWrapperSharedMemspTest__IService : int = 2;
+
+var rpcmethod_RpcWrapperSharedMemspTest__IService_Exchange1 : int = 3;
+
+var rpcmethod_RpcWrapperSharedMemspTest__IService_Exchange2 : int = 4;
+
+var rpcmethod_RpcWrapperSharedMemspTest__IService_GetServiceResult : int = 5;
+
+func rpc_GetIds() : (int[string])
+{
+    var result : int[string] = {};
+    result.Set("RpcWrapperSharedMemspTest::IObj1", 0);
+    result.Set("RpcWrapperSharedMemspTest::IObj2", 1);
+    result.Set("RpcWrapperSharedMemspTest::IService", 2);
+    result.Set("RpcWrapperSharedMemspTest::IService.Exchange1", 3);
+    result.Set("RpcWrapperSharedMemspTest::IService.Exchange2", 4);
+    result.Set("RpcWrapperSharedMemspTest::IService.GetServiceResult", 5);
+    return result;
+}
+
+func rpcwrapper_IsInterfaceTypeId(typeId : int) : (bool)
+{
+    if (((typeId >= -7) and (typeId <= -1)))
+    return true;
+    switch (typeId)
+    {
+        case rpctype_RpcWrapperSharedMemspTest__IObj1:
+        return true;
+        case rpctype_RpcWrapperSharedMemspTest__IObj2:
+        return true;
+        case rpctype_RpcWrapperSharedMemspTest__IService:
+        return true;
+        default:
+        return false;
+    }
+}
+
+func rpcwrapper_IsCtorInterfaceTypeId(typeId : int) : (bool)
+{
+    switch (typeId)
+    {
+        case rpctype_RpcWrapperSharedMemspTest__IService:
+        return true;
+        default:
+        return false;
+    }
+}
+
+interface rpcops_IOps_Rpc_LocalAndWrapper_SharedMemsp
+{
+    func InvokeMethod_RpcWrapperSharedMemspTest__IService_Exchange1(ref : system::RpcObjectReference, arg_o : ::RpcWrapperSharedMemspTest::IObj1^) : (::RpcWrapperSharedMemspTest::IObj2^);
+
+    func InvokeMethod_RpcWrapperSharedMemspTest__IService_Exchange2(ref : system::RpcObjectReference, arg_o : ::RpcWrapperSharedMemspTest::IObj2^) : (::RpcWrapperSharedMemspTest::IObj1^);
+
+    func InvokeMethod_RpcWrapperSharedMemspTest__IService_GetServiceResult(ref : system::RpcObjectReference) : (::system::String);
+}
+
+func rpcops_IRpcObjectOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+{
+    return new (system::IRpcObjectOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _slot : int = 0;
+
+        var _byvalReturnValues : object[int] = {};
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            var unknownId : bool = false;
+            try
+            switch (methodId)
+            {
+                case rpcmethod_RpcWrapperSharedMemspTest__IService_Exchange1:
+                {
+                    var target = (cast (RpcWrapperSharedMemspTest::IService^) _lc.RefToPtr(ref));
+                    return system::IRpcLifecycle::RpcBoxByval(target.Exchange1((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::RpcWrapperSharedMemspTest::IObj1^))), _lc);
+                }
+                case rpcmethod_RpcWrapperSharedMemspTest__IService_Exchange2:
+                {
+                    var target = (cast (RpcWrapperSharedMemspTest::IService^) _lc.RefToPtr(ref));
+                    return system::IRpcLifecycle::RpcBoxByval(target.Exchange2((system::IRpcLifecycle::RpcUnboxByval(arguments[0], _lc) as (::RpcWrapperSharedMemspTest::IObj2^))), _lc);
+                }
+                case rpcmethod_RpcWrapperSharedMemspTest__IService_GetServiceResult:
+                {
+                    var target = (cast (RpcWrapperSharedMemspTest::IService^) _lc.RefToPtr(ref));
+                    return target.GetServiceResult();
+                }
+                default:
+                (unknownId = true);
+            }
+            catch (ex)
+            {
+                return {message : ex.Message;} of (system::RpcException);
+            }
+            if (unknownId)
+            {
+                raise "Unknown RPC method id.";
+            }
+            return null;
+        }
+
+        override func EndInvokeMethod(slot : int) : (void)
+        {
+            _byvalReturnValues.Remove(slot);
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _lc.LocalObjectHold(ref, remoteClientId);
+            }
+            else
+            {
+                _lc.LocalObjectUnhold(ref, remoteClientId);
+            }
+        }
+    };
+}
+
+func rpcops_IRpcObjectEventOps(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+{
+    return new (system::IRpcObjectEventOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (object)
+        {
+            raise "Unknown RPC event id.";
+        }
+    };
+}
+
+func rpcops_IOps_Create(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_LocalAndWrapper_SharedMemsp^)
+{
+    return new (rpcops_IOps_Rpc_LocalAndWrapper_SharedMemsp^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcWrapperSharedMemspTest__IService_Exchange1(ref : system::RpcObjectReference, arg_o : ::RpcWrapperSharedMemspTest::IObj1^) : (::RpcWrapperSharedMemspTest::IObj2^)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg_o, _lc));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcWrapperSharedMemspTest__IService_Exchange1, arguments);
+            system::IRpcLifecycle::ReadMethodException(invokeResult);
+            return (system::IRpcLifecycle::RpcUnboxByval(invokeResult, _lc) as (::RpcWrapperSharedMemspTest::IObj2^));
+        }
+
+        override func InvokeMethod_RpcWrapperSharedMemspTest__IService_Exchange2(ref : system::RpcObjectReference, arg_o : ::RpcWrapperSharedMemspTest::IObj2^) : (::RpcWrapperSharedMemspTest::IObj1^)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            arguments.Set(0, system::IRpcLifecycle::RpcBoxByval(arg_o, _lc));
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcWrapperSharedMemspTest__IService_Exchange2, arguments);
+            system::IRpcLifecycle::ReadMethodException(invokeResult);
+            return (system::IRpcLifecycle::RpcUnboxByval(invokeResult, _lc) as (::RpcWrapperSharedMemspTest::IObj1^));
+        }
+
+        override func InvokeMethod_RpcWrapperSharedMemspTest__IService_GetServiceResult(ref : system::RpcObjectReference) : (::system::String)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(0);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcWrapperSharedMemspTest__IService_GetServiceResult, arguments);
+            system::IRpcLifecycle::ReadMethodException(invokeResult);
+            return (cast (::system::String) invokeResult);
+        }
+    };
+}
+
+namespace RpcWrapperSharedMemspTest
+{
+    interface IRpcWrapper_IObj1 : RpcWrapperSharedMemspTest::IObj1, system::IRpcWrapperBase
+    {
+    }
+
+    interface IRpcWrapper_IObj2 : RpcWrapperSharedMemspTest::IObj2, system::IRpcWrapperBase
+    {
+    }
+
+    interface IRpcWrapper_IService : RpcWrapperSharedMemspTest::IService, system::IRpcWrapperBase
+    {
+    }
+}
+
+func rpcwrapper_RpcWrapperSharedMemspTest__IObj1(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_LocalAndWrapper_SharedMemsp^) : (RpcWrapperSharedMemspTest::IRpcWrapper_IObj1^)
+{
+    var proxy = new (RpcWrapperSharedMemspTest::IRpcWrapper_IObj1^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        var _ops : rpcops_IOps_Rpc_LocalAndWrapper_SharedMemsp^ = ops;
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+            (_ops = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
+            }
+        }
+    };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
+    return proxy;
+}
+
+func rpcwrapper_RpcWrapperSharedMemspTest__IObj2(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_LocalAndWrapper_SharedMemsp^) : (RpcWrapperSharedMemspTest::IRpcWrapper_IObj2^)
+{
+    var proxy = new (RpcWrapperSharedMemspTest::IRpcWrapper_IObj2^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        var _ops : rpcops_IOps_Rpc_LocalAndWrapper_SharedMemsp^ = ops;
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+            (_ops = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
+            }
+        }
+    };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
+    return proxy;
+}
+
+func rpcwrapper_RpcWrapperSharedMemspTest__IService(lc : system::IRpcLifecycle*, proxyRef : system::RpcObjectReference, ops : rpcops_IOps_Rpc_LocalAndWrapper_SharedMemsp^) : (RpcWrapperSharedMemspTest::IRpcWrapper_IService^)
+{
+    var proxy = new (RpcWrapperSharedMemspTest::IRpcWrapper_IService^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _ref : system::RpcObjectReference = proxyRef;
+
+        var _ops : rpcops_IOps_Rpc_LocalAndWrapper_SharedMemsp^ = ops;
+
+        override func DisconnectFromLifecycle() : (void)
+        {
+            (_lc = null);
+            (_ops = null);
+        }
+
+        delete
+        {
+            if (_lc is not null)
+            {
+                _lc.Dispatcher.SendToClient_ObjectOps(_ref.clientId).ObjectHold(_ref, _lc.ClientId, false);
+            }
+        }
+
+        override func Exchange1(o : ::RpcWrapperSharedMemspTest::IObj1^) : (::RpcWrapperSharedMemspTest::IObj2^)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            return _ops.InvokeMethod_RpcWrapperSharedMemspTest__IService_Exchange1(_ref, o);
+        }
+
+        override func Exchange2(o : ::RpcWrapperSharedMemspTest::IObj2^) : (::RpcWrapperSharedMemspTest::IObj1^)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            return _ops.InvokeMethod_RpcWrapperSharedMemspTest__IService_Exchange2(_ref, o);
+        }
+
+        override func GetServiceResult() : (::system::String)
+        {
+            if (_lc is null)
+            raise "RPC wrapper has been disconnected from lifecycle.";
+            return _ops.InvokeMethod_RpcWrapperSharedMemspTest__IService_GetServiceResult(_ref);
+        }
+    };
+    lc.Dispatcher.SendToClient_ObjectOps(proxyRef.clientId).ObjectHold(proxyRef, lc.ClientId, true);
+    return proxy;
+}
+
+func rpcwrapper_Create(ref : system::RpcObjectReference, lc : system::IRpcLifecycle*, ops : rpcops_IOps_Rpc_LocalAndWrapper_SharedMemsp^) : (system::IRpcWrapperBase^)
+{
+    switch (ref.typeId)
+    {
+        case rpctype_RpcWrapperSharedMemspTest__IObj1:
+        {
+            return rpcwrapper_RpcWrapperSharedMemspTest__IObj1(lc, ref, ops);
+        }
+        case rpctype_RpcWrapperSharedMemspTest__IObj2:
+        {
+            return rpcwrapper_RpcWrapperSharedMemspTest__IObj2(lc, ref, ops);
+        }
+        case rpctype_RpcWrapperSharedMemspTest__IService:
+        {
+            return rpcwrapper_RpcWrapperSharedMemspTest__IService(lc, ref, ops);
+        }
+        default:
+        raise "Unknown RPC type id for wrapper creation.";
+    }
+}
+
+func rpcwrapper_GetTypeId(obj : object) : (int)
+{
+    if (obj is (RpcWrapperSharedMemspTest::IObj1*))
+    return rpctype_RpcWrapperSharedMemspTest__IObj1;
+    if (obj is (RpcWrapperSharedMemspTest::IObj2*))
+    return rpctype_RpcWrapperSharedMemspTest__IObj2;
+    if (obj is (RpcWrapperSharedMemspTest::IService*))
+    return rpctype_RpcWrapperSharedMemspTest__IService;
+    return -100;
+}

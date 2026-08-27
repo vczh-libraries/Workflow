@@ -48,9 +48,7 @@ func clientMain(lc : IRpcLifecycle*) : string
     raise "IService(obj) should be a wrapper object in clientMain";
   }
   var clientObj = cast (RpcServiceWrapperTest::IService^) obj;
-  return
-    $"[$(clientObj is null)]" &
-    $"[$(clientObj.Self(clientObj))]";
+  return $"[$(clientObj.Self(clientObj))]";
 }
 
 ========================================================
@@ -95,7 +93,7 @@ func clientMain(lc : IRpcLifecycle*) : (string)
         raise "IService(obj) should be a wrapper object in clientMain";
     }
     var clientObj = (cast (RpcServiceWrapperTest::IService^) obj);
-    return ((("[" & clientObj is null) & "]") & (("[" & clientObj.Self(clientObj)) & "]"));
+    return (("[" & clientObj.Self(clientObj)) & "]");
 }
 
 ========================================================
@@ -342,7 +340,7 @@ AST
             }]
         }
     }, {
-        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 0, "index": 66}, "end": {"row": 15, "column": 0, "index": 461}, "codeIndex": -1}},
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 0, "index": 66}, "end": {"row": 13, "column": 0, "index": 423}, "codeIndex": -1}},
         "attributes": [],
         "name": { "value": "clientMain", "codeRange": {"start": {"row": 4, "column": 5, "index": 71}, "end": {"row": 4, "column": 14, "index": 80}, "codeIndex": -1}},
         "anonymity": "Named",
@@ -364,7 +362,7 @@ AST
             "name": "String"
         },
         "statement": {
-            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 5, "column": 0, "index": 113}, "end": {"row": 15, "column": 0, "index": 461}, "codeIndex": -1}},
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 5, "column": 0, "index": 113}, "end": {"row": 13, "column": 0, "index": 423}, "codeIndex": -1}},
             "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
             "statements": [{
                 "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 6, "column": 2, "index": 118}, "end": {"row": 6, "column": 64, "index": 180}, "codeIndex": -1}},
@@ -457,74 +455,41 @@ AST
                     "type": null
                 }
             }, {
-                "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 12, "column": 2, "index": 380}, "end": {"row": 14, "column": 37, "index": 458}, "codeIndex": -1}},
+                "$ast": { "type": "ReturnStatement", "codeRange": {"start": {"row": 12, "column": 2, "index": 380}, "end": {"row": 12, "column": 42, "index": 420}, "codeIndex": -1}},
                 "expression": {
-                    "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 13, "column": 4, "index": 392}, "end": {"row": 14, "column": 36, "index": 457}, "codeIndex": -1}},
-                    "first": {
-                        "$ast": { "type": "FormatExpression", "codeRange": {"start": {"row": 13, "column": 4, "index": 392}, "end": {"row": 13, "column": 28, "index": 416}, "codeIndex": -1}},
-                        "expandedExpression": {
-                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 13, "column": 4, "index": 392}, "end": {"row": 13, "column": 28, "index": 416}, "codeIndex": -1}},
+                    "$ast": { "type": "FormatExpression", "codeRange": {"start": {"row": 12, "column": 9, "index": 387}, "end": {"row": 12, "column": 41, "index": 419}, "codeIndex": -1}},
+                    "expandedExpression": {
+                        "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 12, "column": 9, "index": 387}, "end": {"row": 12, "column": 41, "index": 419}, "codeIndex": -1}},
+                        "first": {
+                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 12, "column": 9, "index": 387}, "end": {"row": 12, "column": 41, "index": 419}, "codeIndex": -1}},
                             "first": {
-                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 13, "column": 4, "index": 392}, "end": {"row": 13, "column": 28, "index": 416}, "codeIndex": -1}},
-                                "first": {
-                                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 13, "column": 4, "index": 392}, "end": {"row": 13, "column": 28, "index": 416}, "codeIndex": -1}},
-                                    "value": { "value": "[", "codeRange": {"start": {"row": 13, "column": 4, "index": 392}, "end": {"row": 13, "column": 28, "index": 416}, "codeIndex": -1}}
-                                },
-                                "op": "FlagAnd",
-                                "second": {
-                                    "$ast": { "type": "TypeTestingExpression", "codeRange": {"start": {"row": 13, "column": 9, "index": 0}, "end": {"row": 13, "column": 25, "index": 16}, "codeIndex": -1}},
-                                    "expression": {
-                                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 13, "column": 9, "index": 0}, "end": {"row": 13, "column": 17, "index": 8}, "codeIndex": -1}},
-                                        "name": { "value": "clientObj", "codeRange": {"start": {"row": 13, "column": 9, "index": 0}, "end": {"row": 13, "column": 17, "index": 8}, "codeIndex": -1}}
-                                    },
-                                    "test": "IsNull",
-                                    "type": null
-                                }
+                                "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 12, "column": 9, "index": 387}, "end": {"row": 12, "column": 41, "index": 419}, "codeIndex": -1}},
+                                "value": { "value": "[", "codeRange": {"start": {"row": 12, "column": 9, "index": 387}, "end": {"row": 12, "column": 41, "index": 419}, "codeIndex": -1}}
                             },
                             "op": "FlagAnd",
                             "second": {
-                                "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 13, "column": 4, "index": 392}, "end": {"row": 13, "column": 28, "index": 416}, "codeIndex": -1}},
-                                "value": { "value": "]", "codeRange": {"start": {"row": 13, "column": 4, "index": 392}, "end": {"row": 13, "column": 28, "index": 416}, "codeIndex": -1}}
-                            }
-                        },
-                        "value": { "value": "[$(clientObj is null)]", "codeRange": {"start": {"row": 13, "column": 4, "index": 392}, "end": {"row": 13, "column": 28, "index": 416}, "codeIndex": -1}}
-                    },
-                    "op": "FlagAnd",
-                    "second": {
-                        "$ast": { "type": "FormatExpression", "codeRange": {"start": {"row": 14, "column": 4, "index": 425}, "end": {"row": 14, "column": 36, "index": 457}, "codeIndex": -1}},
-                        "expandedExpression": {
-                            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 14, "column": 4, "index": 425}, "end": {"row": 14, "column": 36, "index": 457}, "codeIndex": -1}},
-                            "first": {
-                                "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 14, "column": 4, "index": 425}, "end": {"row": 14, "column": 36, "index": 457}, "codeIndex": -1}},
-                                "first": {
-                                    "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 14, "column": 4, "index": 425}, "end": {"row": 14, "column": 36, "index": 457}, "codeIndex": -1}},
-                                    "value": { "value": "[", "codeRange": {"start": {"row": 14, "column": 4, "index": 425}, "end": {"row": 14, "column": 36, "index": 457}, "codeIndex": -1}}
-                                },
-                                "op": "FlagAnd",
-                                "second": {
-                                    "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 14, "column": 9, "index": 0}, "end": {"row": 14, "column": 33, "index": 24}, "codeIndex": -1}},
-                                    "arguments": [{
-                                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 14, "column": 24, "index": 15}, "end": {"row": 14, "column": 32, "index": 23}, "codeIndex": -1}},
-                                        "name": { "value": "clientObj", "codeRange": {"start": {"row": 14, "column": 24, "index": 15}, "end": {"row": 14, "column": 32, "index": 23}, "codeIndex": -1}}
-                                    }],
-                                    "function": {
-                                        "$ast": { "type": "MemberExpression", "codeRange": {"start": {"row": 14, "column": 9, "index": 0}, "end": {"row": 14, "column": 22, "index": 13}, "codeIndex": -1}},
-                                        "name": { "value": "Self", "codeRange": {"start": {"row": 14, "column": 19, "index": 10}, "end": {"row": 14, "column": 22, "index": 13}, "codeIndex": -1}},
-                                        "parent": {
-                                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 14, "column": 9, "index": 0}, "end": {"row": 14, "column": 17, "index": 8}, "codeIndex": -1}},
-                                            "name": { "value": "clientObj", "codeRange": {"start": {"row": 14, "column": 9, "index": 0}, "end": {"row": 14, "column": 17, "index": 8}, "codeIndex": -1}}
-                                        }
+                                "$ast": { "type": "CallExpression", "codeRange": {"start": {"row": 12, "column": 14, "index": 0}, "end": {"row": 12, "column": 38, "index": 24}, "codeIndex": -1}},
+                                "arguments": [{
+                                    "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 12, "column": 29, "index": 15}, "end": {"row": 12, "column": 37, "index": 23}, "codeIndex": -1}},
+                                    "name": { "value": "clientObj", "codeRange": {"start": {"row": 12, "column": 29, "index": 15}, "end": {"row": 12, "column": 37, "index": 23}, "codeIndex": -1}}
+                                }],
+                                "function": {
+                                    "$ast": { "type": "MemberExpression", "codeRange": {"start": {"row": 12, "column": 14, "index": 0}, "end": {"row": 12, "column": 27, "index": 13}, "codeIndex": -1}},
+                                    "name": { "value": "Self", "codeRange": {"start": {"row": 12, "column": 24, "index": 10}, "end": {"row": 12, "column": 27, "index": 13}, "codeIndex": -1}},
+                                    "parent": {
+                                        "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 12, "column": 14, "index": 0}, "end": {"row": 12, "column": 22, "index": 8}, "codeIndex": -1}},
+                                        "name": { "value": "clientObj", "codeRange": {"start": {"row": 12, "column": 14, "index": 0}, "end": {"row": 12, "column": 22, "index": 8}, "codeIndex": -1}}
                                     }
                                 }
-                            },
-                            "op": "FlagAnd",
-                            "second": {
-                                "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 14, "column": 4, "index": 425}, "end": {"row": 14, "column": 36, "index": 457}, "codeIndex": -1}},
-                                "value": { "value": "]", "codeRange": {"start": {"row": 14, "column": 4, "index": 425}, "end": {"row": 14, "column": 36, "index": 457}, "codeIndex": -1}}
                             }
                         },
-                        "value": { "value": "[$(clientObj.Self(clientObj))]", "codeRange": {"start": {"row": 14, "column": 4, "index": 425}, "end": {"row": 14, "column": 36, "index": 457}, "codeIndex": -1}}
-                    }
+                        "op": "FlagAnd",
+                        "second": {
+                            "$ast": { "type": "StringExpression", "codeRange": {"start": {"row": 12, "column": 9, "index": 387}, "end": {"row": 12, "column": 41, "index": 419}, "codeIndex": -1}},
+                            "value": { "value": "]", "codeRange": {"start": {"row": 12, "column": 9, "index": 387}, "end": {"row": 12, "column": 41, "index": 419}, "codeIndex": -1}}
+                        }
+                    },
+                    "value": { "value": "[$(clientObj.Self(clientObj))]", "codeRange": {"start": {"row": 12, "column": 9, "index": 387}, "end": {"row": 12, "column": 41, "index": 419}, "codeIndex": -1}}
                 }
             }]
         }
