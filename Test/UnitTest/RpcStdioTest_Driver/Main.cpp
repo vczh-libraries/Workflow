@@ -56,13 +56,13 @@ namespace vl::rpc_controller_test
 		CHECK_ERROR(remoteConnected.CreateAutoUnsignal(false), L"Failed to create the RPC stdio connection event.");
 	}
 
-	WaitForClientResult RpcStdioChannelServer::OnClientConnected(vint clientId, const JsonChannelClient::ChannelNameList& availableChannels, JsonChannelClient* localClient)
+	WaitForClientResult RpcStdioChannelServer::OnClientConnected(vint clientId, const JsonChannelClient::ChannelNameList& availableChannels, Ptr<JsonChannelClient> localClient)
 	{
 		if (availableChannels.Count() != 1 || !availableChannels.Contains(WString::Unmanaged(RpcStdioTestChannelName)))
 		{
 			return WaitForClientResult::Reject;
 		}
-		if (localClient && dynamic_cast<RpcStdioBroadcastingClient*>(localClient))
+		if (localClient && dynamic_cast<RpcStdioBroadcastingClient*>(localClient.Obj()))
 		{
 			return WaitForClientResult::Accept;
 		}

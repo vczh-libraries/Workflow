@@ -59,7 +59,7 @@ namespace vl::rpc_controller_test
 	public:
 		RpcStdioChannelServer(Ptr<Parser> parser);
 
-		WaitForClientResult OnClientConnected(vint clientId, const JsonChannelClient::ChannelNameList& availableChannels, JsonChannelClient* localClient) override;
+		WaitForClientResult OnClientConnected(vint clientId, const JsonChannelClient::ChannelNameList& availableChannels, Ptr<JsonChannelClient> localClient) override;
 		void OnClientDisconnected(vint clientId) override;
 		vint WaitForRemoteClient();
 		void SetDispatchers(RpcJsonDispatcherServer* _broadcastingDispatcher, RpcJsonDispatcherClient* _requesterDispatcher);

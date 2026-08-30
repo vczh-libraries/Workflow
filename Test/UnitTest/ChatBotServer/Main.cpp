@@ -177,14 +177,14 @@ public:
 	{
 	}
 
-	WaitForClientResult OnClientConnected(vint clientId, const JsonChannelClient::ChannelNameList& availableChannels, JsonChannelClient* localClient) override
+	WaitForClientResult OnClientConnected(vint clientId, const JsonChannelClient::ChannelNameList& availableChannels, Ptr<JsonChannelClient> localClient) override
 	{
 		if (!availableChannels.Contains(WString::Unmanaged(RpcChannel)))
 		{
 			return WaitForClientResult::Reject;
 		}
 
-		if (localClient && dynamic_cast<ChatBotRpcBroadcastingLocalClient*>(localClient))
+		if (localClient && dynamic_cast<ChatBotRpcBroadcastingLocalClient*>(localClient.Obj()))
 		{
 			return WaitForClientResult::Accept;
 		}
