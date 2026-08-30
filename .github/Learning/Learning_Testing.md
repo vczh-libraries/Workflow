@@ -8,13 +8,14 @@
 - Compare `RuntimeTest` and `CppTest*` failures before choosing an RPC root cause [6]
 - Preserve RPC/Workflow sample intent; only adjust syntax or diagnostics [6]
 - Validate ChatBot RPC apps with a real multi-process scenario [6]
+- Keep split-process RPC fixtures independent and enforce `IndexRpc.txt` [6]
 - Commit direct edits and large generated outputs separately when requested [5]
 - Add every RPC sample resource to the `CompilerTest_LoadAndCompile` project folder [5]
 - RPC byref/byval container samples must verify wrapper/copy semantics at every level [5]
 - Pure refactors should not touch generated RPC outputs [5]
 - Split RPC sample definitions and tests consistently [5]
-- Keep split-process RPC fixtures independent and enforce `IndexRpc.txt` [5]
 - Type-check shared `Rpc.d.ts` standalone [3]
+- Run the cross-process-compatible RPC stdio suite in canonical Workflow builds [2]
 - Workflow analyzer error tests may change values when preserving the error code [1]
 - Workflow samples use `raise`, not `throw` [1]
 - Workflow range syntax for inclusive generated loops is `range [1, xs.Count]` [1]
@@ -31,7 +32,6 @@
 - Verify Workflow library file moves with stale-reference scans [1]
 - Keep Workflow stdio launchers repository-relative and interactive [1]
 - Format nested MSBuild source items for portable vmake parsing [1]
-- Run the cross-process-compatible RPC stdio suite in canonical Workflow builds [1]
 
 # Refinements
 
