@@ -11,6 +11,7 @@
 - Keep RPC-specific fixes out of generic C++ / Workflow codegen surfaces [3]
 - Read and aggregate RPC event exception maps through `IRpcLifecycle::ReadEventException` [3]
 - Run channel-backed RPC dispatchers through one task queue [3]
+- Place RPC fixture state on the process that owns it [3]
 - Generated RPC test id maps must come from `rpc_GetIds()` / `SetIdMap` [2]
 - Interpret `IRpcWrapperBase` as remote-wrapper identity [2]
 - Use internal properties defensively in `RpcDualLifecycleMock` [2]
@@ -31,7 +32,6 @@
 - Mirror ChatBot service event output on server and clients [2]
 - Keep reusable RPC JSON dispatchers free of generated ChatBot dependencies [2]
 - Keep RPC test harness setup under `VCZH_DEBUG_NO_REFLECTION` [2]
-- Place RPC fixture state on the process that owns it [2]
 - Keep RPC analyzer source and shared AST helpers under `Source/Analyzer/Rpc` [1]
 - Use generated strong typed RPC ops for event listeners [1]
 - Use `CLASS_MEMBER_STATIC_EXTERNALMETHOD` for registering free functions as reflection static methods [1]
@@ -389,3 +389,5 @@ Keep the event-handler wiring in a shared out-of-line ChatBot helper so the serv
 Make the service/client process boundary visible even when the in-memory harness loads all fixture modules into one process. Keep `SAMPLE_Service.txt` limited to the top-level `serviceMain` declaration, with service-only state and helpers, including transitively reached helpers, inside its anonymous service implementation. Keep `SAMPLE_Client.txt` limited to `clientMain` and client-only declarations. Put only genuinely stateless cross-process helpers in `SAMPLE.txt`, never top-level variables, and remove unused declarations.
 
 When a fixture intentionally compares local and wrapped identities, use separately named service-owned and client-owned objects instead of declarations that imply shared memory. This reorganization must preserve `IndexRpc.txt` byte-for-byte and regenerate derived outputs through `CompilerTest_LoadAndCompile`.
+
+If the behavior under test inherently requires the identical concrete object pointer to be offered through two lifecycles, preserve that intent as a distinct `*_SharedMemsp` fixture instead of weakening the process-safe fixture. Give it a separate namespace so both cases coexist, keep the shared objects on the client side used by the in-memory harness, and mark the process-boundary limitation explicitly in compatibility lists.

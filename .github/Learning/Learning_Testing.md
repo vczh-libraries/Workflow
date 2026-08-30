@@ -13,7 +13,7 @@
 - RPC byref/byval container samples must verify wrapper/copy semantics at every level [5]
 - Pure refactors should not touch generated RPC outputs [5]
 - Split RPC sample definitions and tests consistently [5]
-- Keep split-process RPC fixtures independent and enforce `IndexRpc.txt` [4]
+- Keep split-process RPC fixtures independent and enforce `IndexRpc.txt` [5]
 - Type-check shared `Rpc.d.ts` standalone [3]
 - Workflow analyzer error tests may change values when preserving the error code [1]
 - Workflow samples use `raise`, not `throw` [1]
@@ -170,6 +170,8 @@ Also scan for stale class and file names after dispatcher splits or renames, inc
 Generate driver and service dispatchers for every indexed case, keep provider stdout reserved for framed protocol traffic, and pass the decoded `IndexRpc.txt` expectation into the driver harness. Compare the complete `clientMain` result exactly and fail immediately on mismatches, exceptions, disconnection, malformed messages, or lifecycle failures.
 
 The C++ launchers must attempt every indexed case when no skip list is supplied; do not hide broken fixtures behind a default C++ compatibility list. Use the explicit `StartRpcStdio_SharedMemspSkipList.txt` for native full-suite verification so destructor cases still run and only `*_SharedMemsp` fixtures are excluded. Providers in languages without deterministic destruction use `StartRpcStdio_DtorSkipList.txt`, which also includes the shared-memory-only fixtures.
+
+When adding a `*_SharedMemsp` fixture, run it through the in-memory Runtime and generated-C++ harnesses, add it to both explicit compatibility lists, and keep the current process-safe counterpart unchanged. Audit that every indexed case has all architecture-specific generated outputs, project entries, external-provider bindings, and service registrations, while stdio executes every case not excluded by the selected compatibility list.
 
 For a source-layout-only fixture refactor, keep `Test/Resources/IndexRpc.txt` byte-for-byte unchanged and verify behavior with the full required UnitTest matrix plus `Test/StartRpcStdio.ps1` or `Test/StartRpcStdio.sh` without a skip list so every indexed case runs.
 
