@@ -15479,8 +15479,10 @@ Author: Zihan Chen (vczh)
 Licensed under https://github.com/vczh-libraries/License
 ***********************************************************************/
 
+#include <algorithm>
 
 using namespace vl;
+using namespace vl::presentation;
 using namespace vl::collections;
 
 namespace vl
@@ -15725,6 +15727,22 @@ namespace vl
 				return code <= 0x10FFFF && !(code >= 0xD800 && code <= 0xDFFF);
 			}
 
+			TuiTextStyle GetTextStyle(const TuiPixel& pixel)
+			{
+				return pixel.glyph == TuiPixelGlyph::Char && pixel.character.c != 0
+					? pixel.character.style
+					: TuiTextStyle{};
+			}
+
+			WString GetTextStyleSequence(TuiTextStyle style)
+			{
+				return WString::Unmanaged(L"\x1B[")
+					+ (style.bold ? L"1;" : L"22;")
+					+ (style.italic ? L"3;" : L"23;")
+					+ (style.underline ? L"4;" : L"24;")
+					+ (style.strikeline ? L"9m" : L"29m");
+			}
+
 			TuiPixel EmptyPixel(TuiColor background = { 0, 0, 0 })
 			{
 				TuiPixel pixel;
@@ -15738,6 +15756,20 @@ namespace vl
 				CHECK_ERROR(width >= 0 && height >= 0, L"vl::console::TUI drawing helper requires non-negative dimensions.");
 			}
 
+			TuiClipper NormalizeClipper(vint width, vint height, const TuiClipper* clipper)
+			{
+				TuiClipper result{ 0, 0, width, height };
+				if (clipper)
+				{
+					result.x1 = std::max(result.x1, clipper->x1);
+					result.y1 = std::max(result.y1, clipper->y1);
+					result.x2 = std::min(result.x2, clipper->x2);
+					result.y2 = std::min(result.y2, clipper->y2);
+				}
+				if (result.x1 >= result.x2 || result.y1 >= result.y2) return {};
+				return result;
+			}
+
 			void RepairWide(TuiPixel* buffer, vint width, vint height, vint x, vint y)
 			{
 				if (x < 0 || x >= width || y < 0 || y >= height) return;
@@ -15749,13 +15781,13 @@ namespace vl
 					if (x > 0)
 					{
 						auto& leading = buffer[index - 1];
-						if (leading.glyph == TuiPixelGlyph::Char && TUI::MeasureChar(leading.c) == 2)
+						if (leading.glyph == TuiPixelGlyph::Char && TUI::MeasureChar(leading.character.c) == 2)
 						{
 							leading = EmptyPixel(leading.backgroundColor);
 						}
 					}
 				}
-				else if (pixel.glyph == TuiPixelGlyph::Char && TUI::MeasureChar(pixel.c) == 2)
+				else if (pixel.glyph == TuiPixelGlyph::Char && TUI::MeasureChar(pixel.character.c) == 2)
 				{
 					pixel = EmptyPixel(pixel.backgroundColor);
 					if (x + 1 < width && buffer[index + 1].glyph == TuiPixelGlyph::WideCharContinuation)
@@ -15766,9 +15798,10 @@ namespace vl
 				}
 			}
 
-			void PlaceMergeable(TuiPixel* buffer, vint width, vint height, vint x, vint y, const TuiMergeablePixel& drawing, TuiColor foreground, Nullable<TuiColor> background)
+			void PlaceMergeable(TuiPixel* buffer, vint width, vint height, vint x, vint y, const TuiMergeablePixel& drawing, TuiColor foreground, Nullable<TuiColor> background, const TuiClipper& clipper, const Func<TuiColor(TuiColor)>& foregroundColorBlending)
 			{
-				if (x < 0 || x >= width || y < 0 || y >= height) return;
+				if (x < clipper.x1 || x >= clipper.x2 || y < clipper.y1 || y >= clipper.y2) return;
+				if (foregroundColorBlending) foreground = foregroundColorBlending(buffer[y * width + x].foregroundColor);
 				RepairWide(buffer, width, height, x, y);
 				auto& pixel = buffer[y * width + x];
 				auto candidate = drawing;
@@ -15790,9 +15823,10 @@ namespace vl
 				if (background) pixel.backgroundColor = background.Value();
 			}
 
-			void PlaceUnmergeable(TuiPixel* buffer, vint width, vint height, vint x, vint y, TuiUnmergeableDirection direction, TuiColor foreground, Nullable<TuiColor> background)
+			void PlaceUnmergeable(TuiPixel* buffer, vint width, vint height, vint x, vint y, TuiUnmergeableDirection direction, TuiColor foreground, Nullable<TuiColor> background, const TuiClipper& clipper, const Func<TuiColor(TuiColor)>& foregroundColorBlending)
 			{
-				if (x < 0 || x >= width || y < 0 || y >= height) return;
+				if (x < clipper.x1 || x >= clipper.x2 || y < clipper.y1 || y >= clipper.y2) return;
+				if (foregroundColorBlending) foreground = foregroundColorBlending(buffer[y * width + x].foregroundColor);
 				RepairWide(buffer, width, height, x, y);
 				auto& pixel = buffer[y * width + x];
 				pixel.glyph = TuiPixelGlyph::Unmergeable;
@@ -15863,12 +15897,12 @@ namespace vl
 						auto& pixel = newBuffer[index];
 						if (pixel.glyph == TuiPixelGlyph::WideCharContinuation)
 						{
-							if (x == 0 || newBuffer[index - 1].glyph != TuiPixelGlyph::Char || TUI::MeasureChar(newBuffer[index - 1].c) != 2)
+							if (x == 0 || newBuffer[index - 1].glyph != TuiPixelGlyph::Char || TUI::MeasureChar(newBuffer[index - 1].character.c) != 2)
 							{
 								pixel = EmptyPixel(pixel.backgroundColor);
 							}
 						}
-						else if (pixel.glyph == TuiPixelGlyph::Char && TUI::MeasureChar(pixel.c) == 2)
+						else if (pixel.glyph == TuiPixelGlyph::Char && TUI::MeasureChar(pixel.character.c) == 2)
 						{
 							if (x + 1 >= width || newBuffer[index + 1].glyph != TuiPixelGlyph::WideCharContinuation)
 							{
@@ -15986,7 +16020,7 @@ TuiPixel
 			switch (glyph)
 			{
 			case TuiPixelGlyph::Char:
-				return c;
+				return character.c;
 			case TuiPixelGlyph::Mergeable:
 				return GetMergeableChar(mergeable);
 			case TuiPixelGlyph::Unmergeable:
@@ -16017,15 +16051,15 @@ ITuiCallback
 		void ITuiCallback::Starting() {}
 		void ITuiCallback::Stopping() {}
 		void ITuiCallback::BufferSizeChanged() {}
-		void ITuiCallback::MouseMove(const TuiMouseInfo&) {}
-		void ITuiCallback::MouseDown(TuiMouseButton, const TuiMouseInfo&) {}
-		void ITuiCallback::MouseUp(TuiMouseButton, const TuiMouseInfo&) {}
-		void ITuiCallback::MouseDoubleClick(TuiMouseButton, const TuiMouseInfo&) {}
-		void ITuiCallback::MouseVerticalWheel(const TuiMouseInfo&) {}
-		void ITuiCallback::MouseHorizontalWheel(const TuiMouseInfo&) {}
-		void ITuiCallback::KeyDown(const TuiKeyInfo&) {}
-		void ITuiCallback::KeyUp(const TuiKeyInfo&) {}
-		void ITuiCallback::Char(const TuiCharInfo&) {}
+		void ITuiCallback::MouseMove(const WindowMouseInfo&) {}
+		void ITuiCallback::MouseDown(NativeMouseButton, const WindowMouseInfo&) {}
+		void ITuiCallback::MouseUp(NativeMouseButton, const WindowMouseInfo&) {}
+		void ITuiCallback::MouseDoubleClick(NativeMouseButton, const WindowMouseInfo&) {}
+		void ITuiCallback::MouseVerticalWheel(const WindowMouseInfo&) {}
+		void ITuiCallback::MouseHorizontalWheel(const WindowMouseInfo&) {}
+		void ITuiCallback::KeyDown(const NativeWindowKeyInfo&) {}
+		void ITuiCallback::KeyUp(const NativeWindowKeyInfo&) {}
+		void ITuiCallback::Char(const NativeWindowCharInfo&) {}
 		void ITuiCallback::Timer() {}
 
 /***********************************************************************
@@ -16256,10 +16290,10 @@ TUI
 					switch (pixel.glyph)
 					{
 					case TuiPixelGlyph::Char:
-						if (pixel.c != 0)
+						if (pixel.character.c != 0)
 						{
-							CHECK_ERROR(IsScalar(pixel.c), L"vl::console::TUI::RenderBuffer()#A Char cell contains an invalid Unicode scalar.");
-							auto width = MeasureChar(pixel.c);
+							CHECK_ERROR(IsScalar(pixel.character.c), L"vl::console::TUI::RenderBuffer()#A Char cell contains an invalid Unicode scalar.");
+							auto width = MeasureChar(pixel.character.c);
 							CHECK_ERROR(width == 1 || width == 2, L"vl::console::TUI::RenderBuffer()#A Char cell contains a zero-width or non-printable scalar.");
 							if (width == 2)
 							{
@@ -16275,7 +16309,7 @@ TUI
 						CHECK_ERROR(GetUnmergeableChar(pixel.unmergeable) != 0, L"vl::console::TUI::RenderBuffer()#An Unmergeable cell contains an invalid glyph.");
 						break;
 					case TuiPixelGlyph::WideCharContinuation:
-						CHECK_ERROR(x > 0 && storage.buffer[index - 1].glyph == TuiPixelGlyph::Char && MeasureChar(storage.buffer[index - 1].c) == 2, L"vl::console::TUI::RenderBuffer()#A continuation cell has no width-two leading cell.");
+						CHECK_ERROR(x > 0 && storage.buffer[index - 1].glyph == TuiPixelGlyph::Char && MeasureChar(storage.buffer[index - 1].character.c) == 2, L"vl::console::TUI::RenderBuffer()#A continuation cell has no width-two leading cell.");
 						break;
 					default:
 						CHECK_FAIL(L"vl::console::TUI::RenderBuffer()#A cell contains an invalid glyph type.");
@@ -16285,130 +16319,143 @@ TUI
 			storage.backend->Render(&storage.buffer[0], storage.width, storage.height, storage.colorMode);
 		}
 
-		void TUI::PrintChar(const TuiPrintOptions& options, char32_t code, vint x, vint y)
+		void TUI::PrintChar(const TuiPrintOptions& options, char32_t code, vint x, vint y, const TuiClipper* clipper)
 		{
-			PrintChar(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, code, x, y);
+			PrintChar(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, code, x, y, clipper);
 		}
 
-		void TUI::DrawLineV(const TuiLineOptions& options, vint x, vint y1, vint y2)
+		void TUI::DrawLineV(const TuiLineOptions& options, vint x, vint y1, vint y2, const TuiClipper* clipper)
 		{
-			DrawLineV(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, x, y1, y2);
+			DrawLineV(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, x, y1, y2, clipper);
 		}
 
-		void TUI::DrawLineH(const TuiLineOptions& options, vint x1, vint x2, vint y)
+		void TUI::DrawLineH(const TuiLineOptions& options, vint x1, vint x2, vint y, const TuiClipper* clipper)
 		{
-			DrawLineH(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, x1, x2, y);
+			DrawLineH(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, x1, x2, y, clipper);
 		}
 
-		void TUI::DrawRect(const TuiRectOptions& options, vint x1, vint y1, vint x2, vint y2)
+		void TUI::DrawRect(const TuiRectOptions& options, vint x1, vint y1, vint x2, vint y2, const TuiClipper* clipper)
 		{
-			DrawRect(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, x1, y1, x2, y2);
+			DrawRect(GetBuffer(), GetBufferWidth(), GetBufferHeight(), options, x1, y1, x2, y2, clipper);
 		}
 
-		void TUI::Clear(TuiColor backgroundColor, vint x1, vint y1, vint x2, vint y2)
+		void TUI::Clear(TuiColor backgroundColor, vint x1, vint y1, vint x2, vint y2, const TuiClipper* clipper)
 		{
-			Clear(GetBuffer(), GetBufferWidth(), GetBufferHeight(), backgroundColor, x1, y1, x2, y2);
+			Clear(GetBuffer(), GetBufferWidth(), GetBufferHeight(), backgroundColor, x1, y1, x2, y2, clipper);
 		}
 
-		void TUI::PrintChar(TuiPixel* buffer, vint width, vint height, const TuiPrintOptions& options, char32_t code, vint x, vint y)
+		void TUI::PrintChar(TuiPixel* buffer, vint width, vint height, const TuiPrintOptions& options, char32_t code, vint x, vint y, const TuiClipper* clipper)
 		{
 			CheckBuffer(buffer, width, height);
 			CHECK_ERROR(IsScalar(code), L"vl::console::TUI::PrintChar(...)#The character must be a Unicode scalar.");
 			auto charWidth = MeasureChar(code);
-			if (charWidth == 0 || x < 0 || x >= width || y < 0 || y >= height) return;
-			if (charWidth == 2 && x + 1 >= width) return;
+			auto clip = NormalizeClipper(width, height, clipper);
+			if (charWidth == 0 || x < clip.x1 || x >= clip.x2 || y < clip.y1 || y >= clip.y2) return;
+			if (charWidth == 2 && x + 1 >= clip.x2) return;
 			RepairWide(buffer, width, height, x, y);
 			if (charWidth == 2) RepairWide(buffer, width, height, x + 1, y);
-			auto& leading = buffer[y * width + x];
-			leading.glyph = TuiPixelGlyph::Char;
-			leading.c = code;
-			leading.foregroundColor = options.foregroundColor;
-			leading.backgroundColor = options.backgroundColor;
+			buffer[y * width + x] = TuiPixel
+			{
+				.glyph = TuiPixelGlyph::Char,
+				.character = { .c = code, .style = options.style },
+				.foregroundColor = options.foregroundColor,
+				.backgroundColor = options.backgroundColor,
+			};
 			if (charWidth == 2)
 			{
-				auto& continuation = buffer[y * width + x + 1];
-				continuation.glyph = TuiPixelGlyph::WideCharContinuation;
-				continuation.c = 0;
-				continuation.foregroundColor = options.foregroundColor;
-				continuation.backgroundColor = options.backgroundColor;
+				buffer[y * width + x + 1] = TuiPixel
+				{
+					.glyph = TuiPixelGlyph::WideCharContinuation,
+					.foregroundColor = options.foregroundColor,
+					.backgroundColor = options.backgroundColor,
+				};
 			}
 		}
 
-		void TUI::DrawLineV(TuiPixel* buffer, vint width, vint height, const TuiLineOptions& options, vint x, vint y1, vint y2)
+		void TUI::DrawLineV(TuiPixel* buffer, vint width, vint height, const TuiLineOptions& options, vint x, vint y1, vint y2, const TuiClipper* clipper)
 		{
 			CheckBuffer(buffer, width, height);
 			CHECK_ERROR(y1 <= y2, L"vl::console::TUI::DrawLineV(...)#The ordered range is invalid.");
 			CHECK_ERROR(IsLineGlyph(options.glyph), L"vl::console::TUI::DrawLineV(...)#The line style is invalid.");
-			if (x < 0 || x >= width || y2 < 0 || y1 >= height) return;
-			auto begin = y1 < 0 ? 0 : y1;
-			auto end = y2 >= height ? height - 1 : y2;
+			auto clip = NormalizeClipper(width, height, clipper);
+			if (x < clip.x1 || x >= clip.x2) return;
+			auto begin = std::max(y1, clip.y1);
+			auto end = std::min(y2, clip.y2 - 1);
 			TuiMergeablePixel drawing = { options.glyph, options.glyph, TuiMergeableGlyph::None, TuiMergeableGlyph::None };
-			for (vint y = begin; y <= end; y++) PlaceMergeable(buffer, width, height, x, y, drawing, options.foregroundColor, options.backgroundColor);
+			for (vint y = begin; y <= end; y++) PlaceMergeable(buffer, width, height, x, y, drawing, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
 		}
 
-		void TUI::DrawLineH(TuiPixel* buffer, vint width, vint height, const TuiLineOptions& options, vint x1, vint x2, vint y)
+		void TUI::DrawLineH(TuiPixel* buffer, vint width, vint height, const TuiLineOptions& options, vint x1, vint x2, vint y, const TuiClipper* clipper)
 		{
 			CheckBuffer(buffer, width, height);
 			CHECK_ERROR(x1 <= x2, L"vl::console::TUI::DrawLineH(...)#The ordered range is invalid.");
 			CHECK_ERROR(IsLineGlyph(options.glyph), L"vl::console::TUI::DrawLineH(...)#The line style is invalid.");
-			if (y < 0 || y >= height || x2 < 0 || x1 >= width) return;
-			auto begin = x1 < 0 ? 0 : x1;
-			auto end = x2 >= width ? width - 1 : x2;
+			auto clip = NormalizeClipper(width, height, clipper);
+			if (y < clip.y1 || y >= clip.y2) return;
+			auto begin = std::max(x1, clip.x1);
+			auto end = std::min(x2, clip.x2 - 1);
 			TuiMergeablePixel drawing = { TuiMergeableGlyph::None, TuiMergeableGlyph::None, options.glyph, options.glyph };
-			for (vint x = begin; x <= end; x++) PlaceMergeable(buffer, width, height, x, y, drawing, options.foregroundColor, options.backgroundColor);
+			for (vint x = begin; x <= end; x++) PlaceMergeable(buffer, width, height, x, y, drawing, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
 		}
 
-		void TUI::DrawRect(TuiPixel* buffer, vint width, vint height, const TuiRectOptions& options, vint x1, vint y1, vint x2, vint y2)
+		void TUI::DrawRect(TuiPixel* buffer, vint width, vint height, const TuiRectOptions& options, vint x1, vint y1, vint x2, vint y2, const TuiClipper* clipper)
 		{
 			CheckBuffer(buffer, width, height);
 			CHECK_ERROR(x1 < x2 && y1 < y2, L"vl::console::TUI::DrawRect(...)#A rectangle must have distinct corners.");
 			CHECK_ERROR(IsLineGlyph(options.glyph), L"vl::console::TUI::DrawRect(...)#The line style is invalid.");
 			CHECK_ERROR(options.corner == TuiRectCorner::Sharp || options.corner == TuiRectCorner::Round, L"vl::console::TUI::DrawRect(...)#The corner style is invalid.");
 			CHECK_ERROR(options.corner == TuiRectCorner::Sharp || options.glyph == TuiMergeableGlyph::ThinLine, L"vl::console::TUI::DrawRect(...)#Rounded corners require a thin line.");
-			if (x2 < 0 || y2 < 0 || x1 >= width || y1 >= height) return;
+			auto clip = NormalizeClipper(width, height, clipper);
+			if (clip.x1 >= clip.x2 || x2 < clip.x1 || y2 < clip.y1 || x1 >= clip.x2 || y1 >= clip.y2) return;
 
 			TuiMergeablePixel horizontal = { TuiMergeableGlyph::None, TuiMergeableGlyph::None, options.glyph, options.glyph };
 			TuiMergeablePixel vertical = { options.glyph, options.glyph, TuiMergeableGlyph::None, TuiMergeableGlyph::None };
-			auto left = x1 + 1 < 0 ? 0 : x1 + 1;
-			auto right = x2 - 1 >= width ? width - 1 : x2 - 1;
-			for (vint x = left; x <= right; x++)
+			auto left = std::max(x1 + 1, clip.x1);
+			auto right = std::min(x2 - 1, clip.x2 - 1);
+			if ((y1 >= clip.y1 && y1 < clip.y2) || (y2 >= clip.y1 && y2 < clip.y2))
 			{
-				PlaceMergeable(buffer, width, height, x, y1, horizontal, options.foregroundColor, options.backgroundColor);
-				PlaceMergeable(buffer, width, height, x, y2, horizontal, options.foregroundColor, options.backgroundColor);
+				for (vint x = left; x <= right; x++)
+				{
+					PlaceMergeable(buffer, width, height, x, y1, horizontal, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+					PlaceMergeable(buffer, width, height, x, y2, horizontal, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				}
 			}
-			auto top = y1 + 1 < 0 ? 0 : y1 + 1;
-			auto bottom = y2 - 1 >= height ? height - 1 : y2 - 1;
-			for (vint y = top; y <= bottom; y++)
+			auto top = std::max(y1 + 1, clip.y1);
+			auto bottom = std::min(y2 - 1, clip.y2 - 1);
+			if ((x1 >= clip.x1 && x1 < clip.x2) || (x2 >= clip.x1 && x2 < clip.x2))
 			{
-				PlaceMergeable(buffer, width, height, x1, y, vertical, options.foregroundColor, options.backgroundColor);
-				PlaceMergeable(buffer, width, height, x2, y, vertical, options.foregroundColor, options.backgroundColor);
+				for (vint y = top; y <= bottom; y++)
+				{
+					PlaceMergeable(buffer, width, height, x1, y, vertical, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+					PlaceMergeable(buffer, width, height, x2, y, vertical, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				}
 			}
 
 			if (options.corner == TuiRectCorner::Round)
 			{
-				PlaceUnmergeable(buffer, width, height, x1, y1, TuiUnmergeableDirection::LeftTop, options.foregroundColor, options.backgroundColor);
-				PlaceUnmergeable(buffer, width, height, x2, y1, TuiUnmergeableDirection::RightTop, options.foregroundColor, options.backgroundColor);
-				PlaceUnmergeable(buffer, width, height, x1, y2, TuiUnmergeableDirection::LeftBottom, options.foregroundColor, options.backgroundColor);
-				PlaceUnmergeable(buffer, width, height, x2, y2, TuiUnmergeableDirection::RightBottom, options.foregroundColor, options.backgroundColor);
+				PlaceUnmergeable(buffer, width, height, x1, y1, TuiUnmergeableDirection::LeftTop, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				PlaceUnmergeable(buffer, width, height, x2, y1, TuiUnmergeableDirection::RightTop, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				PlaceUnmergeable(buffer, width, height, x1, y2, TuiUnmergeableDirection::LeftBottom, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				PlaceUnmergeable(buffer, width, height, x2, y2, TuiUnmergeableDirection::RightBottom, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
 			}
 			else
 			{
-				PlaceMergeable(buffer, width, height, x1, y1, { TuiMergeableGlyph::None, options.glyph, TuiMergeableGlyph::None, options.glyph }, options.foregroundColor, options.backgroundColor);
-				PlaceMergeable(buffer, width, height, x2, y1, { TuiMergeableGlyph::None, options.glyph, options.glyph, TuiMergeableGlyph::None }, options.foregroundColor, options.backgroundColor);
-				PlaceMergeable(buffer, width, height, x1, y2, { options.glyph, TuiMergeableGlyph::None, TuiMergeableGlyph::None, options.glyph }, options.foregroundColor, options.backgroundColor);
-				PlaceMergeable(buffer, width, height, x2, y2, { options.glyph, TuiMergeableGlyph::None, options.glyph, TuiMergeableGlyph::None }, options.foregroundColor, options.backgroundColor);
+				PlaceMergeable(buffer, width, height, x1, y1, { TuiMergeableGlyph::None, options.glyph, TuiMergeableGlyph::None, options.glyph }, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				PlaceMergeable(buffer, width, height, x2, y1, { TuiMergeableGlyph::None, options.glyph, options.glyph, TuiMergeableGlyph::None }, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				PlaceMergeable(buffer, width, height, x1, y2, { options.glyph, TuiMergeableGlyph::None, TuiMergeableGlyph::None, options.glyph }, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
+				PlaceMergeable(buffer, width, height, x2, y2, { options.glyph, TuiMergeableGlyph::None, options.glyph, TuiMergeableGlyph::None }, options.foregroundColor, options.backgroundColor, clip, options.foregroundColorBlending);
 			}
 		}
 
-		void TUI::Clear(TuiPixel* buffer, vint width, vint height, TuiColor backgroundColor, vint x1, vint y1, vint x2, vint y2)
+		void TUI::Clear(TuiPixel* buffer, vint width, vint height, TuiColor backgroundColor, vint x1, vint y1, vint x2, vint y2, const TuiClipper* clipper)
 		{
 			CheckBuffer(buffer, width, height);
 			CHECK_ERROR(x1 <= x2 && y1 <= y2, L"vl::console::TUI::Clear(...)#The ordered rectangle is invalid.");
-			if (x2 < 0 || y2 < 0 || x1 >= width || y1 >= height) return;
-			auto left = x1 < 0 ? 0 : x1;
-			auto top = y1 < 0 ? 0 : y1;
-			auto right = x2 >= width ? width - 1 : x2;
-			auto bottom = y2 >= height ? height - 1 : y2;
+			auto clip = NormalizeClipper(width, height, clipper);
+			auto left = std::max(x1, clip.x1);
+			auto top = std::max(y1, clip.y1);
+			auto right = std::min(x2, clip.x2 - 1);
+			auto bottom = std::min(y2, clip.y2 - 1);
 			for (vint y = top; y <= bottom; y++)
 			{
 				for (vint x = left; x <= right; x++)
@@ -17371,6 +17418,410 @@ StdioRedirectionServer
 			throw;
 		}
 #undef ERROR_MESSAGE_PREFIX
+	}
+}
+
+
+/***********************************************************************
+.\TUI\TUI.INPUT.CPP
+***********************************************************************/
+/***********************************************************************
+Author: Zihan Chen (vczh)
+Licensed under https://github.com/vczh-libraries/License
+***********************************************************************/
+
+
+using namespace vl;
+using namespace vl::collections;
+using namespace vl::presentation;
+
+namespace vl
+{
+	namespace console
+	{
+		namespace tui_internal
+		{
+			VKEY KeyFromAscii(char32_t code)
+			{
+				if (code >= U'a' && code <= U'z') return (VKEY)(code - U'a' + U'A');
+				if ((code >= U'A' && code <= U'Z') || (code >= U'0' && code <= U'9')) return (VKEY)code;
+				switch (code)
+				{
+				case U'\t': return VKEY::KEY_TAB;
+				case U'\r': case U'\n': return VKEY::KEY_RETURN;
+				case U'\b': case 0x7F: return VKEY::KEY_BACK;
+				case 0x1B: return VKEY::KEY_ESCAPE;
+				case U' ': return VKEY::KEY_SPACE;
+				case U';': case U':': return VKEY::KEY_SEMICOLON;
+				case U'/': case U'?': return VKEY::KEY_SLASH;
+				case U'`': case U'~': return VKEY::KEY_GRAVE_ACCENT;
+				case U'[': case U'{': return VKEY::KEY_LEFT_BRACKET;
+				case U']': case U'}': return VKEY::KEY_RIGHT_BRACKET;
+				case U'\\': case U'|': return VKEY::KEY_BACKSLASH;
+				case U'\'': case U'"': return VKEY::KEY_APOSTROPHE;
+				case U'=': case U'+': return VKEY::KEY_OEM_PLUS;
+				case U',': case U'<': return VKEY::KEY_OEM_COMMA;
+				case U'-': case U'_': return VKEY::KEY_OEM_MINUS;
+				case U'.': case U'>': return VKEY::KEY_OEM_PERIOD;
+				default:
+					const char32_t shifted[] = U")!@#$%^&*(";
+					for (vint i = 0; i < 10; i++)
+					{
+						if (code == shifted[i]) return (VKEY)((vint)VKEY::KEY_0 + i);
+					}
+					return VKEY::KEY_UNKNOWN;
+				}
+			}
+
+/***********************************************************************
+PosixTuiInputDecoder
+***********************************************************************/
+
+			void PosixTuiInputDecoder::QueueKey(NativeWindowKeyInfo info, Nullable<char32_t> text)
+			{
+				unittest::TuiBackendEvent event;
+				event.type = unittest::TuiBackendEventType::KeyDown;
+				event.keyInfo = info;
+				pendingEvents.Add(event);
+				if (text)
+				{
+					// POSIX terminals use DEL for Backspace and may use LF for Enter.
+					// Char follows the native key identity, so controls do not also
+					// insert DEL or a second newline after handling KeyDown.
+					auto code = text.Value();
+					if (code == 0x7F) code = U'\b';
+					else if (code == U'\n') code = U'\r';
+					wchar_t units[encoding::UtfConversion<wchar_t>::BufferLength];
+					auto count = encoding::UtfConversion<wchar_t>::From32(code, units);
+					for (vint i = 0; i < count; i++)
+					{
+						event.type = unittest::TuiBackendEventType::Char;
+						event.charInfo.code = units[i];
+						event.charInfo.ctrl = info.ctrl;
+						event.charInfo.shift = info.shift;
+						event.charInfo.alt = info.alt;
+						event.charInfo.osSuper = info.osSuper;
+						event.charInfo.capslock = info.capslock;
+						pendingEvents.Add(event);
+					}
+				}
+			}
+
+			void PosixTuiInputDecoder::DecodeSequence(vint end, vuint64_t now)
+			{
+				auto mouse = inputBytes[1] == '[' && inputBytes[2] == '<';
+				auto final = inputBytes[end];
+				auto keyboardStatus = inputBytes[1] == '[' && inputBytes[2] == '?' && final == 'u';
+				vint values[3] = {};
+				vint count = 0;
+				auto begin = mouse || keyboardStatus ? 3 : 2;
+				if (begin < end)
+				{
+					count = 1;
+					auto hasDigit = false;
+					for (vint i = begin; i < end; i++)
+					{
+						auto byte = inputBytes[i];
+						if (byte >= '0' && byte <= '9')
+						{
+							auto digit = byte - '0';
+							if (values[count - 1] > (std::numeric_limits<vint>::max() - digit) / 10) return;
+							values[count - 1] = values[count - 1] * 10 + digit;
+							hasDigit = true;
+						}
+						else if (byte == ';' && hasDigit && count < 3)
+						{
+							count++;
+							hasDigit = false;
+						}
+						else return;
+					}
+					if (!hasDigit) return;
+				}
+
+				if (keyboardStatus)
+				{
+					if (count == 1) kittyKeyboard = (values[0] & 1) != 0;
+					return;
+				}
+
+				if (mouse)
+				{
+					if (count != 3 || values[1] <= 0 || values[2] <= 0 || (final != 'M' && final != 'm')) return;
+					auto cb = values[0];
+					auto base = cb & ~(4 | 8 | 16 | 32);
+					if (base > 3 && (base < 64 || base > 67)) return;
+					unittest::TuiBackendEvent event;
+					auto& info = event.mouseInfo;
+					info.x = values[1] - 1;
+					info.y = values[2] - 1;
+					info.shift = (cb & 4) != 0;
+					info.alt = (cb & 8) != 0;
+					info.ctrl = (cb & 16) != 0;
+					if (base >= 64)
+					{
+						if (final != 'M' || (cb & 32)) return;
+						event.type = base <= 65 ? unittest::TuiBackendEventType::MouseVerticalWheel : unittest::TuiBackendEventType::MouseHorizontalWheel;
+						info.wheel = base == 64 || base == 67 ? 120 : -120;
+					}
+					else if (cb & 32)
+					{
+						if (final != 'M') return;
+						event.type = unittest::TuiBackendEventType::MouseMove;
+						// SGR motion identifies a held button; button 3 explicitly means none.
+						if (base == 3) left = middle = right = false;
+						if (base == 0) left = true;
+						if (base == 1) middle = true;
+						if (base == 2) right = true;
+					}
+					else
+					{
+						if (base == 3) return;
+						auto button = base == 0 ? NativeMouseButton::Left : base == 1 ? NativeMouseButton::Middle : NativeMouseButton::Right;
+						event.mouseButton = button;
+						auto pressed = final == 'M';
+						if (base == 0) left = pressed;
+						if (base == 1) middle = pressed;
+						if (base == 2) right = pressed;
+						event.type = pressed ? unittest::TuiBackendEventType::MouseDown : unittest::TuiBackendEventType::MouseUp;
+						if (pressed)
+						{
+							if (lastClickTime && now - lastClickTime.Value() <= 500 && lastClickX == info.x && lastClickY == info.y && lastClickButton == button)
+							{
+								event.type = unittest::TuiBackendEventType::MouseDoubleClick;
+								lastClickTime.Reset();
+							}
+							else
+							{
+								lastClickTime = now;
+								lastClickX = info.x;
+								lastClickY = info.y;
+								lastClickButton = button;
+							}
+						}
+					}
+					info.left = left;
+					info.middle = middle;
+					info.right = right;
+					pendingEvents.Add(event);
+					return;
+				}
+
+				NativeWindowKeyInfo info;
+				Nullable<char32_t> text;
+				auto unicodeKey = inputBytes[1] == '[' && final == 'u';
+				if (count > 2) return;
+				if (count == 2)
+				{
+					auto modifiers = values[1];
+					if (modifiers < 1 || modifiers > (kittyKeyboard || unicodeKey ? 256 : 16)) return;
+					modifiers--;
+					info.shift = (modifiers & 1) != 0;
+					// Legacy xterm Meta is Alt; Kitty assigns that bit to OS Super.
+					info.alt = (modifiers & (kittyKeyboard || unicodeKey ? 2 | 32 : 2 | 8)) != 0;
+					info.ctrl = (modifiers & 4) != 0;
+					info.osSuper = (kittyKeyboard || unicodeKey) && (modifiers & 8) != 0;
+					info.capslock = (kittyKeyboard || unicodeKey) && (modifiers & 64) != 0;
+				}
+				if (unicodeKey)
+				{
+					if (count == 0 || values[0] > 0x10FFFF || !IsScalar((char32_t)values[0])) return;
+					auto code = (char32_t)values[0];
+					info.code = KeyFromAscii(code);
+					// CSI u describes a key, not committed text. Only control characters
+					// with existing Char semantics accompany the key event.
+					if (code == 9 || code == 13 || code == 27 || code == 127) text = code;
+					switch (code)
+					{
+					case 57358: info.code = VKEY::KEY_CAPITAL; break;
+					case 57359: info.code = VKEY::KEY_SCROLL; break;
+					case 57360: info.code = VKEY::KEY_NUMLOCK; break;
+					case 57361: info.code = VKEY::KEY_SNAPSHOT; break;
+					case 57362: info.code = VKEY::KEY_PAUSE; break;
+					case 57363: info.code = VKEY::KEY_APPS; break;
+					case 57414: info.code = VKEY::KEY_RETURN; text = U'\r'; break;
+					case 57417: info.code = VKEY::KEY_LEFT; break;
+					case 57418: info.code = VKEY::KEY_RIGHT; break;
+					case 57419: info.code = VKEY::KEY_UP; break;
+					case 57420: info.code = VKEY::KEY_DOWN; break;
+					case 57421: info.code = VKEY::KEY_PRIOR; break;
+					case 57422: info.code = VKEY::KEY_NEXT; break;
+					case 57423: info.code = VKEY::KEY_HOME; break;
+					case 57424: info.code = VKEY::KEY_END; break;
+					case 57425: info.code = VKEY::KEY_INSERT; break;
+					case 57426: info.code = VKEY::KEY_DELETE; break;
+					default:
+						if (code >= 57364 && code <= 57387) info.code = (VKEY)((vint)VKEY::KEY_F1 + code - 57364);
+					}
+				}
+				else if (final == '~' && inputBytes[1] == '[')
+				{
+					if (count == 0) return;
+					switch (values[0])
+					{
+					case 1: case 7: info.code = VKEY::KEY_HOME; break;
+					case 2: info.code = VKEY::KEY_INSERT; break;
+					case 3: info.code = VKEY::KEY_DELETE; break;
+					case 4: case 8: info.code = VKEY::KEY_END; break;
+					case 5: info.code = VKEY::KEY_PRIOR; break;
+					case 6: info.code = VKEY::KEY_NEXT; break;
+					default:
+						const vint functionNumbers[] = { 11, 12, 13, 14, 15, 17, 18, 19, 20, 21, 23, 24, 25, 26, 28, 29, 31, 32, 33, 34 };
+						for (vint i = 0; i < (vint)(sizeof(functionNumbers) / sizeof(*functionNumbers)); i++)
+						{
+							if (values[0] == functionNumbers[i]) info.code = (VKEY)((vint)VKEY::KEY_F1 + i);
+						}
+					}
+				}
+				else
+				{
+					if (count > 0 && values[0] != 1) return;
+					switch (final)
+					{
+					case 'A': info.code = VKEY::KEY_UP; break;
+					case 'B': info.code = VKEY::KEY_DOWN; break;
+					case 'C': info.code = VKEY::KEY_RIGHT; break;
+					case 'D': info.code = VKEY::KEY_LEFT; break;
+					case 'H': info.code = VKEY::KEY_HOME; break;
+					case 'F': info.code = VKEY::KEY_END; break;
+					case 'P': info.code = VKEY::KEY_F1; break;
+					case 'Q': info.code = VKEY::KEY_F2; break;
+					case 'R': info.code = VKEY::KEY_F3; break;
+					case 'S': info.code = VKEY::KEY_F4; break;
+					case 'Z': info.code = VKEY::KEY_TAB; info.shift = true; text = U'\t'; break;
+					default:
+						if (inputBytes[1] != 'O') return;
+						if (final >= 'p' && final <= 'y')
+						{
+							info.code = (VKEY)((vint)VKEY::KEY_NUMPAD0 + final - 'p');
+							text = U'0' + final - 'p';
+						}
+						else switch (final)
+						{
+						case 'M': info.code = VKEY::KEY_RETURN; text = U'\r'; break;
+						case 'X': info.code = VKEY::KEY_OEM_NEC_EQUAL; text = U'='; break;
+						case 'j': info.code = VKEY::KEY_MULTIPLY; text = U'*'; break;
+						case 'k': info.code = VKEY::KEY_ADD; text = U'+'; break;
+						case 'l': info.code = VKEY::KEY_SEPARATOR; text = U','; break;
+						case 'm': info.code = VKEY::KEY_SUBTRACT; text = U'-'; break;
+						case 'n': info.code = VKEY::KEY_DECIMAL; text = U'.'; break;
+						case 'o': info.code = VKEY::KEY_DIVIDE; text = U'/'; break;
+						}
+					}
+				}
+				if (info.code != VKEY::KEY_UNKNOWN) QueueKey(info, text);
+			}
+
+			bool PosixTuiInputDecoder::DecodeText(bool alt)
+			{
+				auto offset = alt ? 1 : 0;
+				auto first = inputBytes[offset];
+				vint length = first < 0x80 ? 1 : first >= 0xC2 && first <= 0xDF ? 2 : first >= 0xE0 && first <= 0xEF ? 3 : first >= 0xF0 && first <= 0xF4 ? 4 : 0;
+				char32_t code = length == 1 ? first : length == 2 ? first & 0x1F : length == 3 ? first & 0x0F : first & 0x07;
+				vint consumed = 1;
+				for (vint i = 1; i < length; i++)
+				{
+					if (offset + i >= inputBytes.Count()) return false;
+					auto next = inputBytes[offset + i];
+					if ((next & 0xC0) != 0x80)
+					{
+						length = 0;
+						break;
+					}
+					code = (code << 6) | (next & 0x3F);
+					consumed++;
+				}
+				char32_t minimum = length == 1 ? 0 : length == 2 ? 0x80 : length == 3 ? 0x800 : 0x10000;
+				if (length == 0 || code < minimum || !IsScalar(code)) code = U'\uFFFD';
+				inputBytes.RemoveRange(0, offset + consumed);
+				NativeWindowKeyInfo info;
+				info.code = KeyFromAscii(code);
+				info.alt = alt;
+				if (info.code == VKEY::KEY_UNKNOWN && code > 0 && code < 0x20)
+				{
+					info.code = KeyFromAscii(code + U'A' - 1);
+					info.ctrl = true;
+				}
+				QueueKey(info, code);
+				return true;
+			}
+
+			void PosixTuiInputDecoder::ParseInput(vuint64_t now)
+			{
+				while (pendingEvents.Count() == 0 && inputBytes.Count() > 0)
+				{
+					if (controlString)
+					{
+						if (inputBytes[0] == 0x1B)
+						{
+							if (inputBytes.Count() == 1) return;
+							controlString = 0;
+							if (inputBytes[1] == '\\') inputBytes.RemoveRange(0, 2);
+						}
+						else
+						{
+							if (inputBytes[0] == 7 && controlString == ']') controlString = 0;
+							inputBytes.RemoveAt(0);
+						}
+						continue;
+					}
+					if (discardSequence)
+					{
+						auto byte = inputBytes[0];
+						if (byte == 0x1B) discardSequence = false;
+						else
+						{
+							inputBytes.RemoveAt(0);
+							if (byte >= 0x40 && byte <= 0x7E) discardSequence = false;
+							continue;
+						}
+					}
+					if (inputBytes[0] != 0x1B)
+					{
+						escapeDeadline.Reset();
+						if (!DecodeText(false)) return;
+					}
+					else if (inputBytes.Count() == 1)
+					{
+						if (!escapeDeadline) escapeDeadline = now + 30;
+						if (now < escapeDeadline.Value()) return;
+						escapeDeadline.Reset();
+						DecodeText(false);
+					}
+					else
+					{
+						escapeDeadline.Reset();
+						if (inputBytes[1] == ']' || inputBytes[1] == 'P' || inputBytes[1] == '^' || inputBytes[1] == '_' || inputBytes[1] == 'X')
+						{
+							controlString = inputBytes[1];
+							inputBytes.RemoveRange(0, 2);
+						}
+						else if (inputBytes[1] == '[' || inputBytes[1] == 'O')
+						{
+							vint end = 2;
+							while (end < inputBytes.Count() && inputBytes[end] >= 0x20 && inputBytes[end] < 0x40) end++;
+							if (end == inputBytes.Count())
+							{
+								if (end > 256)
+								{
+									inputBytes.Clear();
+									discardSequence = true;
+								}
+								return;
+							}
+							if (inputBytes[end] >= 0x40 && inputBytes[end] <= 0x7E)
+							{
+								DecodeSequence(end, now);
+								inputBytes.RemoveRange(0, end + 1);
+							}
+							else inputBytes.RemoveRange(0, end);
+						}
+						else if (inputBytes[1] == 0x1B) DecodeText(false);
+						else if (!DecodeText(true)) return;
+					}
+				}
+			}
+		}
 	}
 }
 
