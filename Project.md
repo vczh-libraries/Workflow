@@ -197,3 +197,16 @@ Only run necessary `Parser.xml` in folders that are changed.
 You need to build, test and debug in that specific folder, otherwise the unit test will not function properly.
 On Linux, only configuration "debug x64" is available, no need to build or run projects with other configurations.
 Unlike Windows, building have to be done in each folder separately.
+
+## WebAssembly
+
+The following unit test projects could be built to web assembly and run with a browser:
+- `REPO-ROOT/Test/Linux/LibraryTest`
+- `REPO-ROOT/Test/Linux/RuntimeTest`
+- `REPO-ROOT/Test/Linux/CppTest`
+- `REPO-ROOT/Test/Linux/CppTest_Metaonly`
+- `REPO-ROOT/Test/Linux/CppTest_Reflection`
+
+Before running `RuntimeTest` in the browser, run the native code-generation sequence (`CompilerTest_GenerateMetadata`, then `CompilerTest_LoadAndCompile`) to refresh the ignored `Test/Generated/Workflow32/*.bin` fixtures. Its `vbuild` maps the required 32-bit assemblies, index files and debugger samples into OPFS. The other four browser suites preload no files.
+
+`RuntimeTest` and `CppTest_Reflection` use `-O1` for Wasm to reduce nested interpreter/reflection call depth and module size; debug information, exceptions and assertions remain enabled.

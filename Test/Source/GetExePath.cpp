@@ -35,6 +35,8 @@ WString GetJsonRequestOutputPath()
 #endif
 #elif defined VCZH_GCC
 	return L"../../TypeScript/JsonRequest64/";
+#elif defined VCZH_WASM
+	return L"/TypeScript/JsonRequest32/";
 #endif
 }
 
@@ -48,5 +50,7 @@ WString GetJsonValuesOutputPath()
 #endif
 #elif defined VCZH_GCC
 	return L"../../TypeScript/JsonValues64/";
+#elif defined VCZH_WASM
+	return L"/TypeScript/JsonValues32/";
 #endif
 }

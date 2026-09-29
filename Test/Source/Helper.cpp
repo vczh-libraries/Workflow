@@ -1,4 +1,4 @@
-#ifdef VCZH_MSVC
+#if defined VCZH_MSVC
 #define _WINSOCKAPI_
 #include <windows.h>
 #endif
@@ -49,6 +49,8 @@ WString GetTestResourcePath()
 #endif
 #elif defined VCZH_GCC
 	return L"../../Resources/";
+#elif defined VCZH_WASM
+	return L"/Resources/";
 #endif
 }
 
@@ -62,6 +64,8 @@ WString GetTestOutputBasePath()
 #endif
 #elif defined VCZH_GCC
 	return L"../../Generated/";
+#elif defined VCZH_WASM
+	return L"/Generated/";
 #endif
 }
 
@@ -84,7 +88,7 @@ WString GetCppOutputPath()
 {
 #if defined VCZH_MSVC
 	return GetTestOutputBasePath() + L"Cpp" + GetBits() + L"\\";
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	return GetTestOutputBasePath() + L"Cpp" + GetBits() + L"/";
 #endif
 }
@@ -93,7 +97,7 @@ WString GetCppOutputPath32()
 {
 #if defined VCZH_MSVC
 	return GetTestOutputBasePath() + L"Cpp32\\";
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	return GetTestOutputBasePath() + L"Cpp32/";
 #endif
 }
@@ -102,7 +106,7 @@ WString GetCppOutputPath64()
 {
 #if defined VCZH_MSVC
 	return GetTestOutputBasePath() + L"Cpp64\\";
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	return GetTestOutputBasePath() + L"Cpp64/";
 #endif
 }
@@ -117,6 +121,8 @@ WString GetCppMergePath()
 #endif
 #elif defined VCZH_GCC
 	return L"../../SourceCppGen/";
+#elif defined VCZH_WASM
+	return L"/SourceCppGen/";
 #endif
 }
 
@@ -124,7 +130,7 @@ WString GetCppOutputPathRpc()
 {
 #if defined VCZH_MSVC
 	return GetTestOutputBasePath() + L"CppRpc" + GetBits() + L"\\";
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	return GetTestOutputBasePath() + L"CppRpc" + GetBits() + L"/";
 #endif
 }
@@ -133,7 +139,7 @@ WString GetCppOutputPath32Rpc()
 {
 #if defined VCZH_MSVC
 	return GetTestOutputBasePath() + L"CppRpc32\\";
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	return GetTestOutputBasePath() + L"CppRpc32/";
 #endif
 }
@@ -142,7 +148,7 @@ WString GetCppOutputPath64Rpc()
 {
 #if defined VCZH_MSVC
 	return GetTestOutputBasePath() + L"CppRpc64\\";
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	return GetTestOutputBasePath() + L"CppRpc64/";
 #endif
 }
@@ -157,6 +163,8 @@ WString GetCppMergePathRpc()
 #endif
 #elif defined VCZH_GCC
 	return L"../../SourceCppGenRpc/";
+#elif defined VCZH_WASM
+	return L"/SourceCppGenRpc/";
 #endif
 }
 
@@ -164,7 +172,7 @@ WString GetAppOutputPath(const WString& appName)
 {
 #if defined VCZH_MSVC
 	return GetTestOutputBasePath() + L"Apps\\" + appName + L"\\Cpp" + GetBits() + L"\\";
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	return GetTestOutputBasePath() + L"Apps/" + appName + L"/Cpp" + GetBits() + L"/";
 #endif
 }
@@ -173,7 +181,7 @@ WString GetAppOutputPath32(const WString& appName)
 {
 #if defined VCZH_MSVC
 	return GetTestOutputBasePath() + L"Apps\\" + appName + L"\\Cpp32\\";
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	return GetTestOutputBasePath() + L"Apps/" + appName + L"/Cpp32/";
 #endif
 }
@@ -182,7 +190,7 @@ WString GetAppOutputPath64(const WString& appName)
 {
 #if defined VCZH_MSVC
 	return GetTestOutputBasePath() + L"Apps\\" + appName + L"\\Cpp64\\";
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	return GetTestOutputBasePath() + L"Apps/" + appName + L"/Cpp64/";
 #endif
 }
@@ -197,6 +205,8 @@ WString GetAppMergePath(const WString& appName)
 #endif
 #elif defined VCZH_GCC
 	return L"../../Generated/Apps/" + appName + L"/Cpp/";
+#elif defined VCZH_WASM
+	return L"/Generated/Apps/" + appName + L"/Cpp/";
 #endif
 }
 
@@ -204,7 +214,7 @@ WString GetWorkflowOutputPath()
 {
 #if defined VCZH_MSVC
 	return GetTestOutputBasePath() + L"Workflow" + GetBits() + L"\\";
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	return GetTestOutputBasePath() + L"Workflow" + GetBits() + L"/";
 #endif
 }
@@ -213,7 +223,7 @@ WString GetWorkflowOutputPath32()
 {
 #if defined VCZH_MSVC
 	return GetTestOutputBasePath() + L"Workflow32\\";
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	return GetTestOutputBasePath() + L"Workflow32/";
 #endif
 }
@@ -222,7 +232,7 @@ WString GetWorkflowOutputPath64()
 {
 #if defined VCZH_MSVC
 	return GetTestOutputBasePath() + L"Workflow64\\";
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	return GetTestOutputBasePath() + L"Workflow64/";
 #endif
 }
@@ -231,7 +241,7 @@ WString GetRpcMetadataOutputPath()
 {
 #if defined VCZH_MSVC
 	return GetTestOutputBasePath() + L"RpcMetadata" + GetBits() + L"\\";
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	return GetTestOutputBasePath() + L"RpcMetadata" + GetBits() + L"/";
 #endif
 }
@@ -240,7 +250,7 @@ WString GetRpcMetadataOutputPath32()
 {
 #if defined VCZH_MSVC
 	return GetTestOutputBasePath() + L"RpcMetadata32\\";
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	return GetTestOutputBasePath() + L"RpcMetadata32/";
 #endif
 }
@@ -249,7 +259,7 @@ WString GetRpcMetadataOutputPath64()
 {
 #if defined VCZH_MSVC
 	return GetTestOutputBasePath() + L"RpcMetadata64\\";
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	return GetTestOutputBasePath() + L"RpcMetadata64/";
 #endif
 }
@@ -271,7 +281,7 @@ WString LoadSample(const WString& sampleName, const WString& itemName)
 {
 #if defined VCZH_MSVC
 	FileStream fileStream(GetTestResourcePath() + sampleName + L"\\" + itemName + L".txt", FileStream::ReadOnly);
-#elif defined VCZH_GCC
+#elif defined VCZH_GCC || defined VCZH_WASM
 	FileStream fileStream(GetTestResourcePath() + sampleName + L"/" + itemName + L".txt", FileStream::ReadOnly);
 #endif
 	BomDecoder decoder;

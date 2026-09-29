@@ -1,5 +1,6 @@
 <#
 CPP_TARGET=./Bin/UnitTest
+CPP_WASM_PTHREAD_POOL_SIZE=32
 CPP_VCXPROJS=(
     "../../UnitTest/VlppImport/VlppImport.vcxitems"
     "../../UnitTest/VlppWorkflow_Library/VlppWorkflow_Library.vcxitems"
@@ -15,6 +16,6 @@ CPP_REMOVES=(
     "../../../Import/VlppOS.Windows.cpp"
     )
 TARGETS=("${CPP_TARGET}")
-CPP_COMPILE_OPTIONS="-I ../../../Import"
+CPP_COMPILE_OPTIONS="-I ../../../Import \$(if \$(filter EMPP,\$(CPP_COMPILER)),-O1)"
 #>
 <#@ include "${VCPROOT}/vl/vmake-cpp" #>
