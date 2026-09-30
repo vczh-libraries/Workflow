@@ -209,4 +209,4 @@ The following unit test projects could be built to web assembly and run with a b
 
 Before running `RuntimeTest` in the browser, run the native code-generation sequence (`CompilerTest_GenerateMetadata`, then `CompilerTest_LoadAndCompile`) to refresh the ignored `Test/Generated/Workflow32/*.bin` fixtures. Its `vbuild` maps the required 32-bit assemblies, index files and debugger samples into OPFS. The other four browser suites preload no files.
 
-`RuntimeTest` and `CppTest_Reflection` use `-O1` for Wasm to reduce nested interpreter/reflection call depth and module size; debug information, exceptions and assertions remain enabled.
+All Wasm projects use the shared Ubuntu tools' `-O3` setting for compilation and linking; debug information, exceptions and assertions remain enabled.
