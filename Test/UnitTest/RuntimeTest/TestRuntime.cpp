@@ -78,6 +78,54 @@ func main():string
 		TEST_ASSERT(actual == L"Hello, world!");
 	});
 
+	TEST_CASE(L"Workflow method callbacks accept native argument lists")
+	{
+		List<glr::ParsingError> errors;
+		List<WString> moduleCodes;
+		moduleCodes.Add(LR"workflow(
+module method_callbacks;
+
+class MethodCallbackTarget
+{
+  var offset : int = 1000;
+
+  func Combine(first : int, second : int) : int
+  {
+    return offset + first * 100 + second;
+  }
+
+  static func Empty() : string
+  {
+    return "empty";
+  }
+}
+
+var target = new MethodCallbackTarget^();
+
+func GetCallback() : func(int, int):int
+{
+  return target.Combine;
+}
+
+func GetEmptyCallback() : func():string
+{
+  return MethodCallbackTarget::Empty;
+}
+)workflow");
+
+		auto&& parser = GetWorkflowParser();
+		auto assembly = Compile(parser, WfCpuArchitecture::AsExecutable, moduleCodes, errors);
+		TEST_ASSERT(errors.Count() == 0);
+
+		auto context = Ptr(new WfRuntimeGlobalContext(assembly));
+		LoadFunction<void()>(context, L"<initialize>")();
+		auto callback = LoadFunction<Func<vint(vint, vint)>()>(context, L"GetCallback")();
+		TEST_ASSERT(callback(12, 34) == 2234);
+		TEST_ASSERT(callback(4, 56) == 1456);
+		auto emptyCallback = LoadFunction<Func<WString()>()>(context, L"GetEmptyCallback")();
+		TEST_ASSERT(emptyCallback() == L"empty");
+	});
+
 	TEST_CATEGORY(L"Runtime with Binary Assembly")
 	{
 		auto&& parser = GetWorkflowParser();
