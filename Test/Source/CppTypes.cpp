@@ -252,6 +252,11 @@ VariantProvider
 		return list;
 	}
 
+	Value VariantProvider::Boxed(IntVariant value)
+	{
+		return BoxParameter(value);
+	}
+
 	Variant<Nullable<vint>, WString> VariantProvider::EmptyNullable()
 	{
 		return Nullable<vint>();
@@ -341,6 +346,7 @@ namespace vl
 				CLASS_MEMBER_STATIC_METHOD(Echo, { L"value" })
 				CLASS_MEMBER_STATIC_METHOD(EchoConst, { L"value" })
 				CLASS_MEMBER_STATIC_METHOD(EchoRef, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(Boxed, { L"value" })
 				CLASS_MEMBER_STATIC_METHOD(ErasedList, NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(EmptyNullable, NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(Function, NO_PARAMETER)

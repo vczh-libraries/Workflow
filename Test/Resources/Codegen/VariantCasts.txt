@@ -1,5 +1,6 @@
 module test;
 using system::*;
+using test::*;
 
 class VariantBase
 {
@@ -35,7 +36,7 @@ func Echo(value:variant<int, string>):variant<int, string>
 func EscapedPayload():int
 {
   var value = 1 of variant<int, string>;
-  var escaped : object = cast object value;
+  var escaped : object = VariantProvider::Boxed(value);
   return cast int escaped;
 }
 
@@ -47,7 +48,7 @@ func SerializeRpcValue(value:object):JsonNode^
 func SerializeEscapedVariant(mode:int):void
 {
   var value = 1 of variant<int, string>;
-  var escaped : object = cast object value;
+  var escaped : object = VariantProvider::Boxed(value);
   if (mode == 0)
   {
     SerializeRpcValue(escaped);
@@ -159,7 +160,7 @@ func main():string
   var opaque = objectNumber of variant<object, int?, int>;
   Check((cast int (cast object opaque)) == 42);
   ExpectFailure(func():void { var result = cast int opaque; });
-  var escaped : object = cast object number;
+  var escaped : object = VariantProvider::Boxed(number);
   Check(escaped is not null);
   var copied = missing;
   missing = other;

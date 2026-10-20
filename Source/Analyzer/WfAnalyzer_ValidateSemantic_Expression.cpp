@@ -615,6 +615,18 @@ ValidateSemantic(Expression)
 					Ptr<ITypeInfo> typeInfo = GetExpressionType(manager, node->operand, 0);
 					if (typeInfo)
 					{
+						if (node->op == WfUnaryOperator::VariantExtract)
+						{
+							if (typeInfo->GetDecorator() != ITypeInfo::Variant)
+							{
+								manager->errors.Add(WfErrors::UnaryOperatorOnWrongType(node, typeInfo.Obj()));
+							}
+							else
+							{
+								results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<Value>::CreateTypeInfo()));
+							}
+							return;
+						}
 						TypeFlag flag = GetTypeFlag(typeInfo.Obj());
 						switch (node->op)
 						{

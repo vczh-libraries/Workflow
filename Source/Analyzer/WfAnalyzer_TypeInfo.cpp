@@ -923,8 +923,7 @@ CanConvertToType
 						return false;
 					}
 					if (toVariant) return GetVariantOptionIndex(toType, fromType) != -1;
-					return GetVariantOptionIndex(fromType, toType) != -1
-						|| toType->GetTypeDescriptor() == GetTypeDescriptor<Value>();
+					return GetVariantOptionIndex(fromType, toType) != -1;
 				}
 				ITypeDescriptor* objectType = GetTypeDescriptor<Value>();
 				bool fromObject = fromType->GetDecorator() == ITypeInfo::TypeDescriptor && fromType->GetTypeDescriptor() == objectType;

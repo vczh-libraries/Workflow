@@ -81,6 +81,7 @@ _Exp0
     ::= "+" _Exp0 : operand as UnaryExpression {op = Positive}
     ::= "-" _Exp0 : operand as UnaryExpression {op = Negative}
     ::= "not" _Exp0 : operand as UnaryExpression {op = Not}
+    ::= "variant" "in" _Exp0 : operand as UnaryExpression {op = VariantExtract}
     ::= "cast" _Type : type _Exp0 : expression as TypeCastingExpression {strategy = Strong}
     ::= "cast" "*" _Exp0 : expression as ExpectedTypeCastExpression {strategy = Strong}
     ;

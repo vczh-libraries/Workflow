@@ -1,0 +1,101 @@
+module test;
+using system::*;
+using test::*;
+
+struct ExtractPayload
+{
+  value : int;
+}
+
+var checks : int = 0;
+var evaluations : int = 0;
+
+func Check(value:bool):void
+{
+  if (not value) { raise "Variant payload extraction assertion failed."; }
+  checks = checks + 1;
+}
+
+func Next():variant<int, string>
+{
+  evaluations = evaluations + 1;
+  return 7 of variant<int, string>;
+}
+
+func ExtractTemporary():object
+{
+  return variant in VariantProvider::Function();
+}
+
+func main():string
+{
+  var number = 42 of variant<int, string>;
+  var payload : object = variant in number;
+  Check((cast int payload) == 42);
+  Check((cast string variant in ("text" of variant<int, string>)) == "text");
+  Check(cast bool variant in (true of variant<bool, string>));
+  Check((cast double variant in (1.5 of variant<double, string>)) == 1.5);
+  Check((cast int variant in Next()) == 7);
+  Check(evaluations == 1);
+  Check(cast int variant in cast variant<int, string> -5 + 8 == 3);
+  Check(+cast int variant in number == 42);
+  Check(-cast int variant in number == -42);
+  Check(not cast bool variant in (false of variant<bool, int>));
+
+  var present : int? = 5;
+  var empty : int? = null;
+  Check((cast int variant in (present of variant<int?, string>)) == 5);
+  Check((variant in (empty of variant<int?, string>)) is null);
+  Check((variant in VariantProvider::EmptyNullable()) is null);
+  var provider = new VariantProvider^();
+  var raw = cast VariantProvider* provider;
+  Check((cast VariantProvider^ variant in (provider of variant<VariantProvider^, int>)) == provider);
+  Check((cast VariantProvider* variant in (raw of variant<VariantProvider*, int>)) == raw);
+  var sharedNull : VariantProvider^ = null;
+  var rawNull : VariantProvider* = null;
+  Check((variant in (sharedNull of variant<VariantProvider^, int>)) is null);
+  Check((variant in (rawNull of variant<VariantProvider*, int>)) is null);
+  provider.Value = number;
+  Check((cast int variant in provider.Value) == 42);
+  var values : variant<int, string>[] = {number};
+  Check((cast int variant in values[0]) == 42);
+  var copy = number;
+  number = "changed" of variant<int, string>;
+  Check((cast int variant in copy) == 42);
+
+  var structure = {value:12} of ExtractPayload of variant<ExtractPayload, string>;
+  var extracted = cast ExtractPayload variant in structure;
+  structure = {value:13} of ExtractPayload of variant<ExtractPayload, string>;
+  Check(extracted.value == 12);
+  var list : int[] = {1 2};
+  var listPayload = variant in (list of variant<int[], string>);
+  Check((cast int[] listPayload)[1] == 2);
+  var function = cast (func(int):int) ExtractTemporary();
+  Check(function(4) == 5);
+  var nativeList = cast List^ variant in VariantProvider::ErasedList();
+  Check((cast int nativeList.Get(0)) == 42);
+  var enumerable = cast int{} variant in VariantProvider::Enumerable();
+  var sum = 0;
+  for (value in enumerable) { sum = sum + value; }
+  Check(sum == 6);
+
+  var objectNumber : object = 8;
+  var objectSlot = objectNumber of variant<object, int>;
+  Check((cast int variant in objectSlot) == 8);
+  Check((cast int (cast object objectSlot)) == 8);
+  objectSlot = 9 of variant<object, int>;
+  Check((cast int variant in objectSlot) == 9);
+  var failed = false;
+  try { var wrong = cast object objectSlot; }
+  catch(ex) { failed = not ex.Fatal and Sys::Find(ex.Message, "variant option") != -1; }
+  Check(failed);
+  var objectNull : object = null;
+  Check((variant in (objectNull of variant<object, int>)) is null);
+  var boxed = VariantProvider::Boxed(copy);
+  var outer = boxed of variant<object, string>;
+  var inner : object = variant in outer;
+  Check(inner is not null);
+  Check(not (inner is int));
+  Check(inner != (variant in copy));
+  return checks;
+}

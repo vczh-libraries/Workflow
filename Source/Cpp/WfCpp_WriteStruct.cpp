@@ -42,8 +42,8 @@ namespace vl
 							auto field = ConvertName(member->name.value);
 							if (prop->GetReturn()->GetDecorator() == ITypeInfo::Variant)
 							{
-								writer.WriteLine(prefix + L"\t\tif (auto result = ::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantPayload("
-									+ field + L"), ::vl::__vwsn::VariantPayload(other." + field + L")); result != 0) return result;");
+								writer.WriteLine(prefix + L"\t\tif (auto result = ::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantExtractObject("
+									+ field + L"), ::vl::__vwsn::VariantExtractObject(other." + field + L")); result != 0) return result;");
 							}
 							else
 							{

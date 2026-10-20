@@ -29,6 +29,64 @@ TEST_FILE
 		TEST_ASSERT(errors.Count() == 0);
 	});
 
+	TEST_CASE(L"Variant extraction shares unary precedence and survives copying and printing")
+	{
+		auto&& parser = GetWorkflowParser();
+		List<glr::ParsingError> errors;
+		auto handler = glr::InstallDefaultErrorMessageGenerator(parser, errors);
+		auto expression = ParseExpression(LoadSample(L"Expression", L"VariantExtract"), parser);
+		auto verify = [](Ptr<WfExpression> node)
+		{
+			auto sum = node.Cast<WfBinaryExpression>();
+			TEST_ASSERT(sum && sum->op == WfBinaryOperator::Add);
+			auto cast = sum->first.Cast<WfTypeCastingExpression>();
+			TEST_ASSERT(cast);
+			auto extract = cast->expression.Cast<WfUnaryExpression>();
+			TEST_ASSERT(extract && extract->op == WfUnaryOperator::VariantExtract);
+			auto call = extract->operand.Cast<WfCallExpression>();
+			TEST_ASSERT(call);
+			auto member = call->function.Cast<WfMemberExpression>();
+			TEST_ASSERT(member && member->name.value == L"Get");
+			auto index = member->parent.Cast<WfBinaryExpression>();
+			TEST_ASSERT(index && index->op == WfBinaryOperator::Index);
+			auto negative = sum->second.Cast<WfUnaryExpression>();
+			TEST_ASSERT(negative && negative->op == WfUnaryOperator::Negative);
+			cast = negative->operand.Cast<WfTypeCastingExpression>();
+			TEST_ASSERT(cast);
+			extract = cast->expression.Cast<WfUnaryExpression>();
+			TEST_ASSERT(extract && extract->op == WfUnaryOperator::VariantExtract);
+		};
+		verify(expression);
+		auto copied = CopyExpression(expression, false);
+		verify(copied);
+		auto printed = stream::GenerateToStream([&](TextWriter& writer) { WfPrint(copied, L"", writer); });
+		verify(ParseExpression(printed, parser));
+		auto chain = ParseExpression(LoadSample(L"Expression", L"VariantExtractChain"), parser).Cast<WfUnaryExpression>();
+		TEST_ASSERT(chain && chain->op == WfUnaryOperator::VariantExtract);
+		auto inner = chain->operand.Cast<WfUnaryExpression>();
+		TEST_ASSERT(inner && inner->op == WfUnaryOperator::VariantExtract);
+		TEST_ASSERT(inner->operand.Cast<WfTypeCastingExpression>());
+		parser.OnError.Remove(handler);
+		TEST_ASSERT(errors.Count() == 0);
+	});
+
+	TEST_CATEGORY(L"Test malformed variant extraction syntax")
+	{
+		const wchar_t* samples[] = { L"variant", L"variant in", L"variant value", L"variant in +" };
+		for (auto sample : samples)
+		{
+			TEST_CASE(sample)
+			{
+				auto&& parser = GetWorkflowParser();
+				List<glr::ParsingError> errors;
+				auto handler = glr::InstallDefaultErrorMessageGenerator(parser, errors);
+				ParseExpression(sample, parser);
+				parser.OnError.Remove(handler);
+				TEST_ASSERT(errors.Count() > 0);
+			});
+		}
+	});
+
 	TEST_CATEGORY(L"Test malformed variant type syntax")
 	{
 		auto&& parser = GetWorkflowParser();

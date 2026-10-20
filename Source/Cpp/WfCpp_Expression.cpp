@@ -120,10 +120,6 @@ Expression Helpers
 						writeExpression();
 						writer.WriteString(L")");
 					}
-					else if (toType->GetTypeDescriptor() == description::GetTypeDescriptor<Value>() && GetVariantOptionIndex(fromType, toType) == -1)
-					{
-						WriteBoxValue(config, writer, fromType, writeExpression);
-					}
 					else
 					{
 						writer.WriteString(L"::vl::__vwsn::VariantExtract<" + config->ConvertType(toType));
@@ -1200,6 +1196,11 @@ WfGenerateExpressionVisitor
 					auto result = config->manager->expressionResolvings[node];
 					switch (node->op)
 					{
+					case WfUnaryOperator::VariantExtract:
+						writer.WriteString(L"::vl::__vwsn::VariantExtractObject(");
+						Call(node->operand);
+						writer.WriteString(L")");
+						break;
 					case WfUnaryOperator::Positive:
 						writer.WriteString(L"(+ ");
 						Call(node->operand, result.type.Obj());
@@ -1447,10 +1448,10 @@ WfGenerateExpressionVisitor
 							default: CHECK_FAIL(L"Unsupported variant comparison.");
 							}
 							writer.WriteString(L"(::vl::reflection::description::CompareVariantPayloads(");
-							writer.WriteString(firstResult.type->GetDecorator() == ITypeInfo::Variant ? L"::vl::__vwsn::VariantPayload(" : L"::vl::__vwsn::Box(");
+							writer.WriteString(firstResult.type->GetDecorator() == ITypeInfo::Variant ? L"::vl::__vwsn::VariantExtractObject(" : L"::vl::__vwsn::Box(");
 							Call(node->first);
 							writer.WriteString(L"), ");
-							writer.WriteString(secondResult.type->GetDecorator() == ITypeInfo::Variant ? L"::vl::__vwsn::VariantPayload(" : L"::vl::__vwsn::Box(");
+							writer.WriteString(secondResult.type->GetDecorator() == ITypeInfo::Variant ? L"::vl::__vwsn::VariantExtractObject(" : L"::vl::__vwsn::Box(");
 							Call(node->second);
 							writer.WriteString(L")) " + WString::Unmanaged(op) + L" 0)");
 							return;
@@ -1855,7 +1856,7 @@ WfGenerateExpressionVisitor
 					switch (result.type->GetDecorator())
 					{
 					case ITypeInfo::Variant:
-						writer.WriteString(node->test == WfTypeTesting::IsNotNull ? L"(!::vl::__vwsn::VariantPayload(" : L"(::vl::__vwsn::VariantPayload(");
+						writer.WriteString(node->test == WfTypeTesting::IsNotNull ? L"(!::vl::__vwsn::VariantExtractObject(" : L"(::vl::__vwsn::VariantExtractObject(");
 						Call(node->expression);
 						writer.WriteString(L").IsNull())");
 						break;

@@ -384,6 +384,9 @@ GenerateInstructions(Expression)
 					case WfUnaryOperator::Negative:
 						INSTRUCTION(Ins::OpNegative(GetInstructionTypeArgument(type)));
 						break;
+					case WfUnaryOperator::VariantExtract:
+						INSTRUCTION(Ins::VUnbox());
+						break;
 					default:;
 					}
 				}
@@ -889,10 +892,6 @@ GenerateInstructions(Expression)
 						INSTRUCTION(Ins::VBox(source));
 					}
 					else if (toVariant && IsVariantSubset(source.Obj(), target.Obj()))
-					{
-					}
-					else if (!toVariant && target->GetTypeDescriptor() == description::GetTypeDescriptor<Value>()
-						&& GetVariantOptionIndex(source.Obj(), target.Obj()) == -1)
 					{
 					}
 					else if (strongCast)

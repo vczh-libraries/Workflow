@@ -87,6 +87,7 @@ namespace test
 		static IntVariant					Echo(IntVariant value);
 		static IntVariant					EchoConst(const IntVariant& value);
 		static IntVariant					EchoRef(IntVariant& value);
+		static Value						Boxed(IntVariant value);
 		static Variant<Ptr<IValueList>, WString>	ErasedList();
 		static Variant<Nullable<vint>, WString>	EmptyNullable();
 		static Variant<Func<vint(vint)>, WString>	Function();

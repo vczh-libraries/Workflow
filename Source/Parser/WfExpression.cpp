@@ -478,6 +478,9 @@ Print (Expression)
 				case WfUnaryOperator::Not:
 					writer.WriteString(L"!");
 					break;
+				case WfUnaryOperator::VariantExtract:
+					writer.WriteString(L"variant in ");
+					break;
 				default:
 					CHECK_FAIL(L"Internal error: Unknown value.");
 				}

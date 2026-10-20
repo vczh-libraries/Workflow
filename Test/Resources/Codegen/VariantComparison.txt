@@ -1,5 +1,6 @@
 module test;
 using system::*;
+using test::*;
 
 var checks : int = 0;
 
@@ -39,7 +40,7 @@ func main():string
   Check(empty == nullValue);
   Check(nullValue == empty);
   Check(empty != a);
-  var escaped : object = cast object a;
+  var escaped : object = VariantProvider::Boxed(a);
   Check(a != escaped);
   Check(escaped != a);
   var zero : double = 0.0;
