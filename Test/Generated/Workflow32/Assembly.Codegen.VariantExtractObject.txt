@@ -1,0 +1,922 @@
+﻿========================================================
+Global Variables:
+========================================================
+checks
+evaluations
+
+========================================================
+Functions:
+========================================================
+Check (6 .. 20)
+    Arguments:
+        value
+    Captured Variables:
+    Local Variables:
+
+Next (21 .. 31)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+ExtractTemporary (32 .. 37)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+main (38 .. 427)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        number
+        payload
+        present
+        empty
+        provider
+        raw
+        sharedNull
+        rawNull
+        values
+        copy
+        structure
+        extracted
+        list
+        listPayload
+        function
+        nativeList
+        enumerable
+        sum
+        <for-enumerable>value
+        <for-enumerator>value
+        value
+        objectNumber
+        objectSlot
+        failed
+        wrong
+        <catch>ex
+        objectNull
+        boxed
+        outer
+        inner
+
+<initialize> (0 .. 5)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+//  0
+0    :     LoadValue     : value = <I4, 0>
+//  var checks : int = 0;
+1    :     StoreGlobalVar: var = 0(checks)
+//  0
+2    :     LoadValue     : value = <I4, 0>
+//  var evaluations : int = 0;
+3    :     StoreGlobalVar: var = 1(evaluations)
+4    :     LoadValue     : value = <null>
+5    :     Return        
+//  value
+6    :     LoadLocalVar  : var = 0(value)
+//  (!value)
+7    :     OpNot         : type = Bool
+//  if ((!value))
+8    :     OpNot         : type = Bool
+//  if ((!value))
+9    :     JumpIf        : label = 13
+//  "Variant payload extraction assertion failed."
+10   :     LoadValue     : value = <String, Variant payload extraction assertion failed.>
+//  raise "Variant payload extraction assertion failed.";
+11   :     RaiseException
+//  if ((!value))
+12   :     Jump          : label = 13
+//  checks
+13   :     LoadGlobalVar : var = 0(checks)
+//  1
+14   :     LoadValue     : value = <I4, 1>
+//  (checks + 1)
+15   :     OpAdd         : type = I4
+//  (checks = (checks + 1))
+16   :     Duplicate     : stackPatternCount = 0
+//  (checks = (checks + 1))
+17   :     StoreGlobalVar: var = 0(checks)
+//  (checks = (checks + 1));
+18   :     Pop           
+//  func Check(value : bool) : (void)
+19   :     LoadValue     : value = <null>
+//  func Check(value : bool) : (void)
+20   :     Return        
+//  evaluations
+21   :     LoadGlobalVar : var = 1(evaluations)
+//  1
+22   :     LoadValue     : value = <I4, 1>
+//  (evaluations + 1)
+23   :     OpAdd         : type = I4
+//  (evaluations = (evaluations + 1))
+24   :     Duplicate     : stackPatternCount = 0
+//  (evaluations = (evaluations + 1))
+25   :     StoreGlobalVar: var = 1(evaluations)
+//  (evaluations = (evaluations + 1));
+26   :     Pop           
+//  7
+27   :     LoadValue     : value = <I4, 7>
+//  7 of (variant<int, string>)
+28   :     VBox          : typeInfo = system::Int32
+//  return 7 of (variant<int, string>);
+29   :     Return        
+//  func Next() : (variant<int, string>)
+30   :     LoadValue     : value = <null>
+//  func Next() : (variant<int, string>)
+31   :     Return        
+//  VariantProvider::Function()
+32   :     LoadValue     : value = <null>
+//  VariantProvider::Function()
+33   :     InvokeMethod  : methodInfo = Function<test::VariantProvider>, stackPatternCount = 0
+//  (variant in VariantProvider::Function())
+34   :     VUnbox        
+//  return (variant in VariantProvider::Function());
+35   :     Return        
+//  func ExtractTemporary() : (object)
+36   :     LoadValue     : value = <null>
+//  func ExtractTemporary() : (object)
+37   :     Return        
+//  42
+38   :     LoadValue     : value = <I4, 42>
+//  42 of (variant<int, string>)
+39   :     VBox          : typeInfo = system::Int32
+//  var number = 42 of (variant<int, string>);
+40   :     StoreLocalVar : var = 0(number)
+//  number
+41   :     LoadLocalVar  : var = 0(number)
+//  (variant in number)
+42   :     VUnbox        
+//  var payload : object = (variant in number);
+43   :     StoreLocalVar : var = 1(payload)
+//  payload
+44   :     LoadLocalVar  : var = 1(payload)
+//  payload
+45   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  42
+46   :     LoadValue     : value = <I4, 42>
+//  ((cast (int) payload) == 42)
+47   :     CompareValue  
+//  Check(((cast (int) payload) == 42))
+48   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int) payload) == 42));
+49   :     Pop           
+//  "text"
+50   :     LoadValue     : value = <String, text>
+//  "text" of (variant<int, string>)
+51   :     VBox          : typeInfo = system::String
+//  (variant in "text" of (variant<int, string>))
+52   :     VUnbox        
+//  (variant in "text" of (variant<int, string>))
+53   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  "text"
+54   :     LoadValue     : value = <String, text>
+//  ((cast (string) (variant in "text" of (variant<int, string>))) == "text")
+55   :     CompareValue  
+//  Check(((cast (string) (variant in "text" of (variant<int, string>))) == "text"))
+56   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (string) (variant in "text" of (variant<int, string>))) == "text"));
+57   :     Pop           
+//  true
+58   :     LoadValue     : value = <Bool, true>
+//  true of (variant<bool, string>)
+59   :     VBox          : typeInfo = system::Boolean
+//  (variant in true of (variant<bool, string>))
+60   :     VUnbox        
+//  (variant in true of (variant<bool, string>))
+61   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Boolean
+//  Check((cast (bool) (variant in true of (variant<bool, string>))))
+62   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((cast (bool) (variant in true of (variant<bool, string>))));
+63   :     Pop           
+//  1.5
+64   :     LoadValue     : value = <F8, 1.5>
+//  1.5 of (variant<double, string>)
+65   :     VBox          : typeInfo = system::Double
+//  (variant in 1.5 of (variant<double, string>))
+66   :     VUnbox        
+//  (variant in 1.5 of (variant<double, string>))
+67   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Double
+//  1.5
+68   :     LoadValue     : value = <F8, 1.5>
+//  ((cast (double) (variant in 1.5 of (variant<double, string>))) == 1.5)
+69   :     CompareValue  
+//  Check(((cast (double) (variant in 1.5 of (variant<double, string>))) == 1.5))
+70   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (double) (variant in 1.5 of (variant<double, string>))) == 1.5));
+71   :     Pop           
+//  Next()
+72   :     Invoke        : func = 1(Next), stackPatternCount = 0
+//  (variant in Next())
+73   :     VUnbox        
+//  (variant in Next())
+74   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  7
+75   :     LoadValue     : value = <I4, 7>
+//  ((cast (int) (variant in Next())) == 7)
+76   :     CompareValue  
+//  Check(((cast (int) (variant in Next())) == 7))
+77   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int) (variant in Next())) == 7));
+78   :     Pop           
+//  evaluations
+79   :     LoadGlobalVar : var = 1(evaluations)
+//  1
+80   :     LoadValue     : value = <I4, 1>
+//  (evaluations == 1)
+81   :     CompareValue  
+//  Check((evaluations == 1))
+82   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((evaluations == 1));
+83   :     Pop           
+//  5
+84   :     LoadValue     : value = <I4, 5>
+//  (-5)
+85   :     OpNegative    : type = I4
+//  (cast (variant<int, string>) (-5))
+86   :     VBox          : typeInfo = system::Int32
+//  (variant in (cast (variant<int, string>) (-5)))
+87   :     VUnbox        
+//  (variant in (cast (variant<int, string>) (-5)))
+88   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  8
+89   :     LoadValue     : value = <I4, 8>
+//  ((cast (int) (variant in (cast (variant<int, string>) (-5)))) + 8)
+90   :     OpAdd         : type = I4
+//  3
+91   :     LoadValue     : value = <I4, 3>
+//  (((cast (int) (variant in (cast (variant<int, string>) (-5)))) + 8) == 3)
+92   :     CompareValue  
+//  Check((((cast (int) (variant in (cast (variant<int, string>) (-5)))) + 8) == 3))
+93   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((((cast (int) (variant in (cast (variant<int, string>) (-5)))) + 8) == 3));
+94   :     Pop           
+//  number
+95   :     LoadLocalVar  : var = 0(number)
+//  (variant in number)
+96   :     VUnbox        
+//  (variant in number)
+97   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  (+(cast (int) (variant in number)))
+98   :     OpPositive    : type = I4
+//  42
+99   :     LoadValue     : value = <I4, 42>
+//  ((+(cast (int) (variant in number))) == 42)
+100  :     CompareValue  
+//  Check(((+(cast (int) (variant in number))) == 42))
+101  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((+(cast (int) (variant in number))) == 42));
+102  :     Pop           
+//  number
+103  :     LoadLocalVar  : var = 0(number)
+//  (variant in number)
+104  :     VUnbox        
+//  (variant in number)
+105  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  (-(cast (int) (variant in number)))
+106  :     OpNegative    : type = I4
+//  42
+107  :     LoadValue     : value = <I4, 42>
+//  (-42)
+108  :     OpNegative    : type = I4
+//  ((-(cast (int) (variant in number))) == (-42))
+109  :     CompareValue  
+//  Check(((-(cast (int) (variant in number))) == (-42)))
+110  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((-(cast (int) (variant in number))) == (-42)));
+111  :     Pop           
+//  false
+112  :     LoadValue     : value = <Bool, false>
+//  false of (variant<bool, int>)
+113  :     VBox          : typeInfo = system::Boolean
+//  (variant in false of (variant<bool, int>))
+114  :     VUnbox        
+//  (variant in false of (variant<bool, int>))
+115  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Boolean
+//  (!(cast (bool) (variant in false of (variant<bool, int>))))
+116  :     OpNot         : type = Bool
+//  Check((!(cast (bool) (variant in false of (variant<bool, int>)))))
+117  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((!(cast (bool) (variant in false of (variant<bool, int>)))));
+118  :     Pop           
+//  5
+119  :     LoadValue     : value = <I4, 5>
+//  5
+120  :     Duplicate     : stackPatternCount = 0
+//  5
+121  :     LoadValue     : value = <null>
+//  5
+122  :     CompareReference
+//  5
+123  :     JumpIf        : label = 126
+//  5
+124  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  5
+125  :     Jump          : label = 127
+//  5
+126  :     LoadValue     : value = <null>
+//  var present : int? = 5;
+127  :     StoreLocalVar : var = 2(present)
+//  null
+128  :     LoadValue     : value = <null>
+//  var empty : int? = null;
+129  :     StoreLocalVar : var = 3(empty)
+//  present
+130  :     LoadLocalVar  : var = 2(present)
+//  present of (variant<int?, string>)
+131  :     VBox          : typeInfo = system::Int32?
+//  (variant in present of (variant<int?, string>))
+132  :     VUnbox        
+//  (variant in present of (variant<int?, string>))
+133  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  5
+134  :     LoadValue     : value = <I4, 5>
+//  ((cast (int) (variant in present of (variant<int?, string>))) == 5)
+135  :     CompareValue  
+//  Check(((cast (int) (variant in present of (variant<int?, string>))) == 5))
+136  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int) (variant in present of (variant<int?, string>))) == 5));
+137  :     Pop           
+//  empty
+138  :     LoadLocalVar  : var = 3(empty)
+//  empty of (variant<int?, string>)
+139  :     VBox          : typeInfo = system::Int32?
+//  (variant in empty of (variant<int?, string>))
+140  :     VUnbox        
+//  (variant in empty of (variant<int?, string>)) is null
+141  :     LoadValue     : value = <null>
+//  (variant in empty of (variant<int?, string>)) is null
+142  :     CompareReference
+//  Check((variant in empty of (variant<int?, string>)) is null)
+143  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((variant in empty of (variant<int?, string>)) is null);
+144  :     Pop           
+//  VariantProvider::EmptyNullable()
+145  :     LoadValue     : value = <null>
+//  VariantProvider::EmptyNullable()
+146  :     InvokeMethod  : methodInfo = EmptyNullable<test::VariantProvider>, stackPatternCount = 0
+//  (variant in VariantProvider::EmptyNullable())
+147  :     VUnbox        
+//  (variant in VariantProvider::EmptyNullable()) is null
+148  :     LoadValue     : value = <null>
+//  (variant in VariantProvider::EmptyNullable()) is null
+149  :     CompareReference
+//  Check((variant in VariantProvider::EmptyNullable()) is null)
+150  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((variant in VariantProvider::EmptyNullable()) is null);
+151  :     Pop           
+//  new (VariantProvider^)()
+152  :     LoadValue     : value = <null>
+//  new (VariantProvider^)()
+153  :     InvokeMethod  : methodInfo = <test::VariantProvider>, stackPatternCount = 0
+//  var provider = new (VariantProvider^)();
+154  :     StoreLocalVar : var = 4(provider)
+//  provider
+155  :     LoadLocalVar  : var = 4(provider)
+//  provider
+156  :     ConvertToType : flag = RawPtr, typeDescriptor = test::VariantProvider
+//  var raw = (cast (VariantProvider*) provider);
+157  :     StoreLocalVar : var = 5(raw)
+//  provider
+158  :     LoadLocalVar  : var = 4(provider)
+//  provider of (variant<VariantProvider^, int>)
+159  :     VBox          : typeInfo = test::VariantProvider^
+//  (variant in provider of (variant<VariantProvider^, int>))
+160  :     VUnbox        
+//  (variant in provider of (variant<VariantProvider^, int>))
+161  :     ConvertToType : flag = SharedPtr, typeDescriptor = test::VariantProvider
+//  provider
+162  :     LoadLocalVar  : var = 4(provider)
+//  ((cast (VariantProvider^) (variant in provider of (variant<VariantProvider^, int>))) == provider)
+163  :     CompareReference
+//  Check(((cast (VariantProvider^) (variant in provider of (variant<VariantProvider^, int>))) == provider))
+164  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (VariantProvider^) (variant in provider of (variant<VariantProvider^, int>))) == provider));
+165  :     Pop           
+//  raw
+166  :     LoadLocalVar  : var = 5(raw)
+//  raw of (variant<VariantProvider*, int>)
+167  :     VBox          : typeInfo = test::VariantProvider*
+//  (variant in raw of (variant<VariantProvider*, int>))
+168  :     VUnbox        
+//  (variant in raw of (variant<VariantProvider*, int>))
+169  :     ConvertToType : flag = RawPtr, typeDescriptor = test::VariantProvider
+//  raw
+170  :     LoadLocalVar  : var = 5(raw)
+//  ((cast (VariantProvider*) (variant in raw of (variant<VariantProvider*, int>))) == raw)
+171  :     CompareReference
+//  Check(((cast (VariantProvider*) (variant in raw of (variant<VariantProvider*, int>))) == raw))
+172  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (VariantProvider*) (variant in raw of (variant<VariantProvider*, int>))) == raw));
+173  :     Pop           
+//  null
+174  :     LoadValue     : value = <null>
+//  var sharedNull : VariantProvider^ = null;
+175  :     StoreLocalVar : var = 6(sharedNull)
+//  null
+176  :     LoadValue     : value = <null>
+//  var rawNull : VariantProvider* = null;
+177  :     StoreLocalVar : var = 7(rawNull)
+//  sharedNull
+178  :     LoadLocalVar  : var = 6(sharedNull)
+//  sharedNull of (variant<VariantProvider^, int>)
+179  :     VBox          : typeInfo = test::VariantProvider^
+//  (variant in sharedNull of (variant<VariantProvider^, int>))
+180  :     VUnbox        
+//  (variant in sharedNull of (variant<VariantProvider^, int>)) is null
+181  :     LoadValue     : value = <null>
+//  (variant in sharedNull of (variant<VariantProvider^, int>)) is null
+182  :     CompareReference
+//  Check((variant in sharedNull of (variant<VariantProvider^, int>)) is null)
+183  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((variant in sharedNull of (variant<VariantProvider^, int>)) is null);
+184  :     Pop           
+//  rawNull
+185  :     LoadLocalVar  : var = 7(rawNull)
+//  rawNull of (variant<VariantProvider*, int>)
+186  :     VBox          : typeInfo = test::VariantProvider*
+//  (variant in rawNull of (variant<VariantProvider*, int>))
+187  :     VUnbox        
+//  (variant in rawNull of (variant<VariantProvider*, int>)) is null
+188  :     LoadValue     : value = <null>
+//  (variant in rawNull of (variant<VariantProvider*, int>)) is null
+189  :     CompareReference
+//  Check((variant in rawNull of (variant<VariantProvider*, int>)) is null)
+190  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((variant in rawNull of (variant<VariantProvider*, int>)) is null);
+191  :     Pop           
+//  number
+192  :     LoadLocalVar  : var = 0(number)
+//  (provider.Value = number)
+193  :     Duplicate     : stackPatternCount = 0
+//  provider
+194  :     LoadLocalVar  : var = 4(provider)
+//  (provider.Value = number)
+195  :     InvokeMethod  : methodInfo = SetValue<test::VariantProvider>, stackPatternCount = 1
+//  (provider.Value = number)
+196  :     Pop           
+//  (provider.Value = number);
+197  :     Pop           
+//  provider
+198  :     LoadLocalVar  : var = 4(provider)
+//  provider.Value
+199  :     InvokeMethod  : methodInfo = GetValue<test::VariantProvider>, stackPatternCount = 0
+//  (variant in provider.Value)
+200  :     VUnbox        
+//  (variant in provider.Value)
+201  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  42
+202  :     LoadValue     : value = <I4, 42>
+//  ((cast (int) (variant in provider.Value)) == 42)
+203  :     CompareValue  
+//  Check(((cast (int) (variant in provider.Value)) == 42))
+204  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int) (variant in provider.Value)) == 42));
+205  :     Pop           
+//  number
+206  :     LoadLocalVar  : var = 0(number)
+//  {number;}
+207  :     NewList       : stackPatternCount = 1
+//  var values : variant<int, string>[] = {number;};
+208  :     StoreLocalVar : var = 8(values)
+//  0
+209  :     LoadValue     : value = <I4, 0>
+//  values
+210  :     LoadLocalVar  : var = 8(values)
+//  values[0]
+211  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  (variant in values[0])
+212  :     VUnbox        
+//  (variant in values[0])
+213  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  42
+214  :     LoadValue     : value = <I4, 42>
+//  ((cast (int) (variant in values[0])) == 42)
+215  :     CompareValue  
+//  Check(((cast (int) (variant in values[0])) == 42))
+216  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int) (variant in values[0])) == 42));
+217  :     Pop           
+//  number
+218  :     LoadLocalVar  : var = 0(number)
+//  var copy = number;
+219  :     StoreLocalVar : var = 9(copy)
+//  "changed"
+220  :     LoadValue     : value = <String, changed>
+//  "changed" of (variant<int, string>)
+221  :     VBox          : typeInfo = system::String
+//  (number = "changed" of (variant<int, string>))
+222  :     Duplicate     : stackPatternCount = 0
+//  (number = "changed" of (variant<int, string>))
+223  :     StoreLocalVar : var = 0(number)
+//  (number = "changed" of (variant<int, string>));
+224  :     Pop           
+//  copy
+225  :     LoadLocalVar  : var = 9(copy)
+//  (variant in copy)
+226  :     VUnbox        
+//  (variant in copy)
+227  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  42
+228  :     LoadValue     : value = <I4, 42>
+//  ((cast (int) (variant in copy)) == 42)
+229  :     CompareValue  
+//  Check(((cast (int) (variant in copy)) == 42))
+230  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int) (variant in copy)) == 42));
+231  :     Pop           
+//  {value : 12;}
+232  :     CreateStruct  : flag = BoxedValue, typeDescriptor = ExtractPayload
+//  12
+233  :     LoadValue     : value = <I4, 12>
+//  {value : 12;}
+234  :     UpdateProperty: propertyInfo = value<ExtractPayload>
+//  {value : 12;} of (ExtractPayload) of (variant<ExtractPayload, string>)
+235  :     VBox          : typeInfo = ExtractPayload
+//  var structure = {value : 12;} of (ExtractPayload) of (variant<ExtractPayload, string>);
+236  :     StoreLocalVar : var = 10(structure)
+//  structure
+237  :     LoadLocalVar  : var = 10(structure)
+//  (variant in structure)
+238  :     VUnbox        
+//  (variant in structure)
+239  :     ConvertToType : flag = BoxedValue, typeDescriptor = ExtractPayload
+//  var extracted = (cast (ExtractPayload) (variant in structure));
+240  :     StoreLocalVar : var = 11(extracted)
+//  {value : 13;}
+241  :     CreateStruct  : flag = BoxedValue, typeDescriptor = ExtractPayload
+//  13
+242  :     LoadValue     : value = <I4, 13>
+//  {value : 13;}
+243  :     UpdateProperty: propertyInfo = value<ExtractPayload>
+//  {value : 13;} of (ExtractPayload) of (variant<ExtractPayload, string>)
+244  :     VBox          : typeInfo = ExtractPayload
+//  (structure = {value : 13;} of (ExtractPayload) of (variant<ExtractPayload, string>))
+245  :     Duplicate     : stackPatternCount = 0
+//  (structure = {value : 13;} of (ExtractPayload) of (variant<ExtractPayload, string>))
+246  :     StoreLocalVar : var = 10(structure)
+//  (structure = {value : 13;} of (ExtractPayload) of (variant<ExtractPayload, string>));
+247  :     Pop           
+//  extracted
+248  :     LoadLocalVar  : var = 11(extracted)
+//  extracted.value
+249  :     GetProperty   : propertyInfo = value<ExtractPayload>
+//  12
+250  :     LoadValue     : value = <I4, 12>
+//  (extracted.value == 12)
+251  :     CompareValue  
+//  Check((extracted.value == 12))
+252  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((extracted.value == 12));
+253  :     Pop           
+//  2
+254  :     LoadValue     : value = <I4, 2>
+//  1
+255  :     LoadValue     : value = <I4, 1>
+//  {1; 2;}
+256  :     NewList       : stackPatternCount = 2
+//  var list : int[] = {1; 2;};
+257  :     StoreLocalVar : var = 12(list)
+//  list
+258  :     LoadLocalVar  : var = 12(list)
+//  list of (variant<int[], string>)
+259  :     VBox          : typeInfo = system::List<system::Int32>^
+//  (variant in list of (variant<int[], string>))
+260  :     VUnbox        
+//  var listPayload = (variant in list of (variant<int[], string>));
+261  :     StoreLocalVar : var = 13(listPayload)
+//  1
+262  :     LoadValue     : value = <I4, 1>
+//  listPayload
+263  :     LoadLocalVar  : var = 13(listPayload)
+//  listPayload
+264  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::List
+//  (cast (int[]) listPayload)[1]
+265  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  2
+266  :     LoadValue     : value = <I4, 2>
+//  ((cast (int[]) listPayload)[1] == 2)
+267  :     CompareValue  
+//  Check(((cast (int[]) listPayload)[1] == 2))
+268  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int[]) listPayload)[1] == 2));
+269  :     Pop           
+//  ExtractTemporary()
+270  :     Invoke        : func = 2(ExtractTemporary), stackPatternCount = 0
+//  ExtractTemporary()
+271  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Function
+//  var function = (cast ((func (int) : (int))) ExtractTemporary());
+272  :     StoreLocalVar : var = 14(function)
+//  4
+273  :     LoadValue     : value = <I4, 4>
+//  function
+274  :     LoadLocalVar  : var = 14(function)
+//  function(4)
+275  :     InvokeProxy   : stackPatternCount = 1
+//  5
+276  :     LoadValue     : value = <I4, 5>
+//  (function(4) == 5)
+277  :     CompareValue  
+//  Check((function(4) == 5))
+278  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((function(4) == 5));
+279  :     Pop           
+//  VariantProvider::ErasedList()
+280  :     LoadValue     : value = <null>
+//  VariantProvider::ErasedList()
+281  :     InvokeMethod  : methodInfo = ErasedList<test::VariantProvider>, stackPatternCount = 0
+//  (variant in VariantProvider::ErasedList())
+282  :     VUnbox        
+//  (variant in VariantProvider::ErasedList())
+283  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::List
+//  var nativeList = (cast (List^) (variant in VariantProvider::ErasedList()));
+284  :     StoreLocalVar : var = 15(nativeList)
+//  0
+285  :     LoadValue     : value = <I4, 0>
+//  nativeList
+286  :     LoadLocalVar  : var = 15(nativeList)
+//  nativeList.Get(0)
+287  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  nativeList.Get(0)
+288  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  42
+289  :     LoadValue     : value = <I4, 42>
+//  ((cast (int) nativeList.Get(0)) == 42)
+290  :     CompareValue  
+//  Check(((cast (int) nativeList.Get(0)) == 42))
+291  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int) nativeList.Get(0)) == 42));
+292  :     Pop           
+//  VariantProvider::Enumerable()
+293  :     LoadValue     : value = <null>
+//  VariantProvider::Enumerable()
+294  :     InvokeMethod  : methodInfo = Enumerable<test::VariantProvider>, stackPatternCount = 0
+//  (variant in VariantProvider::Enumerable())
+295  :     VUnbox        
+//  (variant in VariantProvider::Enumerable())
+296  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var enumerable = (cast (int{}) (variant in VariantProvider::Enumerable()));
+297  :     StoreLocalVar : var = 16(enumerable)
+//  0
+298  :     LoadValue     : value = <I4, 0>
+//  var sum = 0;
+299  :     StoreLocalVar : var = 17(sum)
+//  enumerable
+300  :     LoadLocalVar  : var = 16(enumerable)
+//  enumerable
+301  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var <for-enumerable>value = enumerable of (::system::Enumerable^);
+302  :     StoreLocalVar : var = 18(<for-enumerable>value)
+//  <for-enumerable>value
+303  :     LoadLocalVar  : var = 18(<for-enumerable>value)
+//  <for-enumerable>value.CreateEnumerator()
+304  :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
+//  var <for-enumerator>value = <for-enumerable>value.CreateEnumerator();
+305  :     StoreLocalVar : var = 19(<for-enumerator>value)
+//  <for-enumerator>value
+306  :     LoadLocalVar  : var = 19(<for-enumerator>value)
+//  <for-enumerator>value.Next()
+307  :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
+//  while (<for-enumerator>value.Next())
+308  :     OpNot         : type = Bool
+//  while (<for-enumerator>value.Next())
+309  :     JumpIf        : label = 321
+//  <for-enumerator>value
+310  :     LoadLocalVar  : var = 19(<for-enumerator>value)
+//  <for-enumerator>value.GetCurrent()
+311  :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
+//  <for-enumerator>value.GetCurrent()
+312  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  var value = (cast (::system::Int32) <for-enumerator>value.GetCurrent());
+313  :     StoreLocalVar : var = 20(value)
+//  sum
+314  :     LoadLocalVar  : var = 17(sum)
+//  value
+315  :     LoadLocalVar  : var = 20(value)
+//  (sum + value)
+316  :     OpAdd         : type = I4
+//  (sum = (sum + value))
+317  :     Duplicate     : stackPatternCount = 0
+//  (sum = (sum + value))
+318  :     StoreLocalVar : var = 17(sum)
+//  (sum = (sum + value));
+319  :     Pop           
+//  while (<for-enumerator>value.Next())
+320  :     Jump          : label = 306
+//  sum
+321  :     LoadLocalVar  : var = 17(sum)
+//  6
+322  :     LoadValue     : value = <I4, 6>
+//  (sum == 6)
+323  :     CompareValue  
+//  Check((sum == 6))
+324  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((sum == 6));
+325  :     Pop           
+//  8
+326  :     LoadValue     : value = <I4, 8>
+//  var objectNumber : object = 8;
+327  :     StoreLocalVar : var = 21(objectNumber)
+//  objectNumber
+328  :     LoadLocalVar  : var = 21(objectNumber)
+//  objectNumber of (variant<object, int>)
+329  :     VBox          : typeInfo = system::Object
+//  var objectSlot = objectNumber of (variant<object, int>);
+330  :     StoreLocalVar : var = 22(objectSlot)
+//  objectSlot
+331  :     LoadLocalVar  : var = 22(objectSlot)
+//  (variant in objectSlot)
+332  :     VUnbox        
+//  (variant in objectSlot)
+333  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  8
+334  :     LoadValue     : value = <I4, 8>
+//  ((cast (int) (variant in objectSlot)) == 8)
+335  :     CompareValue  
+//  Check(((cast (int) (variant in objectSlot)) == 8))
+336  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int) (variant in objectSlot)) == 8));
+337  :     Pop           
+//  objectSlot
+338  :     LoadLocalVar  : var = 22(objectSlot)
+//  (cast (object) objectSlot)
+339  :     VCast         : typeInfo = system::Object
+//  (cast (object) objectSlot)
+340  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  8
+341  :     LoadValue     : value = <I4, 8>
+//  ((cast (int) (cast (object) objectSlot)) == 8)
+342  :     CompareValue  
+//  Check(((cast (int) (cast (object) objectSlot)) == 8))
+343  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int) (cast (object) objectSlot)) == 8));
+344  :     Pop           
+//  9
+345  :     LoadValue     : value = <I4, 9>
+//  9 of (variant<object, int>)
+346  :     VBox          : typeInfo = system::Int32
+//  (objectSlot = 9 of (variant<object, int>))
+347  :     Duplicate     : stackPatternCount = 0
+//  (objectSlot = 9 of (variant<object, int>))
+348  :     StoreLocalVar : var = 22(objectSlot)
+//  (objectSlot = 9 of (variant<object, int>));
+349  :     Pop           
+//  objectSlot
+350  :     LoadLocalVar  : var = 22(objectSlot)
+//  (variant in objectSlot)
+351  :     VUnbox        
+//  (variant in objectSlot)
+352  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  9
+353  :     LoadValue     : value = <I4, 9>
+//  ((cast (int) (variant in objectSlot)) == 9)
+354  :     CompareValue  
+//  Check(((cast (int) (variant in objectSlot)) == 9))
+355  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int) (variant in objectSlot)) == 9));
+356  :     Pop           
+//  false
+357  :     LoadValue     : value = <Bool, false>
+//  var failed = false;
+358  :     StoreLocalVar : var = 23(failed)
+//  try
+359  :     InstallTry    : label = 365
+//  objectSlot
+360  :     LoadLocalVar  : var = 22(objectSlot)
+//  (cast (object) objectSlot)
+361  :     VCast         : typeInfo = system::Object
+//  var wrong = (cast (object) objectSlot);
+362  :     StoreLocalVar : var = 24(wrong)
+//  try
+363  :     UninstallTry  : stackPatternCount = 0
+//  try
+364  :     Jump          : label = 383
+//  try
+365  :     LoadException 
+//  try
+366  :     StoreLocalVar : var = 25(<catch>ex)
+//  ex
+367  :     LoadLocalVar  : var = 25(<catch>ex)
+//  ex.Fatal
+368  :     InvokeMethod  : methodInfo = GetFatal<system::Exception>, stackPatternCount = 0
+//  (!ex.Fatal)
+369  :     OpNot         : type = Bool
+//  ex
+370  :     LoadLocalVar  : var = 25(<catch>ex)
+//  ex.Message
+371  :     InvokeMethod  : methodInfo = GetMessage<system::Exception>, stackPatternCount = 0
+//  "variant option"
+372  :     LoadValue     : value = <String, variant option>
+//  Sys::Find(ex.Message, "variant option")
+373  :     LoadValue     : value = <null>
+//  Sys::Find(ex.Message, "variant option")
+374  :     InvokeMethod  : methodInfo = Find<system::Sys>, stackPatternCount = 2
+//  1
+375  :     LoadValue     : value = <I4, 1>
+//  (-1)
+376  :     OpNegative    : type = I4
+//  (Sys::Find(ex.Message, "variant option") != (-1))
+377  :     CompareValue  
+//  (Sys::Find(ex.Message, "variant option") != (-1))
+378  :     OpNot         : type = Bool
+//  ((!ex.Fatal) and (Sys::Find(ex.Message, "variant option") != (-1)))
+379  :     OpAnd         : type = Bool
+//  (failed = ((!ex.Fatal) and (Sys::Find(ex.Message, "variant option") != (-1))))
+380  :     Duplicate     : stackPatternCount = 0
+//  (failed = ((!ex.Fatal) and (Sys::Find(ex.Message, "variant option") != (-1))))
+381  :     StoreLocalVar : var = 23(failed)
+//  (failed = ((!ex.Fatal) and (Sys::Find(ex.Message, "variant option") != (-1))));
+382  :     Pop           
+//  failed
+383  :     LoadLocalVar  : var = 23(failed)
+//  Check(failed)
+384  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(failed);
+385  :     Pop           
+//  null
+386  :     LoadValue     : value = <null>
+//  var objectNull : object = null;
+387  :     StoreLocalVar : var = 26(objectNull)
+//  objectNull
+388  :     LoadLocalVar  : var = 26(objectNull)
+//  objectNull of (variant<object, int>)
+389  :     VBox          : typeInfo = system::Object
+//  (variant in objectNull of (variant<object, int>))
+390  :     VUnbox        
+//  (variant in objectNull of (variant<object, int>)) is null
+391  :     LoadValue     : value = <null>
+//  (variant in objectNull of (variant<object, int>)) is null
+392  :     CompareReference
+//  Check((variant in objectNull of (variant<object, int>)) is null)
+393  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((variant in objectNull of (variant<object, int>)) is null);
+394  :     Pop           
+//  copy
+395  :     LoadLocalVar  : var = 9(copy)
+//  VariantProvider::Boxed(copy)
+396  :     LoadValue     : value = <null>
+//  VariantProvider::Boxed(copy)
+397  :     InvokeMethod  : methodInfo = Boxed<test::VariantProvider>, stackPatternCount = 1
+//  var boxed = VariantProvider::Boxed(copy);
+398  :     StoreLocalVar : var = 27(boxed)
+//  boxed
+399  :     LoadLocalVar  : var = 27(boxed)
+//  boxed of (variant<object, string>)
+400  :     VBox          : typeInfo = system::Object
+//  var outer = boxed of (variant<object, string>);
+401  :     StoreLocalVar : var = 28(outer)
+//  outer
+402  :     LoadLocalVar  : var = 28(outer)
+//  (variant in outer)
+403  :     VUnbox        
+//  var inner : object = (variant in outer);
+404  :     StoreLocalVar : var = 29(inner)
+//  inner
+405  :     LoadLocalVar  : var = 29(inner)
+//  inner is not null
+406  :     LoadValue     : value = <null>
+//  inner is not null
+407  :     CompareReference
+//  inner is not null
+408  :     OpNot         : type = Bool
+//  Check(inner is not null)
+409  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(inner is not null);
+410  :     Pop           
+//  inner
+411  :     LoadLocalVar  : var = 29(inner)
+//  inner is (int)
+412  :     TestType      : flag = BoxedValue, typeDescriptor = system::Int32
+//  (!inner is (int))
+413  :     OpNot         : type = Bool
+//  Check((!inner is (int)))
+414  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((!inner is (int)));
+415  :     Pop           
+//  inner
+416  :     LoadLocalVar  : var = 29(inner)
+//  copy
+417  :     LoadLocalVar  : var = 9(copy)
+//  (variant in copy)
+418  :     VUnbox        
+//  (inner != (variant in copy))
+419  :     CompareValue  
+//  (inner != (variant in copy))
+420  :     OpNot         : type = Bool
+//  Check((inner != (variant in copy)))
+421  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((inner != (variant in copy)));
+422  :     Pop           
+//  checks
+423  :     LoadGlobalVar : var = 0(checks)
+//  checks
+424  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  return checks;
+425  :     Return        
+//  func main() : (string)
+426  :     LoadValue     : value = <null>
+//  func main() : (string)
+427  :     Return        

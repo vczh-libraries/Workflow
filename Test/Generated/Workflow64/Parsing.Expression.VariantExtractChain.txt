@@ -1,0 +1,42 @@
+﻿========================================================
+Original
+========================================================
+variant in variant in cast variant<object, int> +value
+
+========================================================
+Printed
+========================================================
+(variant in (variant in (cast (variant<object, int>) (+value))))
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "UnaryExpression", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 0, "column": 53, "index": 53}, "codeIndex": -1}},
+    "op": "VariantExtract",
+    "operand": {
+        "$ast": { "type": "UnaryExpression", "codeRange": {"start": {"row": 0, "column": 11, "index": 11}, "end": {"row": 0, "column": 53, "index": 53}, "codeIndex": -1}},
+        "op": "VariantExtract",
+        "operand": {
+            "$ast": { "type": "TypeCastingExpression", "codeRange": {"start": {"row": 0, "column": 22, "index": 22}, "end": {"row": 0, "column": 53, "index": 53}, "codeIndex": -1}},
+            "expression": {
+                "$ast": { "type": "UnaryExpression", "codeRange": {"start": {"row": 0, "column": 48, "index": 48}, "end": {"row": 0, "column": 53, "index": 53}, "codeIndex": -1}},
+                "op": "Positive",
+                "operand": {
+                    "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 0, "column": 49, "index": 49}, "end": {"row": 0, "column": 53, "index": 53}, "codeIndex": -1}},
+                    "name": { "value": "value", "codeRange": {"start": {"row": 0, "column": 49, "index": 49}, "end": {"row": 0, "column": 53, "index": 53}, "codeIndex": -1}}
+                }
+            },
+            "strategy": "Strong",
+            "type": {
+                "$ast": { "type": "VariantType", "codeRange": {"start": {"row": 0, "column": 27, "index": 27}, "end": {"row": 0, "column": 46, "index": 46}, "codeIndex": -1}},
+                "arguments": [{
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 0, "column": 35, "index": 35}, "end": {"row": 0, "column": 40, "index": 40}, "codeIndex": -1}},
+                    "name": "Object"
+                }, {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 0, "column": 43, "index": 43}, "end": {"row": 0, "column": 45, "index": 45}, "codeIndex": -1}},
+                    "name": "Int"
+                }]
+            }
+        }
+    }
+}
