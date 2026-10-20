@@ -77,7 +77,7 @@ Global Functions
 			{
 				auto value = ::vl::__vwsn::Unbox<::vl::Variant<::vl::vint64_t, ::vl::WString>>(::vl::__vwsn::This(__vwsn_for_enumerator_value.Obj())->GetCurrent());
 				{
-					(result = (result + ((::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantPayload(value), ::vl::__vwsn::VariantPayload(number)) == 0) ? ::vl::WString::Unmanaged(L"n") : ::vl::WString::Unmanaged(L"t"))));
+					(result = (result + ((::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantExtractObject(value), ::vl::__vwsn::VariantExtractObject(number)) == 0) ? ::vl::WString::Unmanaged(L"n") : ::vl::WString::Unmanaged(L"t"))));
 				}
 			}
 		}
@@ -100,7 +100,7 @@ Global Functions
 		}
 		GLOBAL_NAME Check(failed);
 		auto empty = ::test::VariantProvider::EmptyNullable();
-		GLOBAL_NAME Check((::vl::__vwsn::VariantPayload(empty).IsNull()));
+		GLOBAL_NAME Check((::vl::__vwsn::VariantExtractObject(empty).IsNull()));
 		GLOBAL_NAME Check((! static_cast<bool>(::vl::__vwsn::VariantExtract<::vl::Nullable<::vl::vint64_t>, 0>(empty, true))));
 		auto function = ::vl::__vwsn::VariantExtract<::vl::Func<::vl::vint64_t(::vl::vint64_t)>, 0>(::test::VariantProvider::Function(), true);
 		GLOBAL_NAME Check((function(static_cast<::vl::vint64_t>(4L)) == static_cast<::vl::vint64_t>(5L)));

@@ -241,6 +241,7 @@ namespace vl::workflow
 		Positive = 0,
 		Negative = 1,
 		Not = 2,
+		VariantExtract = 3,
 	};
 
 	enum class WfBinaryOperator

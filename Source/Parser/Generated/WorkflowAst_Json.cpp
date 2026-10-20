@@ -1504,6 +1504,9 @@ namespace vl::workflow
 			case vl::workflow::WfUnaryOperator::Positive:
 				WriteString(vl::WString::Unmanaged(L"Positive"));
 				break;
+			case vl::workflow::WfUnaryOperator::VariantExtract:
+				WriteString(vl::WString::Unmanaged(L"VariantExtract"));
+				break;
 			default:
 				WriteNull();
 			}
@@ -6539,6 +6542,7 @@ namespace vl::workflow
 				if (jsonString->content.value == L"Positive") node->op = WfUnaryOperator::Positive;
 				else if (jsonString->content.value == L"Negative") node->op = WfUnaryOperator::Negative;
 				else if (jsonString->content.value == L"Not") node->op = WfUnaryOperator::Not;
+				else if (jsonString->content.value == L"VariantExtract") node->op = WfUnaryOperator::VariantExtract;
 				else throw vl::Exception(L"AST JSON field \"op\" contains an unknown enum item.");
 			}
 			if (auto value = FindField(vl::WString::Unmanaged(L"operand")))

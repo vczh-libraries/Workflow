@@ -103,6 +103,8 @@
 #include "VariantCastsReflection.h"
 #include "VariantComparison.h"
 #include "VariantCoroutine.h"
+#include "VariantExtractBinding.h"
+#include "VariantExtractObjectReflection.h"
 #include "VariantInstructionTypes.h"
 #include "VariantIteration.h"
 #include "VariantNative.h"
@@ -165,6 +167,7 @@ void LoadTestCaseTypes()
 	 LoadStructCtorTypes();
 	 LoadStructCtor2Types();
 	 LoadVariantCastsTypes();
+	 LoadVariantExtractObjectTypes();
 	 LoadVariantStateMachineTypes();
 	 LoadVariantStorageTypes();
 	 LoadWorkflowAttributesTypes();
@@ -1115,6 +1118,24 @@ TEST_CASE(L"VariantCoroutine")
 {
 	WString expected = L"1done";
 	WString actual = ::vl_workflow_global::VariantCoroutine::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"VariantExtractBinding")
+{
+	WString expected = L"[1][text]";
+	WString actual = ::vl_workflow_global::VariantExtractBinding::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"VariantExtractObject")
+{
+	WString expected = L"33";
+	WString actual = ::vl_workflow_global::VariantExtractObject::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);

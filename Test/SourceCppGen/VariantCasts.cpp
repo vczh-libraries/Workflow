@@ -84,7 +84,7 @@ Global Functions
 	::vl::vint VariantCasts::EscapedPayload()
 	{
 		auto value = ::vl::Variant<::vl::vint, ::vl::WString>(::vl::VariantIndex<0>{}, static_cast<::vl::vint>(1));
-		auto escaped = ::vl::__vwsn::Box(value);
+		auto escaped = ::test::VariantProvider::Boxed(value);
 		return ::vl::__vwsn::Unbox<::vl::vint>(escaped);
 	}
 
@@ -96,7 +96,7 @@ Global Functions
 	void VariantCasts::SerializeEscapedVariant(::vl::vint mode)
 	{
 		auto value = ::vl::Variant<::vl::vint, ::vl::WString>(::vl::VariantIndex<0>{}, static_cast<::vl::vint>(1));
-		auto escaped = ::vl::__vwsn::Box(value);
+		auto escaped = ::test::VariantProvider::Boxed(value);
 		if ((mode == static_cast<::vl::vint>(0)))
 		{
 			GLOBAL_NAME SerializeRpcValue(escaped);
@@ -139,8 +139,8 @@ Global Functions
 		GLOBAL_NAME Check((! static_cast<bool>(::vl::__vwsn::VariantExtract<::vl::Nullable<::vl::vint>, 0, 1>(missing, false))));
 		GLOBAL_NAME Check((! static_cast<bool>(::vl::__vwsn::VariantExtract<::vl::Nullable<::vl::vint>, 1>(missing, true))));
 		GLOBAL_NAME Check((! static_cast<bool>(::vl::__vwsn::VariantExtract<::vl::Nullable<::vl::vint>, 0>(::vl::__vwsn::VariantCast<::vl::Variant<::vl::Nullable<::vl::vint>, bool>, -1, 0, -1>(missing), true))));
-		GLOBAL_NAME Check((::vl::__vwsn::VariantPayload(missing).IsNull()));
-		GLOBAL_NAME Check((!::vl::__vwsn::VariantPayload(plain).IsNull()));
+		GLOBAL_NAME Check((::vl::__vwsn::VariantExtractObject(missing).IsNull()));
+		GLOBAL_NAME Check((!::vl::__vwsn::VariantExtractObject(plain).IsNull()));
 		GLOBAL_NAME ExpectFailure(vl::Func(::vl_workflow_global::__vwsnf3_VariantCasts_main_(plain)));
 		GLOBAL_NAME ExpectFailure(vl::Func(::vl_workflow_global::__vwsnf4_VariantCasts_main_(missing)));
 		auto other = ::vl::Variant<::vl::vint, ::vl::Nullable<::vl::vint>, ::vl::WString>(::vl::VariantIndex<2>{}, ::vl::WString::Unmanaged(L"other"));
@@ -152,7 +152,7 @@ Global Functions
 		GLOBAL_NAME Check((::vl::__vwsn::VariantExtract<::VariantBase*, 0>(baseSlot, true) == nullptr));
 		GLOBAL_NAME Check((::vl::__vwsn::VariantExtract<::VariantBase*, 0>(baseSlot, false) == nullptr));
 		GLOBAL_NAME Check((::vl::__vwsn::VariantExtract<::VariantBase*, 0>(derivedSlot, false) == nullptr));
-		GLOBAL_NAME Check((::vl::__vwsn::VariantPayload(baseSlot).IsNull()));
+		GLOBAL_NAME Check((::vl::__vwsn::VariantExtractObject(baseSlot).IsNull()));
 		GLOBAL_NAME Check((::vl::__vwsn::VariantExtract<::VariantBase*, 0>(::vl::__vwsn::VariantCast<::vl::Variant<::VariantBase*, bool>, 0, -1, -1>(baseSlot), true) == nullptr));
 		GLOBAL_NAME ExpectFailure(vl::Func(::vl_workflow_global::__vwsnf5_VariantCasts_main_(derivedSlot)));
 		auto rawReordered = ::vl::__vwsn::VariantCast<::vl::Variant<::vl::WString, ::VariantDerived*, ::VariantBase*>, 2, 1, 0>(baseSlot);
@@ -166,8 +166,8 @@ Global Functions
 		auto raw = ::vl::__vwsn::Ensure(static_cast<::VariantBase*>(owner.Obj()));
 		auto taggedBase = ::vl::Variant<::VariantBase*, ::VariantDerived*>(::vl::VariantIndex<0>{}, raw);
 		GLOBAL_NAME Check((::vl::__vwsn::VariantExtract<::VariantBase*, 0>(taggedBase, true) == raw));
-		GLOBAL_NAME Check((::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantPayload(taggedBase), ::vl::__vwsn::Box(raw)) == 0));
-		GLOBAL_NAME Check((::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::Box(raw), ::vl::__vwsn::VariantPayload(taggedBase)) == 0));
+		GLOBAL_NAME Check((::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantExtractObject(taggedBase), ::vl::__vwsn::Box(raw)) == 0));
+		GLOBAL_NAME Check((::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::Box(raw), ::vl::__vwsn::VariantExtractObject(taggedBase)) == 0));
 		GLOBAL_NAME Check((::vl::__vwsn::VariantExtract<::VariantBase*, 0>(taggedBase, false) == raw));
 		GLOBAL_NAME Check((::vl::__vwsn::VariantExtract<::VariantDerived*, 1>(taggedBase, false) == nullptr));
 		GLOBAL_NAME ExpectFailure(vl::Func(::vl_workflow_global::__vwsnf8_VariantCasts_main_(taggedBase)));
@@ -176,7 +176,7 @@ Global Functions
 		auto sharedBase = ::vl::Variant<::vl::Ptr<::VariantBase>, ::vl::Ptr<::VariantDerived>, ::vl::WString>(::vl::VariantIndex<0>{}, sharedNull);
 		auto sharedDerived = ::vl::Variant<::vl::Ptr<::VariantBase>, ::vl::Ptr<::VariantDerived>, ::vl::WString>(::vl::VariantIndex<1>{}, sharedDerivedNull);
 		GLOBAL_NAME Check((! static_cast<bool>(::vl::__vwsn::VariantExtract<::vl::Ptr<::VariantBase>, 0>(sharedBase, true))));
-		GLOBAL_NAME Check((::vl::__vwsn::VariantPayload(sharedBase).IsNull()));
+		GLOBAL_NAME Check((::vl::__vwsn::VariantExtractObject(sharedBase).IsNull()));
 		GLOBAL_NAME Check((! static_cast<bool>(::vl::__vwsn::VariantExtract<::vl::Ptr<::VariantBase>, 0>(::vl::__vwsn::VariantCast<::vl::Variant<::vl::Ptr<::VariantBase>, bool>, 0, -1, -1>(sharedBase), true))));
 		GLOBAL_NAME ExpectFailure(vl::Func(::vl_workflow_global::__vwsnf9_VariantCasts_main_(sharedDerived)));
 		GLOBAL_NAME Check((! static_cast<bool>(::vl::__vwsn::VariantExtract<::vl::Ptr<::VariantBase>, 0>(sharedDerived, false))));
@@ -189,14 +189,14 @@ Global Functions
 		GLOBAL_NAME Check((! static_cast<bool>(::vl::__vwsn::VariantExtract<::vl::Ptr<::VariantDerived>, 1>(::vl::__vwsn::Unbox<::vl::Variant<::vl::Ptr<::VariantBase>, ::vl::Ptr<::VariantDerived>, ::vl::WString>>(::vl::__vwsn::This(sharedSlots.Obj())->Get(static_cast<::vl::vint>(1))), true))));
 		auto taggedShared = ::vl::Variant<::vl::Ptr<::VariantBase>, ::vl::Ptr<::VariantDerived>>(::vl::VariantIndex<0>{}, owner);
 		GLOBAL_NAME Check((::vl::__vwsn::VariantExtract<::vl::Ptr<::VariantBase>, 0>(taggedShared, true).Obj() == owner.Obj()));
-		GLOBAL_NAME Check((::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantPayload(taggedShared), ::vl::__vwsn::Box(owner)) == 0));
-		GLOBAL_NAME Check((::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::Box(owner), ::vl::__vwsn::VariantPayload(taggedShared)) == 0));
+		GLOBAL_NAME Check((::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantExtractObject(taggedShared), ::vl::__vwsn::Box(owner)) == 0));
+		GLOBAL_NAME Check((::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::Box(owner), ::vl::__vwsn::VariantExtractObject(taggedShared)) == 0));
 		GLOBAL_NAME Check((::vl::__vwsn::VariantExtract<::vl::Ptr<::VariantBase>, 0>(taggedShared, false).Obj() == owner.Obj()));
 		GLOBAL_NAME ExpectFailure(vl::Func(::vl_workflow_global::__vwsnf12_VariantCasts_main_(taggedShared)));
 		auto objectNull = ::vl::reflection::description::Value();
 		auto objectSlot = ::vl::Variant<::vl::reflection::description::Value, ::vl::Nullable<::vl::vint>, ::vl::vint>(::vl::VariantIndex<0>{}, objectNull);
 		GLOBAL_NAME Check(::vl::__vwsn::VariantExtract<::vl::reflection::description::Value, 0>(objectSlot, true).IsNull());
-		GLOBAL_NAME Check((::vl::__vwsn::VariantPayload(objectSlot).IsNull()));
+		GLOBAL_NAME Check((::vl::__vwsn::VariantExtractObject(objectSlot).IsNull()));
 		GLOBAL_NAME ExpectFailure(vl::Func(::vl_workflow_global::__vwsnf13_VariantCasts_main_(objectSlot)));
 		auto nullableSlot = ::vl::Variant<::vl::reflection::description::Value, ::vl::Nullable<::vl::vint>, ::vl::vint>(::vl::VariantIndex<1>{}, empty);
 		GLOBAL_NAME ExpectFailure(vl::Func(::vl_workflow_global::__vwsnf14_VariantCasts_main_(nullableSlot)));
@@ -204,13 +204,13 @@ Global Functions
 		auto opaque = ::vl::Variant<::vl::reflection::description::Value, ::vl::Nullable<::vl::vint>, ::vl::vint>(::vl::VariantIndex<0>{}, objectNumber);
 		GLOBAL_NAME Check((::vl::__vwsn::Unbox<::vl::vint>(::vl::__vwsn::VariantExtract<::vl::reflection::description::Value, 0>(opaque, true)) == static_cast<::vl::vint>(42)));
 		GLOBAL_NAME ExpectFailure(vl::Func(::vl_workflow_global::__vwsnf15_VariantCasts_main_(opaque)));
-		auto escaped = ::vl::__vwsn::Box(number);
+		auto escaped = ::test::VariantProvider::Boxed(number);
 		GLOBAL_NAME Check((! escaped.IsNull()));
 		auto copied = missing;
 		(missing = other);
-		GLOBAL_NAME Check((::vl::__vwsn::VariantPayload(copied).IsNull()));
+		GLOBAL_NAME Check((::vl::__vwsn::VariantExtractObject(copied).IsNull()));
 		GLOBAL_NAME Check((! static_cast<bool>(::vl::__vwsn::VariantExtract<::vl::Nullable<::vl::vint>, 1>(copied, true))));
-		GLOBAL_NAME Check((!::vl::__vwsn::VariantPayload(missing).IsNull()));
+		GLOBAL_NAME Check((!::vl::__vwsn::VariantExtractObject(missing).IsNull()));
 		return ::vl::__vwsn::ToString(GLOBAL_NAME checks);
 	}
 

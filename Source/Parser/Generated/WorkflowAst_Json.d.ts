@@ -26,7 +26,7 @@ export type StateInvokeType = "Goto" | "Push";
 
 export type LiteralValue = "Null" | "True" | "False";
 
-export type UnaryOperator = "Positive" | "Negative" | "Not";
+export type UnaryOperator = "Positive" | "Negative" | "Not" | "VariantExtract";
 
 export type BinaryOperator = "Assign" | "Index" | "FlagAnd" | "FlagOr" | "FailedThen" | "Exp" | "Add" | "Sub" | "Mul" | "Div" | "Mod" | "Shl" | "Shr" | "LT" | "GT" | "LE" | "GE" | "EQ" | "NE" | "Xor" | "And" | "Or";
 

@@ -1364,6 +1364,7 @@ namespace vl::reflection::description
 		ENUM_NAMESPACE_ITEM(Positive)
 		ENUM_NAMESPACE_ITEM(Negative)
 		ENUM_NAMESPACE_ITEM(Not)
+		ENUM_NAMESPACE_ITEM(VariantExtract)
 	END_ENUM_ITEM(vl::workflow::WfUnaryOperator)
 
 	BEGIN_CLASS_MEMBER(vl::workflow::WfUnaryExpression)

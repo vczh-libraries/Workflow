@@ -45,10 +45,10 @@ namespace __vwsn_structs
 
 		std::partial_ordering operator<=>(const _VariantFields& other) const
 		{
-			if (auto result = ::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantPayload(number), ::vl::__vwsn::VariantPayload(other.number)); result != 0) return result;
-			if (auto result = ::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantPayload(optional), ::vl::__vwsn::VariantPayload(other.optional)); result != 0) return result;
-			if (auto result = ::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantPayload(objectValue), ::vl::__vwsn::VariantPayload(other.objectValue)); result != 0) return result;
-			if (auto result = ::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantPayload(nested), ::vl::__vwsn::VariantPayload(other.nested)); result != 0) return result;
+			if (auto result = ::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantExtractObject(number), ::vl::__vwsn::VariantExtractObject(other.number)); result != 0) return result;
+			if (auto result = ::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantExtractObject(optional), ::vl::__vwsn::VariantExtractObject(other.optional)); result != 0) return result;
+			if (auto result = ::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantExtractObject(objectValue), ::vl::__vwsn::VariantExtractObject(other.objectValue)); result != 0) return result;
+			if (auto result = ::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantExtractObject(nested), ::vl::__vwsn::VariantExtractObject(other.nested)); result != 0) return result;
 			return std::partial_ordering::equivalent;
 		}
 		bool operator==(const _VariantFields& other) const { return (*this <=> other) == 0; }
