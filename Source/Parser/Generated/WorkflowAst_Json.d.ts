@@ -42,7 +42,7 @@ export type ObserveType = "SimpleObserve" | "ExtendedObserve";
 
 export type ModuleType = "Module" | "Unit";
 
-export type Type = PredefinedType | TopQualifiedType | ReferenceType | RawPointerType | SharedPointerType | NullableType | EnumerableType | MapType | ObservableListType | FunctionType | ChildType;
+export type Type = PredefinedType | TopQualifiedType | ReferenceType | RawPointerType | SharedPointerType | NullableType | EnumerableType | MapType | ObservableListType | FunctionType | VariantType | ChildType;
 
 export type Expression = ThisExpression | TopQualifiedExpression | ReferenceExpression | OrderedNameExpression | OrderedLambdaExpression | MemberExpression | ChildExpression | LiteralExpression | FloatingExpression | IntegerExpression | StringExpression | UnaryExpression | BinaryExpression | LetExpression | IfExpression | RangeExpression | SetTestingExpression | ConstructorExpression | InferExpression | TypeCastingExpression | TypeTestingExpression | TypeOfTypeExpression | TypeOfExpressionExpression | AttachEventExpression | DetachEventExpression | ObserveExpression | CallExpression | FunctionExpression | NewClassExpression | NewInterfaceExpression | FormatExpression | BindExpression | NewCoroutineExpression | MixinCastExpression | ExpectedTypeCastExpression | CoOperatorExpression;
 
@@ -148,6 +148,11 @@ export interface ObservableListType {
 export interface FunctionType {
     $ast: "FunctionType";
     result: Type | null;
+    arguments: (Type | null)[];
+}
+
+export interface VariantType {
+    $ast: "VariantType";
     arguments: (Type | null)[];
 }
 
@@ -595,6 +600,7 @@ export interface CallExpression {
     $ast: "CallExpression";
     function: Expression | null;
     arguments: (Expression | null)[];
+    typedResult: Type | null;
 }
 
 export interface FunctionExpression {

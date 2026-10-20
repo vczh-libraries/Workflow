@@ -55,6 +55,10 @@ TypeVisitor
 	{
 	}
 
+	void TypeVisitor::Visit(WfVariantType* node)
+	{
+	}
+
 	void TypeVisitor::Visit(WfChildType* node)
 	{
 	}

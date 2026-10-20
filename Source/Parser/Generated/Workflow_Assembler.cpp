@@ -212,6 +212,8 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::Ptr(new vl::workflow::WfVariableDeclaration);
 		case WorkflowClasses::VariableStatement:
 			return vl::Ptr(new vl::workflow::WfVariableStatement);
+		case WorkflowClasses::VariantType:
+			return vl::Ptr(new vl::workflow::WfVariantType);
 		case WorkflowClasses::WhileStatement:
 			return vl::Ptr(new vl::workflow::WfWhileStatement);
 		default:
@@ -250,6 +252,8 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfCallExpression::arguments, object, field, value, cppFieldName);
 		case WorkflowFields::CallExpression_function:
 			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfCallExpression::function, object, field, value, cppFieldName);
+		case WorkflowFields::CallExpression_typedResult:
+			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfCallExpression::typedResult, object, field, value, cppFieldName);
 		case WorkflowFields::CastResultInterfaceDeclaration_baseType:
 			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfCastResultInterfaceDeclaration::baseType, object, field, value, cppFieldName);
 		case WorkflowFields::CastResultInterfaceDeclaration_elementType:
@@ -470,6 +474,8 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfVariableDeclaration::type, object, field, value, cppFieldName);
 		case WorkflowFields::VariableStatement_variable:
 			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfVariableStatement::variable, object, field, value, cppFieldName);
+		case WorkflowFields::VariantType_arguments:
+			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfVariantType::arguments, object, field, value, cppFieldName);
 		case WorkflowFields::VirtualCfeDeclaration_expandedDeclarations:
 			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfVirtualCfeDeclaration::expandedDeclarations, object, field, value, cppFieldName);
 		case WorkflowFields::VirtualCfeExpression_expandedExpression:
@@ -752,6 +758,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"UnaryExpression",
 			L"VariableDeclaration",
 			L"VariableStatement",
+			L"VariantType",
 			L"VirtualCfeDeclaration",
 			L"VirtualCfeExpression",
 			L"VirtualCseDeclaration",
@@ -760,7 +767,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"WhileStatement",
 		};
 		vl::vint index = (vl::vint)type;
-		return 0 <= index && index < 110 ? results[index] : nullptr;
+		return 0 <= index && index < 111 ? results[index] : nullptr;
 	}
 
 	const wchar_t* WorkflowCppTypeName(WorkflowClasses type)
@@ -870,6 +877,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::workflow::WfUnaryExpression",
 			L"vl::workflow::WfVariableDeclaration",
 			L"vl::workflow::WfVariableStatement",
+			L"vl::workflow::WfVariantType",
 			L"vl::workflow::WfVirtualCfeDeclaration",
 			L"vl::workflow::WfVirtualCfeExpression",
 			L"vl::workflow::WfVirtualCseDeclaration",
@@ -878,7 +886,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::workflow::WfWhileStatement",
 		};
 		vl::vint index = (vl::vint)type;
-		return 0 <= index && index < 110 ? results[index] : nullptr;
+		return 0 <= index && index < 111 ? results[index] : nullptr;
 	}
 
 	const wchar_t* WorkflowFieldName(WorkflowFields field)
@@ -904,6 +912,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"BlockStatement::statements",
 			L"CallExpression::arguments",
 			L"CallExpression::function",
+			L"CallExpression::typedResult",
 			L"CastResultInterfaceDeclaration::baseType",
 			L"CastResultInterfaceDeclaration::elementType",
 			L"ChildExpression::name",
@@ -1075,6 +1084,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"VariableDeclaration::expression",
 			L"VariableDeclaration::type",
 			L"VariableStatement::variable",
+			L"VariantType::arguments",
 			L"VirtualCfeDeclaration::expandedDeclarations",
 			L"VirtualCfeExpression::expandedExpression",
 			L"VirtualCseDeclaration::expandedDeclarations",
@@ -1084,7 +1094,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"WhileStatement::statement",
 		};
 		vl::vint index = (vl::vint)field;
-		return 0 <= index && index < 198 ? results[index] : nullptr;
+		return 0 <= index && index < 200 ? results[index] : nullptr;
 	}
 
 	const wchar_t* WorkflowCppFieldName(WorkflowFields field)
@@ -1110,6 +1120,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::workflow::WfBlockStatement::statements",
 			L"vl::workflow::WfCallExpression::arguments",
 			L"vl::workflow::WfCallExpression::function",
+			L"vl::workflow::WfCallExpression::typedResult",
 			L"vl::workflow::WfCastResultInterfaceDeclaration::baseType",
 			L"vl::workflow::WfCastResultInterfaceDeclaration::elementType",
 			L"vl::workflow::WfChildExpression::name",
@@ -1281,6 +1292,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::workflow::WfVariableDeclaration::expression",
 			L"vl::workflow::WfVariableDeclaration::type",
 			L"vl::workflow::WfVariableStatement::variable",
+			L"vl::workflow::WfVariantType::arguments",
 			L"vl::workflow::WfVirtualCfeDeclaration::expandedDeclarations",
 			L"vl::workflow::WfVirtualCfeExpression::expandedExpression",
 			L"vl::workflow::WfVirtualCseDeclaration::expandedDeclarations",
@@ -1290,7 +1302,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::workflow::WfWhileStatement::statement",
 		};
 		vl::vint index = (vl::vint)field;
-		return 0 <= index && index < 198 ? results[index] : nullptr;
+		return 0 <= index && index < 200 ? results[index] : nullptr;
 	}
 
 	vl::Ptr<vl::glr::ParsingAstBase> WorkflowAstInsReceiver::ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates)

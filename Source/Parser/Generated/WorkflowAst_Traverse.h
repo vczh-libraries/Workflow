@@ -134,6 +134,7 @@ namespace vl::workflow::traverse_visitor
 		virtual void Traverse(WfUnaryExpression* node);
 		virtual void Traverse(WfVariableDeclaration* node);
 		virtual void Traverse(WfVariableStatement* node);
+		virtual void Traverse(WfVariantType* node);
 		virtual void Traverse(WfVirtualCfeDeclaration* node);
 		virtual void Traverse(WfVirtualCfeExpression* node);
 		virtual void Traverse(WfVirtualCseDeclaration* node);
@@ -247,6 +248,7 @@ namespace vl::workflow::traverse_visitor
 		virtual void Finishing(WfUnaryExpression* node);
 		virtual void Finishing(WfVariableDeclaration* node);
 		virtual void Finishing(WfVariableStatement* node);
+		virtual void Finishing(WfVariantType* node);
 		virtual void Finishing(WfVirtualCfeDeclaration* node);
 		virtual void Finishing(WfVirtualCfeExpression* node);
 		virtual void Finishing(WfVirtualCseDeclaration* node);
@@ -265,6 +267,7 @@ namespace vl::workflow::traverse_visitor
 		void Visit(WfMapType* node) override;
 		void Visit(WfObservableListType* node) override;
 		void Visit(WfFunctionType* node) override;
+		void Visit(WfVariantType* node) override;
 		void Visit(WfChildType* node) override;
 
 		void Visit(WfThisExpression* node) override;

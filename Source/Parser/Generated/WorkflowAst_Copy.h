@@ -132,6 +132,7 @@ namespace vl::workflow::copy_visitor
 		void CopyFields(WfUnaryExpression* from, WfUnaryExpression* to);
 		void CopyFields(WfVariableDeclaration* from, WfVariableDeclaration* to);
 		void CopyFields(WfVariableStatement* from, WfVariableStatement* to);
+		void CopyFields(WfVariantType* from, WfVariantType* to);
 		void CopyFields(WfVirtualCfeDeclaration* from, WfVirtualCfeDeclaration* to);
 		void CopyFields(WfVirtualCfeExpression* from, WfVirtualCfeExpression* to);
 		void CopyFields(WfVirtualCseDeclaration* from, WfVirtualCseDeclaration* to);
@@ -167,6 +168,7 @@ namespace vl::workflow::copy_visitor
 		void Visit(WfMapType* node) override;
 		void Visit(WfObservableListType* node) override;
 		void Visit(WfFunctionType* node) override;
+		void Visit(WfVariantType* node) override;
 		void Visit(WfChildType* node) override;
 
 		void Visit(WfThisExpression* node) override;
@@ -364,6 +366,7 @@ namespace vl::workflow::copy_visitor
 		vl::Ptr<WfUnaryExpression> CopyNode(WfUnaryExpression* node);
 		vl::Ptr<WfVariableDeclaration> CopyNode(WfVariableDeclaration* node);
 		vl::Ptr<WfVariableStatement> CopyNode(WfVariableStatement* node);
+		vl::Ptr<WfVariantType> CopyNode(WfVariantType* node);
 		vl::Ptr<WfVirtualCfeDeclaration> CopyNode(WfVirtualCfeDeclaration* node);
 		vl::Ptr<WfVirtualCfeExpression> CopyNode(WfVirtualCfeExpression* node);
 		vl::Ptr<WfVirtualCseDeclaration> CopyNode(WfVirtualCseDeclaration* node);

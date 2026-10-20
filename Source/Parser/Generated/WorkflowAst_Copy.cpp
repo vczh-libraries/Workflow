@@ -78,6 +78,7 @@ namespace vl::workflow::copy_visitor
 			to->arguments.Add(CopyNode(listItem.Obj()));
 		}
 		to->function = CopyNode(from->function.Obj());
+		to->typedResult = CopyNode(from->typedResult.Obj());
 	}
 
 	void AstVisitor::CopyFields(WfCastResultInterfaceDeclaration* from, WfCastResultInterfaceDeclaration* to)
@@ -806,6 +807,15 @@ namespace vl::workflow::copy_visitor
 		to->variable = CopyNode(from->variable.Obj());
 	}
 
+	void AstVisitor::CopyFields(WfVariantType* from, WfVariantType* to)
+	{
+		CopyFields(static_cast<WfType*>(from), static_cast<WfType*>(to));
+		for (auto&& listItem : from->arguments)
+		{
+			to->arguments.Add(CopyNode(listItem.Obj()));
+		}
+	}
+
 	void AstVisitor::CopyFields(WfVirtualCfeDeclaration* from, WfVirtualCfeDeclaration* to)
 	{
 		CopyFields(static_cast<WfDeclaration*>(from), static_cast<WfDeclaration*>(to));
@@ -1027,6 +1037,13 @@ namespace vl::workflow::copy_visitor
 	void AstVisitor::Visit(WfFunctionType* node)
 	{
 		auto newNode = vl::Ptr(new WfFunctionType);
+		CopyFields(node, newNode.Obj());
+		this->result = newNode;
+	}
+
+	void AstVisitor::Visit(WfVariantType* node)
+	{
+		auto newNode = vl::Ptr(new WfVariantType);
 		CopyFields(node, newNode.Obj());
 		this->result = newNode;
 	}
@@ -2234,6 +2251,12 @@ namespace vl::workflow::copy_visitor
 	{
 		if (!node) return nullptr;
 		return CopyNode(static_cast<WfStatement*>(node)).Cast<WfVariableStatement>();
+	}
+
+	vl::Ptr<WfVariantType> AstVisitor::CopyNode(WfVariantType* node)
+	{
+		if (!node) return nullptr;
+		return CopyNode(static_cast<WfType*>(node)).Cast<WfVariantType>();
 	}
 
 	vl::Ptr<WfVirtualCfeDeclaration> AstVisitor::CopyNode(WfVirtualCfeDeclaration* node)

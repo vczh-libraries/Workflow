@@ -115,6 +115,7 @@ namespace vl::workflow
 	class WfUnaryExpression;
 	class WfVariableDeclaration;
 	class WfVariableStatement;
+	class WfVariantType;
 	class WfVirtualCfeDeclaration;
 	class WfVirtualCfeExpression;
 	class WfVirtualCseDeclaration;
@@ -329,6 +330,7 @@ namespace vl::workflow
 			virtual void Visit(WfMapType* node) = 0;
 			virtual void Visit(WfObservableListType* node) = 0;
 			virtual void Visit(WfFunctionType* node) = 0;
+			virtual void Visit(WfVariantType* node) = 0;
 			virtual void Visit(WfChildType* node) = 0;
 		};
 
@@ -520,6 +522,14 @@ namespace vl::workflow
 	{
 	public:
 		vl::Ptr<WfType> result;
+		vl::collections::List<vl::Ptr<WfType>> arguments;
+
+		void Accept(WfType::IVisitor* visitor) override;
+	};
+
+	class WfVariantType : public WfType, vl::reflection::Description<WfVariantType>
+	{
+	public:
 		vl::collections::List<vl::Ptr<WfType>> arguments;
 
 		void Accept(WfType::IVisitor* visitor) override;
@@ -1245,6 +1255,7 @@ namespace vl::workflow
 	public:
 		vl::Ptr<WfExpression> function;
 		vl::collections::List<vl::Ptr<WfExpression>> arguments;
+		vl::Ptr<WfType> typedResult;
 
 		void Accept(WfExpression::IVisitor* visitor) override;
 	};
@@ -1437,6 +1448,7 @@ namespace vl::reflection::description
 	DECL_TYPE_INFO(vl::workflow::WfMapType)
 	DECL_TYPE_INFO(vl::workflow::WfObservableListType)
 	DECL_TYPE_INFO(vl::workflow::WfFunctionType)
+	DECL_TYPE_INFO(vl::workflow::WfVariantType)
 	DECL_TYPE_INFO(vl::workflow::WfChildType)
 	DECL_TYPE_INFO(vl::workflow::WfNamespaceDeclaration)
 	DECL_TYPE_INFO(vl::workflow::WfFunctionArgument)
@@ -1609,6 +1621,11 @@ namespace vl::reflection::description
 		}
 
 		void Visit(vl::workflow::WfFunctionType* node) override
+		{
+			INVOKE_INTERFACE_PROXY(Visit, node);
+		}
+
+		void Visit(vl::workflow::WfVariantType* node) override
 		{
 			INVOKE_INTERFACE_PROXY(Visit, node);
 		}

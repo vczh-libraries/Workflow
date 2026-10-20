@@ -135,6 +135,7 @@ namespace vl::workflow
 			virtual void PrintFields(WfUnaryExpression* node);
 			virtual void PrintFields(WfVariableDeclaration* node);
 			virtual void PrintFields(WfVariableStatement* node);
+			virtual void PrintFields(WfVariantType* node);
 			virtual void PrintFields(WfVirtualCfeDeclaration* node);
 			virtual void PrintFields(WfVirtualCfeExpression* node);
 			virtual void PrintFields(WfVirtualCseDeclaration* node);
@@ -153,6 +154,7 @@ namespace vl::workflow
 			void Visit(WfMapType* node) override;
 			void Visit(WfObservableListType* node) override;
 			void Visit(WfFunctionType* node) override;
+			void Visit(WfVariantType* node) override;
 			void Visit(WfChildType* node) override;
 
 			void Visit(WfThisExpression* node) override;
@@ -410,6 +412,7 @@ namespace vl::workflow
 			virtual void FillFields(WfUnaryExpression* node);
 			virtual void FillFields(WfVariableDeclaration* node);
 			virtual void FillFields(WfVariableStatement* node);
+			virtual void FillFields(WfVariantType* node);
 			virtual void FillFields(WfVirtualCfeDeclaration* node);
 			virtual void FillFields(WfVirtualCfeExpression* node);
 			virtual void FillFields(WfVirtualCseDeclaration* node);
@@ -428,6 +431,7 @@ namespace vl::workflow
 			void Visit(WfMapType* node) override;
 			void Visit(WfObservableListType* node) override;
 			void Visit(WfFunctionType* node) override;
+			void Visit(WfVariantType* node) override;
 			void Visit(WfChildType* node) override;
 
 			void Visit(WfThisExpression* node) override;

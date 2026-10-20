@@ -29,6 +29,7 @@ namespace vl::workflow::empty_visitor
 		void Visit(WfMapType* node) override;
 		void Visit(WfObservableListType* node) override;
 		void Visit(WfFunctionType* node) override;
+		void Visit(WfVariantType* node) override;
 		void Visit(WfChildType* node) override;
 	};
 

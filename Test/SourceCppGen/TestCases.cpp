@@ -99,6 +99,15 @@
 #include "TryCatch.h"
 #include "TryFinally.h"
 #include "TryFinally2.h"
+#include "VariantBinding.h"
+#include "VariantCastsReflection.h"
+#include "VariantComparison.h"
+#include "VariantCoroutine.h"
+#include "VariantInstructionTypes.h"
+#include "VariantIteration.h"
+#include "VariantNative.h"
+#include "VariantStateMachineReflection.h"
+#include "VariantStorageReflection.h"
 #include "WorkflowAttributesReflection.h"
 #include "WorkflowHintsReflection.h"
 #include "WorkflowMultiFilesReflection.h"
@@ -155,6 +164,9 @@ void LoadTestCaseTypes()
 	 LoadOrdinaryCastBaselineTypes();
 	 LoadStructCtorTypes();
 	 LoadStructCtor2Types();
+	 LoadVariantCastsTypes();
+	 LoadVariantStateMachineTypes();
+	 LoadVariantStorageTypes();
 	 LoadWorkflowAttributesTypes();
 	 LoadWorkflowHintsTypes();
 	 LoadWorkflowMultiFilesTypes();
@@ -1067,6 +1079,87 @@ TEST_CASE(L"TryFinally2")
 {
 	WString expected = L"3115";
 	WString actual = ::vl_workflow_global::TryFinally2::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"VariantBinding")
+{
+	WString expected = L"[2][3]";
+	WString actual = ::vl_workflow_global::VariantBinding::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"VariantCasts")
+{
+	WString expected = L"60";
+	WString actual = ::vl_workflow_global::VariantCasts::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"VariantComparison")
+{
+	WString expected = L"31";
+	WString actual = ::vl_workflow_global::VariantComparison::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"VariantCoroutine")
+{
+	WString expected = L"1done";
+	WString actual = ::vl_workflow_global::VariantCoroutine::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"VariantInstructionTypes")
+{
+	WString expected = L"true";
+	WString actual = ::vl_workflow_global::VariantInstructionTypes::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"VariantIteration")
+{
+	WString expected = L"1s2|2s1|1s2";
+	WString actual = ::vl_workflow_global::VariantIteration::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"VariantNative")
+{
+	WString expected = L"18";
+	WString actual = ::vl_workflow_global::VariantNative::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"VariantStateMachine")
+{
+	WString expected = L"7done";
+	WString actual = ::vl_workflow_global::VariantStateMachine::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"VariantStorage")
+{
+	WString expected = L"14";
+	WString actual = ::vl_workflow_global::VariantStorage::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);

@@ -73,6 +73,7 @@ namespace vl::workflow::builder
 	public:
 		MakeCallExpression& arguments(const vl::Ptr<WfExpression>& value);
 		MakeCallExpression& function(const vl::Ptr<WfExpression>& value);
+		MakeCallExpression& typedResult(const vl::Ptr<WfType>& value);
 	};
 
 	class MakeCastResultInterfaceDeclaration : public vl::glr::ParsingAstBuilder<WfCastResultInterfaceDeclaration>
@@ -710,6 +711,12 @@ namespace vl::workflow::builder
 	{
 	public:
 		MakeVariableStatement& variable(const vl::Ptr<WfVariableDeclaration>& value);
+	};
+
+	class MakeVariantType : public vl::glr::ParsingAstBuilder<WfVariantType>
+	{
+	public:
+		MakeVariantType& arguments(const vl::Ptr<WfType>& value);
 	};
 
 	class MakeVirtualCfeDeclaration : public vl::glr::ParsingAstBuilder<WfVirtualCfeDeclaration>

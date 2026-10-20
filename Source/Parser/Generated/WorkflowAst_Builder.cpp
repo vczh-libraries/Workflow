@@ -185,6 +185,12 @@ MakeCallExpression
 		return *this;
 	}
 
+	MakeCallExpression& MakeCallExpression::typedResult(const vl::Ptr<WfType>& value)
+	{
+		node->typedResult = value;
+		return *this;
+	}
+
 /***********************************************************************
 MakeCastResultInterfaceDeclaration
 ***********************************************************************/
@@ -1768,6 +1774,16 @@ MakeVariableStatement
 	MakeVariableStatement& MakeVariableStatement::variable(const vl::Ptr<WfVariableDeclaration>& value)
 	{
 		node->variable = value;
+		return *this;
+	}
+
+/***********************************************************************
+MakeVariantType
+***********************************************************************/
+
+	MakeVariantType& MakeVariantType::arguments(const vl::Ptr<WfType>& value)
+	{
+		node->arguments.Add(value);
 		return *this;
 	}
 

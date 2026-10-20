@@ -220,6 +220,9 @@ namespace vl::workflow
 			BeginField(vl::WString::Unmanaged(L"function"));
 			Print(node->function.Obj());
 			EndField();
+			BeginField(vl::WString::Unmanaged(L"typedResult"));
+			Print(node->typedResult.Obj());
+			EndField();
 		}
 		void AstVisitor::PrintFields(WfCastResultInterfaceDeclaration* node)
 		{
@@ -1524,6 +1527,19 @@ namespace vl::workflow
 			Print(node->variable.Obj());
 			EndField();
 		}
+		void AstVisitor::PrintFields(WfVariantType* node)
+		{
+			BeginField(vl::WString::Unmanaged(L"arguments"));
+			BeginArray();
+			for (auto&& listItem : node->arguments)
+			{
+				BeginArrayItem();
+				Print(listItem.Obj());
+				EndArrayItem();
+			}
+			EndArray();
+			EndField();
+		}
 		void AstVisitor::PrintFields(WfVirtualCfeDeclaration* node)
 		{
 			BeginField(vl::WString::Unmanaged(L"expandedDeclarations"));
@@ -1715,6 +1731,20 @@ namespace vl::workflow
 			WriteType(vl::WString::Unmanaged(L"FunctionType"), node);
 			PrintFields(static_cast<WfType*>(node));
 			PrintFields(static_cast<WfFunctionType*>(node));
+			EndObject();
+		}
+
+		void AstVisitor::Visit(WfVariantType* node)
+		{
+			if (!node)
+			{
+				WriteNull();
+				return;
+			}
+			BeginObject();
+			WriteType(vl::WString::Unmanaged(L"VariantType"), node);
+			PrintFields(static_cast<WfType*>(node));
+			PrintFields(static_cast<WfVariantType*>(node));
 			EndObject();
 		}
 
@@ -3154,6 +3184,10 @@ namespace vl::workflow
 					fieldFound = fieldFound || name == L"result";
 					fieldFound = fieldFound || name == L"arguments";
 				}
+				else if (typeName == L"VariantType")
+				{
+					fieldFound = fieldFound || name == L"arguments";
+				}
 				else if (typeName == L"ChildType")
 				{
 					fieldFound = fieldFound || name == L"parent";
@@ -3560,6 +3594,7 @@ namespace vl::workflow
 				{
 					fieldFound = fieldFound || name == L"function";
 					fieldFound = fieldFound || name == L"arguments";
+					fieldFound = fieldFound || name == L"typedResult";
 				}
 				else if (typeName == L"FunctionExpression")
 				{
@@ -3946,6 +3981,20 @@ namespace vl::workflow
 					}
 					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
 				}
+			}
+			if (auto value = FindField(vl::WString::Unmanaged(L"typedResult")))
+			{
+				if (IsNull(value))
+				{
+					node->typedResult = nullptr;
+				}
+				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
+				{
+					auto ast = ReadJson(jsonObject).Cast<WfType>();
+					if (!ast) throw vl::Exception(L"AST JSON field \"typedResult\" contains an incompatible AST type.");
+					node->typedResult = ast;
+				}
+				else throw vl::Exception(L"AST JSON field \"typedResult\" must be an object or null.");
 			}
 		}
 
@@ -6560,6 +6609,30 @@ namespace vl::workflow
 			}
 		}
 
+		void AstVisitor::FillFields(WfVariantType* node)
+		{
+			FillFields(static_cast<WfType*>(node));
+			if (auto value = FindField(vl::WString::Unmanaged(L"arguments")))
+			{
+				auto jsonArray = dynamic_cast<vl::glr::json::JsonArray*>(value);
+				if (!jsonArray) throw vl::Exception(L"AST JSON field \"arguments\" must be an array.");
+				for (auto item : jsonArray->items)
+				{
+					if (IsNull(item.Obj()))
+					{
+						node->arguments.Add(vl::Ptr<WfType>());
+					}
+					else if (auto jsonObject = item.Cast<vl::glr::json::JsonObject>())
+					{
+						auto ast = ReadJson(jsonObject.Obj()).Cast<WfType>();
+						if (!ast) throw vl::Exception(L"AST JSON field \"arguments\" contains an incompatible AST type.");
+						node->arguments.Add(ast);
+					}
+					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
+				}
+			}
+		}
+
 		void AstVisitor::FillFields(WfVirtualCfeDeclaration* node)
 		{
 			FillFields(static_cast<WfDeclaration*>(node));
@@ -6744,6 +6817,11 @@ namespace vl::workflow
 		}
 
 		void AstVisitor::Visit(WfFunctionType* node)
+		{
+			FillFields(node);
+		}
+
+		void AstVisitor::Visit(WfVariantType* node)
 		{
 			FillFields(node);
 		}
@@ -7229,6 +7307,14 @@ namespace vl::workflow
 			if (typeName == L"FunctionType")
 			{
 				auto node = vl::Ptr(new WfFunctionType);
+				JsonObjectScope scope(jsonObjects, json);
+				static_cast<WfType*>(node.Obj())->Accept(static_cast<WfType::IVisitor*>(this));
+				ValidateFields(json, typeName);
+				return node;
+			}
+			if (typeName == L"VariantType")
+			{
+				auto node = vl::Ptr(new WfVariantType);
 				JsonObjectScope scope(jsonObjects, json);
 				static_cast<WfType*>(node.Obj())->Accept(static_cast<WfType::IVisitor*>(this));
 				ValidateFields(json, typeName);
