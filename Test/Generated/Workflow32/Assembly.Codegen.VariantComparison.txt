@@ -1,0 +1,573 @@
+﻿========================================================
+Global Variables:
+========================================================
+checks
+
+========================================================
+Functions:
+========================================================
+Check (4 .. 18)
+    Arguments:
+        value
+    Captured Variables:
+    Local Variables:
+
+main (19 .. 269)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        a
+        b
+        text
+        nullValue
+        empty
+        escaped
+        zero
+        nan
+
+<initialize> (0 .. 3)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+//  0
+0    :     LoadValue     : value = <I4, 0>
+//  var checks : int = 0;
+1    :     StoreGlobalVar: var = 0(checks)
+2    :     LoadValue     : value = <null>
+3    :     Return        
+//  value
+4    :     LoadLocalVar  : var = 0(value)
+//  (!value)
+5    :     OpNot         : type = Bool
+//  if ((!value))
+6    :     OpNot         : type = Bool
+//  if ((!value))
+7    :     JumpIf        : label = 11
+//  "Variant comparison assertion failed."
+8    :     LoadValue     : value = <String, Variant comparison assertion failed.>
+//  raise "Variant comparison assertion failed.";
+9    :     RaiseException
+//  if ((!value))
+10   :     Jump          : label = 11
+//  checks
+11   :     LoadGlobalVar : var = 0(checks)
+//  1
+12   :     LoadValue     : value = <I4, 1>
+//  (checks + 1)
+13   :     OpAdd         : type = I4
+//  (checks = (checks + 1))
+14   :     Duplicate     : stackPatternCount = 0
+//  (checks = (checks + 1))
+15   :     StoreGlobalVar: var = 0(checks)
+//  (checks = (checks + 1));
+16   :     Pop           
+//  func Check(value : bool) : (void)
+17   :     LoadValue     : value = <null>
+//  func Check(value : bool) : (void)
+18   :     Return        
+//  3
+19   :     LoadValue     : value = <I4, 3>
+//  3 of (variant<int, string>)
+20   :     VBox          : typeInfo = system::Int32
+//  var a = 3 of (variant<int, string>);
+21   :     StoreLocalVar : var = 0(a)
+//  3.0
+22   :     LoadValue     : value = <F8, 3>
+//  3.0 of (variant<double, bool>)
+23   :     VBox          : typeInfo = system::Double
+//  var b = 3.0 of (variant<double, bool>);
+24   :     StoreLocalVar : var = 1(b)
+//  a
+25   :     LoadLocalVar  : var = 0(a)
+//  (a == b)
+26   :     VUnbox        
+//  b
+27   :     LoadLocalVar  : var = 1(b)
+//  (a == b)
+28   :     VUnbox        
+//  (a == b)
+29   :     CompareValue  
+//  Check((a == b))
+30   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((a == b));
+31   :     Pop           
+//  a
+32   :     LoadLocalVar  : var = 0(a)
+//  (a != b)
+33   :     VUnbox        
+//  b
+34   :     LoadLocalVar  : var = 1(b)
+//  (a != b)
+35   :     VUnbox        
+//  (a != b)
+36   :     CompareValue  
+//  (a != b)
+37   :     OpNot         : type = Bool
+//  (!(a != b))
+38   :     OpNot         : type = Bool
+//  Check((!(a != b)))
+39   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((!(a != b)));
+40   :     Pop           
+//  a
+41   :     LoadLocalVar  : var = 0(a)
+//  (a <= b)
+42   :     VUnbox        
+//  b
+43   :     LoadLocalVar  : var = 1(b)
+//  (a <= b)
+44   :     VUnbox        
+//  (a <= b)
+45   :     CompareValueLE
+//  Check((a <= b))
+46   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((a <= b));
+47   :     Pop           
+//  a
+48   :     LoadLocalVar  : var = 0(a)
+//  (a >= b)
+49   :     VUnbox        
+//  b
+50   :     LoadLocalVar  : var = 1(b)
+//  (a >= b)
+51   :     VUnbox        
+//  (a >= b)
+52   :     CompareValueGE
+//  Check((a >= b))
+53   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((a >= b));
+54   :     Pop           
+//  a
+55   :     LoadLocalVar  : var = 0(a)
+//  (a < b)
+56   :     VUnbox        
+//  b
+57   :     LoadLocalVar  : var = 1(b)
+//  (a < b)
+58   :     VUnbox        
+//  (a < b)
+59   :     CompareValueLT
+//  (!(a < b))
+60   :     OpNot         : type = Bool
+//  Check((!(a < b)))
+61   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((!(a < b)));
+62   :     Pop           
+//  a
+63   :     LoadLocalVar  : var = 0(a)
+//  (a > b)
+64   :     VUnbox        
+//  b
+65   :     LoadLocalVar  : var = 1(b)
+//  (a > b)
+66   :     VUnbox        
+//  (a > b)
+67   :     CompareValueGT
+//  (!(a > b))
+68   :     OpNot         : type = Bool
+//  Check((!(a > b)))
+69   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((!(a > b)));
+70   :     Pop           
+//  a
+71   :     LoadLocalVar  : var = 0(a)
+//  (a == 3.0)
+72   :     VUnbox        
+//  3.0
+73   :     LoadValue     : value = <F8, 3>
+//  (a == 3.0)
+74   :     CompareValue  
+//  Check((a == 3.0))
+75   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((a == 3.0));
+76   :     Pop           
+//  3.0
+77   :     LoadValue     : value = <F8, 3>
+//  a
+78   :     LoadLocalVar  : var = 0(a)
+//  (3.0 == a)
+79   :     VUnbox        
+//  (3.0 == a)
+80   :     CompareValue  
+//  Check((3.0 == a))
+81   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((3.0 == a));
+82   :     Pop           
+//  a
+83   :     LoadLocalVar  : var = 0(a)
+//  (a < 4)
+84   :     VUnbox        
+//  4
+85   :     LoadValue     : value = <I4, 4>
+//  (a < 4)
+86   :     CompareValueLT
+//  Check((a < 4))
+87   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((a < 4));
+88   :     Pop           
+//  2
+89   :     LoadValue     : value = <I4, 2>
+//  a
+90   :     LoadLocalVar  : var = 0(a)
+//  (2 < a)
+91   :     VUnbox        
+//  (2 < a)
+92   :     CompareValueLT
+//  Check((2 < a))
+93   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((2 < a));
+94   :     Pop           
+//  a
+95   :     LoadLocalVar  : var = 0(a)
+//  (a > 2)
+96   :     VUnbox        
+//  2
+97   :     LoadValue     : value = <I4, 2>
+//  (a > 2)
+98   :     CompareValueGT
+//  Check((a > 2))
+99   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((a > 2));
+100  :     Pop           
+//  4
+101  :     LoadValue     : value = <I4, 4>
+//  a
+102  :     LoadLocalVar  : var = 0(a)
+//  (4 > a)
+103  :     VUnbox        
+//  (4 > a)
+104  :     CompareValueGT
+//  Check((4 > a))
+105  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((4 > a));
+106  :     Pop           
+//  a
+107  :     LoadLocalVar  : var = 0(a)
+//  (a <= 3)
+108  :     VUnbox        
+//  3
+109  :     LoadValue     : value = <I4, 3>
+//  (a <= 3)
+110  :     CompareValueLE
+//  Check((a <= 3))
+111  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((a <= 3));
+112  :     Pop           
+//  3
+113  :     LoadValue     : value = <I4, 3>
+//  a
+114  :     LoadLocalVar  : var = 0(a)
+//  (3 >= a)
+115  :     VUnbox        
+//  (3 >= a)
+116  :     CompareValueGE
+//  Check((3 >= a))
+117  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((3 >= a));
+118  :     Pop           
+//  a
+119  :     LoadLocalVar  : var = 0(a)
+//  (a != 4)
+120  :     VUnbox        
+//  4
+121  :     LoadValue     : value = <I4, 4>
+//  (a != 4)
+122  :     CompareValue  
+//  (a != 4)
+123  :     OpNot         : type = Bool
+//  Check((a != 4))
+124  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((a != 4));
+125  :     Pop           
+//  "three"
+126  :     LoadValue     : value = <String, three>
+//  "three" of (variant<int, string>)
+127  :     VBox          : typeInfo = system::String
+//  var text = "three" of (variant<int, string>);
+128  :     StoreLocalVar : var = 2(text)
+//  a
+129  :     LoadLocalVar  : var = 0(a)
+//  (a != text)
+130  :     VUnbox        
+//  text
+131  :     LoadLocalVar  : var = 2(text)
+//  (a != text)
+132  :     VUnbox        
+//  (a != text)
+133  :     CompareValue  
+//  (a != text)
+134  :     OpNot         : type = Bool
+//  Check((a != text))
+135  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((a != text));
+136  :     Pop           
+//  a
+137  :     LoadLocalVar  : var = 0(a)
+//  (a < text)
+138  :     VUnbox        
+//  text
+139  :     LoadLocalVar  : var = 2(text)
+//  (a < text)
+140  :     VUnbox        
+//  (a < text)
+141  :     CompareValueLT
+//  (!(a < text))
+142  :     OpNot         : type = Bool
+//  Check((!(a < text)))
+143  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((!(a < text)));
+144  :     Pop           
+//  a
+145  :     LoadLocalVar  : var = 0(a)
+//  (a > text)
+146  :     VUnbox        
+//  text
+147  :     LoadLocalVar  : var = 2(text)
+//  (a > text)
+148  :     VUnbox        
+//  (a > text)
+149  :     CompareValueGT
+//  (!(a > text))
+150  :     OpNot         : type = Bool
+//  Check((!(a > text)))
+151  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((!(a > text)));
+152  :     Pop           
+//  a
+153  :     LoadLocalVar  : var = 0(a)
+//  (a <= text)
+154  :     VUnbox        
+//  text
+155  :     LoadLocalVar  : var = 2(text)
+//  (a <= text)
+156  :     VUnbox        
+//  (a <= text)
+157  :     CompareValueLE
+//  (!(a <= text))
+158  :     OpNot         : type = Bool
+//  Check((!(a <= text)))
+159  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((!(a <= text)));
+160  :     Pop           
+//  a
+161  :     LoadLocalVar  : var = 0(a)
+//  (a >= text)
+162  :     VUnbox        
+//  text
+163  :     LoadLocalVar  : var = 2(text)
+//  (a >= text)
+164  :     VUnbox        
+//  (a >= text)
+165  :     CompareValueGE
+//  (!(a >= text))
+166  :     OpNot         : type = Bool
+//  Check((!(a >= text)))
+167  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((!(a >= text)));
+168  :     Pop           
+//  null
+169  :     LoadValue     : value = <null>
+//  var nullValue : int? = null;
+170  :     StoreLocalVar : var = 3(nullValue)
+//  nullValue
+171  :     LoadLocalVar  : var = 3(nullValue)
+//  nullValue of (variant<int?, string>)
+172  :     VBox          : typeInfo = system::Int32?
+//  var empty = nullValue of (variant<int?, string>);
+173  :     StoreLocalVar : var = 4(empty)
+//  empty
+174  :     LoadLocalVar  : var = 4(empty)
+//  (empty == nullValue)
+175  :     VUnbox        
+//  nullValue
+176  :     LoadLocalVar  : var = 3(nullValue)
+//  (empty == nullValue)
+177  :     CompareValue  
+//  Check((empty == nullValue))
+178  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((empty == nullValue));
+179  :     Pop           
+//  nullValue
+180  :     LoadLocalVar  : var = 3(nullValue)
+//  empty
+181  :     LoadLocalVar  : var = 4(empty)
+//  (nullValue == empty)
+182  :     VUnbox        
+//  (nullValue == empty)
+183  :     CompareValue  
+//  Check((nullValue == empty))
+184  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((nullValue == empty));
+185  :     Pop           
+//  empty
+186  :     LoadLocalVar  : var = 4(empty)
+//  (empty != a)
+187  :     VUnbox        
+//  a
+188  :     LoadLocalVar  : var = 0(a)
+//  (empty != a)
+189  :     VUnbox        
+//  (empty != a)
+190  :     CompareValue  
+//  (empty != a)
+191  :     OpNot         : type = Bool
+//  Check((empty != a))
+192  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((empty != a));
+193  :     Pop           
+//  a
+194  :     LoadLocalVar  : var = 0(a)
+//  var escaped : object = (cast (object) a);
+195  :     StoreLocalVar : var = 5(escaped)
+//  a
+196  :     LoadLocalVar  : var = 0(a)
+//  (a != escaped)
+197  :     VUnbox        
+//  escaped
+198  :     LoadLocalVar  : var = 5(escaped)
+//  (a != escaped)
+199  :     CompareValue  
+//  (a != escaped)
+200  :     OpNot         : type = Bool
+//  Check((a != escaped))
+201  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((a != escaped));
+202  :     Pop           
+//  escaped
+203  :     LoadLocalVar  : var = 5(escaped)
+//  a
+204  :     LoadLocalVar  : var = 0(a)
+//  (escaped != a)
+205  :     VUnbox        
+//  (escaped != a)
+206  :     CompareValue  
+//  (escaped != a)
+207  :     OpNot         : type = Bool
+//  Check((escaped != a))
+208  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((escaped != a));
+209  :     Pop           
+//  0.0
+210  :     LoadValue     : value = <F8, 0>
+//  var zero : double = 0.0;
+211  :     StoreLocalVar : var = 6(zero)
+//  zero
+212  :     LoadLocalVar  : var = 6(zero)
+//  zero
+213  :     LoadLocalVar  : var = 6(zero)
+//  (zero / zero)
+214  :     OpDiv         : type = F8
+//  (zero / zero) of (variant<double, string>)
+215  :     VBox          : typeInfo = system::Double
+//  var nan = (zero / zero) of (variant<double, string>);
+216  :     StoreLocalVar : var = 7(nan)
+//  nan
+217  :     LoadLocalVar  : var = 7(nan)
+//  (nan == nan)
+218  :     VUnbox        
+//  nan
+219  :     LoadLocalVar  : var = 7(nan)
+//  (nan == nan)
+220  :     VUnbox        
+//  (nan == nan)
+221  :     CompareValue  
+//  (!(nan == nan))
+222  :     OpNot         : type = Bool
+//  Check((!(nan == nan)))
+223  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((!(nan == nan)));
+224  :     Pop           
+//  nan
+225  :     LoadLocalVar  : var = 7(nan)
+//  (nan != nan)
+226  :     VUnbox        
+//  nan
+227  :     LoadLocalVar  : var = 7(nan)
+//  (nan != nan)
+228  :     VUnbox        
+//  (nan != nan)
+229  :     CompareValue  
+//  (nan != nan)
+230  :     OpNot         : type = Bool
+//  Check((nan != nan))
+231  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((nan != nan));
+232  :     Pop           
+//  nan
+233  :     LoadLocalVar  : var = 7(nan)
+//  (nan < nan)
+234  :     VUnbox        
+//  nan
+235  :     LoadLocalVar  : var = 7(nan)
+//  (nan < nan)
+236  :     VUnbox        
+//  (nan < nan)
+237  :     CompareValueLT
+//  (!(nan < nan))
+238  :     OpNot         : type = Bool
+//  Check((!(nan < nan)))
+239  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((!(nan < nan)));
+240  :     Pop           
+//  nan
+241  :     LoadLocalVar  : var = 7(nan)
+//  (nan > nan)
+242  :     VUnbox        
+//  nan
+243  :     LoadLocalVar  : var = 7(nan)
+//  (nan > nan)
+244  :     VUnbox        
+//  (nan > nan)
+245  :     CompareValueGT
+//  (!(nan > nan))
+246  :     OpNot         : type = Bool
+//  Check((!(nan > nan)))
+247  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((!(nan > nan)));
+248  :     Pop           
+//  nan
+249  :     LoadLocalVar  : var = 7(nan)
+//  (nan <= nan)
+250  :     VUnbox        
+//  nan
+251  :     LoadLocalVar  : var = 7(nan)
+//  (nan <= nan)
+252  :     VUnbox        
+//  (nan <= nan)
+253  :     CompareValueLE
+//  (!(nan <= nan))
+254  :     OpNot         : type = Bool
+//  Check((!(nan <= nan)))
+255  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((!(nan <= nan)));
+256  :     Pop           
+//  nan
+257  :     LoadLocalVar  : var = 7(nan)
+//  (nan >= nan)
+258  :     VUnbox        
+//  nan
+259  :     LoadLocalVar  : var = 7(nan)
+//  (nan >= nan)
+260  :     VUnbox        
+//  (nan >= nan)
+261  :     CompareValueGE
+//  (!(nan >= nan))
+262  :     OpNot         : type = Bool
+//  Check((!(nan >= nan)))
+263  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((!(nan >= nan)));
+264  :     Pop           
+//  checks
+265  :     LoadGlobalVar : var = 0(checks)
+//  checks
+266  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  return checks;
+267  :     Return        
+//  func main() : (string)
+268  :     LoadValue     : value = <null>
+//  func main() : (string)
+269  :     Return        

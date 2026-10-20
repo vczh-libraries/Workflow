@@ -1,0 +1,76 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+var x = [$1] of (variant<(func (int) : (int)), string>);
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+var x = [$1] of (variant<(func (int) : (int)), string>);
+
+========================================================
+Errors
+========================================================
+Line: 4, Column: 9, Message: A9: Ordered lambda expression failed to resolve its type.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 3, "column": 46, "index": 80}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 3, "column": 46, "index": 80}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "x", "codeRange": {"start": {"row": 3, "column": 4, "index": 38}, "end": {"row": 3, "column": 4, "index": 38}, "codeIndex": -1}},
+        "expression": {
+            "$ast": { "type": "InferExpression", "codeRange": {"start": {"row": 3, "column": 8, "index": 42}, "end": {"row": 3, "column": 45, "index": 79}, "codeIndex": -1}},
+            "expression": {
+                "$ast": { "type": "OrderedLambdaExpression", "codeRange": {"start": {"row": 3, "column": 8, "index": 42}, "end": {"row": 3, "column": 11, "index": 45}, "codeIndex": -1}},
+                "body": {
+                    "$ast": { "type": "OrderedNameExpression", "codeRange": {"start": {"row": 3, "column": 9, "index": 43}, "end": {"row": 3, "column": 10, "index": 44}, "codeIndex": -1}},
+                    "name": { "value": "$1", "codeRange": {"start": {"row": 3, "column": 9, "index": 43}, "end": {"row": 3, "column": 10, "index": 44}, "codeIndex": -1}}
+                }
+            },
+            "type": {
+                "$ast": { "type": "VariantType", "codeRange": {"start": {"row": 3, "column": 16, "index": 50}, "end": {"row": 3, "column": 45, "index": 79}, "codeIndex": -1}},
+                "arguments": [{
+                    "$ast": { "type": "FunctionType", "codeRange": {"start": {"row": 3, "column": 24, "index": 58}, "end": {"row": 3, "column": 36, "index": 70}, "codeIndex": -1}},
+                    "arguments": [{
+                        "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 29, "index": 63}, "end": {"row": 3, "column": 31, "index": 65}, "codeIndex": -1}},
+                        "name": "Int"
+                    }],
+                    "result": {
+                        "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 34, "index": 68}, "end": {"row": 3, "column": 36, "index": 70}, "codeIndex": -1}},
+                        "name": "Int"
+                    }
+                }, {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 39, "index": 73}, "end": {"row": 3, "column": 44, "index": 78}, "codeIndex": -1}},
+                    "name": "String"
+                }]
+            }
+        },
+        "type": null
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

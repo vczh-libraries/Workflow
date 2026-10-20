@@ -1,0 +1,51 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+var value = new (variant<int, string>)
+{
+};
+
+========================================================
+Printed
+========================================================
+module test;
+
+var value = new (variant<int, string>)
+{
+};
+
+========================================================
+Errors
+========================================================
+Line: 2, Column: 13, Message: A23: Class "Variant<system::Int64, system::String>" does not contain any constructor.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 1, "column": 38, "index": 52}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 38, "index": 52}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "value", "codeRange": {"start": {"row": 1, "column": 4, "index": 18}, "end": {"row": 1, "column": 8, "index": 22}, "codeIndex": -1}},
+        "expression": {
+            "$ast": { "type": "NewInterfaceExpression", "codeRange": {"start": {"row": 1, "column": 12, "index": 26}, "end": {"row": 1, "column": 37, "index": 51}, "codeIndex": -1}},
+            "declarations": [],
+            "type": {
+                "$ast": { "type": "VariantType", "codeRange": {"start": {"row": 1, "column": 16, "index": 30}, "end": {"row": 1, "column": 35, "index": 49}, "codeIndex": -1}},
+                "arguments": [{
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 1, "column": 24, "index": 38}, "end": {"row": 1, "column": 26, "index": 40}, "codeIndex": -1}},
+                    "name": "Int"
+                }, {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 1, "column": 29, "index": 43}, "end": {"row": 1, "column": 34, "index": 48}, "codeIndex": -1}},
+                    "name": "String"
+                }]
+            }
+        },
+        "type": null
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

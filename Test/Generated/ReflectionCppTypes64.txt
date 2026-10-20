@@ -1171,6 +1171,7 @@ enum system::reflection::TypeInfo::Decorator {
     RawPtr = 0,
     SharedPtr = 1,
     TypeDescriptor = 3,
+    Variant = 5,
 }
 
 @FullName:vl::reflection::description::IValueType
@@ -1384,5 +1385,28 @@ enum test::Seasons {
 class test::SyncScheduler : system::AsyncScheduler {
     static function Run(callback  : system::Function<system::Void>^) : system::Void;
 
+}
+
+@FullName:test::VariantProvider
+class test::VariantProvider : system::ReferenceType {
+    event Changed : system::Function<system::Void, Variant<system::Int64, system::String>>^ observing {
+        Value,
+    }
+
+    property Value : Variant<system::Int64, system::String> { get:GetValue set:SetValue event:Changed }
+    property data : Variant<system::Int64, system::String>;
+
+    static function Echo(value : Variant<system::Int64, system::String>) : Variant<system::Int64, system::String>;
+    static function EchoConst(value : Variant<system::Int64, system::String>) : Variant<system::Int64, system::String>;
+    static function EchoRef(value : Variant<system::Int64, system::String>) : Variant<system::Int64, system::String>;
+    static function EmptyNullable() : Variant<system::Int64?, system::String>;
+    static function Enumerable() : Variant<system::Enumerable<system::Int64>^, system::String>;
+    static function ErasedList() : Variant<system::List^, system::String>;
+    static function Function() : Variant<system::Function<system::Int64, system::Int64>^, system::String>;
+    function GetValue() : Variant<system::Int64, system::String>;
+    static function Items(values : system::ReadonlyList<Variant<system::Int64, system::String>>^) : system::Enumerable<Variant<system::Int64, system::String>>^;
+    function SetValue(value : Variant<system::Int64, system::String>) : system::Void;
+
+    constructor () : test::VariantProvider^;
 }
 

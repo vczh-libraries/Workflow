@@ -1,0 +1,62 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+var x = typeof(variant<int, string>);
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+var x = typeof(variant<int, string>);
+
+========================================================
+Errors
+========================================================
+Line: 4, Column: 9, Message: J1: Invalid variant expression. A variant has no type descriptor.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 3, "column": 36, "index": 70}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 3, "column": 36, "index": 70}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "x", "codeRange": {"start": {"row": 3, "column": 4, "index": 38}, "end": {"row": 3, "column": 4, "index": 38}, "codeIndex": -1}},
+        "expression": {
+            "$ast": { "type": "TypeOfTypeExpression", "codeRange": {"start": {"row": 3, "column": 8, "index": 42}, "end": {"row": 3, "column": 35, "index": 69}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "VariantType", "codeRange": {"start": {"row": 3, "column": 15, "index": 49}, "end": {"row": 3, "column": 34, "index": 68}, "codeIndex": -1}},
+                "arguments": [{
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 23, "index": 57}, "end": {"row": 3, "column": 25, "index": 59}, "codeIndex": -1}},
+                    "name": "Int"
+                }, {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 28, "index": 62}, "end": {"row": 3, "column": 33, "index": 67}, "codeIndex": -1}},
+                    "name": "String"
+                }]
+            }
+        },
+        "type": null
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

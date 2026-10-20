@@ -1,0 +1,67 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+var x = (1 as (variant<int, string>));
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+var x = (1 as (variant<int, string>));
+
+========================================================
+Errors
+========================================================
+Line: 4, Column: 9, Message: A12: Expression cannot weakly cast to "Variant<system::Int64, system::String>" because it cannot be "null".
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 3, "column": 33, "index": 67}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 3, "column": 33, "index": 67}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "x", "codeRange": {"start": {"row": 3, "column": 4, "index": 38}, "end": {"row": 3, "column": 4, "index": 38}, "codeIndex": -1}},
+        "expression": {
+            "$ast": { "type": "TypeCastingExpression", "codeRange": {"start": {"row": 3, "column": 8, "index": 42}, "end": {"row": 3, "column": 32, "index": 66}, "codeIndex": -1}},
+            "expression": {
+                "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 3, "column": 8, "index": 42}, "end": {"row": 3, "column": 8, "index": 42}, "codeIndex": -1}},
+                "value": { "value": "1", "codeRange": {"start": {"row": 3, "column": 8, "index": 42}, "end": {"row": 3, "column": 8, "index": 42}, "codeIndex": -1}}
+            },
+            "strategy": "Weak",
+            "type": {
+                "$ast": { "type": "VariantType", "codeRange": {"start": {"row": 3, "column": 13, "index": 47}, "end": {"row": 3, "column": 32, "index": 66}, "codeIndex": -1}},
+                "arguments": [{
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 21, "index": 55}, "end": {"row": 3, "column": 23, "index": 57}, "codeIndex": -1}},
+                    "name": "Int"
+                }, {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 26, "index": 60}, "end": {"row": 3, "column": 31, "index": 65}, "codeIndex": -1}},
+                    "name": "String"
+                }]
+            }
+        },
+        "type": null
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

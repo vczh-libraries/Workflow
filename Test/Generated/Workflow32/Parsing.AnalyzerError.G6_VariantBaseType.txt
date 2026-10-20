@@ -1,0 +1,49 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+class C : variant<int, string>
+{
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+class C : variant<int, string>
+{
+}
+
+========================================================
+Errors
+========================================================
+Line: 2, Column: 1, Message: G6: A base type of the type "C" should be another custom type, it cannot be any predefined type, pointer type, shared pointer type, nullable type, collection type, or function type
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 1, "column": 32, "index": 46}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 32, "index": 46}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "C", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 6, "index": 20}, "codeIndex": -1}},
+        "baseTypes": [{
+            "$ast": { "type": "VariantType", "codeRange": {"start": {"row": 1, "column": 10, "index": 24}, "end": {"row": 1, "column": 29, "index": 43}, "codeIndex": -1}},
+            "arguments": [{
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 1, "column": 18, "index": 32}, "end": {"row": 1, "column": 20, "index": 34}, "codeIndex": -1}},
+                "name": "Int"
+            }, {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 1, "column": 23, "index": 37}, "end": {"row": 1, "column": 28, "index": 42}, "codeIndex": -1}},
+                "name": "String"
+            }]
+        }],
+        "constructorType": "Undefined",
+        "declarations": [],
+        "kind": "Class"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

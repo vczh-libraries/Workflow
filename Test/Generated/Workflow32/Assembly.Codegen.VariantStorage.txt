@@ -1,0 +1,460 @@
+﻿========================================================
+Global Variables:
+========================================================
+checks
+
+========================================================
+Functions:
+========================================================
+VariantHolder::#ctor (4 .. 9)
+    Arguments:
+    Captured Variables:
+        <captured-this>0
+    Local Variables:
+
+Check (10 .. 24)
+    Arguments:
+        value
+    Captured Variables:
+    Local Variables:
+
+main (25 .. 202)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        a
+        b
+        copy
+        holder
+        values
+        dictionary
+        captured
+
+<initialize> (0 .. 3)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+<lambda:(4)> in main (203 .. 207)
+    Arguments:
+    Captured Variables:
+        <captured>copy
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+//  0
+0    :     LoadValue     : value = <I4, 0>
+//  var checks : int = 0;
+1    :     StoreGlobalVar: var = 0(checks)
+2    :     LoadValue     : value = <null>
+3    :     Return        
+//  0
+4    :     LoadValue     : value = <I4, 0>
+//  0 of (variant<int, string>)
+5    :     VBox          : typeInfo = system::Int32
+//  var data : variant<int, string> = 0 of (variant<int, string>);
+6    :     LoadCapturedVar: var = 0(<captured-this>0)
+//  var data : variant<int, string> = 0 of (variant<int, string>);
+7    :     SetProperty   : propertyInfo = data<VariantHolder>
+//  new ()
+8    :     LoadValue     : value = <null>
+//  new ()
+9    :     Return        
+//  value
+10   :     LoadLocalVar  : var = 0(value)
+//  (!value)
+11   :     OpNot         : type = Bool
+//  if ((!value))
+12   :     OpNot         : type = Bool
+//  if ((!value))
+13   :     JumpIf        : label = 17
+//  "Variant storage assertion failed."
+14   :     LoadValue     : value = <String, Variant storage assertion failed.>
+//  raise "Variant storage assertion failed.";
+15   :     RaiseException
+//  if ((!value))
+16   :     Jump          : label = 17
+//  checks
+17   :     LoadGlobalVar : var = 0(checks)
+//  1
+18   :     LoadValue     : value = <I4, 1>
+//  (checks + 1)
+19   :     OpAdd         : type = I4
+//  (checks = (checks + 1))
+20   :     Duplicate     : stackPatternCount = 0
+//  (checks = (checks + 1))
+21   :     StoreGlobalVar: var = 0(checks)
+//  (checks = (checks + 1));
+22   :     Pop           
+//  func Check(value : bool) : (void)
+23   :     LoadValue     : value = <null>
+//  func Check(value : bool) : (void)
+24   :     Return        
+//  {}
+25   :     CreateStruct  : flag = BoxedValue, typeDescriptor = VariantFields
+//  var a = {} of (VariantFields);
+26   :     StoreLocalVar : var = 0(a)
+//  {}
+27   :     CreateStruct  : flag = BoxedValue, typeDescriptor = VariantFields
+//  var b = {} of (VariantFields);
+28   :     StoreLocalVar : var = 1(b)
+//  a
+29   :     LoadLocalVar  : var = 0(a)
+//  a.number
+30   :     GetProperty   : propertyInfo = number<VariantFields>
+//  (cast (int) a.number)
+31   :     VCast         : typeInfo = system::Int32
+//  0
+32   :     LoadValue     : value = <I4, 0>
+//  ((cast (int) a.number) == 0)
+33   :     CompareValue  
+//  Check(((cast (int) a.number) == 0))
+34   :     Invoke        : func = 1(Check), stackPatternCount = 1
+//  Check(((cast (int) a.number) == 0));
+35   :     Pop           
+//  a
+36   :     LoadLocalVar  : var = 0(a)
+//  a.optional
+37   :     GetProperty   : propertyInfo = optional<VariantFields>
+//  (cast (int?) a.optional)
+38   :     VCast         : typeInfo = system::Int32?
+//  (cast (int?) a.optional) is null
+39   :     LoadValue     : value = <null>
+//  (cast (int?) a.optional) is null
+40   :     CompareReference
+//  Check((cast (int?) a.optional) is null)
+41   :     Invoke        : func = 1(Check), stackPatternCount = 1
+//  Check((cast (int?) a.optional) is null);
+42   :     Pop           
+//  a
+43   :     LoadLocalVar  : var = 0(a)
+//  a.objectValue
+44   :     GetProperty   : propertyInfo = objectValue<VariantFields>
+//  (cast (object) a.objectValue)
+45   :     VCast         : typeInfo = system::Object
+//  (cast (object) a.objectValue) is null
+46   :     LoadValue     : value = <null>
+//  (cast (object) a.objectValue) is null
+47   :     CompareReference
+//  Check((cast (object) a.objectValue) is null)
+48   :     Invoke        : func = 1(Check), stackPatternCount = 1
+//  Check((cast (object) a.objectValue) is null);
+49   :     Pop           
+//  a
+50   :     LoadLocalVar  : var = 0(a)
+//  a.nested
+51   :     GetProperty   : propertyInfo = nested<VariantFields>
+//  (cast (Payload) a.nested)
+52   :     VCast         : typeInfo = Payload
+//  (cast (Payload) a.nested).value
+53   :     GetProperty   : propertyInfo = value<Payload>
+//  0
+54   :     LoadValue     : value = <I4, 0>
+//  ((cast (Payload) a.nested).value == 0)
+55   :     CompareValue  
+//  Check(((cast (Payload) a.nested).value == 0))
+56   :     Invoke        : func = 1(Check), stackPatternCount = 1
+//  Check(((cast (Payload) a.nested).value == 0));
+57   :     Pop           
+//  a
+58   :     LoadLocalVar  : var = 0(a)
+//  b
+59   :     LoadLocalVar  : var = 1(b)
+//  (a == b)
+60   :     CompareValue  
+//  Check((a == b))
+61   :     Invoke        : func = 1(Check), stackPatternCount = 1
+//  Check((a == b));
+62   :     Pop           
+//  {number : 5 of (variant<int, string>);}
+63   :     CreateStruct  : flag = BoxedValue, typeDescriptor = VariantFields
+//  5
+64   :     LoadValue     : value = <I4, 5>
+//  5 of (variant<int, string>)
+65   :     VBox          : typeInfo = system::Int32
+//  {number : 5 of (variant<int, string>);}
+66   :     UpdateProperty: propertyInfo = number<VariantFields>
+//  (a = {number : 5 of (variant<int, string>);} of (VariantFields))
+67   :     Duplicate     : stackPatternCount = 0
+//  (a = {number : 5 of (variant<int, string>);} of (VariantFields))
+68   :     StoreLocalVar : var = 0(a)
+//  (a = {number : 5 of (variant<int, string>);} of (VariantFields));
+69   :     Pop           
+//  a
+70   :     LoadLocalVar  : var = 0(a)
+//  b
+71   :     LoadLocalVar  : var = 1(b)
+//  (a != b)
+72   :     CompareValue  
+//  (a != b)
+73   :     OpNot         : type = Bool
+//  Check((a != b))
+74   :     Invoke        : func = 1(Check), stackPatternCount = 1
+//  Check((a != b));
+75   :     Pop           
+//  {number : 5 of (variant<int, string>);}
+76   :     CreateStruct  : flag = BoxedValue, typeDescriptor = VariantFields
+//  5
+77   :     LoadValue     : value = <I4, 5>
+//  5 of (variant<int, string>)
+78   :     VBox          : typeInfo = system::Int32
+//  {number : 5 of (variant<int, string>);}
+79   :     UpdateProperty: propertyInfo = number<VariantFields>
+//  (b = {number : 5 of (variant<int, string>);} of (VariantFields))
+80   :     Duplicate     : stackPatternCount = 0
+//  (b = {number : 5 of (variant<int, string>);} of (VariantFields))
+81   :     StoreLocalVar : var = 1(b)
+//  (b = {number : 5 of (variant<int, string>);} of (VariantFields));
+82   :     Pop           
+//  a
+83   :     LoadLocalVar  : var = 0(a)
+//  b
+84   :     LoadLocalVar  : var = 1(b)
+//  (a == b)
+85   :     CompareValue  
+//  Check((a == b))
+86   :     Invoke        : func = 1(Check), stackPatternCount = 1
+//  Check((a == b));
+87   :     Pop           
+//  {number : a.number; optional : 1 of (int?) of (variant<int?, string>);}
+88   :     CreateStruct  : flag = BoxedValue, typeDescriptor = VariantFields
+//  a
+89   :     LoadLocalVar  : var = 0(a)
+//  a.number
+90   :     GetProperty   : propertyInfo = number<VariantFields>
+//  {number : a.number; optional : 1 of (int?) of (variant<int?, string>);}
+91   :     UpdateProperty: propertyInfo = number<VariantFields>
+//  1
+92   :     LoadValue     : value = <I4, 1>
+//  1
+93   :     Duplicate     : stackPatternCount = 0
+//  1
+94   :     LoadValue     : value = <null>
+//  1
+95   :     CompareReference
+//  1
+96   :     JumpIf        : label = 99
+//  1
+97   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int32
+//  1
+98   :     Jump          : label = 100
+//  1
+99   :     LoadValue     : value = <null>
+//  1 of (int?) of (variant<int?, string>)
+100  :     VBox          : typeInfo = system::Int32?
+//  {number : a.number; optional : 1 of (int?) of (variant<int?, string>);}
+101  :     UpdateProperty: propertyInfo = optional<VariantFields>
+//  (a = {number : a.number; optional : 1 of (int?) of (variant<int?, string>);} of (VariantFields))
+102  :     Duplicate     : stackPatternCount = 0
+//  (a = {number : a.number; optional : 1 of (int?) of (variant<int?, string>);} of (VariantFields))
+103  :     StoreLocalVar : var = 0(a)
+//  (a = {number : a.number; optional : 1 of (int?) of (variant<int?, string>);} of (VariantFields));
+104  :     Pop           
+//  a
+105  :     LoadLocalVar  : var = 0(a)
+//  b
+106  :     LoadLocalVar  : var = 1(b)
+//  (a != b)
+107  :     CompareValue  
+//  (a != b)
+108  :     OpNot         : type = Bool
+//  Check((a != b))
+109  :     Invoke        : func = 1(Check), stackPatternCount = 1
+//  Check((a != b));
+110  :     Pop           
+//  a
+111  :     LoadLocalVar  : var = 0(a)
+//  var copy = a;
+112  :     StoreLocalVar : var = 2(copy)
+//  {number : "changed" of (variant<int, string>);}
+113  :     CreateStruct  : flag = BoxedValue, typeDescriptor = VariantFields
+//  "changed"
+114  :     LoadValue     : value = <String, changed>
+//  "changed" of (variant<int, string>)
+115  :     VBox          : typeInfo = system::String
+//  {number : "changed" of (variant<int, string>);}
+116  :     UpdateProperty: propertyInfo = number<VariantFields>
+//  (a = {number : "changed" of (variant<int, string>);} of (VariantFields))
+117  :     Duplicate     : stackPatternCount = 0
+//  (a = {number : "changed" of (variant<int, string>);} of (VariantFields))
+118  :     StoreLocalVar : var = 0(a)
+//  (a = {number : "changed" of (variant<int, string>);} of (VariantFields));
+119  :     Pop           
+//  copy
+120  :     LoadLocalVar  : var = 2(copy)
+//  copy.number
+121  :     GetProperty   : propertyInfo = number<VariantFields>
+//  (cast (int) copy.number)
+122  :     VCast         : typeInfo = system::Int32
+//  5
+123  :     LoadValue     : value = <I4, 5>
+//  ((cast (int) copy.number) == 5)
+124  :     CompareValue  
+//  Check(((cast (int) copy.number) == 5))
+125  :     Invoke        : func = 1(Check), stackPatternCount = 1
+//  Check(((cast (int) copy.number) == 5));
+126  :     Pop           
+//  new (VariantHolder^)()
+127  :     LoadValue     : value = <null>
+//  new (VariantHolder^)()
+128  :     InvokeMethod  : methodInfo = <VariantHolder>, stackPatternCount = 0
+//  var holder = new (VariantHolder^)();
+129  :     StoreLocalVar : var = 3(holder)
+//  copy
+130  :     LoadLocalVar  : var = 2(copy)
+//  copy.number
+131  :     GetProperty   : propertyInfo = number<VariantFields>
+//  (holder.data = copy.number)
+132  :     Duplicate     : stackPatternCount = 0
+//  holder
+133  :     LoadLocalVar  : var = 3(holder)
+//  (holder.data = copy.number)
+134  :     SetProperty   : propertyInfo = data<VariantHolder>
+//  (holder.data = copy.number);
+135  :     Pop           
+//  holder
+136  :     LoadLocalVar  : var = 3(holder)
+//  holder.data
+137  :     GetProperty   : propertyInfo = data<VariantHolder>
+//  (cast (int) holder.data)
+138  :     VCast         : typeInfo = system::Int32
+//  5
+139  :     LoadValue     : value = <I4, 5>
+//  ((cast (int) holder.data) == 5)
+140  :     CompareValue  
+//  Check(((cast (int) holder.data) == 5))
+141  :     Invoke        : func = 1(Check), stackPatternCount = 1
+//  Check(((cast (int) holder.data) == 5));
+142  :     Pop           
+//  holder
+143  :     LoadLocalVar  : var = 3(holder)
+//  holder.data
+144  :     GetProperty   : propertyInfo = data<VariantHolder>
+//  copy
+145  :     LoadLocalVar  : var = 2(copy)
+//  copy.number
+146  :     GetProperty   : propertyInfo = number<VariantFields>
+//  {copy.number; holder.data;}
+147  :     NewList       : stackPatternCount = 2
+//  var values : variant<int, string>[] = {copy.number; holder.data;};
+148  :     StoreLocalVar : var = 4(values)
+//  0
+149  :     LoadValue     : value = <I4, 0>
+//  values
+150  :     LoadLocalVar  : var = 4(values)
+//  values[0]
+151  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  (cast (int) values[0])
+152  :     VCast         : typeInfo = system::Int32
+//  5
+153  :     LoadValue     : value = <I4, 5>
+//  ((cast (int) values[0]) == 5)
+154  :     CompareValue  
+//  Check(((cast (int) values[0]) == 5))
+155  :     Invoke        : func = 1(Check), stackPatternCount = 1
+//  Check(((cast (int) values[0]) == 5));
+156  :     Pop           
+//  1
+157  :     LoadValue     : value = <I4, 1>
+//  (values[1] = "second" of (variant<int, string>))
+158  :     Duplicate     : stackPatternCount = 0
+//  "second"
+159  :     LoadValue     : value = <String, second>
+//  "second" of (variant<int, string>)
+160  :     VBox          : typeInfo = system::String
+//  values
+161  :     LoadLocalVar  : var = 4(values)
+//  (values[1] = "second" of (variant<int, string>))
+162  :     InvokeMethod  : methodInfo = Set<system::List>, stackPatternCount = 2
+//  (values[1] = "second" of (variant<int, string>))
+163  :     Pop           
+//  (values[1] = "second" of (variant<int, string>));
+164  :     Pop           
+//  1
+165  :     LoadValue     : value = <I4, 1>
+//  values
+166  :     LoadLocalVar  : var = 4(values)
+//  values[1]
+167  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  (cast (string) values[1])
+168  :     VCast         : typeInfo = system::String
+//  "second"
+169  :     LoadValue     : value = <String, second>
+//  ((cast (string) values[1]) == "second")
+170  :     CompareValue  
+//  Check(((cast (string) values[1]) == "second"))
+171  :     Invoke        : func = 1(Check), stackPatternCount = 1
+//  Check(((cast (string) values[1]) == "second"));
+172  :     Pop           
+//  "one"
+173  :     LoadValue     : value = <String, one>
+//  copy
+174  :     LoadLocalVar  : var = 2(copy)
+//  copy.number
+175  :     GetProperty   : propertyInfo = number<VariantFields>
+//  {"one" : copy.number;}
+176  :     NewDictionary : stackPatternCount = 2
+//  var dictionary : variant<int, string>[string] = {"one" : copy.number;};
+177  :     StoreLocalVar : var = 5(dictionary)
+//  "one"
+178  :     LoadValue     : value = <String, one>
+//  dictionary
+179  :     LoadLocalVar  : var = 5(dictionary)
+//  dictionary["one"]
+180  :     InvokeMethod  : methodInfo = Get<system::ReadonlyDictionary>, stackPatternCount = 1
+//  (cast (int) dictionary["one"])
+181  :     VCast         : typeInfo = system::Int32
+//  5
+182  :     LoadValue     : value = <I4, 5>
+//  ((cast (int) dictionary["one"]) == 5)
+183  :     CompareValue  
+//  Check(((cast (int) dictionary["one"]) == 5))
+184  :     Invoke        : func = 1(Check), stackPatternCount = 1
+//  Check(((cast (int) dictionary["one"]) == 5));
+185  :     Pop           
+//  func () : (variant<int, string>)
+186  :     LoadLocalVar  : var = 2(copy)
+//  func () : (variant<int, string>)
+187  :     CreateClosureContext: stackPatternCount = 1
+//  func () : (variant<int, string>)
+188  :     LoadFunction  : func = 4(<lambda:(4)> in main)
+//  func () : (variant<int, string>)
+189  :     CreateClosure 
+//  var captured = func () : (variant<int, string>)
+190  :     StoreLocalVar : var = 6(captured)
+//  captured
+191  :     LoadLocalVar  : var = 6(captured)
+//  captured()
+192  :     InvokeProxy   : stackPatternCount = 0
+//  (cast (int) captured())
+193  :     VCast         : typeInfo = system::Int32
+//  5
+194  :     LoadValue     : value = <I4, 5>
+//  ((cast (int) captured()) == 5)
+195  :     CompareValue  
+//  Check(((cast (int) captured()) == 5))
+196  :     Invoke        : func = 1(Check), stackPatternCount = 1
+//  Check(((cast (int) captured()) == 5));
+197  :     Pop           
+//  checks
+198  :     LoadGlobalVar : var = 0(checks)
+//  checks
+199  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  return checks;
+200  :     Return        
+//  func main() : (string)
+201  :     LoadValue     : value = <null>
+//  func main() : (string)
+202  :     Return        
+//  copy
+203  :     LoadCapturedVar: var = 0(<captured>copy)
+//  copy.number
+204  :     GetProperty   : propertyInfo = number<VariantFields>
+//  return copy.number;
+205  :     Return        
+//  func () : (variant<int, string>)
+206  :     LoadValue     : value = <null>
+//  func () : (variant<int, string>)
+207  :     Return        

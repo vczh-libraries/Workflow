@@ -1,0 +1,787 @@
+﻿========================================================
+Global Variables:
+========================================================
+checks
+observed
+
+========================================================
+Functions:
+========================================================
+Check (7 .. 21)
+    Arguments:
+        value
+    Captured Variables:
+    Local Variables:
+
+main (22 .. 346)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        number
+        text
+        provider
+        handler
+        values
+        result
+        <for-enumerable>value
+        <for-enumerator>value
+        value
+        erased
+        failed
+        typed
+        <catch>ex
+        empty
+        function
+        enumerable
+        sum
+        <for-enumerable>value
+        <for-enumerator>value
+        value
+        typedList
+        typedVariant
+        reordered
+        wrong
+        <catch>ex
+        first
+        functionOptions
+        lazyOptions
+        <for-enumerable>value
+        <for-enumerator>value
+        value
+
+<initialize> (0 .. 6)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+<lambda:(3)> in main (347 .. 352)
+    Arguments:
+        value
+    Captured Variables:
+    Local Variables:
+
+<lambda:(4)> in main (353 .. 358)
+    Arguments:
+        value
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+//  0
+0    :     LoadValue     : value = <I8, 0>
+//  var checks : int = 0;
+1    :     StoreGlobalVar: var = 0(checks)
+//  0
+2    :     LoadValue     : value = <I8, 0>
+//  0 of (variant<int, string>)
+3    :     VBox          : typeInfo = system::Int64
+//  var observed = 0 of (variant<int, string>);
+4    :     StoreGlobalVar: var = 1(observed)
+5    :     LoadValue     : value = <null>
+6    :     Return        
+//  value
+7    :     LoadLocalVar  : var = 0(value)
+//  (!value)
+8    :     OpNot         : type = Bool
+//  if ((!value))
+9    :     OpNot         : type = Bool
+//  if ((!value))
+10   :     JumpIf        : label = 14
+//  "Native variant assertion failed."
+11   :     LoadValue     : value = <String, Native variant assertion failed.>
+//  raise "Native variant assertion failed.";
+12   :     RaiseException
+//  if ((!value))
+13   :     Jump          : label = 14
+//  checks
+14   :     LoadGlobalVar : var = 0(checks)
+//  1
+15   :     LoadValue     : value = <I8, 1>
+//  (checks + 1)
+16   :     OpAdd         : type = I8
+//  (checks = (checks + 1))
+17   :     Duplicate     : stackPatternCount = 0
+//  (checks = (checks + 1))
+18   :     StoreGlobalVar: var = 0(checks)
+//  (checks = (checks + 1));
+19   :     Pop           
+//  func Check(value : bool) : (void)
+20   :     LoadValue     : value = <null>
+//  func Check(value : bool) : (void)
+21   :     Return        
+//  42
+22   :     LoadValue     : value = <I8, 42>
+//  42 of (variant<int, string>)
+23   :     VBox          : typeInfo = system::Int64
+//  var number = 42 of (variant<int, string>);
+24   :     StoreLocalVar : var = 0(number)
+//  number
+25   :     LoadLocalVar  : var = 0(number)
+//  VariantProvider::Echo(number)
+26   :     LoadValue     : value = <null>
+//  VariantProvider::Echo(number)
+27   :     InvokeMethod  : methodInfo = Echo<test::VariantProvider>, stackPatternCount = 1
+//  (cast (int) VariantProvider::Echo(number))
+28   :     VCast         : typeInfo = system::Int64
+//  42
+29   :     LoadValue     : value = <I8, 42>
+//  ((cast (int) VariantProvider::Echo(number)) == 42)
+30   :     CompareValue  
+//  Check(((cast (int) VariantProvider::Echo(number)) == 42))
+31   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int) VariantProvider::Echo(number)) == 42));
+32   :     Pop           
+//  number
+33   :     LoadLocalVar  : var = 0(number)
+//  VariantProvider::EchoConst(number)
+34   :     LoadValue     : value = <null>
+//  VariantProvider::EchoConst(number)
+35   :     InvokeMethod  : methodInfo = EchoConst<test::VariantProvider>, stackPatternCount = 1
+//  (cast (int) VariantProvider::EchoConst(number))
+36   :     VCast         : typeInfo = system::Int64
+//  42
+37   :     LoadValue     : value = <I8, 42>
+//  ((cast (int) VariantProvider::EchoConst(number)) == 42)
+38   :     CompareValue  
+//  Check(((cast (int) VariantProvider::EchoConst(number)) == 42))
+39   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int) VariantProvider::EchoConst(number)) == 42));
+40   :     Pop           
+//  number
+41   :     LoadLocalVar  : var = 0(number)
+//  VariantProvider::EchoRef(number)
+42   :     LoadValue     : value = <null>
+//  VariantProvider::EchoRef(number)
+43   :     InvokeMethod  : methodInfo = EchoRef<test::VariantProvider>, stackPatternCount = 1
+//  (cast (int) VariantProvider::EchoRef(number))
+44   :     VCast         : typeInfo = system::Int64
+//  42
+45   :     LoadValue     : value = <I8, 42>
+//  ((cast (int) VariantProvider::EchoRef(number)) == 42)
+46   :     CompareValue  
+//  Check(((cast (int) VariantProvider::EchoRef(number)) == 42))
+47   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int) VariantProvider::EchoRef(number)) == 42));
+48   :     Pop           
+//  "native"
+49   :     LoadValue     : value = <String, native>
+//  "native" of (variant<int, string>)
+50   :     VBox          : typeInfo = system::String
+//  var text = "native" of (variant<int, string>);
+51   :     StoreLocalVar : var = 1(text)
+//  text
+52   :     LoadLocalVar  : var = 1(text)
+//  VariantProvider::Echo(text)
+53   :     LoadValue     : value = <null>
+//  VariantProvider::Echo(text)
+54   :     InvokeMethod  : methodInfo = Echo<test::VariantProvider>, stackPatternCount = 1
+//  (cast (string) VariantProvider::Echo(text))
+55   :     VCast         : typeInfo = system::String
+//  "native"
+56   :     LoadValue     : value = <String, native>
+//  ((cast (string) VariantProvider::Echo(text)) == "native")
+57   :     CompareValue  
+//  Check(((cast (string) VariantProvider::Echo(text)) == "native"))
+58   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (string) VariantProvider::Echo(text)) == "native"));
+59   :     Pop           
+//  new (VariantProvider^)()
+60   :     LoadValue     : value = <null>
+//  new (VariantProvider^)()
+61   :     InvokeMethod  : methodInfo = <test::VariantProvider>, stackPatternCount = 0
+//  var provider = new (VariantProvider^)();
+62   :     StoreLocalVar : var = 2(provider)
+//  text
+63   :     LoadLocalVar  : var = 1(text)
+//  (provider.data = text)
+64   :     Duplicate     : stackPatternCount = 0
+//  provider
+65   :     LoadLocalVar  : var = 2(provider)
+//  (provider.data = text)
+66   :     SetProperty   : propertyInfo = data<test::VariantProvider>
+//  (provider.data = text);
+67   :     Pop           
+//  provider
+68   :     LoadLocalVar  : var = 2(provider)
+//  provider.data
+69   :     GetProperty   : propertyInfo = data<test::VariantProvider>
+//  (cast (string) provider.data)
+70   :     VCast         : typeInfo = system::String
+//  "native"
+71   :     LoadValue     : value = <String, native>
+//  ((cast (string) provider.data) == "native")
+72   :     CompareValue  
+//  Check(((cast (string) provider.data) == "native"))
+73   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (string) provider.data) == "native"));
+74   :     Pop           
+//  provider
+75   :     LoadLocalVar  : var = 2(provider)
+//  func (value : variant<int, string>) : (void)
+76   :     CreateClosureContext: stackPatternCount = 0
+//  func (value : variant<int, string>) : (void)
+77   :     LoadFunction  : func = 3(<lambda:(3)> in main)
+//  func (value : variant<int, string>) : (void)
+78   :     CreateClosure 
+//  attach(provider.Changed, func (value : variant<int, string>) : (void)
+79   :     AttachEvent   : eventInfo = Changed<test::VariantProvider>
+//  var handler = attach(provider.Changed, func (value : variant<int, string>) : (void)
+80   :     StoreLocalVar : var = 3(handler)
+//  text
+81   :     LoadLocalVar  : var = 1(text)
+//  (provider.Value = text)
+82   :     Duplicate     : stackPatternCount = 0
+//  provider
+83   :     LoadLocalVar  : var = 2(provider)
+//  (provider.Value = text)
+84   :     InvokeMethod  : methodInfo = SetValue<test::VariantProvider>, stackPatternCount = 1
+//  (provider.Value = text)
+85   :     Pop           
+//  (provider.Value = text);
+86   :     Pop           
+//  observed
+87   :     LoadGlobalVar : var = 1(observed)
+//  (cast (string) observed)
+88   :     VCast         : typeInfo = system::String
+//  "native"
+89   :     LoadValue     : value = <String, native>
+//  ((cast (string) observed) == "native")
+90   :     CompareValue  
+//  Check(((cast (string) observed) == "native"))
+91   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (string) observed) == "native"));
+92   :     Pop           
+//  provider
+93   :     LoadLocalVar  : var = 2(provider)
+//  provider.Value
+94   :     InvokeMethod  : methodInfo = GetValue<test::VariantProvider>, stackPatternCount = 0
+//  (cast (string) provider.Value)
+95   :     VCast         : typeInfo = system::String
+//  "native"
+96   :     LoadValue     : value = <String, native>
+//  ((cast (string) provider.Value) == "native")
+97   :     CompareValue  
+//  Check(((cast (string) provider.Value) == "native"))
+98   :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (string) provider.Value) == "native"));
+99   :     Pop           
+//  provider
+100  :     LoadLocalVar  : var = 2(provider)
+//  handler
+101  :     LoadLocalVar  : var = 3(handler)
+//  detach(provider.Changed, handler)
+102  :     DetachEvent   : eventInfo = Changed<test::VariantProvider>
+//  detach(provider.Changed, handler);
+103  :     Pop           
+//  text
+104  :     LoadLocalVar  : var = 1(text)
+//  number
+105  :     LoadLocalVar  : var = 0(number)
+//  {number; text;}
+106  :     NewList       : stackPatternCount = 2
+//  var values : variant<int, string>[] = {number; text;};
+107  :     StoreLocalVar : var = 4(values)
+//  ""
+108  :     LoadValue     : value = <String, >
+//  var result = "";
+109  :     StoreLocalVar : var = 5(result)
+//  values
+110  :     LoadLocalVar  : var = 4(values)
+//  values
+111  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::ReadonlyList
+//  VariantProvider::Items(values)
+112  :     LoadValue     : value = <null>
+//  VariantProvider::Items(values)
+113  :     InvokeMethod  : methodInfo = Items<test::VariantProvider>, stackPatternCount = 1
+//  VariantProvider::Items(values)
+114  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var <for-enumerable>value = VariantProvider::Items(values) of (::system::Enumerable^);
+115  :     StoreLocalVar : var = 6(<for-enumerable>value)
+//  <for-enumerable>value
+116  :     LoadLocalVar  : var = 6(<for-enumerable>value)
+//  <for-enumerable>value.CreateEnumerator()
+117  :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
+//  var <for-enumerator>value = <for-enumerable>value.CreateEnumerator();
+118  :     StoreLocalVar : var = 7(<for-enumerator>value)
+//  <for-enumerator>value
+119  :     LoadLocalVar  : var = 7(<for-enumerator>value)
+//  <for-enumerator>value.Next()
+120  :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
+//  while (<for-enumerator>value.Next())
+121  :     OpNot         : type = Bool
+//  while (<for-enumerator>value.Next())
+122  :     JumpIf        : label = 141
+//  <for-enumerator>value
+123  :     LoadLocalVar  : var = 7(<for-enumerator>value)
+//  <for-enumerator>value.GetCurrent()
+124  :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
+//  var value = <for-enumerator>value.GetCurrent();
+125  :     StoreLocalVar : var = 8(value)
+//  result
+126  :     LoadLocalVar  : var = 5(result)
+//  value
+127  :     LoadLocalVar  : var = 8(value)
+//  (value == number)
+128  :     VUnbox        
+//  number
+129  :     LoadLocalVar  : var = 0(number)
+//  (value == number)
+130  :     VUnbox        
+//  (value == number)
+131  :     CompareValue  
+//  (value == number) ? "n" : "t"
+132  :     JumpIf        : label = 135
+//  "t"
+133  :     LoadValue     : value = <String, t>
+//  (value == number) ? "n" : "t"
+134  :     Jump          : label = 136
+//  "n"
+135  :     LoadValue     : value = <String, n>
+//  (result & (value == number) ? "n" : "t")
+136  :     OpConcat      
+//  (result = (result & (value == number) ? "n" : "t"))
+137  :     Duplicate     : stackPatternCount = 0
+//  (result = (result & (value == number) ? "n" : "t"))
+138  :     StoreLocalVar : var = 5(result)
+//  (result = (result & (value == number) ? "n" : "t"));
+139  :     Pop           
+//  while (<for-enumerator>value.Next())
+140  :     Jump          : label = 119
+//  result
+141  :     LoadLocalVar  : var = 5(result)
+//  "nt"
+142  :     LoadValue     : value = <String, nt>
+//  (result == "nt")
+143  :     CompareValue  
+//  Check((result == "nt"))
+144  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((result == "nt"));
+145  :     Pop           
+//  VariantProvider::ErasedList()
+146  :     LoadValue     : value = <null>
+//  VariantProvider::ErasedList()
+147  :     InvokeMethod  : methodInfo = ErasedList<test::VariantProvider>, stackPatternCount = 0
+//  var erased = VariantProvider::ErasedList();
+148  :     StoreLocalVar : var = 9(erased)
+//  0
+149  :     LoadValue     : value = <I8, 0>
+//  erased
+150  :     LoadLocalVar  : var = 9(erased)
+//  (cast (List^) erased)
+151  :     VCast         : typeInfo = system::List^
+//  (cast (List^) erased).Get(0)
+152  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  (cast (List^) erased).Get(0)
+153  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
+//  42
+154  :     LoadValue     : value = <I8, 42>
+//  ((cast (int) (cast (List^) erased).Get(0)) == 42)
+155  :     CompareValue  
+//  Check(((cast (int) (cast (List^) erased).Get(0)) == 42))
+156  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int) (cast (List^) erased).Get(0)) == 42));
+157  :     Pop           
+//  false
+158  :     LoadValue     : value = <Bool, false>
+//  var failed = false;
+159  :     StoreLocalVar : var = 10(failed)
+//  try
+160  :     InstallTry    : label = 166
+//  erased
+161  :     LoadLocalVar  : var = 9(erased)
+//  (cast (variant<int[], string>) erased)
+162  :     VCast         : typeInfo = Variant<system::List<system::Int64>^, system::String>
+//  var typed = (cast (variant<int[], string>) erased);
+163  :     StoreLocalVar : var = 11(typed)
+//  try
+164  :     UninstallTry  : stackPatternCount = 0
+//  try
+165  :     Jump          : label = 184
+//  try
+166  :     LoadException 
+//  try
+167  :     StoreLocalVar : var = 12(<catch>ex)
+//  ex
+168  :     LoadLocalVar  : var = 12(<catch>ex)
+//  ex.Fatal
+169  :     InvokeMethod  : methodInfo = GetFatal<system::Exception>, stackPatternCount = 0
+//  (!ex.Fatal)
+170  :     OpNot         : type = Bool
+//  ex
+171  :     LoadLocalVar  : var = 12(<catch>ex)
+//  ex.Message
+172  :     InvokeMethod  : methodInfo = GetMessage<system::Exception>, stackPatternCount = 0
+//  "variant option"
+173  :     LoadValue     : value = <String, variant option>
+//  Sys::Find(ex.Message, "variant option")
+174  :     LoadValue     : value = <null>
+//  Sys::Find(ex.Message, "variant option")
+175  :     InvokeMethod  : methodInfo = Find<system::Sys>, stackPatternCount = 2
+//  1
+176  :     LoadValue     : value = <I8, 1>
+//  (-1)
+177  :     OpNegative    : type = I8
+//  (Sys::Find(ex.Message, "variant option") != (-1))
+178  :     CompareValue  
+//  (Sys::Find(ex.Message, "variant option") != (-1))
+179  :     OpNot         : type = Bool
+//  ((!ex.Fatal) and (Sys::Find(ex.Message, "variant option") != (-1)))
+180  :     OpAnd         : type = Bool
+//  (failed = ((!ex.Fatal) and (Sys::Find(ex.Message, "variant option") != (-1))))
+181  :     Duplicate     : stackPatternCount = 0
+//  (failed = ((!ex.Fatal) and (Sys::Find(ex.Message, "variant option") != (-1))))
+182  :     StoreLocalVar : var = 10(failed)
+//  (failed = ((!ex.Fatal) and (Sys::Find(ex.Message, "variant option") != (-1))));
+183  :     Pop           
+//  failed
+184  :     LoadLocalVar  : var = 10(failed)
+//  Check(failed)
+185  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(failed);
+186  :     Pop           
+//  VariantProvider::EmptyNullable()
+187  :     LoadValue     : value = <null>
+//  VariantProvider::EmptyNullable()
+188  :     InvokeMethod  : methodInfo = EmptyNullable<test::VariantProvider>, stackPatternCount = 0
+//  var empty = VariantProvider::EmptyNullable();
+189  :     StoreLocalVar : var = 13(empty)
+//  empty
+190  :     LoadLocalVar  : var = 13(empty)
+//  empty is null
+191  :     VUnbox        
+//  empty is null
+192  :     LoadValue     : value = <null>
+//  empty is null
+193  :     CompareReference
+//  Check(empty is null)
+194  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(empty is null);
+195  :     Pop           
+//  empty
+196  :     LoadLocalVar  : var = 13(empty)
+//  (cast (int?) empty)
+197  :     VCast         : typeInfo = system::Int64?
+//  (cast (int?) empty) is null
+198  :     LoadValue     : value = <null>
+//  (cast (int?) empty) is null
+199  :     CompareReference
+//  Check((cast (int?) empty) is null)
+200  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((cast (int?) empty) is null);
+201  :     Pop           
+//  VariantProvider::Function()
+202  :     LoadValue     : value = <null>
+//  VariantProvider::Function()
+203  :     InvokeMethod  : methodInfo = Function<test::VariantProvider>, stackPatternCount = 0
+//  (cast ((func (int) : (int))) VariantProvider::Function())
+204  :     VCast         : typeInfo = system::Function<system::Int64, system::Int64>^
+//  var function = (cast ((func (int) : (int))) VariantProvider::Function());
+205  :     StoreLocalVar : var = 14(function)
+//  4
+206  :     LoadValue     : value = <I8, 4>
+//  function
+207  :     LoadLocalVar  : var = 14(function)
+//  function(4)
+208  :     InvokeProxy   : stackPatternCount = 1
+//  5
+209  :     LoadValue     : value = <I8, 5>
+//  (function(4) == 5)
+210  :     CompareValue  
+//  Check((function(4) == 5))
+211  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((function(4) == 5));
+212  :     Pop           
+//  VariantProvider::Enumerable()
+213  :     LoadValue     : value = <null>
+//  VariantProvider::Enumerable()
+214  :     InvokeMethod  : methodInfo = Enumerable<test::VariantProvider>, stackPatternCount = 0
+//  (cast (int{}) VariantProvider::Enumerable())
+215  :     VCast         : typeInfo = system::Enumerable<system::Int64>^
+//  var enumerable = (cast (int{}) VariantProvider::Enumerable());
+216  :     StoreLocalVar : var = 15(enumerable)
+//  0
+217  :     LoadValue     : value = <I8, 0>
+//  var sum = 0;
+218  :     StoreLocalVar : var = 16(sum)
+//  enumerable
+219  :     LoadLocalVar  : var = 15(enumerable)
+//  enumerable
+220  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var <for-enumerable>value = enumerable of (::system::Enumerable^);
+221  :     StoreLocalVar : var = 17(<for-enumerable>value)
+//  <for-enumerable>value
+222  :     LoadLocalVar  : var = 17(<for-enumerable>value)
+//  <for-enumerable>value.CreateEnumerator()
+223  :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
+//  var <for-enumerator>value = <for-enumerable>value.CreateEnumerator();
+224  :     StoreLocalVar : var = 18(<for-enumerator>value)
+//  <for-enumerator>value
+225  :     LoadLocalVar  : var = 18(<for-enumerator>value)
+//  <for-enumerator>value.Next()
+226  :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
+//  while (<for-enumerator>value.Next())
+227  :     OpNot         : type = Bool
+//  while (<for-enumerator>value.Next())
+228  :     JumpIf        : label = 240
+//  <for-enumerator>value
+229  :     LoadLocalVar  : var = 18(<for-enumerator>value)
+//  <for-enumerator>value.GetCurrent()
+230  :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
+//  <for-enumerator>value.GetCurrent()
+231  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
+//  var value = (cast (::system::Int64) <for-enumerator>value.GetCurrent());
+232  :     StoreLocalVar : var = 19(value)
+//  sum
+233  :     LoadLocalVar  : var = 16(sum)
+//  value
+234  :     LoadLocalVar  : var = 19(value)
+//  (sum + value)
+235  :     OpAdd         : type = I8
+//  (sum = (sum + value))
+236  :     Duplicate     : stackPatternCount = 0
+//  (sum = (sum + value))
+237  :     StoreLocalVar : var = 16(sum)
+//  (sum = (sum + value));
+238  :     Pop           
+//  while (<for-enumerator>value.Next())
+239  :     Jump          : label = 225
+//  sum
+240  :     LoadLocalVar  : var = 16(sum)
+//  6
+241  :     LoadValue     : value = <I8, 6>
+//  (sum == 6)
+242  :     CompareValue  
+//  Check((sum == 6))
+243  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((sum == 6));
+244  :     Pop           
+//  2
+245  :     LoadValue     : value = <I8, 2>
+//  1
+246  :     LoadValue     : value = <I8, 1>
+//  {1; 2;}
+247  :     NewList       : stackPatternCount = 2
+//  var typedList : int[] = {1; 2;};
+248  :     StoreLocalVar : var = 20(typedList)
+//  typedList
+249  :     LoadLocalVar  : var = 20(typedList)
+//  typedList of (variant<int[], string>)
+250  :     VBox          : typeInfo = system::List<system::Int64>^
+//  var typedVariant = typedList of (variant<int[], string>);
+251  :     StoreLocalVar : var = 21(typedVariant)
+//  typedVariant
+252  :     LoadLocalVar  : var = 21(typedVariant)
+//  var reordered = typedVariant of (variant<string, int[]>);
+253  :     StoreLocalVar : var = 22(reordered)
+//  1
+254  :     LoadValue     : value = <I8, 1>
+//  reordered
+255  :     LoadLocalVar  : var = 22(reordered)
+//  (cast (int[]) reordered)
+256  :     VCast         : typeInfo = system::List<system::Int64>^
+//  (cast (int[]) reordered)[1]
+257  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  2
+258  :     LoadValue     : value = <I8, 2>
+//  ((cast (int[]) reordered)[1] == 2)
+259  :     CompareValue  
+//  Check(((cast (int[]) reordered)[1] == 2))
+260  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast (int[]) reordered)[1] == 2));
+261  :     Pop           
+//  false
+262  :     LoadValue     : value = <Bool, false>
+//  (failed = false)
+263  :     Duplicate     : stackPatternCount = 0
+//  (failed = false)
+264  :     StoreLocalVar : var = 10(failed)
+//  (failed = false);
+265  :     Pop           
+//  try
+266  :     InstallTry    : label = 272
+//  typedVariant
+267  :     LoadLocalVar  : var = 21(typedVariant)
+//  (cast (variant<string[], string>) typedVariant)
+268  :     VCast         : typeInfo = Variant<system::List<system::String>^, system::String>
+//  var wrong = (cast (variant<string[], string>) typedVariant);
+269  :     StoreLocalVar : var = 23(wrong)
+//  try
+270  :     UninstallTry  : stackPatternCount = 0
+//  try
+271  :     Jump          : label = 290
+//  try
+272  :     LoadException 
+//  try
+273  :     StoreLocalVar : var = 24(<catch>ex)
+//  ex
+274  :     LoadLocalVar  : var = 24(<catch>ex)
+//  ex.Fatal
+275  :     InvokeMethod  : methodInfo = GetFatal<system::Exception>, stackPatternCount = 0
+//  (!ex.Fatal)
+276  :     OpNot         : type = Bool
+//  ex
+277  :     LoadLocalVar  : var = 24(<catch>ex)
+//  ex.Message
+278  :     InvokeMethod  : methodInfo = GetMessage<system::Exception>, stackPatternCount = 0
+//  "variant option"
+279  :     LoadValue     : value = <String, variant option>
+//  Sys::Find(ex.Message, "variant option")
+280  :     LoadValue     : value = <null>
+//  Sys::Find(ex.Message, "variant option")
+281  :     InvokeMethod  : methodInfo = Find<system::Sys>, stackPatternCount = 2
+//  1
+282  :     LoadValue     : value = <I8, 1>
+//  (-1)
+283  :     OpNegative    : type = I8
+//  (Sys::Find(ex.Message, "variant option") != (-1))
+284  :     CompareValue  
+//  (Sys::Find(ex.Message, "variant option") != (-1))
+285  :     OpNot         : type = Bool
+//  ((!ex.Fatal) and (Sys::Find(ex.Message, "variant option") != (-1)))
+286  :     OpAnd         : type = Bool
+//  (failed = ((!ex.Fatal) and (Sys::Find(ex.Message, "variant option") != (-1))))
+287  :     Duplicate     : stackPatternCount = 0
+//  (failed = ((!ex.Fatal) and (Sys::Find(ex.Message, "variant option") != (-1))))
+288  :     StoreLocalVar : var = 10(failed)
+//  (failed = ((!ex.Fatal) and (Sys::Find(ex.Message, "variant option") != (-1))));
+289  :     Pop           
+//  failed
+290  :     LoadLocalVar  : var = 10(failed)
+//  Check(failed)
+291  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(failed);
+292  :     Pop           
+//  func (value : int) : (int)
+293  :     CreateClosureContext: stackPatternCount = 0
+//  func (value : int) : (int)
+294  :     LoadFunction  : func = 4(<lambda:(4)> in main)
+//  func (value : int) : (int)
+295  :     CreateClosure 
+//  var first = func (value : int) : (int)
+296  :     StoreLocalVar : var = 25(first)
+//  first
+297  :     LoadLocalVar  : var = 25(first)
+//  first of (variant<(func (int) : (int)), (func (string) : (string))>)
+298  :     VBox          : typeInfo = system::Function<system::Int64, system::Int64>^
+//  var functionOptions = first of (variant<(func (int) : (int)), (func (string) : (string))>);
+299  :     StoreLocalVar : var = 26(functionOptions)
+//  9
+300  :     LoadValue     : value = <I8, 9>
+//  functionOptions
+301  :     LoadLocalVar  : var = 26(functionOptions)
+//  (cast ((func (int) : (int))) functionOptions)
+302  :     VCast         : typeInfo = system::Function<system::Int64, system::Int64>^
+//  (cast ((func (int) : (int))) functionOptions)(9)
+303  :     InvokeProxy   : stackPatternCount = 1
+//  10
+304  :     LoadValue     : value = <I8, 10>
+//  ((cast ((func (int) : (int))) functionOptions)(9) == 10)
+305  :     CompareValue  
+//  Check(((cast ((func (int) : (int))) functionOptions)(9) == 10))
+306  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check(((cast ((func (int) : (int))) functionOptions)(9) == 10));
+307  :     Pop           
+//  enumerable
+308  :     LoadLocalVar  : var = 15(enumerable)
+//  enumerable of (variant<int{}, string{}>)
+309  :     VBox          : typeInfo = system::Enumerable<system::Int64>^
+//  var lazyOptions = enumerable of (variant<int{}, string{}>);
+310  :     StoreLocalVar : var = 27(lazyOptions)
+//  0
+311  :     LoadValue     : value = <I8, 0>
+//  (sum = 0)
+312  :     Duplicate     : stackPatternCount = 0
+//  (sum = 0)
+313  :     StoreLocalVar : var = 16(sum)
+//  (sum = 0);
+314  :     Pop           
+//  lazyOptions
+315  :     LoadLocalVar  : var = 27(lazyOptions)
+//  (cast (int{}) lazyOptions)
+316  :     VCast         : typeInfo = system::Enumerable<system::Int64>^
+//  (cast (int{}) lazyOptions)
+317  :     ConvertToType : flag = SharedPtr, typeDescriptor = system::Enumerable
+//  var <for-enumerable>value = (cast (int{}) lazyOptions) of (::system::Enumerable^);
+318  :     StoreLocalVar : var = 28(<for-enumerable>value)
+//  <for-enumerable>value
+319  :     LoadLocalVar  : var = 28(<for-enumerable>value)
+//  <for-enumerable>value.CreateEnumerator()
+320  :     InvokeMethod  : methodInfo = CreateEnumerator<system::Enumerable>, stackPatternCount = 0
+//  var <for-enumerator>value = <for-enumerable>value.CreateEnumerator();
+321  :     StoreLocalVar : var = 29(<for-enumerator>value)
+//  <for-enumerator>value
+322  :     LoadLocalVar  : var = 29(<for-enumerator>value)
+//  <for-enumerator>value.Next()
+323  :     InvokeMethod  : methodInfo = Next<system::Enumerator>, stackPatternCount = 0
+//  while (<for-enumerator>value.Next())
+324  :     OpNot         : type = Bool
+//  while (<for-enumerator>value.Next())
+325  :     JumpIf        : label = 337
+//  <for-enumerator>value
+326  :     LoadLocalVar  : var = 29(<for-enumerator>value)
+//  <for-enumerator>value.GetCurrent()
+327  :     InvokeMethod  : methodInfo = GetCurrent<system::Enumerator>, stackPatternCount = 0
+//  <for-enumerator>value.GetCurrent()
+328  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
+//  var value = (cast (::system::Int64) <for-enumerator>value.GetCurrent());
+329  :     StoreLocalVar : var = 30(value)
+//  sum
+330  :     LoadLocalVar  : var = 16(sum)
+//  value
+331  :     LoadLocalVar  : var = 30(value)
+//  (sum + value)
+332  :     OpAdd         : type = I8
+//  (sum = (sum + value))
+333  :     Duplicate     : stackPatternCount = 0
+//  (sum = (sum + value))
+334  :     StoreLocalVar : var = 16(sum)
+//  (sum = (sum + value));
+335  :     Pop           
+//  while (<for-enumerator>value.Next())
+336  :     Jump          : label = 322
+//  sum
+337  :     LoadLocalVar  : var = 16(sum)
+//  6
+338  :     LoadValue     : value = <I8, 6>
+//  (sum == 6)
+339  :     CompareValue  
+//  Check((sum == 6))
+340  :     Invoke        : func = 0(Check), stackPatternCount = 1
+//  Check((sum == 6));
+341  :     Pop           
+//  checks
+342  :     LoadGlobalVar : var = 0(checks)
+//  checks
+343  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  return checks;
+344  :     Return        
+//  func main() : (string)
+345  :     LoadValue     : value = <null>
+//  func main() : (string)
+346  :     Return        
+//  value
+347  :     LoadLocalVar  : var = 0(value)
+//  (observed = value)
+348  :     Duplicate     : stackPatternCount = 0
+//  (observed = value)
+349  :     StoreGlobalVar: var = 1(observed)
+//  (observed = value);
+350  :     Pop           
+//  func (value : variant<int, string>) : (void)
+351  :     LoadValue     : value = <null>
+//  func (value : variant<int, string>) : (void)
+352  :     Return        
+//  value
+353  :     LoadLocalVar  : var = 0(value)
+//  1
+354  :     LoadValue     : value = <I8, 1>
+//  (value + 1)
+355  :     OpAdd         : type = I8
+//  return (value + 1);
+356  :     Return        
+//  func (value : int) : (int)
+357  :     LoadValue     : value = <null>
+//  func (value : int) : (int)
+358  :     Return        

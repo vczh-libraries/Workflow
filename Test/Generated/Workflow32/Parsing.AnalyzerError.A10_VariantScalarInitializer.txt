@@ -1,0 +1,62 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+var x : variant<int, string> = 1;
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+var x : variant<int, string> = 1;
+
+========================================================
+Errors
+========================================================
+Line: 4, Column: 30, Message: A10: Expression of type "system::Int32" cannot implicitly convert to "Variant<system::Int32, system::String>".
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 3, "column": 30, "index": 64}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 3, "column": 30, "index": 64}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "x", "codeRange": {"start": {"row": 3, "column": 4, "index": 38}, "end": {"row": 3, "column": 4, "index": 38}, "codeIndex": -1}},
+        "expression": {
+            "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 3, "column": 29, "index": 63}, "end": {"row": 3, "column": 29, "index": 63}, "codeIndex": -1}},
+            "value": { "value": "1", "codeRange": {"start": {"row": 3, "column": 29, "index": 63}, "end": {"row": 3, "column": 29, "index": 63}, "codeIndex": -1}}
+        },
+        "type": {
+            "$ast": { "type": "VariantType", "codeRange": {"start": {"row": 3, "column": 6, "index": 40}, "end": {"row": 3, "column": 25, "index": 59}, "codeIndex": -1}},
+            "arguments": [{
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 14, "index": 48}, "end": {"row": 3, "column": 16, "index": 50}, "codeIndex": -1}},
+                "name": "Int"
+            }, {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 19, "index": 53}, "end": {"row": 3, "column": 24, "index": 58}, "codeIndex": -1}},
+                "name": "String"
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

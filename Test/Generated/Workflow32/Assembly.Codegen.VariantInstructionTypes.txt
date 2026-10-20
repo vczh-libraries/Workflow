@@ -1,0 +1,57 @@
+﻿========================================================
+Global Variables:
+========================================================
+
+========================================================
+Functions:
+========================================================
+main (2 .. 17)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+        pointer
+        boxed
+        narrowed
+
+<initialize> (0 .. 1)
+    Arguments:
+    Captured Variables:
+    Local Variables:
+
+========================================================
+Instructions:
+========================================================
+0    :     LoadValue     : value = <null>
+1    :     Return        
+//  null
+2    :     LoadValue     : value = <null>
+//  var pointer : ObservableValue* = null;
+3    :     StoreLocalVar : var = 0(pointer)
+//  pointer
+4    :     LoadLocalVar  : var = 0(pointer)
+//  pointer of (variant<ObservableValue*, string>)
+5    :     VBox          : typeInfo = test::ObservableValue*
+//  var boxed = pointer of (variant<ObservableValue*, string>);
+6    :     StoreLocalVar : var = 1(boxed)
+//  boxed
+7    :     LoadLocalVar  : var = 1(boxed)
+//  (cast (variant<PointClass*, ObservableValue*>) boxed)
+8    :     VCast         : typeInfo = Variant<test::PointClass*, test::ObservableValue*>
+//  var narrowed = (cast (variant<PointClass*, ObservableValue*>) boxed);
+9    :     StoreLocalVar : var = 2(narrowed)
+//  narrowed
+10   :     LoadLocalVar  : var = 2(narrowed)
+//  (cast (ObservableValue*) narrowed)
+11   :     VCast         : typeInfo = test::ObservableValue*
+//  (cast (ObservableValue*) narrowed) is null
+12   :     LoadValue     : value = <null>
+//  (cast (ObservableValue*) narrowed) is null
+13   :     CompareReference
+//  (cast (ObservableValue*) narrowed) is null
+14   :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  return (cast (ObservableValue*) narrowed) is null;
+15   :     Return        
+//  func main() : (string)
+16   :     LoadValue     : value = <null>
+//  func main() : (string)
+17   :     Return        

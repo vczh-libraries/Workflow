@@ -1,0 +1,108 @@
+﻿========================================================
+Original
+========================================================
+module test;
+using system::*;
+
+func f(x : List^) : (void)
+{
+    var y = (cast (variant<int[], string>) x);
+}
+
+========================================================
+Printed
+========================================================
+module test;
+using system::*;
+
+func f(x : List^) : (void)
+{
+    var y = (cast (variant<int[], string>) x);
+}
+
+========================================================
+Errors
+========================================================
+Line: 4, Column: 60, Message: A11: Expression of type "system::List^" cannot explicitly convert to "Variant<system::List<system::Int32>^, system::String>".
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 3, "column": 62, "index": 96}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 3, "column": 0, "index": 34}, "end": {"row": 3, "column": 62, "index": 96}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "f", "codeRange": {"start": {"row": 3, "column": 5, "index": 39}, "end": {"row": 3, "column": 5, "index": 39}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [{
+            "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 3, "column": 7, "index": 41}, "end": {"row": 3, "column": 13, "index": 47}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "x", "codeRange": {"start": {"row": 3, "column": 7, "index": 41}, "end": {"row": 3, "column": 7, "index": 41}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 3, "column": 9, "index": 43}, "end": {"row": 3, "column": 13, "index": 47}, "codeIndex": -1}},
+                "element": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 3, "column": 9, "index": 43}, "end": {"row": 3, "column": 12, "index": 46}, "codeIndex": -1}},
+                    "name": { "value": "List", "codeRange": {"start": {"row": 3, "column": 9, "index": 43}, "end": {"row": 3, "column": 12, "index": 46}, "codeIndex": -1}}
+                }
+            }
+        }],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 16, "index": 50}, "end": {"row": 3, "column": 19, "index": 53}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 3, "column": 21, "index": 55}, "end": {"row": 3, "column": 62, "index": 96}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": [{
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 3, "column": 23, "index": 57}, "end": {"row": 3, "column": 60, "index": 94}, "codeIndex": -1}},
+                "variable": {
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 3, "column": 23, "index": 57}, "end": {"row": 3, "column": 60, "index": 94}, "codeIndex": -1}},
+                    "attributes": [],
+                    "name": { "value": "y", "codeRange": {"start": {"row": 3, "column": 27, "index": 61}, "end": {"row": 3, "column": 27, "index": 61}, "codeIndex": -1}},
+                    "expression": {
+                        "$ast": { "type": "TypeCastingExpression", "codeRange": {"start": {"row": 3, "column": 31, "index": 65}, "end": {"row": 3, "column": 59, "index": 93}, "codeIndex": -1}},
+                        "expression": {
+                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 3, "column": 59, "index": 93}, "end": {"row": 3, "column": 59, "index": 93}, "codeIndex": -1}},
+                            "name": { "value": "x", "codeRange": {"start": {"row": 3, "column": 59, "index": 93}, "end": {"row": 3, "column": 59, "index": 93}, "codeIndex": -1}}
+                        },
+                        "strategy": "Strong",
+                        "type": {
+                            "$ast": { "type": "VariantType", "codeRange": {"start": {"row": 3, "column": 36, "index": 70}, "end": {"row": 3, "column": 57, "index": 91}, "codeIndex": -1}},
+                            "arguments": [{
+                                "$ast": { "type": "MapType", "codeRange": {"start": {"row": 3, "column": 44, "index": 78}, "end": {"row": 3, "column": 48, "index": 82}, "codeIndex": -1}},
+                                "key": null,
+                                "value": {
+                                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 44, "index": 78}, "end": {"row": 3, "column": 46, "index": 80}, "codeIndex": -1}},
+                                    "name": "Int"
+                                },
+                                "writability": "Writable"
+                            }, {
+                                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 51, "index": 85}, "end": {"row": 3, "column": 56, "index": 90}, "codeIndex": -1}},
+                                "name": "String"
+                            }]
+                        }
+                    },
+                    "type": null
+                }
+            }]
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": [{
+        "$ast": { "type": "ModuleUsingPath", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 15, "index": 29}, "codeIndex": -1}},
+        "items": [{
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingNameFragment", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}},
+                "name": { "value": "system", "codeRange": {"start": {"row": 1, "column": 6, "index": 20}, "end": {"row": 1, "column": 11, "index": 25}, "codeIndex": -1}}
+            }]
+        }, {
+            "$ast": { "type": "ModuleUsingItem", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}},
+            "fragments": [{
+                "$ast": { "type": "ModuleUsingWildCardFragment", "codeRange": {"start": {"row": 1, "column": 14, "index": 28}, "end": {"row": 1, "column": 14, "index": 28}, "codeIndex": -1}}
+            }]
+        }]
+    }]
+}

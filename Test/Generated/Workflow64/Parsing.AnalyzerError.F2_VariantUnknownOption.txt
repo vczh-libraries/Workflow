@@ -1,0 +1,63 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+func f(x : variant<MissingType, int>) : (void)
+{
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+func f(x : variant<MissingType, int>) : (void)
+{
+}
+
+========================================================
+Errors
+========================================================
+Line: 2, Column: 18, Message: F2: Symbol "MissingType" does not exist in the current scope.
+Line: 2, Column: 18, Message: F2: Symbol "MissingType" does not exist in the current scope.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 1, "column": 42, "index": 56}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 42, "index": 56}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "f", "codeRange": {"start": {"row": 1, "column": 5, "index": 19}, "end": {"row": 1, "column": 5, "index": 19}, "codeIndex": -1}},
+        "anonymity": "Named",
+        "arguments": [{
+            "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 1, "column": 7, "index": 21}, "end": {"row": 1, "column": 33, "index": 47}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "x", "codeRange": {"start": {"row": 1, "column": 7, "index": 21}, "end": {"row": 1, "column": 7, "index": 21}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "VariantType", "codeRange": {"start": {"row": 1, "column": 9, "index": 23}, "end": {"row": 1, "column": 33, "index": 47}, "codeIndex": -1}},
+                "arguments": [{
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 1, "column": 17, "index": 31}, "end": {"row": 1, "column": 27, "index": 41}, "codeIndex": -1}},
+                    "name": { "value": "MissingType", "codeRange": {"start": {"row": 1, "column": 17, "index": 31}, "end": {"row": 1, "column": 27, "index": 41}, "codeIndex": -1}}
+                }, {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 1, "column": 30, "index": 44}, "end": {"row": 1, "column": 32, "index": 46}, "codeIndex": -1}},
+                    "name": "Int"
+                }]
+            }
+        }],
+        "functionKind": "Normal",
+        "returnType": {
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 1, "column": 36, "index": 50}, "end": {"row": 1, "column": 39, "index": 53}, "codeIndex": -1}},
+            "name": "Void"
+        },
+        "statement": {
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 1, "column": 41, "index": 55}, "end": {"row": 1, "column": 42, "index": 56}, "codeIndex": -1}},
+            "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
+            "statements": []
+        }
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}
