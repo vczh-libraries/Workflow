@@ -1,0 +1,141 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+struct PlainRecord
+{
+    value : int;
+}
+
+struct VariantEnvelope
+{
+    first : PlainRecord;
+    second : PlainRecord;
+    payload : variant<int, string>;
+}
+
+@rpc:Interface
+interface IVariantService
+{
+    func Send(value : VariantEnvelope) : (void);
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+struct PlainRecord
+{
+    value : int;
+}
+
+struct VariantEnvelope
+{
+    first : PlainRecord;
+    second : PlainRecord;
+    payload : variant<int, string>;
+}
+
+@rpc:Interface
+interface IVariantService
+{
+    func Send(value : VariantEnvelope) : (void);
+}
+
+========================================================
+Errors
+========================================================
+Line: 15, Column: 13, Message: H2: @rpc:Interface cannot be applied to interface "IVariantService" because its member "IVariantService.Send(value)" is not serializable.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 15, "column": 0, "index": 250}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "StructDeclaration", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 4, "column": 0, "index": 51}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "PlainRecord", "codeRange": {"start": {"row": 1, "column": 7, "index": 21}, "end": {"row": 1, "column": 17, "index": 31}, "codeIndex": -1}},
+        "members": [{
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 3, "column": 2, "index": 39}, "end": {"row": 3, "column": 11, "index": 48}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "value", "codeRange": {"start": {"row": 3, "column": 2, "index": 39}, "end": {"row": 3, "column": 6, "index": 43}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 3, "column": 8, "index": 45}, "end": {"row": 3, "column": 10, "index": 47}, "codeIndex": -1}},
+                "name": "Int"
+            }
+        }]
+    }, {
+        "$ast": { "type": "StructDeclaration", "codeRange": {"start": {"row": 5, "column": 0, "index": 54}, "end": {"row": 10, "column": 0, "index": 159}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "VariantEnvelope", "codeRange": {"start": {"row": 5, "column": 7, "index": 61}, "end": {"row": 5, "column": 21, "index": 75}, "codeIndex": -1}},
+        "members": [{
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 7, "column": 2, "index": 83}, "end": {"row": 7, "column": 19, "index": 100}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "first", "codeRange": {"start": {"row": 7, "column": 2, "index": 83}, "end": {"row": 7, "column": 6, "index": 87}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 7, "column": 8, "index": 89}, "end": {"row": 7, "column": 18, "index": 99}, "codeIndex": -1}},
+                "name": { "value": "PlainRecord", "codeRange": {"start": {"row": 7, "column": 8, "index": 89}, "end": {"row": 7, "column": 18, "index": 99}, "codeIndex": -1}}
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 8, "column": 2, "index": 105}, "end": {"row": 8, "column": 20, "index": 123}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "second", "codeRange": {"start": {"row": 8, "column": 2, "index": 105}, "end": {"row": 8, "column": 7, "index": 110}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 8, "column": 9, "index": 112}, "end": {"row": 8, "column": 19, "index": 122}, "codeIndex": -1}},
+                "name": { "value": "PlainRecord", "codeRange": {"start": {"row": 8, "column": 9, "index": 112}, "end": {"row": 8, "column": 19, "index": 122}, "codeIndex": -1}}
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 9, "column": 2, "index": 128}, "end": {"row": 9, "column": 30, "index": 156}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "payload", "codeRange": {"start": {"row": 9, "column": 2, "index": 128}, "end": {"row": 9, "column": 8, "index": 134}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "VariantType", "codeRange": {"start": {"row": 9, "column": 10, "index": 136}, "end": {"row": 9, "column": 29, "index": 155}, "codeIndex": -1}},
+                "arguments": [{
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 9, "column": 18, "index": 144}, "end": {"row": 9, "column": 20, "index": 146}, "codeIndex": -1}},
+                    "name": "Int"
+                }, {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 9, "column": 23, "index": 149}, "end": {"row": 9, "column": 28, "index": 154}, "codeIndex": -1}},
+                    "name": "String"
+                }]
+            }
+        }]
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 11, "column": 0, "index": 162}, "end": {"row": 15, "column": 0, "index": 250}, "codeIndex": -1}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 11, "column": 0, "index": 162}, "end": {"row": 11, "column": 13, "index": 175}, "codeIndex": -1}},
+            "category": { "value": "rpc", "codeRange": {"start": {"row": 11, "column": 1, "index": 163}, "end": {"row": 11, "column": 3, "index": 165}, "codeIndex": -1}},
+            "name": { "value": "Interface", "codeRange": {"start": {"row": 11, "column": 5, "index": 167}, "end": {"row": 11, "column": 13, "index": 175}, "codeIndex": -1}},
+            "value": null
+        }],
+        "name": { "value": "IVariantService", "codeRange": {"start": {"row": 12, "column": 10, "index": 188}, "end": {"row": 12, "column": 24, "index": 202}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 14, "column": 2, "index": 210}, "end": {"row": 14, "column": 39, "index": 247}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Send", "codeRange": {"start": {"row": 14, "column": 7, "index": 215}, "end": {"row": 14, "column": 10, "index": 218}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 14, "column": 12, "index": 220}, "end": {"row": 14, "column": 32, "index": 240}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "value", "codeRange": {"start": {"row": 14, "column": 12, "index": 220}, "end": {"row": 14, "column": 16, "index": 224}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 14, "column": 18, "index": 226}, "end": {"row": 14, "column": 32, "index": 240}, "codeIndex": -1}},
+                    "name": { "value": "VariantEnvelope", "codeRange": {"start": {"row": 14, "column": 18, "index": 226}, "end": {"row": 14, "column": 32, "index": 240}, "codeIndex": -1}}
+                }
+            }],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 14, "column": 35, "index": 243}, "end": {"row": 14, "column": 38, "index": 246}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": null
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

@@ -1,0 +1,462 @@
+﻿module RpcMetadataJson;
+
+func rpcjson_Serialize_Struct_RpcStructTraversal__Leaf(value : ::RpcStructTraversal::Leaf) : (system::JsonNode^)
+{
+    var object = new (system::JsonObject^)();
+    var jsonNumber0 = new (system::JsonNumber^)();
+    (jsonNumber0.content = {value : (cast (string) value.value);});
+    var jsonField1 = new (system::JsonObjectField^)();
+    (jsonField1.name = {value : "value";});
+    (jsonField1.value = jsonNumber0);
+    object.fields.Add(jsonField1);
+    return object;
+}
+
+func rpcjson_Deserialize_Struct_RpcStructTraversal__Leaf(node : system::JsonNode^) : (::RpcStructTraversal::Leaf)
+{
+    var object = (cast (system::JsonObject^) node);
+    var jsonFieldValue2 : system::JsonNode^ = null;
+    for (jsonField3 in object.fields)
+    {
+        if ((jsonField3.name.value == "value"))
+        (jsonFieldValue2 = jsonField3.value);
+    }
+    if (jsonFieldValue2 is null)
+    raise "JSON object field not found: value";
+    var jsonValue4 = (cast (::system::Int32) (cast (string) rpcjson_Deserialize(jsonFieldValue2)));
+    return {value : jsonValue4;};
+}
+
+func rpcjson_Serialize_Struct_RpcStructTraversal__OptionalLeaf(value : ::RpcStructTraversal::OptionalLeaf) : (system::JsonNode^)
+{
+    var object = new (system::JsonObject^)();
+    var jsonNumber5 = new (system::JsonNumber^)();
+    (jsonNumber5.content = {value : (cast (string) value.value);});
+    var jsonField6 = new (system::JsonObjectField^)();
+    (jsonField6.name = {value : "value";});
+    (jsonField6.value = jsonNumber5);
+    object.fields.Add(jsonField6);
+    return object;
+}
+
+func rpcjson_Deserialize_Struct_RpcStructTraversal__OptionalLeaf(node : system::JsonNode^) : (::RpcStructTraversal::OptionalLeaf)
+{
+    var object = (cast (system::JsonObject^) node);
+    var jsonFieldValue7 : system::JsonNode^ = null;
+    for (jsonField8 in object.fields)
+    {
+        if ((jsonField8.name.value == "value"))
+        (jsonFieldValue7 = jsonField8.value);
+    }
+    if (jsonFieldValue7 is null)
+    raise "JSON object field not found: value";
+    var jsonValue9 = (cast (::system::Int32) (cast (string) rpcjson_Deserialize(jsonFieldValue7)));
+    return {value : jsonValue9;};
+}
+
+func rpcjson_Serialize_Struct_RpcStructTraversal__Node(value : ::RpcStructTraversal::Node) : (system::JsonNode^)
+{
+    var object = new (system::JsonObject^)();
+    var jsonNode10 = rpcjson_Serialize_Struct_RpcStructTraversal__Leaf(value.first);
+    var jsonField11 = new (system::JsonObjectField^)();
+    (jsonField11.name = {value : "first";});
+    (jsonField11.value = jsonNode10);
+    object.fields.Add(jsonField11);
+    var jsonNode12 : system::JsonNode^ = null;
+    if (value.optional is null)
+    {
+        var jsonLiteral13 = new (system::JsonLiteral^)();
+        (jsonLiteral13.value = system::JsonLiteralValue::Null);
+        (jsonNode12 = jsonLiteral13);
+    }
+    else
+    {
+        var jsonNode14 = rpcjson_Serialize_Struct_RpcStructTraversal__OptionalLeaf((cast (::RpcStructTraversal::OptionalLeaf) value.optional));
+        (jsonNode12 = jsonNode14);
+    }
+    var jsonField15 = new (system::JsonObjectField^)();
+    (jsonField15.name = {value : "optional";});
+    (jsonField15.value = jsonNode12);
+    object.fields.Add(jsonField15);
+    var jsonNode16 = rpcjson_Serialize_Struct_RpcStructTraversal__Leaf(value.second);
+    var jsonField17 = new (system::JsonObjectField^)();
+    (jsonField17.name = {value : "second";});
+    (jsonField17.value = jsonNode16);
+    object.fields.Add(jsonField17);
+    return object;
+}
+
+func rpcjson_Deserialize_Struct_RpcStructTraversal__Node(node : system::JsonNode^) : (::RpcStructTraversal::Node)
+{
+    var object = (cast (system::JsonObject^) node);
+    var jsonFieldValue18 : system::JsonNode^ = null;
+    for (jsonField19 in object.fields)
+    {
+        if ((jsonField19.name.value == "first"))
+        (jsonFieldValue18 = jsonField19.value);
+    }
+    if (jsonFieldValue18 is null)
+    raise "JSON object field not found: first";
+    var jsonValue20 = rpcjson_Deserialize_Struct_RpcStructTraversal__Leaf(jsonFieldValue18);
+    var jsonFieldValue21 : system::JsonNode^ = null;
+    for (jsonField22 in object.fields)
+    {
+        if ((jsonField22.name.value == "optional"))
+        (jsonFieldValue21 = jsonField22.value);
+    }
+    if (jsonFieldValue21 is null)
+    raise "JSON object field not found: optional";
+    var jsonValue23 : ::RpcStructTraversal::OptionalLeaf? = null;
+    var jsonLiteral24 = (jsonFieldValue21 as (system::JsonLiteral^));
+    if ((jsonLiteral24 is null or (jsonLiteral24.value != system::JsonLiteralValue::Null)))
+    {
+        var jsonValue25 = rpcjson_Deserialize_Struct_RpcStructTraversal__OptionalLeaf(jsonFieldValue21);
+        (jsonValue23 = jsonValue25);
+    }
+    var jsonFieldValue26 : system::JsonNode^ = null;
+    for (jsonField27 in object.fields)
+    {
+        if ((jsonField27.name.value == "second"))
+        (jsonFieldValue26 = jsonField27.value);
+    }
+    if (jsonFieldValue26 is null)
+    raise "JSON object field not found: second";
+    var jsonValue28 = rpcjson_Deserialize_Struct_RpcStructTraversal__Leaf(jsonFieldValue26);
+    return {first : jsonValue20; optional : jsonValue23; second : jsonValue28;};
+}
+
+func rpcjson_Serialize(value : object) : (system::JsonNode^)
+{
+    var value_RpcStructTraversal__Leaf = (value as (::RpcStructTraversal::Leaf?));
+    if (value_RpcStructTraversal__Leaf is not null)
+    {
+        var object = new (system::JsonObject^)();
+        var jsonString29 = new (system::JsonString^)();
+        (jsonString29.content = {value : "RpcStructTraversal::Leaf";});
+        var jsonField30 = new (system::JsonObjectField^)();
+        (jsonField30.name = {value : "$";});
+        (jsonField30.value = jsonString29);
+        object.fields.Add(jsonField30);
+        var value31 = (cast (::RpcStructTraversal::Leaf) value_RpcStructTraversal__Leaf);
+        var jsonNumber32 = new (system::JsonNumber^)();
+        (jsonNumber32.content = {value : (cast (string) value31.value);});
+        var jsonField33 = new (system::JsonObjectField^)();
+        (jsonField33.name = {value : "value";});
+        (jsonField33.value = jsonNumber32);
+        object.fields.Add(jsonField33);
+        return object;
+    }
+    var value_RpcStructTraversal__OptionalLeaf = (value as (::RpcStructTraversal::OptionalLeaf?));
+    if (value_RpcStructTraversal__OptionalLeaf is not null)
+    {
+        var object = new (system::JsonObject^)();
+        var jsonString34 = new (system::JsonString^)();
+        (jsonString34.content = {value : "RpcStructTraversal::OptionalLeaf";});
+        var jsonField35 = new (system::JsonObjectField^)();
+        (jsonField35.name = {value : "$";});
+        (jsonField35.value = jsonString34);
+        object.fields.Add(jsonField35);
+        var value36 = (cast (::RpcStructTraversal::OptionalLeaf) value_RpcStructTraversal__OptionalLeaf);
+        var jsonNumber37 = new (system::JsonNumber^)();
+        (jsonNumber37.content = {value : (cast (string) value36.value);});
+        var jsonField38 = new (system::JsonObjectField^)();
+        (jsonField38.name = {value : "value";});
+        (jsonField38.value = jsonNumber37);
+        object.fields.Add(jsonField38);
+        return object;
+    }
+    var value_RpcStructTraversal__Node = (value as (::RpcStructTraversal::Node?));
+    if (value_RpcStructTraversal__Node is not null)
+    {
+        var object = new (system::JsonObject^)();
+        var jsonString39 = new (system::JsonString^)();
+        (jsonString39.content = {value : "RpcStructTraversal::Node";});
+        var jsonField40 = new (system::JsonObjectField^)();
+        (jsonField40.name = {value : "$";});
+        (jsonField40.value = jsonString39);
+        object.fields.Add(jsonField40);
+        var value41 = (cast (::RpcStructTraversal::Node) value_RpcStructTraversal__Node);
+        var jsonNode42 = rpcjson_Serialize_Struct_RpcStructTraversal__Leaf(value41.first);
+        var jsonField43 = new (system::JsonObjectField^)();
+        (jsonField43.name = {value : "first";});
+        (jsonField43.value = jsonNode42);
+        object.fields.Add(jsonField43);
+        var jsonNode44 : system::JsonNode^ = null;
+        if (value41.optional is null)
+        {
+            var jsonLiteral45 = new (system::JsonLiteral^)();
+            (jsonLiteral45.value = system::JsonLiteralValue::Null);
+            (jsonNode44 = jsonLiteral45);
+        }
+        else
+        {
+            var jsonNode46 = rpcjson_Serialize_Struct_RpcStructTraversal__OptionalLeaf((cast (::RpcStructTraversal::OptionalLeaf) value41.optional));
+            (jsonNode44 = jsonNode46);
+        }
+        var jsonField47 = new (system::JsonObjectField^)();
+        (jsonField47.name = {value : "optional";});
+        (jsonField47.value = jsonNode44);
+        object.fields.Add(jsonField47);
+        var jsonNode48 = rpcjson_Serialize_Struct_RpcStructTraversal__Leaf(value41.second);
+        var jsonField49 = new (system::JsonObjectField^)();
+        (jsonField49.name = {value : "second";});
+        (jsonField49.value = jsonNode48);
+        object.fields.Add(jsonField49);
+        return object;
+    }
+    return system::IRpcLifecycle::JsonSerializePredefinedTypes(value, rpcjson_Serialize);
+}
+
+func rpcjson_Deserialize(node : system::JsonNode^) : (object)
+{
+    var object = (node as (system::JsonObject^));
+    if (object is not null)
+    {
+        var jsonFieldValue50 : system::JsonNode^ = null;
+        for (jsonField51 in object.fields)
+        {
+            if ((jsonField51.name.value == "$"))
+            (jsonFieldValue50 = jsonField51.value);
+        }
+        if (jsonFieldValue50 is not null)
+        {
+            var keyword = (cast (system::JsonString^) jsonFieldValue50).content.value;
+            switch (keyword)
+            {
+                case "RpcStructTraversal::Leaf":
+                return rpcjson_Deserialize_Struct_RpcStructTraversal__Leaf(object);
+                case "RpcStructTraversal::OptionalLeaf":
+                return rpcjson_Deserialize_Struct_RpcStructTraversal__OptionalLeaf(object);
+                case "RpcStructTraversal::Node":
+                return rpcjson_Deserialize_Struct_RpcStructTraversal__Node(object);
+            }
+        }
+    }
+    return system::IRpcLifecycle::JsonDeserializePredefinedTypes(node, rpcjson_Deserialize);
+}
+
+func rpcops_IRpcSerializer() : (system::IRpcSerializer^)
+{
+    return new (system::IRpcSerializer^)
+    {
+        override func Serialize(value : object) : (object)
+        {
+            var result = rpcjson_Serialize(value);
+            return result;
+        }
+
+        override func Deserialize(value : object) : (object)
+        {
+            return rpcjson_Deserialize((cast (system::JsonNode^) value));
+        }
+    };
+}
+
+func rpcops_IRpcObjectOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObjectOps^)
+{
+    return new (system::IRpcObjectOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        var _slot : int = 0;
+
+        var _byvalReturnValues : object[int] = {};
+
+        override func InvokeMethod(ref : system::RpcObjectReference, methodId : int, arguments : system::Array^) : (object)
+        {
+            var unknownId : bool = false;
+            try
+            switch (methodId)
+            {
+                case rpcmethod_RpcStructTraversal__IService_Echo:
+                {
+                    var target = (cast (RpcStructTraversal::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 : ::RpcStructTraversal::Node? = null;
+                    var jsonLiteral1 = ((cast (system::JsonNode^) arguments[0]) as (system::JsonLiteral^));
+                    if ((jsonLiteral1 is null or (jsonLiteral1.value != system::JsonLiteralValue::Null)))
+                    {
+                        var jsonValue2 = rpcjson_Deserialize_Struct_RpcStructTraversal__Node((cast (system::JsonNode^) arguments[0]));
+                        (jsonValue0 = jsonValue2);
+                    }
+                    var jsonNode3 : system::JsonNode^ = null;
+                    if (target.Echo(jsonValue0) is null)
+                    {
+                        var jsonLiteral4 = new (system::JsonLiteral^)();
+                        (jsonLiteral4.value = system::JsonLiteralValue::Null);
+                        (jsonNode3 = jsonLiteral4);
+                    }
+                    else
+                    {
+                        var jsonNode5 = rpcjson_Serialize_Struct_RpcStructTraversal__Node((cast (::RpcStructTraversal::Node) target.Echo(jsonValue0)));
+                        (jsonNode3 = jsonNode5);
+                    }
+                    return jsonNode3;
+                }
+                case rpcmethod_RpcStructTraversal__IService_EchoList:
+                {
+                    var target = (cast (RpcStructTraversal::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 = rpcjson_Deserialize((cast (system::JsonNode^) arguments[0]));
+                    var copiedReturnValue = system::IRpcLifecycle::RpcCopyByval(target.EchoList((cast (::RpcStructTraversal::Node[]) system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc))), _lc);
+                    var jsonValue1 = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
+                    var jsonNode2 = rpcjson_Serialize(jsonValue1);
+                    var byvalReturnValue = new (system::RpcByvalReturnValue^)();
+                    (byvalReturnValue.value = jsonNode2);
+                    (byvalReturnValue.slot = _slot);
+                    _byvalReturnValues.Set(_slot, copiedReturnValue);
+                    (_slot = (_slot + 1));
+                    return byvalReturnValue;
+                }
+                case rpcmethod_RpcStructTraversal__IService_EchoMap:
+                {
+                    var target = (cast (RpcStructTraversal::IService^) _lc.RefToPtr(ref));
+                    var jsonValue0 = rpcjson_Deserialize((cast (system::JsonNode^) arguments[0]));
+                    var copiedReturnValue = system::IRpcLifecycle::RpcCopyByval(target.EchoMap((cast (::RpcStructTraversal::Node[::system::String]) system::IRpcLifecycle::RpcUnboxByval(jsonValue0, _lc))), _lc);
+                    var jsonValue1 = system::IRpcLifecycle::RpcBoxByval(copiedReturnValue, _lc);
+                    var jsonNode2 = rpcjson_Serialize(jsonValue1);
+                    var byvalReturnValue = new (system::RpcByvalReturnValue^)();
+                    (byvalReturnValue.value = jsonNode2);
+                    (byvalReturnValue.slot = _slot);
+                    _byvalReturnValues.Set(_slot, copiedReturnValue);
+                    (_slot = (_slot + 1));
+                    return byvalReturnValue;
+                }
+                default:
+                (unknownId = true);
+            }
+            catch (ex)
+            {
+                return rpcjson_Serialize({message : ex.Message;} of (system::RpcException));
+            }
+            if (unknownId)
+            {
+                raise "Unknown RPC method id.";
+            }
+            return rpcjson_Serialize(null);
+        }
+
+        override func EndInvokeMethod(slot : int) : (void)
+        {
+            _byvalReturnValues.Remove(slot);
+        }
+
+        override func ObjectHold(ref : system::RpcObjectReference, remoteClientId : int, hold : bool) : (void)
+        {
+            if (hold)
+            {
+                _lc.LocalObjectHold(ref, remoteClientId);
+            }
+            else
+            {
+                _lc.LocalObjectUnhold(ref, remoteClientId);
+            }
+        }
+    };
+}
+
+func rpcops_IRpcObjectEventOpsJson(lc : system::IRpcLifecycle*) : (system::IRpcObjectEventOps^)
+{
+    return new (system::IRpcObjectEventOps^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeEvent(ref : system::RpcObjectReference, eventId : int, arguments : system::Array^) : (object)
+        {
+            raise "Unknown RPC event id.";
+        }
+    };
+}
+
+func rpcops_IOps_CreateJson(lc : system::IRpcLifecycle*) : (rpcops_IOps_Rpc_StructTraversal^)
+{
+    return new (rpcops_IOps_Rpc_StructTraversal^)
+    {
+        var _lc : system::IRpcLifecycle* = lc;
+
+        override func InvokeMethod_RpcStructTraversal__IService_Echo(ref : system::RpcObjectReference, arg_value : ::RpcStructTraversal::Node?) : (::RpcStructTraversal::Node?)
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonNode0 : system::JsonNode^ = null;
+            if (arg_value is null)
+            {
+                var jsonLiteral1 = new (system::JsonLiteral^)();
+                (jsonLiteral1.value = system::JsonLiteralValue::Null);
+                (jsonNode0 = jsonLiteral1);
+            }
+            else
+            {
+                var jsonNode2 = rpcjson_Serialize_Struct_RpcStructTraversal__Node((cast (::RpcStructTraversal::Node) arg_value));
+                (jsonNode0 = jsonNode2);
+            }
+            arguments.Set(0, jsonNode0);
+            var invokeResult = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId).InvokeMethod(ref, rpcmethod_RpcStructTraversal__IService_Echo, arguments);
+            var jsonResult = (cast (system::JsonNode^) invokeResult);
+            var methodResult = rpcjson_Deserialize(jsonResult);
+            system::IRpcLifecycle::ReadMethodException(methodResult);
+            var jsonValue3 : ::RpcStructTraversal::Node? = null;
+            var jsonLiteral4 = (jsonResult as (system::JsonLiteral^));
+            if ((jsonLiteral4 is null or (jsonLiteral4.value != system::JsonLiteralValue::Null)))
+            {
+                var jsonValue5 = rpcjson_Deserialize_Struct_RpcStructTraversal__Node(jsonResult);
+                (jsonValue3 = jsonValue5);
+            }
+            return jsonValue3;
+        }
+
+        override func InvokeMethod_RpcStructTraversal__IService_EchoList(ref : system::RpcObjectReference, arg_values : ::RpcStructTraversal::Node[]) : (::RpcStructTraversal::Node[])
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonValue0 = system::IRpcLifecycle::RpcBoxByval(arg_values, _lc);
+            var jsonNode1 = rpcjson_Serialize(jsonValue0);
+            arguments.Set(0, jsonNode1);
+            var objectOps = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
+            var invokeResult = objectOps.InvokeMethod(ref, rpcmethod_RpcStructTraversal__IService_EchoList, arguments);
+            var byvalReturnValue = (invokeResult as (system::RpcByvalReturnValue^));
+            var jsonResult : system::JsonNode^ = null;
+            if (byvalReturnValue is null)
+            {
+                (jsonResult = (cast (system::JsonNode^) invokeResult));
+            }
+            else
+            {
+                (jsonResult = (cast (system::JsonNode^) byvalReturnValue.value));
+            }
+            var methodResult = rpcjson_Deserialize(jsonResult);
+            system::IRpcLifecycle::ReadMethodException(methodResult);
+            var strongByvalReturnValue = (cast (system::RpcByvalReturnValue^) byvalReturnValue);
+            var jsonValue2 = rpcjson_Deserialize(jsonResult);
+            var result = (cast (::RpcStructTraversal::Node[]) system::IRpcLifecycle::RpcUnboxByval(jsonValue2, _lc));
+            objectOps.EndInvokeMethod(strongByvalReturnValue.slot);
+            return result;
+        }
+
+        override func InvokeMethod_RpcStructTraversal__IService_EchoMap(ref : system::RpcObjectReference, arg_values : ::RpcStructTraversal::Node[::system::String]) : (::RpcStructTraversal::Node[::system::String])
+        {
+            var arguments : system::Array^ = {};
+            arguments.Resize(1);
+            var jsonValue0 = system::IRpcLifecycle::RpcBoxByval(arg_values, _lc);
+            var jsonNode1 = rpcjson_Serialize(jsonValue0);
+            arguments.Set(0, jsonNode1);
+            var objectOps = _lc.Dispatcher.SendToClient_ObjectOps(ref.clientId);
+            var invokeResult = objectOps.InvokeMethod(ref, rpcmethod_RpcStructTraversal__IService_EchoMap, arguments);
+            var byvalReturnValue = (invokeResult as (system::RpcByvalReturnValue^));
+            var jsonResult : system::JsonNode^ = null;
+            if (byvalReturnValue is null)
+            {
+                (jsonResult = (cast (system::JsonNode^) invokeResult));
+            }
+            else
+            {
+                (jsonResult = (cast (system::JsonNode^) byvalReturnValue.value));
+            }
+            var methodResult = rpcjson_Deserialize(jsonResult);
+            system::IRpcLifecycle::ReadMethodException(methodResult);
+            var strongByvalReturnValue = (cast (system::RpcByvalReturnValue^) byvalReturnValue);
+            var jsonValue2 = rpcjson_Deserialize(jsonResult);
+            var result = (cast (::RpcStructTraversal::Node[::system::String]) system::IRpcLifecycle::RpcUnboxByval(jsonValue2, _lc));
+            objectOps.EndInvokeMethod(strongByvalReturnValue.slot);
+            return result;
+        }
+    };
+}

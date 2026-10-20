@@ -1,0 +1,70 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+@rpc:Interface
+interface IVariantService
+{
+    prop Value : variant<int, string> {}
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+@rpc:Interface
+interface IVariantService
+{
+    prop Value : variant<int, string> {}
+}
+
+========================================================
+Errors
+========================================================
+Line: -1, Column: -1, Message: H2: @rpc:Interface cannot be applied to interface "IVariantService" because its member "IVariantService.Value" is not serializable.
+Line: 5, Column: 3, Message: H2: @rpc:Interface cannot be applied to interface "IVariantService" because its member "IVariantService.GetValue" is not serializable.
+Line: 5, Column: 3, Message: H2: @rpc:Interface cannot be applied to interface "IVariantService" because its member "IVariantService.SetValue(<value>)" is not serializable.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 98}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 5, "column": 0, "index": 98}, "codeIndex": -1}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 13, "index": 27}, "codeIndex": -1}},
+            "category": { "value": "rpc", "codeRange": {"start": {"row": 1, "column": 1, "index": 15}, "end": {"row": 1, "column": 3, "index": 17}, "codeIndex": -1}},
+            "name": { "value": "Interface", "codeRange": {"start": {"row": 1, "column": 5, "index": 19}, "end": {"row": 1, "column": 13, "index": 27}, "codeIndex": -1}},
+            "value": null
+        }],
+        "name": { "value": "IVariantService", "codeRange": {"start": {"row": 2, "column": 10, "index": 40}, "end": {"row": 2, "column": 24, "index": 54}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "AutoPropertyDeclaration", "codeRange": {"start": {"row": 4, "column": 2, "index": 62}, "end": {"row": 4, "column": 35, "index": 95}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Value", "codeRange": {"start": {"row": 4, "column": 7, "index": 67}, "end": {"row": 4, "column": 11, "index": 71}, "codeIndex": -1}},
+            "expandedDeclarations": [],
+            "configConst": "Writable",
+            "configObserve": "Observable",
+            "expression": null,
+            "functionKind": "Normal",
+            "type": {
+                "$ast": { "type": "VariantType", "codeRange": {"start": {"row": 4, "column": 13, "index": 73}, "end": {"row": 4, "column": 32, "index": 92}, "codeIndex": -1}},
+                "arguments": [{
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 21, "index": 81}, "end": {"row": 4, "column": 23, "index": 83}, "codeIndex": -1}},
+                    "name": "Int"
+                }, {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 26, "index": 86}, "end": {"row": 4, "column": 31, "index": 91}, "codeIndex": -1}},
+                    "name": "String"
+                }]
+            }
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

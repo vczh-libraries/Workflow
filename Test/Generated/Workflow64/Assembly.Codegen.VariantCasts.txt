@@ -45,7 +45,23 @@ EscapedPayload (61 .. 70)
         value
         escaped
 
-main (71 .. 554)
+SerializeRpcValue (71 .. 79)
+    Arguments:
+        value
+    Captured Variables:
+    Local Variables:
+
+SerializeEscapedVariant (80 .. 114)
+    Arguments:
+        mode
+    Captured Variables:
+    Local Variables:
+        value
+        escaped
+        values
+        values
+
+main (115 .. 598)
     Arguments:
     Captured Variables:
     Local Variables:
@@ -90,105 +106,105 @@ main (71 .. 554)
     Captured Variables:
     Local Variables:
 
-<lambda:(8)> in main (555 .. 559)
+<lambda:(10)> in main (599 .. 603)
     Arguments:
     Captured Variables:
         <captured>number
     Local Variables:
         result
 
-<lambda:(9)> in main (560 .. 564)
+<lambda:(11)> in main (604 .. 608)
     Arguments:
     Captured Variables:
         <captured>number
     Local Variables:
         result
 
-<lambda:(10)> in main (565 .. 569)
+<lambda:(12)> in main (609 .. 613)
     Arguments:
     Captured Variables:
         <captured>plain
     Local Variables:
         result
 
-<lambda:(11)> in main (570 .. 574)
+<lambda:(13)> in main (614 .. 618)
     Arguments:
     Captured Variables:
         <captured>missing
     Local Variables:
         result
 
-<lambda:(12)> in main (575 .. 579)
+<lambda:(14)> in main (619 .. 623)
     Arguments:
     Captured Variables:
         <captured>derivedSlot
     Local Variables:
         result
 
-<lambda:(13)> in main (580 .. 584)
+<lambda:(15)> in main (624 .. 628)
     Arguments:
     Captured Variables:
         <captured>derivedSlot
     Local Variables:
         result
 
-<lambda:(14)> in main (585 .. 591)
+<lambda:(16)> in main (629 .. 635)
     Arguments:
     Captured Variables:
         <captured>rawSlots
     Local Variables:
         result
 
-<lambda:(15)> in main (592 .. 596)
+<lambda:(17)> in main (636 .. 640)
     Arguments:
     Captured Variables:
         <captured>taggedBase
     Local Variables:
         result
 
-<lambda:(16)> in main (597 .. 601)
+<lambda:(18)> in main (641 .. 645)
     Arguments:
     Captured Variables:
         <captured>sharedDerived
     Local Variables:
         result
 
-<lambda:(17)> in main (602 .. 606)
+<lambda:(19)> in main (646 .. 650)
     Arguments:
     Captured Variables:
         <captured>sharedDerived
     Local Variables:
         result
 
-<lambda:(18)> in main (607 .. 613)
+<lambda:(20)> in main (651 .. 657)
     Arguments:
     Captured Variables:
         <captured>sharedSlots
     Local Variables:
         result
 
-<lambda:(19)> in main (614 .. 618)
+<lambda:(21)> in main (658 .. 662)
     Arguments:
     Captured Variables:
         <captured>taggedShared
     Local Variables:
         result
 
-<lambda:(20)> in main (619 .. 623)
+<lambda:(22)> in main (663 .. 667)
     Arguments:
     Captured Variables:
         <captured>objectSlot
     Local Variables:
         result
 
-<lambda:(21)> in main (624 .. 628)
+<lambda:(23)> in main (668 .. 672)
     Arguments:
     Captured Variables:
         <captured>nullableSlot
     Local Variables:
         result
 
-<lambda:(22)> in main (629 .. 633)
+<lambda:(24)> in main (673 .. 677)
     Arguments:
     Captured Variables:
         <captured>opaque
@@ -338,1129 +354,1217 @@ Instructions:
 69   :     LoadValue     : value = <null>
 //  func EscapedPayload() : (int)
 70   :     Return        
-//  42
-71   :     LoadValue     : value = <I8, 42>
-//  (cast (variant<int, string>) 42)
-72   :     VBox          : typeInfo = system::Int64
-//  var number = (cast (variant<int, string>) 42);
-73   :     StoreLocalVar : var = 0(number)
-//  number
-74   :     LoadLocalVar  : var = 0(number)
-//  Echo(number)
-75   :     Invoke        : func = 4(Echo), stackPatternCount = 1
-//  (cast (int) Echo(number))
-76   :     VCast         : typeInfo = system::Int64
-//  42
-77   :     LoadValue     : value = <I8, 42>
-//  ((cast (int) Echo(number)) == 42)
-78   :     CompareValue  
-//  Check(((cast (int) Echo(number)) == 42))
-79   :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(((cast (int) Echo(number)) == 42));
-80   :     Pop           
-//  "hello"
-81   :     LoadValue     : value = <String, hello>
-//  "hello" of (variant<int, string>)
-82   :     VBox          : typeInfo = system::String
-//  var text = "hello" of (variant<int, string>);
-83   :     StoreLocalVar : var = 1(text)
-//  text
-84   :     LoadLocalVar  : var = 1(text)
-//  (cast (string) text)
-85   :     VCast         : typeInfo = system::String
-//  "hello"
-86   :     LoadValue     : value = <String, hello>
-//  ((cast (string) text) == "hello")
+//  value
+71   :     LoadLocalVar  : var = 0(value)
+//  SerializeRpcValue
+72   :     CreateClosureContext: stackPatternCount = 0
+//  SerializeRpcValue
+73   :     LoadFunction  : func = 6(SerializeRpcValue)
+//  SerializeRpcValue
+74   :     CreateClosure 
+//  IRpcLifecycle::JsonSerializePredefinedTypes(value, SerializeRpcValue)
+75   :     LoadValue     : value = <null>
+//  IRpcLifecycle::JsonSerializePredefinedTypes(value, SerializeRpcValue)
+76   :     InvokeMethod  : methodInfo = JsonSerializePredefinedTypes<system::IRpcLifecycle>, stackPatternCount = 2
+//  return IRpcLifecycle::JsonSerializePredefinedTypes(value, SerializeRpcValue);
+77   :     Return        
+//  func SerializeRpcValue(value : object) : (JsonNode^)
+78   :     LoadValue     : value = <null>
+//  func SerializeRpcValue(value : object) : (JsonNode^)
+79   :     Return        
+//  1
+80   :     LoadValue     : value = <I8, 1>
+//  1 of (variant<int, string>)
+81   :     VBox          : typeInfo = system::Int64
+//  var value = 1 of (variant<int, string>);
+82   :     StoreLocalVar : var = 1(value)
+//  value
+83   :     LoadLocalVar  : var = 1(value)
+//  var escaped : object = (cast (object) value);
+84   :     StoreLocalVar : var = 2(escaped)
+//  mode
+85   :     LoadLocalVar  : var = 0(mode)
+//  0
+86   :     LoadValue     : value = <I8, 0>
+//  (mode == 0)
 87   :     CompareValue  
-//  Check(((cast (string) text) == "hello"))
-88   :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(((cast (string) text) == "hello"));
-89   :     Pop           
-//  number
-90   :     LoadLocalVar  : var = 0(number)
-//  var reordered = (cast (variant<string, int>) number);
-91   :     StoreLocalVar : var = 2(reordered)
-//  reordered
-92   :     LoadLocalVar  : var = 2(reordered)
-//  (cast (int) reordered)
-93   :     VCast         : typeInfo = system::Int64
-//  42
-94   :     LoadValue     : value = <I8, 42>
-//  ((cast (int) reordered) == 42)
-95   :     CompareValue  
-//  Check(((cast (int) reordered) == 42))
-96   :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(((cast (int) reordered) == 42));
-97   :     Pop           
-//  text
-98   :     LoadLocalVar  : var = 1(text)
-//  var widened = text of (variant<double, string, int>);
-99   :     StoreLocalVar : var = 3(widened)
-//  widened
-100  :     LoadLocalVar  : var = 3(widened)
-//  (cast (string) widened)
-101  :     VCast         : typeInfo = system::String
-//  "hello"
-102  :     LoadValue     : value = <String, hello>
-//  ((cast (string) widened) == "hello")
-103  :     CompareValue  
-//  Check(((cast (string) widened) == "hello"))
-104  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(((cast (string) widened) == "hello"));
-105  :     Pop           
-//  number
-106  :     LoadLocalVar  : var = 0(number)
-//  var widenedNumber = number of (variant<double, string, int>);
-107  :     StoreLocalVar : var = 4(widenedNumber)
-//  widenedNumber
-108  :     LoadLocalVar  : var = 4(widenedNumber)
-//  (cast (int) widenedNumber)
-109  :     VCast         : typeInfo = system::Int64
-//  42
-110  :     LoadValue     : value = <I8, 42>
-//  ((cast (int) widenedNumber) == 42)
-111  :     CompareValue  
-//  Check(((cast (int) widenedNumber) == 42))
-112  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(((cast (int) widenedNumber) == 42));
-113  :     Pop           
-//  text
-114  :     LoadLocalVar  : var = 1(text)
-//  (cast (variant<string, bool>) text)
-115  :     VCast         : typeInfo = Variant<system::String, system::Boolean>
-//  var intersected = (cast (variant<string, bool>) text);
-116  :     StoreLocalVar : var = 5(intersected)
-//  intersected
-117  :     LoadLocalVar  : var = 5(intersected)
-//  (cast (string) intersected)
-118  :     VCast         : typeInfo = system::String
-//  "hello"
-119  :     LoadValue     : value = <String, hello>
-//  ((cast (string) intersected) == "hello")
-120  :     CompareValue  
-//  Check(((cast (string) intersected) == "hello"))
-121  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(((cast (string) intersected) == "hello"));
-122  :     Pop           
-//  func () : (void)
-123  :     LoadLocalVar  : var = 0(number)
-//  func () : (void)
-124  :     CreateClosureContext: stackPatternCount = 1
-//  func () : (void)
-125  :     LoadFunction  : func = 8(<lambda:(8)> in main)
-//  func () : (void)
-126  :     CreateClosure 
-//  ExpectFailure(func () : (void)
-127  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
-//  ExpectFailure(func () : (void)
-128  :     Pop           
-//  func () : (void)
-129  :     LoadLocalVar  : var = 0(number)
-//  func () : (void)
-130  :     CreateClosureContext: stackPatternCount = 1
-//  func () : (void)
-131  :     LoadFunction  : func = 9(<lambda:(9)> in main)
-//  func () : (void)
-132  :     CreateClosure 
-//  ExpectFailure(func () : (void)
-133  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
-//  ExpectFailure(func () : (void)
-134  :     Pop           
-//  7
-135  :     LoadValue     : value = <I8, 7>
-//  (cast (variant<int, int?, string>) 7)
-136  :     VBox          : typeInfo = system::Int64
-//  var plain = (cast (variant<int, int?, string>) 7);
-137  :     StoreLocalVar : var = 6(plain)
-//  8
-138  :     LoadValue     : value = <I8, 8>
-//  8
-139  :     Duplicate     : stackPatternCount = 0
-//  8
-140  :     LoadValue     : value = <null>
-//  8
-141  :     CompareReference
-//  8
-142  :     JumpIf        : label = 145
-//  8
-143  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
-//  8
-144  :     Jump          : label = 146
-//  8
-145  :     LoadValue     : value = <null>
-//  var optional : int? = 8;
-146  :     StoreLocalVar : var = 7(optional)
-//  optional
-147  :     LoadLocalVar  : var = 7(optional)
-//  optional of (variant<int, int?, string>)
-148  :     VBox          : typeInfo = system::Int64?
-//  var present = optional of (variant<int, int?, string>);
-149  :     StoreLocalVar : var = 8(present)
-//  null
-150  :     LoadValue     : value = <null>
-//  var empty : int? = null;
-151  :     StoreLocalVar : var = 9(empty)
-//  empty
-152  :     LoadLocalVar  : var = 9(empty)
-//  (cast (variant<int, int?, string>) empty)
-153  :     VBox          : typeInfo = system::Int64?
-//  var missing = (cast (variant<int, int?, string>) empty);
-154  :     StoreLocalVar : var = 10(missing)
-//  plain
-155  :     LoadLocalVar  : var = 6(plain)
-//  (plain as (int?))
-156  :     VTryCast      : typeInfo = system::Int64?
-//  7
-157  :     LoadValue     : value = <I8, 7>
-//  ((plain as (int?)) == 7)
-158  :     CompareValue  
-//  Check(((plain as (int?)) == 7))
-159  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(((plain as (int?)) == 7));
-160  :     Pop           
-//  present
-161  :     LoadLocalVar  : var = 8(present)
-//  (present as (int?))
-162  :     VTryCast      : typeInfo = system::Int64?
-//  8
-163  :     LoadValue     : value = <I8, 8>
-//  ((present as (int?)) == 8)
-164  :     CompareValue  
-//  Check(((present as (int?)) == 8))
-165  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(((present as (int?)) == 8));
-166  :     Pop           
-//  missing
-167  :     LoadLocalVar  : var = 10(missing)
-//  (missing as (int?))
-168  :     VTryCast      : typeInfo = system::Int64?
-//  (missing as (int?)) is null
-169  :     LoadValue     : value = <null>
-//  (missing as (int?)) is null
-170  :     CompareReference
-//  Check((missing as (int?)) is null)
-171  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((missing as (int?)) is null);
-172  :     Pop           
-//  missing
-173  :     LoadLocalVar  : var = 10(missing)
-//  (cast (int?) missing)
-174  :     VCast         : typeInfo = system::Int64?
-//  (cast (int?) missing) is null
-175  :     LoadValue     : value = <null>
-//  (cast (int?) missing) is null
-176  :     CompareReference
-//  Check((cast (int?) missing) is null)
-177  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((cast (int?) missing) is null);
-178  :     Pop           
-//  missing
-179  :     LoadLocalVar  : var = 10(missing)
-//  (cast (variant<int?, bool>) missing)
-180  :     VCast         : typeInfo = Variant<system::Int64?, system::Boolean>
-//  (cast (int?) (cast (variant<int?, bool>) missing))
-181  :     VCast         : typeInfo = system::Int64?
-//  (cast (int?) (cast (variant<int?, bool>) missing)) is null
-182  :     LoadValue     : value = <null>
-//  (cast (int?) (cast (variant<int?, bool>) missing)) is null
-183  :     CompareReference
-//  Check((cast (int?) (cast (variant<int?, bool>) missing)) is null)
-184  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((cast (int?) (cast (variant<int?, bool>) missing)) is null);
-185  :     Pop           
-//  missing
-186  :     LoadLocalVar  : var = 10(missing)
-//  missing is null
-187  :     VUnbox        
-//  missing is null
-188  :     LoadValue     : value = <null>
-//  missing is null
-189  :     CompareReference
-//  Check(missing is null)
-190  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(missing is null);
-191  :     Pop           
-//  plain
-192  :     LoadLocalVar  : var = 6(plain)
-//  plain is not null
-193  :     VUnbox        
-//  plain is not null
-194  :     LoadValue     : value = <null>
-//  plain is not null
-195  :     CompareReference
-//  plain is not null
-196  :     OpNot         : type = Bool
-//  Check(plain is not null)
-197  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(plain is not null);
-198  :     Pop           
-//  func () : (void)
-199  :     LoadLocalVar  : var = 6(plain)
-//  func () : (void)
-200  :     CreateClosureContext: stackPatternCount = 1
-//  func () : (void)
-201  :     LoadFunction  : func = 10(<lambda:(10)> in main)
-//  func () : (void)
-202  :     CreateClosure 
-//  ExpectFailure(func () : (void)
-203  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
-//  ExpectFailure(func () : (void)
-204  :     Pop           
-//  func () : (void)
-205  :     LoadLocalVar  : var = 10(missing)
-//  func () : (void)
-206  :     CreateClosureContext: stackPatternCount = 1
-//  func () : (void)
-207  :     LoadFunction  : func = 11(<lambda:(11)> in main)
-//  func () : (void)
-208  :     CreateClosure 
-//  ExpectFailure(func () : (void)
-209  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
-//  ExpectFailure(func () : (void)
-210  :     Pop           
-//  "other"
-211  :     LoadValue     : value = <String, other>
-//  "other" of (variant<int, int?, string>)
-212  :     VBox          : typeInfo = system::String
-//  var other = "other" of (variant<int, int?, string>);
-213  :     StoreLocalVar : var = 11(other)
-//  other
-214  :     LoadLocalVar  : var = 11(other)
-//  (other as (int?))
-215  :     VTryCast      : typeInfo = system::Int64?
-//  (other as (int?)) is null
-216  :     LoadValue     : value = <null>
-//  (other as (int?)) is null
-217  :     CompareReference
-//  Check((other as (int?)) is null)
-218  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((other as (int?)) is null);
-219  :     Pop           
-//  null
-220  :     LoadValue     : value = <null>
-//  var baseNull : VariantBase* = null;
-221  :     StoreLocalVar : var = 12(baseNull)
-//  null
-222  :     LoadValue     : value = <null>
-//  var derivedNull : VariantDerived* = null;
-223  :     StoreLocalVar : var = 13(derivedNull)
-//  baseNull
-224  :     LoadLocalVar  : var = 12(baseNull)
-//  baseNull of (variant<VariantBase*, VariantDerived*, string>)
-225  :     VBox          : typeInfo = VariantBase*
-//  var baseSlot = baseNull of (variant<VariantBase*, VariantDerived*, string>);
-226  :     StoreLocalVar : var = 14(baseSlot)
-//  derivedNull
-227  :     LoadLocalVar  : var = 13(derivedNull)
-//  derivedNull of (variant<VariantBase*, VariantDerived*, string>)
-228  :     VBox          : typeInfo = VariantDerived*
-//  var derivedSlot = derivedNull of (variant<VariantBase*, VariantDerived*, string>);
-229  :     StoreLocalVar : var = 15(derivedSlot)
-//  baseSlot
-230  :     LoadLocalVar  : var = 14(baseSlot)
-//  (cast (VariantBase*) baseSlot)
-231  :     VCast         : typeInfo = VariantBase*
-//  (cast (VariantBase*) baseSlot) is null
-232  :     LoadValue     : value = <null>
-//  (cast (VariantBase*) baseSlot) is null
-233  :     CompareReference
-//  Check((cast (VariantBase*) baseSlot) is null)
-234  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((cast (VariantBase*) baseSlot) is null);
-235  :     Pop           
-//  baseSlot
-236  :     LoadLocalVar  : var = 14(baseSlot)
-//  (baseSlot as (VariantBase*))
-237  :     VTryCast      : typeInfo = VariantBase*
-//  (baseSlot as (VariantBase*)) is null
-238  :     LoadValue     : value = <null>
-//  (baseSlot as (VariantBase*)) is null
-239  :     CompareReference
-//  Check((baseSlot as (VariantBase*)) is null)
-240  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((baseSlot as (VariantBase*)) is null);
-241  :     Pop           
-//  derivedSlot
-242  :     LoadLocalVar  : var = 15(derivedSlot)
-//  (derivedSlot as (VariantBase*))
-243  :     VTryCast      : typeInfo = VariantBase*
-//  (derivedSlot as (VariantBase*)) is null
-244  :     LoadValue     : value = <null>
-//  (derivedSlot as (VariantBase*)) is null
-245  :     CompareReference
-//  Check((derivedSlot as (VariantBase*)) is null)
-246  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((derivedSlot as (VariantBase*)) is null);
-247  :     Pop           
-//  baseSlot
-248  :     LoadLocalVar  : var = 14(baseSlot)
-//  baseSlot is null
-249  :     VUnbox        
-//  baseSlot is null
-250  :     LoadValue     : value = <null>
-//  baseSlot is null
-251  :     CompareReference
-//  Check(baseSlot is null)
-252  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(baseSlot is null);
-253  :     Pop           
-//  baseSlot
-254  :     LoadLocalVar  : var = 14(baseSlot)
-//  (cast (variant<VariantBase*, bool>) baseSlot)
-255  :     VCast         : typeInfo = Variant<VariantBase*, system::Boolean>
-//  (cast (VariantBase*) (cast (variant<VariantBase*, bool>) baseSlot))
-256  :     VCast         : typeInfo = VariantBase*
-//  (cast (VariantBase*) (cast (variant<VariantBase*, bool>) baseSlot)) is null
-257  :     LoadValue     : value = <null>
-//  (cast (VariantBase*) (cast (variant<VariantBase*, bool>) baseSlot)) is null
-258  :     CompareReference
-//  Check((cast (VariantBase*) (cast (variant<VariantBase*, bool>) baseSlot)) is null)
-259  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((cast (VariantBase*) (cast (variant<VariantBase*, bool>) baseSlot)) is null);
-260  :     Pop           
-//  func () : (void)
-261  :     LoadLocalVar  : var = 15(derivedSlot)
-//  func () : (void)
-262  :     CreateClosureContext: stackPatternCount = 1
-//  func () : (void)
-263  :     LoadFunction  : func = 12(<lambda:(12)> in main)
-//  func () : (void)
-264  :     CreateClosure 
-//  ExpectFailure(func () : (void)
-265  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
-//  ExpectFailure(func () : (void)
-266  :     Pop           
-//  baseSlot
-267  :     LoadLocalVar  : var = 14(baseSlot)
-//  var rawReordered = baseSlot of (variant<string, VariantDerived*, VariantBase*>);
-268  :     StoreLocalVar : var = 16(rawReordered)
-//  rawReordered
-269  :     LoadLocalVar  : var = 16(rawReordered)
-//  (cast (VariantBase*) rawReordered)
-270  :     VCast         : typeInfo = VariantBase*
-//  (cast (VariantBase*) rawReordered) is null
-271  :     LoadValue     : value = <null>
-//  (cast (VariantBase*) rawReordered) is null
-272  :     CompareReference
-//  Check((cast (VariantBase*) rawReordered) is null)
-273  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((cast (VariantBase*) rawReordered) is null);
-274  :     Pop           
-//  func () : (void)
-275  :     LoadLocalVar  : var = 15(derivedSlot)
-//  func () : (void)
-276  :     CreateClosureContext: stackPatternCount = 1
-//  func () : (void)
-277  :     LoadFunction  : func = 13(<lambda:(13)> in main)
-//  func () : (void)
-278  :     CreateClosure 
-//  ExpectFailure(func () : (void)
-279  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
-//  ExpectFailure(func () : (void)
-280  :     Pop           
-//  derivedSlot
-281  :     LoadLocalVar  : var = 15(derivedSlot)
-//  baseSlot
-282  :     LoadLocalVar  : var = 14(baseSlot)
-//  {baseSlot; derivedSlot;}
-283  :     NewList       : stackPatternCount = 2
-//  var rawSlots : variant<VariantBase*, VariantDerived*, string>[] = {baseSlot; derivedSlot;};
-284  :     StoreLocalVar : var = 17(rawSlots)
-//  0
-285  :     LoadValue     : value = <I8, 0>
-//  rawSlots
-286  :     LoadLocalVar  : var = 17(rawSlots)
-//  rawSlots[0]
-287  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
-//  (cast (VariantBase*) rawSlots[0])
-288  :     VCast         : typeInfo = VariantBase*
-//  (cast (VariantBase*) rawSlots[0]) is null
-289  :     LoadValue     : value = <null>
-//  (cast (VariantBase*) rawSlots[0]) is null
-290  :     CompareReference
-//  Check((cast (VariantBase*) rawSlots[0]) is null)
-291  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((cast (VariantBase*) rawSlots[0]) is null);
-292  :     Pop           
-//  func () : (void)
-293  :     LoadLocalVar  : var = 17(rawSlots)
-//  func () : (void)
-294  :     CreateClosureContext: stackPatternCount = 1
-//  func () : (void)
-295  :     LoadFunction  : func = 14(<lambda:(14)> in main)
-//  func () : (void)
-296  :     CreateClosure 
-//  ExpectFailure(func () : (void)
-297  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
-//  ExpectFailure(func () : (void)
-298  :     Pop           
-//  1
-299  :     LoadValue     : value = <I8, 1>
-//  rawSlots
-300  :     LoadLocalVar  : var = 17(rawSlots)
-//  rawSlots[1]
-301  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
-//  (cast (VariantDerived*) rawSlots[1])
-302  :     VCast         : typeInfo = VariantDerived*
-//  (cast (VariantDerived*) rawSlots[1]) is null
-303  :     LoadValue     : value = <null>
-//  (cast (VariantDerived*) rawSlots[1]) is null
-304  :     CompareReference
-//  Check((cast (VariantDerived*) rawSlots[1]) is null)
-305  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((cast (VariantDerived*) rawSlots[1]) is null);
-306  :     Pop           
-//  new (VariantDerived^)()
-307  :     LoadValue     : value = <null>
-//  new (VariantDerived^)()
-308  :     InvokeMethod  : methodInfo = <VariantDerived>, stackPatternCount = 0
-//  new (VariantDerived^)()
-309  :     ConvertToType : flag = SharedPtr, typeDescriptor = VariantBase
-//  var owner : VariantBase^ = new (VariantDerived^)();
-310  :     StoreLocalVar : var = 18(owner)
-//  owner
-311  :     LoadLocalVar  : var = 18(owner)
-//  owner
-312  :     ConvertToType : flag = RawPtr, typeDescriptor = VariantBase
-//  var raw : VariantBase* = (cast (VariantBase*) owner);
-313  :     StoreLocalVar : var = 19(raw)
-//  raw
-314  :     LoadLocalVar  : var = 19(raw)
-//  raw of (variant<VariantBase*, VariantDerived*>)
-315  :     VBox          : typeInfo = VariantBase*
-//  var taggedBase = raw of (variant<VariantBase*, VariantDerived*>);
-316  :     StoreLocalVar : var = 20(taggedBase)
-//  taggedBase
-317  :     LoadLocalVar  : var = 20(taggedBase)
-//  (cast (VariantBase*) taggedBase)
-318  :     VCast         : typeInfo = VariantBase*
-//  raw
-319  :     LoadLocalVar  : var = 19(raw)
-//  ((cast (VariantBase*) taggedBase) == raw)
-320  :     CompareReference
-//  Check(((cast (VariantBase*) taggedBase) == raw))
-321  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(((cast (VariantBase*) taggedBase) == raw));
-322  :     Pop           
-//  taggedBase
-323  :     LoadLocalVar  : var = 20(taggedBase)
-//  (taggedBase == raw)
-324  :     VUnbox        
-//  raw
-325  :     LoadLocalVar  : var = 19(raw)
-//  (taggedBase == raw)
-326  :     CompareValue  
-//  Check((taggedBase == raw))
-327  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((taggedBase == raw));
-328  :     Pop           
-//  raw
-329  :     LoadLocalVar  : var = 19(raw)
-//  taggedBase
-330  :     LoadLocalVar  : var = 20(taggedBase)
-//  (raw == taggedBase)
-331  :     VUnbox        
-//  (raw == taggedBase)
-332  :     CompareValue  
-//  Check((raw == taggedBase))
-333  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((raw == taggedBase));
-334  :     Pop           
-//  taggedBase
-335  :     LoadLocalVar  : var = 20(taggedBase)
-//  (taggedBase as (VariantBase*))
-336  :     VTryCast      : typeInfo = VariantBase*
-//  raw
-337  :     LoadLocalVar  : var = 19(raw)
-//  ((taggedBase as (VariantBase*)) == raw)
-338  :     CompareReference
-//  Check(((taggedBase as (VariantBase*)) == raw))
-339  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(((taggedBase as (VariantBase*)) == raw));
-340  :     Pop           
-//  taggedBase
-341  :     LoadLocalVar  : var = 20(taggedBase)
-//  (taggedBase as (VariantDerived*))
-342  :     VTryCast      : typeInfo = VariantDerived*
-//  (taggedBase as (VariantDerived*)) is null
-343  :     LoadValue     : value = <null>
-//  (taggedBase as (VariantDerived*)) is null
-344  :     CompareReference
-//  Check((taggedBase as (VariantDerived*)) is null)
-345  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((taggedBase as (VariantDerived*)) is null);
-346  :     Pop           
-//  func () : (void)
-347  :     LoadLocalVar  : var = 20(taggedBase)
-//  func () : (void)
-348  :     CreateClosureContext: stackPatternCount = 1
-//  func () : (void)
-349  :     LoadFunction  : func = 15(<lambda:(15)> in main)
-//  func () : (void)
-350  :     CreateClosure 
-//  ExpectFailure(func () : (void)
-351  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
-//  ExpectFailure(func () : (void)
-352  :     Pop           
-//  null
-353  :     LoadValue     : value = <null>
-//  var sharedNull : VariantBase^ = null;
-354  :     StoreLocalVar : var = 21(sharedNull)
-//  null
-355  :     LoadValue     : value = <null>
-//  var sharedDerivedNull : VariantDerived^ = null;
-356  :     StoreLocalVar : var = 22(sharedDerivedNull)
-//  sharedNull
-357  :     LoadLocalVar  : var = 21(sharedNull)
-//  sharedNull of (variant<VariantBase^, VariantDerived^, string>)
-358  :     VBox          : typeInfo = VariantBase^
-//  var sharedBase = sharedNull of (variant<VariantBase^, VariantDerived^, string>);
-359  :     StoreLocalVar : var = 23(sharedBase)
-//  sharedDerivedNull
-360  :     LoadLocalVar  : var = 22(sharedDerivedNull)
-//  sharedDerivedNull of (variant<VariantBase^, VariantDerived^, string>)
-361  :     VBox          : typeInfo = VariantDerived^
-//  var sharedDerived = sharedDerivedNull of (variant<VariantBase^, VariantDerived^, string>);
-362  :     StoreLocalVar : var = 24(sharedDerived)
-//  sharedBase
-363  :     LoadLocalVar  : var = 23(sharedBase)
-//  (cast (VariantBase^) sharedBase)
-364  :     VCast         : typeInfo = VariantBase^
-//  (cast (VariantBase^) sharedBase) is null
-365  :     LoadValue     : value = <null>
-//  (cast (VariantBase^) sharedBase) is null
-366  :     CompareReference
-//  Check((cast (VariantBase^) sharedBase) is null)
-367  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((cast (VariantBase^) sharedBase) is null);
-368  :     Pop           
-//  sharedBase
-369  :     LoadLocalVar  : var = 23(sharedBase)
-//  sharedBase is null
-370  :     VUnbox        
-//  sharedBase is null
-371  :     LoadValue     : value = <null>
-//  sharedBase is null
-372  :     CompareReference
-//  Check(sharedBase is null)
-373  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(sharedBase is null);
-374  :     Pop           
-//  sharedBase
-375  :     LoadLocalVar  : var = 23(sharedBase)
-//  (cast (variant<VariantBase^, bool>) sharedBase)
-376  :     VCast         : typeInfo = Variant<VariantBase^, system::Boolean>
-//  (cast (VariantBase^) (cast (variant<VariantBase^, bool>) sharedBase))
-377  :     VCast         : typeInfo = VariantBase^
-//  (cast (VariantBase^) (cast (variant<VariantBase^, bool>) sharedBase)) is null
-378  :     LoadValue     : value = <null>
-//  (cast (VariantBase^) (cast (variant<VariantBase^, bool>) sharedBase)) is null
-379  :     CompareReference
-//  Check((cast (VariantBase^) (cast (variant<VariantBase^, bool>) sharedBase)) is null)
-380  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((cast (VariantBase^) (cast (variant<VariantBase^, bool>) sharedBase)) is null);
-381  :     Pop           
-//  func () : (void)
-382  :     LoadLocalVar  : var = 24(sharedDerived)
-//  func () : (void)
-383  :     CreateClosureContext: stackPatternCount = 1
-//  func () : (void)
-384  :     LoadFunction  : func = 16(<lambda:(16)> in main)
-//  func () : (void)
-385  :     CreateClosure 
-//  ExpectFailure(func () : (void)
-386  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
-//  ExpectFailure(func () : (void)
-387  :     Pop           
-//  sharedDerived
-388  :     LoadLocalVar  : var = 24(sharedDerived)
-//  (sharedDerived as (VariantBase^))
-389  :     VTryCast      : typeInfo = VariantBase^
-//  (sharedDerived as (VariantBase^)) is null
-390  :     LoadValue     : value = <null>
-//  (sharedDerived as (VariantBase^)) is null
-391  :     CompareReference
-//  Check((sharedDerived as (VariantBase^)) is null)
-392  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((sharedDerived as (VariantBase^)) is null);
-393  :     Pop           
-//  func () : (void)
-394  :     LoadLocalVar  : var = 24(sharedDerived)
-//  func () : (void)
-395  :     CreateClosureContext: stackPatternCount = 1
-//  func () : (void)
-396  :     LoadFunction  : func = 17(<lambda:(17)> in main)
-//  func () : (void)
-397  :     CreateClosure 
-//  ExpectFailure(func () : (void)
-398  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
-//  ExpectFailure(func () : (void)
-399  :     Pop           
-//  sharedBase
-400  :     LoadLocalVar  : var = 23(sharedBase)
-//  var sharedReordered = sharedBase of (variant<string, VariantDerived^, VariantBase^>);
-401  :     StoreLocalVar : var = 25(sharedReordered)
-//  sharedReordered
-402  :     LoadLocalVar  : var = 25(sharedReordered)
-//  (cast (VariantBase^) sharedReordered)
-403  :     VCast         : typeInfo = VariantBase^
-//  (cast (VariantBase^) sharedReordered) is null
-404  :     LoadValue     : value = <null>
-//  (cast (VariantBase^) sharedReordered) is null
-405  :     CompareReference
-//  Check((cast (VariantBase^) sharedReordered) is null)
-406  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((cast (VariantBase^) sharedReordered) is null);
-407  :     Pop           
-//  sharedDerived
-408  :     LoadLocalVar  : var = 24(sharedDerived)
-//  sharedBase
-409  :     LoadLocalVar  : var = 23(sharedBase)
-//  {sharedBase; sharedDerived;}
-410  :     NewList       : stackPatternCount = 2
-//  var sharedSlots : variant<VariantBase^, VariantDerived^, string>[] = {sharedBase; sharedDerived;};
-411  :     StoreLocalVar : var = 26(sharedSlots)
-//  0
-412  :     LoadValue     : value = <I8, 0>
-//  sharedSlots
-413  :     LoadLocalVar  : var = 26(sharedSlots)
-//  sharedSlots[0]
-414  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
-//  (cast (VariantBase^) sharedSlots[0])
-415  :     VCast         : typeInfo = VariantBase^
-//  (cast (VariantBase^) sharedSlots[0]) is null
-416  :     LoadValue     : value = <null>
-//  (cast (VariantBase^) sharedSlots[0]) is null
-417  :     CompareReference
-//  Check((cast (VariantBase^) sharedSlots[0]) is null)
-418  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((cast (VariantBase^) sharedSlots[0]) is null);
-419  :     Pop           
-//  func () : (void)
-420  :     LoadLocalVar  : var = 26(sharedSlots)
-//  func () : (void)
-421  :     CreateClosureContext: stackPatternCount = 1
-//  func () : (void)
-422  :     LoadFunction  : func = 18(<lambda:(18)> in main)
-//  func () : (void)
-423  :     CreateClosure 
-//  ExpectFailure(func () : (void)
-424  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
-//  ExpectFailure(func () : (void)
-425  :     Pop           
-//  1
-426  :     LoadValue     : value = <I8, 1>
-//  sharedSlots
-427  :     LoadLocalVar  : var = 26(sharedSlots)
-//  sharedSlots[1]
-428  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
-//  (cast (VariantDerived^) sharedSlots[1])
-429  :     VCast         : typeInfo = VariantDerived^
-//  (cast (VariantDerived^) sharedSlots[1]) is null
-430  :     LoadValue     : value = <null>
-//  (cast (VariantDerived^) sharedSlots[1]) is null
-431  :     CompareReference
-//  Check((cast (VariantDerived^) sharedSlots[1]) is null)
-432  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((cast (VariantDerived^) sharedSlots[1]) is null);
-433  :     Pop           
-//  owner
-434  :     LoadLocalVar  : var = 18(owner)
-//  owner of (variant<VariantBase^, VariantDerived^>)
-435  :     VBox          : typeInfo = VariantBase^
-//  var taggedShared = owner of (variant<VariantBase^, VariantDerived^>);
-436  :     StoreLocalVar : var = 27(taggedShared)
-//  taggedShared
-437  :     LoadLocalVar  : var = 27(taggedShared)
-//  (cast (VariantBase^) taggedShared)
-438  :     VCast         : typeInfo = VariantBase^
-//  owner
-439  :     LoadLocalVar  : var = 18(owner)
-//  ((cast (VariantBase^) taggedShared) == owner)
-440  :     CompareReference
-//  Check(((cast (VariantBase^) taggedShared) == owner))
-441  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(((cast (VariantBase^) taggedShared) == owner));
-442  :     Pop           
-//  taggedShared
-443  :     LoadLocalVar  : var = 27(taggedShared)
-//  (taggedShared == owner)
-444  :     VUnbox        
-//  owner
-445  :     LoadLocalVar  : var = 18(owner)
-//  (taggedShared == owner)
-446  :     CompareValue  
-//  Check((taggedShared == owner))
-447  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((taggedShared == owner));
-448  :     Pop           
-//  owner
-449  :     LoadLocalVar  : var = 18(owner)
-//  taggedShared
-450  :     LoadLocalVar  : var = 27(taggedShared)
-//  (owner == taggedShared)
-451  :     VUnbox        
-//  (owner == taggedShared)
-452  :     CompareValue  
-//  Check((owner == taggedShared))
-453  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((owner == taggedShared));
-454  :     Pop           
-//  taggedShared
-455  :     LoadLocalVar  : var = 27(taggedShared)
-//  (taggedShared as (VariantBase^))
-456  :     VTryCast      : typeInfo = VariantBase^
-//  owner
-457  :     LoadLocalVar  : var = 18(owner)
-//  ((taggedShared as (VariantBase^)) == owner)
-458  :     CompareReference
-//  Check(((taggedShared as (VariantBase^)) == owner))
-459  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(((taggedShared as (VariantBase^)) == owner));
-460  :     Pop           
-//  func () : (void)
-461  :     LoadLocalVar  : var = 27(taggedShared)
-//  func () : (void)
-462  :     CreateClosureContext: stackPatternCount = 1
-//  func () : (void)
-463  :     LoadFunction  : func = 19(<lambda:(19)> in main)
-//  func () : (void)
-464  :     CreateClosure 
-//  ExpectFailure(func () : (void)
-465  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
-//  ExpectFailure(func () : (void)
-466  :     Pop           
-//  null
-467  :     LoadValue     : value = <null>
-//  var objectNull : object = null;
-468  :     StoreLocalVar : var = 28(objectNull)
-//  objectNull
-469  :     LoadLocalVar  : var = 28(objectNull)
-//  objectNull of (variant<object, int?, int>)
-470  :     VBox          : typeInfo = system::Object
-//  var objectSlot = objectNull of (variant<object, int?, int>);
-471  :     StoreLocalVar : var = 29(objectSlot)
-//  objectSlot
-472  :     LoadLocalVar  : var = 29(objectSlot)
-//  (cast (object) objectSlot)
-473  :     VCast         : typeInfo = system::Object
-//  (cast (object) objectSlot) is null
-474  :     LoadValue     : value = <null>
-//  (cast (object) objectSlot) is null
-475  :     CompareReference
-//  Check((cast (object) objectSlot) is null)
-476  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((cast (object) objectSlot) is null);
-477  :     Pop           
-//  objectSlot
-478  :     LoadLocalVar  : var = 29(objectSlot)
-//  objectSlot is null
-479  :     VUnbox        
-//  objectSlot is null
-480  :     LoadValue     : value = <null>
-//  objectSlot is null
-481  :     CompareReference
-//  Check(objectSlot is null)
-482  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(objectSlot is null);
-483  :     Pop           
-//  func () : (void)
-484  :     LoadLocalVar  : var = 29(objectSlot)
-//  func () : (void)
-485  :     CreateClosureContext: stackPatternCount = 1
-//  func () : (void)
-486  :     LoadFunction  : func = 20(<lambda:(20)> in main)
-//  func () : (void)
-487  :     CreateClosure 
-//  ExpectFailure(func () : (void)
-488  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
-//  ExpectFailure(func () : (void)
-489  :     Pop           
-//  empty
-490  :     LoadLocalVar  : var = 9(empty)
-//  empty of (variant<object, int?, int>)
-491  :     VBox          : typeInfo = system::Int64?
-//  var nullableSlot = empty of (variant<object, int?, int>);
-492  :     StoreLocalVar : var = 30(nullableSlot)
-//  func () : (void)
-493  :     LoadLocalVar  : var = 30(nullableSlot)
-//  func () : (void)
-494  :     CreateClosureContext: stackPatternCount = 1
-//  func () : (void)
-495  :     LoadFunction  : func = 21(<lambda:(21)> in main)
-//  func () : (void)
-496  :     CreateClosure 
-//  ExpectFailure(func () : (void)
-497  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
-//  ExpectFailure(func () : (void)
-498  :     Pop           
-//  42
-499  :     LoadValue     : value = <I8, 42>
-//  var objectNumber : object = 42;
-500  :     StoreLocalVar : var = 31(objectNumber)
-//  objectNumber
-501  :     LoadLocalVar  : var = 31(objectNumber)
-//  objectNumber of (variant<object, int?, int>)
-502  :     VBox          : typeInfo = system::Object
-//  var opaque = objectNumber of (variant<object, int?, int>);
-503  :     StoreLocalVar : var = 32(opaque)
-//  opaque
-504  :     LoadLocalVar  : var = 32(opaque)
-//  (cast (object) opaque)
-505  :     VCast         : typeInfo = system::Object
-//  (cast (object) opaque)
-506  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
-//  42
-507  :     LoadValue     : value = <I8, 42>
-//  ((cast (int) (cast (object) opaque)) == 42)
-508  :     CompareValue  
-//  Check(((cast (int) (cast (object) opaque)) == 42))
-509  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(((cast (int) (cast (object) opaque)) == 42));
-510  :     Pop           
-//  func () : (void)
-511  :     LoadLocalVar  : var = 32(opaque)
-//  func () : (void)
-512  :     CreateClosureContext: stackPatternCount = 1
-//  func () : (void)
-513  :     LoadFunction  : func = 22(<lambda:(22)> in main)
-//  func () : (void)
-514  :     CreateClosure 
-//  ExpectFailure(func () : (void)
-515  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
-//  ExpectFailure(func () : (void)
-516  :     Pop           
-//  number
-517  :     LoadLocalVar  : var = 0(number)
-//  var escaped : object = (cast (object) number);
-518  :     StoreLocalVar : var = 33(escaped)
+//  if ((mode == 0))
+88   :     OpNot         : type = Bool
+//  if ((mode == 0))
+89   :     JumpIf        : label = 94
 //  escaped
-519  :     LoadLocalVar  : var = 33(escaped)
-//  escaped is not null
-520  :     LoadValue     : value = <null>
-//  escaped is not null
-521  :     CompareReference
-//  escaped is not null
-522  :     OpNot         : type = Bool
-//  Check(escaped is not null)
-523  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(escaped is not null);
-524  :     Pop           
-//  missing
-525  :     LoadLocalVar  : var = 10(missing)
-//  var copied = missing;
-526  :     StoreLocalVar : var = 34(copied)
-//  other
-527  :     LoadLocalVar  : var = 11(other)
-//  (missing = other)
-528  :     Duplicate     : stackPatternCount = 0
-//  (missing = other)
-529  :     StoreLocalVar : var = 10(missing)
-//  (missing = other);
-530  :     Pop           
-//  copied
-531  :     LoadLocalVar  : var = 34(copied)
-//  copied is null
-532  :     VUnbox        
-//  copied is null
-533  :     LoadValue     : value = <null>
-//  copied is null
-534  :     CompareReference
-//  Check(copied is null)
-535  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(copied is null);
-536  :     Pop           
-//  copied
-537  :     LoadLocalVar  : var = 34(copied)
-//  (cast (int?) copied)
-538  :     VCast         : typeInfo = system::Int64?
-//  (cast (int?) copied) is null
-539  :     LoadValue     : value = <null>
-//  (cast (int?) copied) is null
-540  :     CompareReference
-//  Check((cast (int?) copied) is null)
-541  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check((cast (int?) copied) is null);
-542  :     Pop           
-//  missing
-543  :     LoadLocalVar  : var = 10(missing)
-//  missing is not null
-544  :     VUnbox        
-//  missing is not null
-545  :     LoadValue     : value = <null>
-//  missing is not null
-546  :     CompareReference
-//  missing is not null
-547  :     OpNot         : type = Bool
-//  Check(missing is not null)
-548  :     Invoke        : func = 2(Check), stackPatternCount = 1
-//  Check(missing is not null);
-549  :     Pop           
-//  checks
-550  :     LoadGlobalVar : var = 0(checks)
-//  checks
-551  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
-//  return checks;
-552  :     Return        
-//  func main() : (string)
-553  :     LoadValue     : value = <null>
-//  func main() : (string)
-554  :     Return        
+90   :     LoadLocalVar  : var = 2(escaped)
+//  SerializeRpcValue(escaped)
+91   :     Invoke        : func = 6(SerializeRpcValue), stackPatternCount = 1
+//  SerializeRpcValue(escaped);
+92   :     Pop           
+//  if ((mode == 0))
+93   :     Jump          : label = 113
+//  mode
+94   :     LoadLocalVar  : var = 0(mode)
+//  1
+95   :     LoadValue     : value = <I8, 1>
+//  (mode == 1)
+96   :     CompareValue  
+//  if ((mode == 1))
+97   :     OpNot         : type = Bool
+//  if ((mode == 1))
+98   :     JumpIf        : label = 106
+//  escaped
+99   :     LoadLocalVar  : var = 2(escaped)
+//  {escaped;}
+100  :     NewList       : stackPatternCount = 1
+//  var values : object[] = {escaped;};
+101  :     StoreLocalVar : var = 3(values)
+//  values
+102  :     LoadLocalVar  : var = 3(values)
+//  SerializeRpcValue(values)
+103  :     Invoke        : func = 6(SerializeRpcValue), stackPatternCount = 1
+//  SerializeRpcValue(values);
+104  :     Pop           
+//  if ((mode == 1))
+105  :     Jump          : label = 113
+//  "value"
+106  :     LoadValue     : value = <String, value>
+//  escaped
+107  :     LoadLocalVar  : var = 2(escaped)
+//  {"value" : escaped;}
+108  :     NewDictionary : stackPatternCount = 2
+//  var values : object[string] = {"value" : escaped;};
+109  :     StoreLocalVar : var = 4(values)
+//  values
+110  :     LoadLocalVar  : var = 4(values)
+//  SerializeRpcValue(values)
+111  :     Invoke        : func = 6(SerializeRpcValue), stackPatternCount = 1
+//  SerializeRpcValue(values);
+112  :     Pop           
+//  func SerializeEscapedVariant(mode : int) : (void)
+113  :     LoadValue     : value = <null>
+//  func SerializeEscapedVariant(mode : int) : (void)
+114  :     Return        
+//  42
+115  :     LoadValue     : value = <I8, 42>
+//  (cast (variant<int, string>) 42)
+116  :     VBox          : typeInfo = system::Int64
+//  var number = (cast (variant<int, string>) 42);
+117  :     StoreLocalVar : var = 0(number)
 //  number
-555  :     LoadCapturedVar: var = 0(<captured>number)
-//  (cast (string) number)
-556  :     VCast         : typeInfo = system::String
-//  var result = (cast (string) number);
-557  :     StoreLocalVar : var = 0(result)
-//  func () : (void)
-558  :     LoadValue     : value = <null>
-//  func () : (void)
-559  :     Return        
+118  :     LoadLocalVar  : var = 0(number)
+//  Echo(number)
+119  :     Invoke        : func = 4(Echo), stackPatternCount = 1
+//  (cast (int) Echo(number))
+120  :     VCast         : typeInfo = system::Int64
+//  42
+121  :     LoadValue     : value = <I8, 42>
+//  ((cast (int) Echo(number)) == 42)
+122  :     CompareValue  
+//  Check(((cast (int) Echo(number)) == 42))
+123  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(((cast (int) Echo(number)) == 42));
+124  :     Pop           
+//  "hello"
+125  :     LoadValue     : value = <String, hello>
+//  "hello" of (variant<int, string>)
+126  :     VBox          : typeInfo = system::String
+//  var text = "hello" of (variant<int, string>);
+127  :     StoreLocalVar : var = 1(text)
+//  text
+128  :     LoadLocalVar  : var = 1(text)
+//  (cast (string) text)
+129  :     VCast         : typeInfo = system::String
+//  "hello"
+130  :     LoadValue     : value = <String, hello>
+//  ((cast (string) text) == "hello")
+131  :     CompareValue  
+//  Check(((cast (string) text) == "hello"))
+132  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(((cast (string) text) == "hello"));
+133  :     Pop           
 //  number
-560  :     LoadCapturedVar: var = 0(<captured>number)
-//  (cast (variant<string, bool>) number)
-561  :     VCast         : typeInfo = Variant<system::String, system::Boolean>
-//  var result = (cast (variant<string, bool>) number);
-562  :     StoreLocalVar : var = 0(result)
+134  :     LoadLocalVar  : var = 0(number)
+//  var reordered = (cast (variant<string, int>) number);
+135  :     StoreLocalVar : var = 2(reordered)
+//  reordered
+136  :     LoadLocalVar  : var = 2(reordered)
+//  (cast (int) reordered)
+137  :     VCast         : typeInfo = system::Int64
+//  42
+138  :     LoadValue     : value = <I8, 42>
+//  ((cast (int) reordered) == 42)
+139  :     CompareValue  
+//  Check(((cast (int) reordered) == 42))
+140  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(((cast (int) reordered) == 42));
+141  :     Pop           
+//  text
+142  :     LoadLocalVar  : var = 1(text)
+//  var widened = text of (variant<double, string, int>);
+143  :     StoreLocalVar : var = 3(widened)
+//  widened
+144  :     LoadLocalVar  : var = 3(widened)
+//  (cast (string) widened)
+145  :     VCast         : typeInfo = system::String
+//  "hello"
+146  :     LoadValue     : value = <String, hello>
+//  ((cast (string) widened) == "hello")
+147  :     CompareValue  
+//  Check(((cast (string) widened) == "hello"))
+148  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(((cast (string) widened) == "hello"));
+149  :     Pop           
+//  number
+150  :     LoadLocalVar  : var = 0(number)
+//  var widenedNumber = number of (variant<double, string, int>);
+151  :     StoreLocalVar : var = 4(widenedNumber)
+//  widenedNumber
+152  :     LoadLocalVar  : var = 4(widenedNumber)
+//  (cast (int) widenedNumber)
+153  :     VCast         : typeInfo = system::Int64
+//  42
+154  :     LoadValue     : value = <I8, 42>
+//  ((cast (int) widenedNumber) == 42)
+155  :     CompareValue  
+//  Check(((cast (int) widenedNumber) == 42))
+156  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(((cast (int) widenedNumber) == 42));
+157  :     Pop           
+//  text
+158  :     LoadLocalVar  : var = 1(text)
+//  (cast (variant<string, bool>) text)
+159  :     VCast         : typeInfo = Variant<system::String, system::Boolean>
+//  var intersected = (cast (variant<string, bool>) text);
+160  :     StoreLocalVar : var = 5(intersected)
+//  intersected
+161  :     LoadLocalVar  : var = 5(intersected)
+//  (cast (string) intersected)
+162  :     VCast         : typeInfo = system::String
+//  "hello"
+163  :     LoadValue     : value = <String, hello>
+//  ((cast (string) intersected) == "hello")
+164  :     CompareValue  
+//  Check(((cast (string) intersected) == "hello"))
+165  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(((cast (string) intersected) == "hello"));
+166  :     Pop           
 //  func () : (void)
-563  :     LoadValue     : value = <null>
+167  :     LoadLocalVar  : var = 0(number)
 //  func () : (void)
-564  :     Return        
+168  :     CreateClosureContext: stackPatternCount = 1
+//  func () : (void)
+169  :     LoadFunction  : func = 10(<lambda:(10)> in main)
+//  func () : (void)
+170  :     CreateClosure 
+//  ExpectFailure(func () : (void)
+171  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
+//  ExpectFailure(func () : (void)
+172  :     Pop           
+//  func () : (void)
+173  :     LoadLocalVar  : var = 0(number)
+//  func () : (void)
+174  :     CreateClosureContext: stackPatternCount = 1
+//  func () : (void)
+175  :     LoadFunction  : func = 11(<lambda:(11)> in main)
+//  func () : (void)
+176  :     CreateClosure 
+//  ExpectFailure(func () : (void)
+177  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
+//  ExpectFailure(func () : (void)
+178  :     Pop           
+//  7
+179  :     LoadValue     : value = <I8, 7>
+//  (cast (variant<int, int?, string>) 7)
+180  :     VBox          : typeInfo = system::Int64
+//  var plain = (cast (variant<int, int?, string>) 7);
+181  :     StoreLocalVar : var = 6(plain)
+//  8
+182  :     LoadValue     : value = <I8, 8>
+//  8
+183  :     Duplicate     : stackPatternCount = 0
+//  8
+184  :     LoadValue     : value = <null>
+//  8
+185  :     CompareReference
+//  8
+186  :     JumpIf        : label = 189
+//  8
+187  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
+//  8
+188  :     Jump          : label = 190
+//  8
+189  :     LoadValue     : value = <null>
+//  var optional : int? = 8;
+190  :     StoreLocalVar : var = 7(optional)
+//  optional
+191  :     LoadLocalVar  : var = 7(optional)
+//  optional of (variant<int, int?, string>)
+192  :     VBox          : typeInfo = system::Int64?
+//  var present = optional of (variant<int, int?, string>);
+193  :     StoreLocalVar : var = 8(present)
+//  null
+194  :     LoadValue     : value = <null>
+//  var empty : int? = null;
+195  :     StoreLocalVar : var = 9(empty)
+//  empty
+196  :     LoadLocalVar  : var = 9(empty)
+//  (cast (variant<int, int?, string>) empty)
+197  :     VBox          : typeInfo = system::Int64?
+//  var missing = (cast (variant<int, int?, string>) empty);
+198  :     StoreLocalVar : var = 10(missing)
 //  plain
-565  :     LoadCapturedVar: var = 0(<captured>plain)
-//  (cast (int?) plain)
-566  :     VCast         : typeInfo = system::Int64?
-//  var result = (cast (int?) plain);
-567  :     StoreLocalVar : var = 0(result)
-//  func () : (void)
-568  :     LoadValue     : value = <null>
-//  func () : (void)
-569  :     Return        
+199  :     LoadLocalVar  : var = 6(plain)
+//  (plain as (int?))
+200  :     VTryCast      : typeInfo = system::Int64?
+//  7
+201  :     LoadValue     : value = <I8, 7>
+//  ((plain as (int?)) == 7)
+202  :     CompareValue  
+//  Check(((plain as (int?)) == 7))
+203  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(((plain as (int?)) == 7));
+204  :     Pop           
+//  present
+205  :     LoadLocalVar  : var = 8(present)
+//  (present as (int?))
+206  :     VTryCast      : typeInfo = system::Int64?
+//  8
+207  :     LoadValue     : value = <I8, 8>
+//  ((present as (int?)) == 8)
+208  :     CompareValue  
+//  Check(((present as (int?)) == 8))
+209  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(((present as (int?)) == 8));
+210  :     Pop           
 //  missing
-570  :     LoadCapturedVar: var = 0(<captured>missing)
-//  (cast (int) missing)
-571  :     VCast         : typeInfo = system::Int64
-//  var result = (cast (int) missing);
-572  :     StoreLocalVar : var = 0(result)
+211  :     LoadLocalVar  : var = 10(missing)
+//  (missing as (int?))
+212  :     VTryCast      : typeInfo = system::Int64?
+//  (missing as (int?)) is null
+213  :     LoadValue     : value = <null>
+//  (missing as (int?)) is null
+214  :     CompareReference
+//  Check((missing as (int?)) is null)
+215  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((missing as (int?)) is null);
+216  :     Pop           
+//  missing
+217  :     LoadLocalVar  : var = 10(missing)
+//  (cast (int?) missing)
+218  :     VCast         : typeInfo = system::Int64?
+//  (cast (int?) missing) is null
+219  :     LoadValue     : value = <null>
+//  (cast (int?) missing) is null
+220  :     CompareReference
+//  Check((cast (int?) missing) is null)
+221  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((cast (int?) missing) is null);
+222  :     Pop           
+//  missing
+223  :     LoadLocalVar  : var = 10(missing)
+//  (cast (variant<int?, bool>) missing)
+224  :     VCast         : typeInfo = Variant<system::Int64?, system::Boolean>
+//  (cast (int?) (cast (variant<int?, bool>) missing))
+225  :     VCast         : typeInfo = system::Int64?
+//  (cast (int?) (cast (variant<int?, bool>) missing)) is null
+226  :     LoadValue     : value = <null>
+//  (cast (int?) (cast (variant<int?, bool>) missing)) is null
+227  :     CompareReference
+//  Check((cast (int?) (cast (variant<int?, bool>) missing)) is null)
+228  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((cast (int?) (cast (variant<int?, bool>) missing)) is null);
+229  :     Pop           
+//  missing
+230  :     LoadLocalVar  : var = 10(missing)
+//  missing is null
+231  :     VUnbox        
+//  missing is null
+232  :     LoadValue     : value = <null>
+//  missing is null
+233  :     CompareReference
+//  Check(missing is null)
+234  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(missing is null);
+235  :     Pop           
+//  plain
+236  :     LoadLocalVar  : var = 6(plain)
+//  plain is not null
+237  :     VUnbox        
+//  plain is not null
+238  :     LoadValue     : value = <null>
+//  plain is not null
+239  :     CompareReference
+//  plain is not null
+240  :     OpNot         : type = Bool
+//  Check(plain is not null)
+241  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(plain is not null);
+242  :     Pop           
 //  func () : (void)
-573  :     LoadValue     : value = <null>
+243  :     LoadLocalVar  : var = 6(plain)
 //  func () : (void)
-574  :     Return        
+244  :     CreateClosureContext: stackPatternCount = 1
+//  func () : (void)
+245  :     LoadFunction  : func = 12(<lambda:(12)> in main)
+//  func () : (void)
+246  :     CreateClosure 
+//  ExpectFailure(func () : (void)
+247  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
+//  ExpectFailure(func () : (void)
+248  :     Pop           
+//  func () : (void)
+249  :     LoadLocalVar  : var = 10(missing)
+//  func () : (void)
+250  :     CreateClosureContext: stackPatternCount = 1
+//  func () : (void)
+251  :     LoadFunction  : func = 13(<lambda:(13)> in main)
+//  func () : (void)
+252  :     CreateClosure 
+//  ExpectFailure(func () : (void)
+253  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
+//  ExpectFailure(func () : (void)
+254  :     Pop           
+//  "other"
+255  :     LoadValue     : value = <String, other>
+//  "other" of (variant<int, int?, string>)
+256  :     VBox          : typeInfo = system::String
+//  var other = "other" of (variant<int, int?, string>);
+257  :     StoreLocalVar : var = 11(other)
+//  other
+258  :     LoadLocalVar  : var = 11(other)
+//  (other as (int?))
+259  :     VTryCast      : typeInfo = system::Int64?
+//  (other as (int?)) is null
+260  :     LoadValue     : value = <null>
+//  (other as (int?)) is null
+261  :     CompareReference
+//  Check((other as (int?)) is null)
+262  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((other as (int?)) is null);
+263  :     Pop           
+//  null
+264  :     LoadValue     : value = <null>
+//  var baseNull : VariantBase* = null;
+265  :     StoreLocalVar : var = 12(baseNull)
+//  null
+266  :     LoadValue     : value = <null>
+//  var derivedNull : VariantDerived* = null;
+267  :     StoreLocalVar : var = 13(derivedNull)
+//  baseNull
+268  :     LoadLocalVar  : var = 12(baseNull)
+//  baseNull of (variant<VariantBase*, VariantDerived*, string>)
+269  :     VBox          : typeInfo = VariantBase*
+//  var baseSlot = baseNull of (variant<VariantBase*, VariantDerived*, string>);
+270  :     StoreLocalVar : var = 14(baseSlot)
+//  derivedNull
+271  :     LoadLocalVar  : var = 13(derivedNull)
+//  derivedNull of (variant<VariantBase*, VariantDerived*, string>)
+272  :     VBox          : typeInfo = VariantDerived*
+//  var derivedSlot = derivedNull of (variant<VariantBase*, VariantDerived*, string>);
+273  :     StoreLocalVar : var = 15(derivedSlot)
+//  baseSlot
+274  :     LoadLocalVar  : var = 14(baseSlot)
+//  (cast (VariantBase*) baseSlot)
+275  :     VCast         : typeInfo = VariantBase*
+//  (cast (VariantBase*) baseSlot) is null
+276  :     LoadValue     : value = <null>
+//  (cast (VariantBase*) baseSlot) is null
+277  :     CompareReference
+//  Check((cast (VariantBase*) baseSlot) is null)
+278  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((cast (VariantBase*) baseSlot) is null);
+279  :     Pop           
+//  baseSlot
+280  :     LoadLocalVar  : var = 14(baseSlot)
+//  (baseSlot as (VariantBase*))
+281  :     VTryCast      : typeInfo = VariantBase*
+//  (baseSlot as (VariantBase*)) is null
+282  :     LoadValue     : value = <null>
+//  (baseSlot as (VariantBase*)) is null
+283  :     CompareReference
+//  Check((baseSlot as (VariantBase*)) is null)
+284  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((baseSlot as (VariantBase*)) is null);
+285  :     Pop           
 //  derivedSlot
-575  :     LoadCapturedVar: var = 0(<captured>derivedSlot)
-//  (cast (VariantBase*) derivedSlot)
-576  :     VCast         : typeInfo = VariantBase*
-//  var result = (cast (VariantBase*) derivedSlot);
-577  :     StoreLocalVar : var = 0(result)
+286  :     LoadLocalVar  : var = 15(derivedSlot)
+//  (derivedSlot as (VariantBase*))
+287  :     VTryCast      : typeInfo = VariantBase*
+//  (derivedSlot as (VariantBase*)) is null
+288  :     LoadValue     : value = <null>
+//  (derivedSlot as (VariantBase*)) is null
+289  :     CompareReference
+//  Check((derivedSlot as (VariantBase*)) is null)
+290  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((derivedSlot as (VariantBase*)) is null);
+291  :     Pop           
+//  baseSlot
+292  :     LoadLocalVar  : var = 14(baseSlot)
+//  baseSlot is null
+293  :     VUnbox        
+//  baseSlot is null
+294  :     LoadValue     : value = <null>
+//  baseSlot is null
+295  :     CompareReference
+//  Check(baseSlot is null)
+296  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(baseSlot is null);
+297  :     Pop           
+//  baseSlot
+298  :     LoadLocalVar  : var = 14(baseSlot)
+//  (cast (variant<VariantBase*, bool>) baseSlot)
+299  :     VCast         : typeInfo = Variant<VariantBase*, system::Boolean>
+//  (cast (VariantBase*) (cast (variant<VariantBase*, bool>) baseSlot))
+300  :     VCast         : typeInfo = VariantBase*
+//  (cast (VariantBase*) (cast (variant<VariantBase*, bool>) baseSlot)) is null
+301  :     LoadValue     : value = <null>
+//  (cast (VariantBase*) (cast (variant<VariantBase*, bool>) baseSlot)) is null
+302  :     CompareReference
+//  Check((cast (VariantBase*) (cast (variant<VariantBase*, bool>) baseSlot)) is null)
+303  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((cast (VariantBase*) (cast (variant<VariantBase*, bool>) baseSlot)) is null);
+304  :     Pop           
 //  func () : (void)
-578  :     LoadValue     : value = <null>
+305  :     LoadLocalVar  : var = 15(derivedSlot)
 //  func () : (void)
-579  :     Return        
+306  :     CreateClosureContext: stackPatternCount = 1
+//  func () : (void)
+307  :     LoadFunction  : func = 14(<lambda:(14)> in main)
+//  func () : (void)
+308  :     CreateClosure 
+//  ExpectFailure(func () : (void)
+309  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
+//  ExpectFailure(func () : (void)
+310  :     Pop           
+//  baseSlot
+311  :     LoadLocalVar  : var = 14(baseSlot)
+//  var rawReordered = baseSlot of (variant<string, VariantDerived*, VariantBase*>);
+312  :     StoreLocalVar : var = 16(rawReordered)
+//  rawReordered
+313  :     LoadLocalVar  : var = 16(rawReordered)
+//  (cast (VariantBase*) rawReordered)
+314  :     VCast         : typeInfo = VariantBase*
+//  (cast (VariantBase*) rawReordered) is null
+315  :     LoadValue     : value = <null>
+//  (cast (VariantBase*) rawReordered) is null
+316  :     CompareReference
+//  Check((cast (VariantBase*) rawReordered) is null)
+317  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((cast (VariantBase*) rawReordered) is null);
+318  :     Pop           
+//  func () : (void)
+319  :     LoadLocalVar  : var = 15(derivedSlot)
+//  func () : (void)
+320  :     CreateClosureContext: stackPatternCount = 1
+//  func () : (void)
+321  :     LoadFunction  : func = 15(<lambda:(15)> in main)
+//  func () : (void)
+322  :     CreateClosure 
+//  ExpectFailure(func () : (void)
+323  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
+//  ExpectFailure(func () : (void)
+324  :     Pop           
 //  derivedSlot
-580  :     LoadCapturedVar: var = 0(<captured>derivedSlot)
-//  (cast (variant<VariantBase*, bool>) derivedSlot)
-581  :     VCast         : typeInfo = Variant<VariantBase*, system::Boolean>
-//  var result = (cast (variant<VariantBase*, bool>) derivedSlot);
-582  :     StoreLocalVar : var = 0(result)
-//  func () : (void)
-583  :     LoadValue     : value = <null>
-//  func () : (void)
-584  :     Return        
-//  1
-585  :     LoadValue     : value = <I8, 1>
+325  :     LoadLocalVar  : var = 15(derivedSlot)
+//  baseSlot
+326  :     LoadLocalVar  : var = 14(baseSlot)
+//  {baseSlot; derivedSlot;}
+327  :     NewList       : stackPatternCount = 2
+//  var rawSlots : variant<VariantBase*, VariantDerived*, string>[] = {baseSlot; derivedSlot;};
+328  :     StoreLocalVar : var = 17(rawSlots)
+//  0
+329  :     LoadValue     : value = <I8, 0>
 //  rawSlots
-586  :     LoadCapturedVar: var = 0(<captured>rawSlots)
-//  rawSlots[1]
-587  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
-//  (cast (VariantBase*) rawSlots[1])
-588  :     VCast         : typeInfo = VariantBase*
-//  var result = (cast (VariantBase*) rawSlots[1]);
-589  :     StoreLocalVar : var = 0(result)
+330  :     LoadLocalVar  : var = 17(rawSlots)
+//  rawSlots[0]
+331  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  (cast (VariantBase*) rawSlots[0])
+332  :     VCast         : typeInfo = VariantBase*
+//  (cast (VariantBase*) rawSlots[0]) is null
+333  :     LoadValue     : value = <null>
+//  (cast (VariantBase*) rawSlots[0]) is null
+334  :     CompareReference
+//  Check((cast (VariantBase*) rawSlots[0]) is null)
+335  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((cast (VariantBase*) rawSlots[0]) is null);
+336  :     Pop           
 //  func () : (void)
-590  :     LoadValue     : value = <null>
+337  :     LoadLocalVar  : var = 17(rawSlots)
 //  func () : (void)
-591  :     Return        
-//  taggedBase
-592  :     LoadCapturedVar: var = 0(<captured>taggedBase)
-//  (cast (VariantDerived*) taggedBase)
-593  :     VCast         : typeInfo = VariantDerived*
-//  var result = (cast (VariantDerived*) taggedBase);
-594  :     StoreLocalVar : var = 0(result)
+338  :     CreateClosureContext: stackPatternCount = 1
 //  func () : (void)
-595  :     LoadValue     : value = <null>
+339  :     LoadFunction  : func = 16(<lambda:(16)> in main)
 //  func () : (void)
-596  :     Return        
-//  sharedDerived
-597  :     LoadCapturedVar: var = 0(<captured>sharedDerived)
-//  (cast (variant<VariantBase^, bool>) sharedDerived)
-598  :     VCast         : typeInfo = Variant<VariantBase^, system::Boolean>
-//  var result = (cast (variant<VariantBase^, bool>) sharedDerived);
-599  :     StoreLocalVar : var = 0(result)
-//  func () : (void)
-600  :     LoadValue     : value = <null>
-//  func () : (void)
-601  :     Return        
-//  sharedDerived
-602  :     LoadCapturedVar: var = 0(<captured>sharedDerived)
-//  (cast (VariantBase^) sharedDerived)
-603  :     VCast         : typeInfo = VariantBase^
-//  var result = (cast (VariantBase^) sharedDerived);
-604  :     StoreLocalVar : var = 0(result)
-//  func () : (void)
-605  :     LoadValue     : value = <null>
-//  func () : (void)
-606  :     Return        
+340  :     CreateClosure 
+//  ExpectFailure(func () : (void)
+341  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
+//  ExpectFailure(func () : (void)
+342  :     Pop           
 //  1
-607  :     LoadValue     : value = <I8, 1>
+343  :     LoadValue     : value = <I8, 1>
+//  rawSlots
+344  :     LoadLocalVar  : var = 17(rawSlots)
+//  rawSlots[1]
+345  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  (cast (VariantDerived*) rawSlots[1])
+346  :     VCast         : typeInfo = VariantDerived*
+//  (cast (VariantDerived*) rawSlots[1]) is null
+347  :     LoadValue     : value = <null>
+//  (cast (VariantDerived*) rawSlots[1]) is null
+348  :     CompareReference
+//  Check((cast (VariantDerived*) rawSlots[1]) is null)
+349  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((cast (VariantDerived*) rawSlots[1]) is null);
+350  :     Pop           
+//  new (VariantDerived^)()
+351  :     LoadValue     : value = <null>
+//  new (VariantDerived^)()
+352  :     InvokeMethod  : methodInfo = <VariantDerived>, stackPatternCount = 0
+//  new (VariantDerived^)()
+353  :     ConvertToType : flag = SharedPtr, typeDescriptor = VariantBase
+//  var owner : VariantBase^ = new (VariantDerived^)();
+354  :     StoreLocalVar : var = 18(owner)
+//  owner
+355  :     LoadLocalVar  : var = 18(owner)
+//  owner
+356  :     ConvertToType : flag = RawPtr, typeDescriptor = VariantBase
+//  var raw : VariantBase* = (cast (VariantBase*) owner);
+357  :     StoreLocalVar : var = 19(raw)
+//  raw
+358  :     LoadLocalVar  : var = 19(raw)
+//  raw of (variant<VariantBase*, VariantDerived*>)
+359  :     VBox          : typeInfo = VariantBase*
+//  var taggedBase = raw of (variant<VariantBase*, VariantDerived*>);
+360  :     StoreLocalVar : var = 20(taggedBase)
+//  taggedBase
+361  :     LoadLocalVar  : var = 20(taggedBase)
+//  (cast (VariantBase*) taggedBase)
+362  :     VCast         : typeInfo = VariantBase*
+//  raw
+363  :     LoadLocalVar  : var = 19(raw)
+//  ((cast (VariantBase*) taggedBase) == raw)
+364  :     CompareReference
+//  Check(((cast (VariantBase*) taggedBase) == raw))
+365  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(((cast (VariantBase*) taggedBase) == raw));
+366  :     Pop           
+//  taggedBase
+367  :     LoadLocalVar  : var = 20(taggedBase)
+//  (taggedBase == raw)
+368  :     VUnbox        
+//  raw
+369  :     LoadLocalVar  : var = 19(raw)
+//  (taggedBase == raw)
+370  :     CompareValue  
+//  Check((taggedBase == raw))
+371  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((taggedBase == raw));
+372  :     Pop           
+//  raw
+373  :     LoadLocalVar  : var = 19(raw)
+//  taggedBase
+374  :     LoadLocalVar  : var = 20(taggedBase)
+//  (raw == taggedBase)
+375  :     VUnbox        
+//  (raw == taggedBase)
+376  :     CompareValue  
+//  Check((raw == taggedBase))
+377  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((raw == taggedBase));
+378  :     Pop           
+//  taggedBase
+379  :     LoadLocalVar  : var = 20(taggedBase)
+//  (taggedBase as (VariantBase*))
+380  :     VTryCast      : typeInfo = VariantBase*
+//  raw
+381  :     LoadLocalVar  : var = 19(raw)
+//  ((taggedBase as (VariantBase*)) == raw)
+382  :     CompareReference
+//  Check(((taggedBase as (VariantBase*)) == raw))
+383  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(((taggedBase as (VariantBase*)) == raw));
+384  :     Pop           
+//  taggedBase
+385  :     LoadLocalVar  : var = 20(taggedBase)
+//  (taggedBase as (VariantDerived*))
+386  :     VTryCast      : typeInfo = VariantDerived*
+//  (taggedBase as (VariantDerived*)) is null
+387  :     LoadValue     : value = <null>
+//  (taggedBase as (VariantDerived*)) is null
+388  :     CompareReference
+//  Check((taggedBase as (VariantDerived*)) is null)
+389  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((taggedBase as (VariantDerived*)) is null);
+390  :     Pop           
+//  func () : (void)
+391  :     LoadLocalVar  : var = 20(taggedBase)
+//  func () : (void)
+392  :     CreateClosureContext: stackPatternCount = 1
+//  func () : (void)
+393  :     LoadFunction  : func = 17(<lambda:(17)> in main)
+//  func () : (void)
+394  :     CreateClosure 
+//  ExpectFailure(func () : (void)
+395  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
+//  ExpectFailure(func () : (void)
+396  :     Pop           
+//  null
+397  :     LoadValue     : value = <null>
+//  var sharedNull : VariantBase^ = null;
+398  :     StoreLocalVar : var = 21(sharedNull)
+//  null
+399  :     LoadValue     : value = <null>
+//  var sharedDerivedNull : VariantDerived^ = null;
+400  :     StoreLocalVar : var = 22(sharedDerivedNull)
+//  sharedNull
+401  :     LoadLocalVar  : var = 21(sharedNull)
+//  sharedNull of (variant<VariantBase^, VariantDerived^, string>)
+402  :     VBox          : typeInfo = VariantBase^
+//  var sharedBase = sharedNull of (variant<VariantBase^, VariantDerived^, string>);
+403  :     StoreLocalVar : var = 23(sharedBase)
+//  sharedDerivedNull
+404  :     LoadLocalVar  : var = 22(sharedDerivedNull)
+//  sharedDerivedNull of (variant<VariantBase^, VariantDerived^, string>)
+405  :     VBox          : typeInfo = VariantDerived^
+//  var sharedDerived = sharedDerivedNull of (variant<VariantBase^, VariantDerived^, string>);
+406  :     StoreLocalVar : var = 24(sharedDerived)
+//  sharedBase
+407  :     LoadLocalVar  : var = 23(sharedBase)
+//  (cast (VariantBase^) sharedBase)
+408  :     VCast         : typeInfo = VariantBase^
+//  (cast (VariantBase^) sharedBase) is null
+409  :     LoadValue     : value = <null>
+//  (cast (VariantBase^) sharedBase) is null
+410  :     CompareReference
+//  Check((cast (VariantBase^) sharedBase) is null)
+411  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((cast (VariantBase^) sharedBase) is null);
+412  :     Pop           
+//  sharedBase
+413  :     LoadLocalVar  : var = 23(sharedBase)
+//  sharedBase is null
+414  :     VUnbox        
+//  sharedBase is null
+415  :     LoadValue     : value = <null>
+//  sharedBase is null
+416  :     CompareReference
+//  Check(sharedBase is null)
+417  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(sharedBase is null);
+418  :     Pop           
+//  sharedBase
+419  :     LoadLocalVar  : var = 23(sharedBase)
+//  (cast (variant<VariantBase^, bool>) sharedBase)
+420  :     VCast         : typeInfo = Variant<VariantBase^, system::Boolean>
+//  (cast (VariantBase^) (cast (variant<VariantBase^, bool>) sharedBase))
+421  :     VCast         : typeInfo = VariantBase^
+//  (cast (VariantBase^) (cast (variant<VariantBase^, bool>) sharedBase)) is null
+422  :     LoadValue     : value = <null>
+//  (cast (VariantBase^) (cast (variant<VariantBase^, bool>) sharedBase)) is null
+423  :     CompareReference
+//  Check((cast (VariantBase^) (cast (variant<VariantBase^, bool>) sharedBase)) is null)
+424  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((cast (VariantBase^) (cast (variant<VariantBase^, bool>) sharedBase)) is null);
+425  :     Pop           
+//  func () : (void)
+426  :     LoadLocalVar  : var = 24(sharedDerived)
+//  func () : (void)
+427  :     CreateClosureContext: stackPatternCount = 1
+//  func () : (void)
+428  :     LoadFunction  : func = 18(<lambda:(18)> in main)
+//  func () : (void)
+429  :     CreateClosure 
+//  ExpectFailure(func () : (void)
+430  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
+//  ExpectFailure(func () : (void)
+431  :     Pop           
+//  sharedDerived
+432  :     LoadLocalVar  : var = 24(sharedDerived)
+//  (sharedDerived as (VariantBase^))
+433  :     VTryCast      : typeInfo = VariantBase^
+//  (sharedDerived as (VariantBase^)) is null
+434  :     LoadValue     : value = <null>
+//  (sharedDerived as (VariantBase^)) is null
+435  :     CompareReference
+//  Check((sharedDerived as (VariantBase^)) is null)
+436  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((sharedDerived as (VariantBase^)) is null);
+437  :     Pop           
+//  func () : (void)
+438  :     LoadLocalVar  : var = 24(sharedDerived)
+//  func () : (void)
+439  :     CreateClosureContext: stackPatternCount = 1
+//  func () : (void)
+440  :     LoadFunction  : func = 19(<lambda:(19)> in main)
+//  func () : (void)
+441  :     CreateClosure 
+//  ExpectFailure(func () : (void)
+442  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
+//  ExpectFailure(func () : (void)
+443  :     Pop           
+//  sharedBase
+444  :     LoadLocalVar  : var = 23(sharedBase)
+//  var sharedReordered = sharedBase of (variant<string, VariantDerived^, VariantBase^>);
+445  :     StoreLocalVar : var = 25(sharedReordered)
+//  sharedReordered
+446  :     LoadLocalVar  : var = 25(sharedReordered)
+//  (cast (VariantBase^) sharedReordered)
+447  :     VCast         : typeInfo = VariantBase^
+//  (cast (VariantBase^) sharedReordered) is null
+448  :     LoadValue     : value = <null>
+//  (cast (VariantBase^) sharedReordered) is null
+449  :     CompareReference
+//  Check((cast (VariantBase^) sharedReordered) is null)
+450  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((cast (VariantBase^) sharedReordered) is null);
+451  :     Pop           
+//  sharedDerived
+452  :     LoadLocalVar  : var = 24(sharedDerived)
+//  sharedBase
+453  :     LoadLocalVar  : var = 23(sharedBase)
+//  {sharedBase; sharedDerived;}
+454  :     NewList       : stackPatternCount = 2
+//  var sharedSlots : variant<VariantBase^, VariantDerived^, string>[] = {sharedBase; sharedDerived;};
+455  :     StoreLocalVar : var = 26(sharedSlots)
+//  0
+456  :     LoadValue     : value = <I8, 0>
 //  sharedSlots
-608  :     LoadCapturedVar: var = 0(<captured>sharedSlots)
+457  :     LoadLocalVar  : var = 26(sharedSlots)
+//  sharedSlots[0]
+458  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  (cast (VariantBase^) sharedSlots[0])
+459  :     VCast         : typeInfo = VariantBase^
+//  (cast (VariantBase^) sharedSlots[0]) is null
+460  :     LoadValue     : value = <null>
+//  (cast (VariantBase^) sharedSlots[0]) is null
+461  :     CompareReference
+//  Check((cast (VariantBase^) sharedSlots[0]) is null)
+462  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((cast (VariantBase^) sharedSlots[0]) is null);
+463  :     Pop           
+//  func () : (void)
+464  :     LoadLocalVar  : var = 26(sharedSlots)
+//  func () : (void)
+465  :     CreateClosureContext: stackPatternCount = 1
+//  func () : (void)
+466  :     LoadFunction  : func = 20(<lambda:(20)> in main)
+//  func () : (void)
+467  :     CreateClosure 
+//  ExpectFailure(func () : (void)
+468  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
+//  ExpectFailure(func () : (void)
+469  :     Pop           
+//  1
+470  :     LoadValue     : value = <I8, 1>
+//  sharedSlots
+471  :     LoadLocalVar  : var = 26(sharedSlots)
 //  sharedSlots[1]
-609  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
-//  (cast (VariantBase^) sharedSlots[1])
-610  :     VCast         : typeInfo = VariantBase^
-//  var result = (cast (VariantBase^) sharedSlots[1]);
+472  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  (cast (VariantDerived^) sharedSlots[1])
+473  :     VCast         : typeInfo = VariantDerived^
+//  (cast (VariantDerived^) sharedSlots[1]) is null
+474  :     LoadValue     : value = <null>
+//  (cast (VariantDerived^) sharedSlots[1]) is null
+475  :     CompareReference
+//  Check((cast (VariantDerived^) sharedSlots[1]) is null)
+476  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((cast (VariantDerived^) sharedSlots[1]) is null);
+477  :     Pop           
+//  owner
+478  :     LoadLocalVar  : var = 18(owner)
+//  owner of (variant<VariantBase^, VariantDerived^>)
+479  :     VBox          : typeInfo = VariantBase^
+//  var taggedShared = owner of (variant<VariantBase^, VariantDerived^>);
+480  :     StoreLocalVar : var = 27(taggedShared)
+//  taggedShared
+481  :     LoadLocalVar  : var = 27(taggedShared)
+//  (cast (VariantBase^) taggedShared)
+482  :     VCast         : typeInfo = VariantBase^
+//  owner
+483  :     LoadLocalVar  : var = 18(owner)
+//  ((cast (VariantBase^) taggedShared) == owner)
+484  :     CompareReference
+//  Check(((cast (VariantBase^) taggedShared) == owner))
+485  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(((cast (VariantBase^) taggedShared) == owner));
+486  :     Pop           
+//  taggedShared
+487  :     LoadLocalVar  : var = 27(taggedShared)
+//  (taggedShared == owner)
+488  :     VUnbox        
+//  owner
+489  :     LoadLocalVar  : var = 18(owner)
+//  (taggedShared == owner)
+490  :     CompareValue  
+//  Check((taggedShared == owner))
+491  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((taggedShared == owner));
+492  :     Pop           
+//  owner
+493  :     LoadLocalVar  : var = 18(owner)
+//  taggedShared
+494  :     LoadLocalVar  : var = 27(taggedShared)
+//  (owner == taggedShared)
+495  :     VUnbox        
+//  (owner == taggedShared)
+496  :     CompareValue  
+//  Check((owner == taggedShared))
+497  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((owner == taggedShared));
+498  :     Pop           
+//  taggedShared
+499  :     LoadLocalVar  : var = 27(taggedShared)
+//  (taggedShared as (VariantBase^))
+500  :     VTryCast      : typeInfo = VariantBase^
+//  owner
+501  :     LoadLocalVar  : var = 18(owner)
+//  ((taggedShared as (VariantBase^)) == owner)
+502  :     CompareReference
+//  Check(((taggedShared as (VariantBase^)) == owner))
+503  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(((taggedShared as (VariantBase^)) == owner));
+504  :     Pop           
+//  func () : (void)
+505  :     LoadLocalVar  : var = 27(taggedShared)
+//  func () : (void)
+506  :     CreateClosureContext: stackPatternCount = 1
+//  func () : (void)
+507  :     LoadFunction  : func = 21(<lambda:(21)> in main)
+//  func () : (void)
+508  :     CreateClosure 
+//  ExpectFailure(func () : (void)
+509  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
+//  ExpectFailure(func () : (void)
+510  :     Pop           
+//  null
+511  :     LoadValue     : value = <null>
+//  var objectNull : object = null;
+512  :     StoreLocalVar : var = 28(objectNull)
+//  objectNull
+513  :     LoadLocalVar  : var = 28(objectNull)
+//  objectNull of (variant<object, int?, int>)
+514  :     VBox          : typeInfo = system::Object
+//  var objectSlot = objectNull of (variant<object, int?, int>);
+515  :     StoreLocalVar : var = 29(objectSlot)
+//  objectSlot
+516  :     LoadLocalVar  : var = 29(objectSlot)
+//  (cast (object) objectSlot)
+517  :     VCast         : typeInfo = system::Object
+//  (cast (object) objectSlot) is null
+518  :     LoadValue     : value = <null>
+//  (cast (object) objectSlot) is null
+519  :     CompareReference
+//  Check((cast (object) objectSlot) is null)
+520  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((cast (object) objectSlot) is null);
+521  :     Pop           
+//  objectSlot
+522  :     LoadLocalVar  : var = 29(objectSlot)
+//  objectSlot is null
+523  :     VUnbox        
+//  objectSlot is null
+524  :     LoadValue     : value = <null>
+//  objectSlot is null
+525  :     CompareReference
+//  Check(objectSlot is null)
+526  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(objectSlot is null);
+527  :     Pop           
+//  func () : (void)
+528  :     LoadLocalVar  : var = 29(objectSlot)
+//  func () : (void)
+529  :     CreateClosureContext: stackPatternCount = 1
+//  func () : (void)
+530  :     LoadFunction  : func = 22(<lambda:(22)> in main)
+//  func () : (void)
+531  :     CreateClosure 
+//  ExpectFailure(func () : (void)
+532  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
+//  ExpectFailure(func () : (void)
+533  :     Pop           
+//  empty
+534  :     LoadLocalVar  : var = 9(empty)
+//  empty of (variant<object, int?, int>)
+535  :     VBox          : typeInfo = system::Int64?
+//  var nullableSlot = empty of (variant<object, int?, int>);
+536  :     StoreLocalVar : var = 30(nullableSlot)
+//  func () : (void)
+537  :     LoadLocalVar  : var = 30(nullableSlot)
+//  func () : (void)
+538  :     CreateClosureContext: stackPatternCount = 1
+//  func () : (void)
+539  :     LoadFunction  : func = 23(<lambda:(23)> in main)
+//  func () : (void)
+540  :     CreateClosure 
+//  ExpectFailure(func () : (void)
+541  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
+//  ExpectFailure(func () : (void)
+542  :     Pop           
+//  42
+543  :     LoadValue     : value = <I8, 42>
+//  var objectNumber : object = 42;
+544  :     StoreLocalVar : var = 31(objectNumber)
+//  objectNumber
+545  :     LoadLocalVar  : var = 31(objectNumber)
+//  objectNumber of (variant<object, int?, int>)
+546  :     VBox          : typeInfo = system::Object
+//  var opaque = objectNumber of (variant<object, int?, int>);
+547  :     StoreLocalVar : var = 32(opaque)
+//  opaque
+548  :     LoadLocalVar  : var = 32(opaque)
+//  (cast (object) opaque)
+549  :     VCast         : typeInfo = system::Object
+//  (cast (object) opaque)
+550  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::Int64
+//  42
+551  :     LoadValue     : value = <I8, 42>
+//  ((cast (int) (cast (object) opaque)) == 42)
+552  :     CompareValue  
+//  Check(((cast (int) (cast (object) opaque)) == 42))
+553  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(((cast (int) (cast (object) opaque)) == 42));
+554  :     Pop           
+//  func () : (void)
+555  :     LoadLocalVar  : var = 32(opaque)
+//  func () : (void)
+556  :     CreateClosureContext: stackPatternCount = 1
+//  func () : (void)
+557  :     LoadFunction  : func = 24(<lambda:(24)> in main)
+//  func () : (void)
+558  :     CreateClosure 
+//  ExpectFailure(func () : (void)
+559  :     Invoke        : func = 3(ExpectFailure), stackPatternCount = 1
+//  ExpectFailure(func () : (void)
+560  :     Pop           
+//  number
+561  :     LoadLocalVar  : var = 0(number)
+//  var escaped : object = (cast (object) number);
+562  :     StoreLocalVar : var = 33(escaped)
+//  escaped
+563  :     LoadLocalVar  : var = 33(escaped)
+//  escaped is not null
+564  :     LoadValue     : value = <null>
+//  escaped is not null
+565  :     CompareReference
+//  escaped is not null
+566  :     OpNot         : type = Bool
+//  Check(escaped is not null)
+567  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(escaped is not null);
+568  :     Pop           
+//  missing
+569  :     LoadLocalVar  : var = 10(missing)
+//  var copied = missing;
+570  :     StoreLocalVar : var = 34(copied)
+//  other
+571  :     LoadLocalVar  : var = 11(other)
+//  (missing = other)
+572  :     Duplicate     : stackPatternCount = 0
+//  (missing = other)
+573  :     StoreLocalVar : var = 10(missing)
+//  (missing = other);
+574  :     Pop           
+//  copied
+575  :     LoadLocalVar  : var = 34(copied)
+//  copied is null
+576  :     VUnbox        
+//  copied is null
+577  :     LoadValue     : value = <null>
+//  copied is null
+578  :     CompareReference
+//  Check(copied is null)
+579  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(copied is null);
+580  :     Pop           
+//  copied
+581  :     LoadLocalVar  : var = 34(copied)
+//  (cast (int?) copied)
+582  :     VCast         : typeInfo = system::Int64?
+//  (cast (int?) copied) is null
+583  :     LoadValue     : value = <null>
+//  (cast (int?) copied) is null
+584  :     CompareReference
+//  Check((cast (int?) copied) is null)
+585  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check((cast (int?) copied) is null);
+586  :     Pop           
+//  missing
+587  :     LoadLocalVar  : var = 10(missing)
+//  missing is not null
+588  :     VUnbox        
+//  missing is not null
+589  :     LoadValue     : value = <null>
+//  missing is not null
+590  :     CompareReference
+//  missing is not null
+591  :     OpNot         : type = Bool
+//  Check(missing is not null)
+592  :     Invoke        : func = 2(Check), stackPatternCount = 1
+//  Check(missing is not null);
+593  :     Pop           
+//  checks
+594  :     LoadGlobalVar : var = 0(checks)
+//  checks
+595  :     ConvertToType : flag = BoxedValue, typeDescriptor = system::String
+//  return checks;
+596  :     Return        
+//  func main() : (string)
+597  :     LoadValue     : value = <null>
+//  func main() : (string)
+598  :     Return        
+//  number
+599  :     LoadCapturedVar: var = 0(<captured>number)
+//  (cast (string) number)
+600  :     VCast         : typeInfo = system::String
+//  var result = (cast (string) number);
+601  :     StoreLocalVar : var = 0(result)
+//  func () : (void)
+602  :     LoadValue     : value = <null>
+//  func () : (void)
+603  :     Return        
+//  number
+604  :     LoadCapturedVar: var = 0(<captured>number)
+//  (cast (variant<string, bool>) number)
+605  :     VCast         : typeInfo = Variant<system::String, system::Boolean>
+//  var result = (cast (variant<string, bool>) number);
+606  :     StoreLocalVar : var = 0(result)
+//  func () : (void)
+607  :     LoadValue     : value = <null>
+//  func () : (void)
+608  :     Return        
+//  plain
+609  :     LoadCapturedVar: var = 0(<captured>plain)
+//  (cast (int?) plain)
+610  :     VCast         : typeInfo = system::Int64?
+//  var result = (cast (int?) plain);
 611  :     StoreLocalVar : var = 0(result)
 //  func () : (void)
 612  :     LoadValue     : value = <null>
 //  func () : (void)
 613  :     Return        
-//  taggedShared
-614  :     LoadCapturedVar: var = 0(<captured>taggedShared)
-//  (cast (VariantDerived^) taggedShared)
-615  :     VCast         : typeInfo = VariantDerived^
-//  var result = (cast (VariantDerived^) taggedShared);
+//  missing
+614  :     LoadCapturedVar: var = 0(<captured>missing)
+//  (cast (int) missing)
+615  :     VCast         : typeInfo = system::Int64
+//  var result = (cast (int) missing);
 616  :     StoreLocalVar : var = 0(result)
 //  func () : (void)
 617  :     LoadValue     : value = <null>
 //  func () : (void)
 618  :     Return        
-//  objectSlot
-619  :     LoadCapturedVar: var = 0(<captured>objectSlot)
-//  (cast (variant<int?, bool>) objectSlot)
-620  :     VCast         : typeInfo = Variant<system::Int64?, system::Boolean>
-//  var result = (cast (variant<int?, bool>) objectSlot);
+//  derivedSlot
+619  :     LoadCapturedVar: var = 0(<captured>derivedSlot)
+//  (cast (VariantBase*) derivedSlot)
+620  :     VCast         : typeInfo = VariantBase*
+//  var result = (cast (VariantBase*) derivedSlot);
 621  :     StoreLocalVar : var = 0(result)
 //  func () : (void)
 622  :     LoadValue     : value = <null>
 //  func () : (void)
 623  :     Return        
-//  nullableSlot
-624  :     LoadCapturedVar: var = 0(<captured>nullableSlot)
-//  (cast (object) nullableSlot)
-625  :     VCast         : typeInfo = system::Object
-//  var result = (cast (object) nullableSlot);
+//  derivedSlot
+624  :     LoadCapturedVar: var = 0(<captured>derivedSlot)
+//  (cast (variant<VariantBase*, bool>) derivedSlot)
+625  :     VCast         : typeInfo = Variant<VariantBase*, system::Boolean>
+//  var result = (cast (variant<VariantBase*, bool>) derivedSlot);
 626  :     StoreLocalVar : var = 0(result)
 //  func () : (void)
 627  :     LoadValue     : value = <null>
 //  func () : (void)
 628  :     Return        
+//  1
+629  :     LoadValue     : value = <I8, 1>
+//  rawSlots
+630  :     LoadCapturedVar: var = 0(<captured>rawSlots)
+//  rawSlots[1]
+631  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  (cast (VariantBase*) rawSlots[1])
+632  :     VCast         : typeInfo = VariantBase*
+//  var result = (cast (VariantBase*) rawSlots[1]);
+633  :     StoreLocalVar : var = 0(result)
+//  func () : (void)
+634  :     LoadValue     : value = <null>
+//  func () : (void)
+635  :     Return        
+//  taggedBase
+636  :     LoadCapturedVar: var = 0(<captured>taggedBase)
+//  (cast (VariantDerived*) taggedBase)
+637  :     VCast         : typeInfo = VariantDerived*
+//  var result = (cast (VariantDerived*) taggedBase);
+638  :     StoreLocalVar : var = 0(result)
+//  func () : (void)
+639  :     LoadValue     : value = <null>
+//  func () : (void)
+640  :     Return        
+//  sharedDerived
+641  :     LoadCapturedVar: var = 0(<captured>sharedDerived)
+//  (cast (variant<VariantBase^, bool>) sharedDerived)
+642  :     VCast         : typeInfo = Variant<VariantBase^, system::Boolean>
+//  var result = (cast (variant<VariantBase^, bool>) sharedDerived);
+643  :     StoreLocalVar : var = 0(result)
+//  func () : (void)
+644  :     LoadValue     : value = <null>
+//  func () : (void)
+645  :     Return        
+//  sharedDerived
+646  :     LoadCapturedVar: var = 0(<captured>sharedDerived)
+//  (cast (VariantBase^) sharedDerived)
+647  :     VCast         : typeInfo = VariantBase^
+//  var result = (cast (VariantBase^) sharedDerived);
+648  :     StoreLocalVar : var = 0(result)
+//  func () : (void)
+649  :     LoadValue     : value = <null>
+//  func () : (void)
+650  :     Return        
+//  1
+651  :     LoadValue     : value = <I8, 1>
+//  sharedSlots
+652  :     LoadCapturedVar: var = 0(<captured>sharedSlots)
+//  sharedSlots[1]
+653  :     InvokeMethod  : methodInfo = Get<system::ReadonlyList>, stackPatternCount = 1
+//  (cast (VariantBase^) sharedSlots[1])
+654  :     VCast         : typeInfo = VariantBase^
+//  var result = (cast (VariantBase^) sharedSlots[1]);
+655  :     StoreLocalVar : var = 0(result)
+//  func () : (void)
+656  :     LoadValue     : value = <null>
+//  func () : (void)
+657  :     Return        
+//  taggedShared
+658  :     LoadCapturedVar: var = 0(<captured>taggedShared)
+//  (cast (VariantDerived^) taggedShared)
+659  :     VCast         : typeInfo = VariantDerived^
+//  var result = (cast (VariantDerived^) taggedShared);
+660  :     StoreLocalVar : var = 0(result)
+//  func () : (void)
+661  :     LoadValue     : value = <null>
+//  func () : (void)
+662  :     Return        
+//  objectSlot
+663  :     LoadCapturedVar: var = 0(<captured>objectSlot)
+//  (cast (variant<int?, bool>) objectSlot)
+664  :     VCast         : typeInfo = Variant<system::Int64?, system::Boolean>
+//  var result = (cast (variant<int?, bool>) objectSlot);
+665  :     StoreLocalVar : var = 0(result)
+//  func () : (void)
+666  :     LoadValue     : value = <null>
+//  func () : (void)
+667  :     Return        
+//  nullableSlot
+668  :     LoadCapturedVar: var = 0(<captured>nullableSlot)
+//  (cast (object) nullableSlot)
+669  :     VCast         : typeInfo = system::Object
+//  var result = (cast (object) nullableSlot);
+670  :     StoreLocalVar : var = 0(result)
+//  func () : (void)
+671  :     LoadValue     : value = <null>
+//  func () : (void)
+672  :     Return        
 //  opaque
-629  :     LoadCapturedVar: var = 0(<captured>opaque)
+673  :     LoadCapturedVar: var = 0(<captured>opaque)
 //  (cast (int) opaque)
-630  :     VCast         : typeInfo = system::Int64
+674  :     VCast         : typeInfo = system::Int64
 //  var result = (cast (int) opaque);
-631  :     StoreLocalVar : var = 0(result)
+675  :     StoreLocalVar : var = 0(result)
 //  func () : (void)
-632  :     LoadValue     : value = <null>
+676  :     LoadValue     : value = <null>
 //  func () : (void)
-633  :     Return        
+677  :     Return        

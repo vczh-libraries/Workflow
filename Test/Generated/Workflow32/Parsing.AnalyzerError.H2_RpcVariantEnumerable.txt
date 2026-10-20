@@ -1,0 +1,78 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+@rpc:Interface
+interface IVariantService
+{
+    func Send(values : variant<int, string>{}) : (void);
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+@rpc:Interface
+interface IVariantService
+{
+    func Send(values : variant<int, string>{}) : (void);
+}
+
+========================================================
+Errors
+========================================================
+Line: 5, Column: 13, Message: H2: @rpc:Interface cannot be applied to interface "IVariantService" because its member "IVariantService.Send(values)" is not serializable.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 5, "column": 0, "index": 110}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 5, "column": 0, "index": 110}, "codeIndex": -1}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 13, "index": 27}, "codeIndex": -1}},
+            "category": { "value": "rpc", "codeRange": {"start": {"row": 1, "column": 1, "index": 15}, "end": {"row": 1, "column": 3, "index": 17}, "codeIndex": -1}},
+            "name": { "value": "Interface", "codeRange": {"start": {"row": 1, "column": 5, "index": 19}, "end": {"row": 1, "column": 13, "index": 27}, "codeIndex": -1}},
+            "value": null
+        }],
+        "name": { "value": "IVariantService", "codeRange": {"start": {"row": 2, "column": 10, "index": 40}, "end": {"row": 2, "column": 24, "index": 54}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 4, "column": 2, "index": 62}, "end": {"row": 4, "column": 47, "index": 107}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Send", "codeRange": {"start": {"row": 4, "column": 7, "index": 67}, "end": {"row": 4, "column": 10, "index": 70}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 4, "column": 12, "index": 72}, "end": {"row": 4, "column": 40, "index": 100}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "values", "codeRange": {"start": {"row": 4, "column": 12, "index": 72}, "end": {"row": 4, "column": 17, "index": 77}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "EnumerableType", "codeRange": {"start": {"row": 4, "column": 19, "index": 79}, "end": {"row": 4, "column": 40, "index": 100}, "codeIndex": -1}},
+                    "element": {
+                        "$ast": { "type": "VariantType", "codeRange": {"start": {"row": 4, "column": 19, "index": 79}, "end": {"row": 4, "column": 38, "index": 98}, "codeIndex": -1}},
+                        "arguments": [{
+                            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 27, "index": 87}, "end": {"row": 4, "column": 29, "index": 89}, "codeIndex": -1}},
+                            "name": "Int"
+                        }, {
+                            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 32, "index": 92}, "end": {"row": 4, "column": 37, "index": 97}, "codeIndex": -1}},
+                            "name": "String"
+                        }]
+                    }
+                }
+            }],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 43, "index": 103}, "end": {"row": 4, "column": 46, "index": 106}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": null
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

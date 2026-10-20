@@ -1,0 +1,113 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+struct VariantNode
+{
+    children : VariantNode[];
+    payload : variant<int, string>;
+}
+
+@rpc:Interface
+interface IVariantService
+{
+    func Send(value : VariantNode) : (void);
+}
+
+========================================================
+Printed
+========================================================
+module test;
+
+struct VariantNode
+{
+    children : VariantNode[];
+    payload : variant<int, string>;
+}
+
+@rpc:Interface
+interface IVariantService
+{
+    func Send(value : VariantNode) : (void);
+}
+
+========================================================
+Errors
+========================================================
+Line: 4, Column: 3, Message: D12: Type of member "children" of struct "VariantNode" is not value type.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 10, "column": 0, "index": 184}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "StructDeclaration", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 5, "column": 0, "index": 97}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "VariantNode", "codeRange": {"start": {"row": 1, "column": 7, "index": 21}, "end": {"row": 1, "column": 17, "index": 31}, "codeIndex": -1}},
+        "members": [{
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 3, "column": 2, "index": 39}, "end": {"row": 3, "column": 24, "index": 61}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "children", "codeRange": {"start": {"row": 3, "column": 2, "index": 39}, "end": {"row": 3, "column": 9, "index": 46}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "MapType", "codeRange": {"start": {"row": 3, "column": 11, "index": 48}, "end": {"row": 3, "column": 23, "index": 60}, "codeIndex": -1}},
+                "key": null,
+                "value": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 3, "column": 11, "index": 48}, "end": {"row": 3, "column": 21, "index": 58}, "codeIndex": -1}},
+                    "name": { "value": "VariantNode", "codeRange": {"start": {"row": 3, "column": 11, "index": 48}, "end": {"row": 3, "column": 21, "index": 58}, "codeIndex": -1}}
+                },
+                "writability": "Writable"
+            }
+        }, {
+            "$ast": { "type": "StructMember", "codeRange": {"start": {"row": 4, "column": 2, "index": 66}, "end": {"row": 4, "column": 30, "index": 94}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "payload", "codeRange": {"start": {"row": 4, "column": 2, "index": 66}, "end": {"row": 4, "column": 8, "index": 72}, "codeIndex": -1}},
+            "type": {
+                "$ast": { "type": "VariantType", "codeRange": {"start": {"row": 4, "column": 10, "index": 74}, "end": {"row": 4, "column": 29, "index": 93}, "codeIndex": -1}},
+                "arguments": [{
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 18, "index": 82}, "end": {"row": 4, "column": 20, "index": 84}, "codeIndex": -1}},
+                    "name": "Int"
+                }, {
+                    "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 4, "column": 23, "index": 87}, "end": {"row": 4, "column": 28, "index": 92}, "codeIndex": -1}},
+                    "name": "String"
+                }]
+            }
+        }]
+    }, {
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 6, "column": 0, "index": 100}, "end": {"row": 10, "column": 0, "index": 184}, "codeIndex": -1}},
+        "attributes": [{
+            "$ast": { "type": "Attribute", "codeRange": {"start": {"row": 6, "column": 0, "index": 100}, "end": {"row": 6, "column": 13, "index": 113}, "codeIndex": -1}},
+            "category": { "value": "rpc", "codeRange": {"start": {"row": 6, "column": 1, "index": 101}, "end": {"row": 6, "column": 3, "index": 103}, "codeIndex": -1}},
+            "name": { "value": "Interface", "codeRange": {"start": {"row": 6, "column": 5, "index": 105}, "end": {"row": 6, "column": 13, "index": 113}, "codeIndex": -1}},
+            "value": null
+        }],
+        "name": { "value": "IVariantService", "codeRange": {"start": {"row": 7, "column": 10, "index": 126}, "end": {"row": 7, "column": 24, "index": 140}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [{
+            "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 9, "column": 2, "index": 148}, "end": {"row": 9, "column": 35, "index": 181}, "codeIndex": -1}},
+            "attributes": [],
+            "name": { "value": "Send", "codeRange": {"start": {"row": 9, "column": 7, "index": 153}, "end": {"row": 9, "column": 10, "index": 156}, "codeIndex": -1}},
+            "anonymity": "Named",
+            "arguments": [{
+                "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 9, "column": 12, "index": 158}, "end": {"row": 9, "column": 28, "index": 174}, "codeIndex": -1}},
+                "attributes": [],
+                "name": { "value": "value", "codeRange": {"start": {"row": 9, "column": 12, "index": 158}, "end": {"row": 9, "column": 16, "index": 162}, "codeIndex": -1}},
+                "type": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 9, "column": 18, "index": 164}, "end": {"row": 9, "column": 28, "index": 174}, "codeIndex": -1}},
+                    "name": { "value": "VariantNode", "codeRange": {"start": {"row": 9, "column": 18, "index": 164}, "end": {"row": 9, "column": 28, "index": 174}, "codeIndex": -1}}
+                }
+            }],
+            "functionKind": "Normal",
+            "returnType": {
+                "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 9, "column": 31, "index": 177}, "end": {"row": 9, "column": 34, "index": 180}, "codeIndex": -1}},
+                "name": "Void"
+            },
+            "statement": null
+        }],
+        "kind": "Interface"
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

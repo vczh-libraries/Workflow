@@ -1,0 +1,42 @@
+﻿module RpcMetadata;
+
+namespace RpcStructTraversal
+{
+    struct Leaf
+    {
+        value : ::system::Int64;
+    }
+
+    struct OptionalLeaf
+    {
+        value : ::system::Int64;
+    }
+
+    struct Node
+    {
+        first : ::RpcStructTraversal::Leaf;
+        optional : ::RpcStructTraversal::OptionalLeaf?;
+        second : ::RpcStructTraversal::Leaf;
+    }
+
+    @rpc:Interface
+    @rpc:Ctor
+    @rpc:IdString("RpcStructTraversal::IService")
+    @rpc:IdNumber(0)
+    interface IService
+    {
+        @rpc:IdString("RpcStructTraversal::IService.Echo")
+        @rpc:IdNumber(1)
+        func Echo(value : ::RpcStructTraversal::Node?) : (::RpcStructTraversal::Node?);
+
+        @rpc:Byval
+        @rpc:IdString("RpcStructTraversal::IService.EchoList")
+        @rpc:IdNumber(2)
+        func EchoList(@rpc:Byval values : ::RpcStructTraversal::Node[]) : (::RpcStructTraversal::Node[]);
+
+        @rpc:Byval
+        @rpc:IdString("RpcStructTraversal::IService.EchoMap")
+        @rpc:IdNumber(3)
+        func EchoMap(@rpc:Byval values : ::RpcStructTraversal::Node[::system::String]) : (::RpcStructTraversal::Node[::system::String]);
+    }
+}
