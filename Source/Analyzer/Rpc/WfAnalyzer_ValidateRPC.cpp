@@ -402,11 +402,39 @@ ValidateModuleRPC_Ast
 					return L"Byval";
 				}
 
+				bool ContainsVariantType(ITypeInfo* type, SortedList<ITypeInfo*>& visitedTypes, SortedList<ITypeDescriptor*>& visitedStructs)
+				{
+					if (!type || visitedTypes.Contains(type)) return false;
+					visitedTypes.Add(type);
+					if (type->GetDecorator() == ITypeInfo::Variant) return true;
+					if (ContainsVariantType(type->GetElementType(), visitedTypes, visitedStructs)) return true;
+					for (vint i = 0; i < type->GetGenericArgumentCount(); i++)
+					{
+						if (ContainsVariantType(type->GetGenericArgument(i), visitedTypes, visitedStructs)) return true;
+					}
+					if (type->GetDecorator() == ITypeInfo::TypeDescriptor)
+					{
+						auto td = type->GetTypeDescriptor();
+						if (td && td->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct && !visitedStructs.Contains(td))
+						{
+							visitedStructs.Add(td);
+							for (vint i = 0; i < td->GetPropertyCount(); i++)
+							{
+								if (ContainsVariantType(td->GetProperty(i)->GetReturn(), visitedTypes, visitedStructs)) return true;
+							}
+						}
+					}
+					return false;
+				}
+
 				bool IsSerializableType(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds)
 				{
 					if (!type) return false;
 					switch (type->GetDecorator())
 					{
+					case ITypeInfo::Variant:
+						return false;
+
 					case ITypeInfo::Nullable:
 						return IsSerializableType(type->GetElementType(), rpcInterfaceAttrTd, rpcInterfaceTds);
 
@@ -442,10 +470,15 @@ ValidateModuleRPC_Ast
 							switch (td->GetTypeDescriptorFlags())
 							{
 							case TypeDescriptorFlags::Primitive:
-							case TypeDescriptorFlags::Struct:
 							case TypeDescriptorFlags::FlagEnum:
 							case TypeDescriptorFlags::NormalEnum:
 								return true;
+							case TypeDescriptorFlags::Struct:
+								{
+									SortedList<ITypeInfo*> visitedTypes;
+									SortedList<ITypeDescriptor*> visitedStructs;
+									return !ContainsVariantType(type, visitedTypes, visitedStructs);
+								}
 							default:
 								return false;
 							}
@@ -912,6 +945,16 @@ ValidateModuleRPC_Reflection
 												manager->errors.Add(WfErrors::RpcReservedTypeInEventArgument(eventDecl->arguments[j - 1].Obj(), td->GetTypeName(), td->GetTypeName() + L"." + eventInfo->GetName() + L"(" + itow(j - 1) + L")", typeName));
 											}
 										}
+										else
+										{
+											SortedList<ITypeInfo*> visitedTypes;
+											SortedList<ITypeDescriptor*> visitedStructs;
+											if (ContainsVariantType(genericType->GetGenericArgument(j), visitedTypes, visitedStructs)
+												&& eventDecl && j - 1 < eventDecl->arguments.Count())
+											{
+												manager->errors.Add(WfErrors::RpcInterfaceMemberNotSerializable(eventDecl.Obj(), td->GetTypeName(), td->GetTypeName() + L"." + eventInfo->GetName() + L"(" + itow(j - 1) + L")"));
+											}
+										}
 									}
 								}
 							}
@@ -1081,6 +1124,9 @@ ValidateModuleRPC_GenerateMetadata
 					if (!typeInfo) return;
 					switch (typeInfo->GetDecorator())
 					{
+					case ITypeInfo::Nullable:
+						CollectSerializableTypesFromTypeInfo(typeInfo->GetElementType(), collectedEnums, collectedStructs, structVisitOrder, rpcInterfaceTds);
+						break;
 					case ITypeInfo::SharedPtr:
 						{
 							auto e = typeInfo->GetElementType();

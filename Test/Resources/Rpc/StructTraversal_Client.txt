@@ -1,0 +1,36 @@
+module Rpc;
+using system::*;
+
+func clientMain(lc:IRpcLifecycle*):string
+{
+  var service = cast (RpcStructTraversal::IService^) lc.RequestService("RpcStructTraversal::IService");
+  if (service.Echo(null) is not null) { raise "Nullable struct did not remain null."; }
+
+  var leaf:RpcStructTraversal::Leaf = {value:4};
+  var optionalLeaf:RpcStructTraversal::OptionalLeaf = {value:4};
+  var child:RpcStructTraversal::Node =
+  {
+    first:leaf
+    second:leaf
+    optional:optionalLeaf
+  };
+  var root:RpcStructTraversal::Node =
+  {
+    first:leaf
+    second:leaf
+    optional:null
+  };
+  if (var result:RpcStructTraversal::Node? = service.Echo(root))
+  {
+    if (result.optional is not null) { raise "Nested nullable field did not remain null."; }
+    var items = service.EchoList({root child});
+    var lookup = service.EchoMap({"root":root "child":child});
+    if (items.Count != 2) { raise "Struct collection lost an item."; }
+    if (var optional:RpcStructTraversal::OptionalLeaf? = items[1].optional)
+    {
+      return result.first.value + result.second.value + items[0].first.value
+        + items[1].second.value + optional.value + lookup["root"].first.value + lookup["child"].second.value;
+    }
+  }
+  return "Missing struct value";
+}

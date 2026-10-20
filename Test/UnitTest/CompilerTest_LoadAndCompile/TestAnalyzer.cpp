@@ -1,7 +1,13 @@
 #include "../../Source/Helper.h"
 #include "../../Source/CppTypes.h"
+#include "../../../Source/Runtime/WfRuntimeTypeDescriptor.h"
 
 extern WfCpuArchitecture testCpuArchitecture;
+
+namespace vl::workflow::analyzer::rpc_compiling
+{
+	bool IsSerializableType(ITypeInfo* type, ITypeDescriptor* rpcInterfaceAttrTd, const SortedList<ITypeDescriptor*>& rpcInterfaceTds);
+}
 
 void LoadMultipleSamples(WfLexicalScopeManager* manager, const WString& sampleName)
 {
@@ -79,6 +85,35 @@ TEST_FILE
 			auto function = name->declarations[0].Cast<WfFunctionDeclaration>();
 			TEST_ASSERT(function->name.value == L"main");
 		}
+	});
+
+	TEST_CASE(L"RPC variant validation terminates on repeated and cyclic struct metadata")
+	{
+		using namespace vl::workflow::typeimpl;
+		auto leaf = Ptr(new WfStruct(L"test::RpcMetadataLeaf"));
+		auto node = Ptr(new WfStruct(L"test::RpcMetadataNode"));
+		auto leafType = Ptr(new TypeDescriptorTypeInfo(leaf.Obj(), TypeInfoHint::Normal));
+		auto nodeType = Ptr(new TypeDescriptorTypeInfo(node.Obj(), TypeInfoHint::Normal));
+		auto childrenType = Ptr(new GenericTypeInfo(Ptr(new TypeDescriptorTypeInfo(GetTypeDescriptor<IValueList>(), TypeInfoHint::Normal))));
+		childrenType->AddGenericArgument(nodeType);
+		auto children = Ptr(new WfStructField(node.Obj(), L"children"));
+		children->SetReturn(Ptr(new SharedPtrTypeInfo(childrenType)));
+		node->AddMember(children);
+		for (auto name : { L"first", L"second" })
+		{
+			auto field = Ptr(new WfStructField(node.Obj(), name));
+			field->SetReturn(leafType);
+			node->AddMember(field);
+		}
+
+		SortedList<ITypeDescriptor*> rpcInterfaces;
+		auto rpcAttribute = GetTypeDescriptor<vl::__vwsn::att_rpc_Interface>();
+		TEST_ASSERT(rpc_compiling::IsSerializableType(nodeType.Obj(), rpcAttribute, rpcInterfaces));
+
+		auto payload = Ptr(new WfStructField(leaf.Obj(), L"payload"));
+		payload->SetReturn(TypeInfoRetriver<Variant<vint, WString>>::CreateTypeInfo());
+		leaf->AddMember(payload);
+		TEST_ASSERT(!rpc_compiling::IsSerializableType(nodeType.Obj(), rpcAttribute, rpcInterfaces));
 	});
 
 	TEST_CATEGORY(L"Test against illegal scripts")

@@ -1,0 +1,31 @@
+module Rpc;
+using system::*;
+
+namespace RpcStructTraversal
+{
+  struct Leaf
+  {
+    value:int;
+  }
+
+  struct OptionalLeaf
+  {
+    value:int;
+  }
+
+  struct Node
+  {
+    first:Leaf;
+    second:Leaf;
+    optional:OptionalLeaf?;
+  }
+
+  @rpc:Interface
+  @rpc:Ctor
+  interface IService
+  {
+    func Echo(value:Node?):Node?;
+    func EchoList(values:Node[]):Node[];
+    func EchoMap(values:Node[string]):Node[string];
+  }
+}

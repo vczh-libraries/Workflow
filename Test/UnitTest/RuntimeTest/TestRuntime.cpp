@@ -210,6 +210,46 @@ func GetEmptyCallback() : func():string
 		});
 	});
 
+	TEST_CASE(L"RPC JSON rejects escaped variants directly and in dynamic collections")
+	{
+		Ptr<WfAssembly> assembly;
+		LoadSampleAssemblyBinary(L"Codegen", L"VariantCasts", assembly);
+		auto context = Ptr(new WfRuntimeGlobalContext(assembly));
+		LoadFunction<void()>(context, L"<initialize>")();
+		auto serialize = LoadFunction<void(vint)>(context, L"SerializeEscapedVariant");
+		for (vint mode = 0; mode < 3; mode++)
+		{
+			TEST_EXCEPTION(serialize(mode), Error, [](const Error& exception)
+			{
+				TEST_ASSERT(WString(exception.Description()) == L"Unsupported RPC JSON serialization value.");
+			});
+		}
+	});
+
+	TEST_CASE(L"Generated RPC serializers reject variant boxes before choosing a schema")
+	{
+		Ptr<WfAssembly> assembly;
+		LoadSampleAssemblyBinary(L"Rpc", L"PrimitiveTypes", assembly);
+		auto context = Ptr(new WfRuntimeGlobalContext(assembly));
+		LoadFunction<void()>(context, L"<initialize>")();
+		auto serialize = LoadFunction<Ptr<vl::glr::json::JsonNode>(const Value&)>(context, L"rpcjson_Serialize");
+
+		Variant<vint, WString> variant(vint(1));
+		auto boxed = BoxParameter(variant);
+		auto list = IValueList::Create();
+		list->Add(boxed);
+		auto dictionary = IValueDictionary::Create();
+		dictionary->Set(BoxValue(WString(L"value")), boxed);
+		Value inputs[] = { boxed, BoxParameter(list), BoxParameter(dictionary) };
+		for (auto&& input : inputs)
+		{
+			TEST_EXCEPTION(serialize(input), Error, [](const Error& exception)
+			{
+				TEST_ASSERT(WString(exception.Description()) == L"Unsupported RPC JSON serialization value.");
+			});
+		}
+	});
+
 	TEST_CASE(L"Variant instruction type operands survive independent assembly loads")
 	{
 		Ptr<WfAssembly> first, second;

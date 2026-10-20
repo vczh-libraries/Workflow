@@ -1,0 +1,16 @@
+module test;
+struct PlainRecord
+{
+  value:int;
+}
+struct VariantEnvelope
+{
+  first:PlainRecord;
+  second:PlainRecord;
+  payload:variant<int, string>;
+}
+@rpc:Interface
+interface IVariantService
+{
+  func Send(value:VariantEnvelope):void;
+}

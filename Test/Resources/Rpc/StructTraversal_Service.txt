@@ -1,0 +1,22 @@
+module Rpc;
+using system::*;
+
+func serviceMain(lc:IRpcLifecycle*):void
+{
+  var serviceObj = new (RpcStructTraversal::IService^)
+  {
+    override func Echo(value:RpcStructTraversal::Node?):RpcStructTraversal::Node?
+    {
+      return value;
+    }
+    override func EchoList(values:RpcStructTraversal::Node[]):RpcStructTraversal::Node[]
+    {
+      return values;
+    }
+    override func EchoMap(values:RpcStructTraversal::Node[string]):RpcStructTraversal::Node[string]
+    {
+      return values;
+    }
+  };
+  lc.RegisterLocalService(rpc_GetIds()["RpcStructTraversal::IService"], serviceObj);
+}

@@ -39,6 +39,31 @@ func EscapedPayload():int
   return cast int escaped;
 }
 
+func SerializeRpcValue(value:object):JsonNode^
+{
+  return IRpcLifecycle::JsonSerializePredefinedTypes(value, SerializeRpcValue);
+}
+
+func SerializeEscapedVariant(mode:int):void
+{
+  var value = 1 of variant<int, string>;
+  var escaped : object = cast object value;
+  if (mode == 0)
+  {
+    SerializeRpcValue(escaped);
+  }
+  else if (mode == 1)
+  {
+    var values : object[] = {escaped};
+    SerializeRpcValue(values);
+  }
+  else
+  {
+    var values : object[string] = {"value":escaped};
+    SerializeRpcValue(values);
+  }
+}
+
 func main():string
 {
   var number = cast variant<int, string> 42;
