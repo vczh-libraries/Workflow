@@ -186,4 +186,16 @@ func GetEmptyCallback() : func():string
 		}
 	});
 
+	TEST_CASE(L"Ordinary strong null casts preserve the VM baseline")
+	{
+		Ptr<WfAssembly> assembly;
+		LoadSampleAssemblyBinary(L"Codegen", L"OrdinaryCastBaseline", assembly);
+		auto context = Ptr(new WfRuntimeGlobalContext(assembly));
+		LoadFunction<void()>(context, L"<initialize>")();
+		for (auto name : { L"StrongRawNull", L"StrongSharedNull", L"StrongNullableNull" })
+		{
+			TEST_ASSERT(LoadFunction<bool()>(context, name)());
+		}
+	});
+
 }

@@ -1,0 +1,52 @@
+module test;
+using test::*;
+using system::*;
+
+class OrdinaryCastBase
+{
+	new(){}
+}
+
+class OrdinaryCastDerived : OrdinaryCastBase
+{
+	new(){}
+}
+
+func StrongRawNull():bool
+{
+	var value : OrdinaryCastBase* = null;
+	return (cast OrdinaryCastDerived* value) is null;
+}
+
+func StrongSharedNull():bool
+{
+	var value : OrdinaryCastBase^ = null;
+	return (cast OrdinaryCastDerived^ value) is null;
+}
+
+func StrongNullableNull():bool
+{
+	var value : int? = null;
+	return (cast double? value) is null;
+}
+
+func WeakNullableNull():bool
+{
+	var value : int? = null;
+	return (value as double?) is null;
+}
+
+func main():string
+{
+	var raw : OrdinaryCastBase* = null;
+	var shared : OrdinaryCastBase^ = null;
+	var pointer : OrdinaryCastBase^ = new OrdinaryCastDerived^();
+	var value : int? = 42;
+	return
+		((raw as OrdinaryCastDerived*) is null) & ", " &
+		((shared as OrdinaryCastDerived^) is null) & ", " &
+		WeakNullableNull() & ", " &
+		((cast OrdinaryCastDerived* pointer) is not null) & ", " &
+		((cast OrdinaryCastDerived^ pointer) is not null) & ", " &
+		((cast double? value) == 42.0);
+}
