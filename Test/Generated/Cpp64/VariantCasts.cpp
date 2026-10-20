@@ -88,6 +88,31 @@ Global Functions
 		return ::vl::__vwsn::Unbox<::vl::vint64_t>(escaped);
 	}
 
+	::vl::Ptr<::vl::glr::json::JsonNode> VariantCasts::SerializeRpcValue(const ::vl::reflection::description::Value& value)
+	{
+		return ::vl::rpc_controller::JsonSerializePredefinedTypes(value, ::vl::Func<::vl::Ptr<::vl::glr::json::JsonNode>(const ::vl::reflection::description::Value&)>(GLOBAL_OBJ, &GLOBAL_SYMBOL SerializeRpcValue));
+	}
+
+	void VariantCasts::SerializeEscapedVariant(::vl::vint64_t mode)
+	{
+		auto value = ::vl::Variant<::vl::vint64_t, ::vl::WString>(::vl::VariantIndex<0>{}, static_cast<::vl::vint64_t>(1L));
+		auto escaped = ::vl::__vwsn::Box(value);
+		if ((mode == static_cast<::vl::vint64_t>(0L)))
+		{
+			GLOBAL_NAME SerializeRpcValue(escaped);
+		}
+		else if ((mode == static_cast<::vl::vint64_t>(1L)))
+		{
+			auto values = (::vl::__vwsn::CreateList().Add(escaped)).list;
+			GLOBAL_NAME SerializeRpcValue(::vl::__vwsn::Box(values));
+		}
+		else
+		{
+			auto values = (::vl::__vwsn::CreateDictionary().Add(::vl::WString::Unmanaged(L"value"), escaped)).dictionary;
+			GLOBAL_NAME SerializeRpcValue(::vl::__vwsn::Box(values));
+		}
+	}
+
 	::vl::WString VariantCasts::main()
 	{
 		auto number = ::vl::Variant<::vl::vint64_t, ::vl::WString>(::vl::VariantIndex<0>{}, static_cast<::vl::vint64_t>(42L));

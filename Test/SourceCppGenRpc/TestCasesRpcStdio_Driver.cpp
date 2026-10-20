@@ -127,6 +127,7 @@
 #include "RpcRequestService.h"
 #include "RpcServiceWrapper.h"
 #include "RpcServiceWrapper_SharedMemsp.h"
+#include "RpcStructTraversal.h"
 #include "../Source/TestCasesRpcStdio_Driver.h"
 
 using namespace vl;
@@ -1424,5 +1425,15 @@ void RunTestCasesRpcStdio_Driver(const WString& serviceCommand, const SortedList
 		List<WString> waitingForServices;
 		waitingForServices.Add(L"RpcServiceWrapperSharedMemspTest::IService");
 		RunRpcStdioTestCase<::vl_workflow_global::Rpc_ServiceWrapper_SharedMemsp, false>(L"ServiceWrapper_SharedMemsp", L"[false][true]", serviceCommand, waitingForServices);
+	}
+	if (skippedTestCases.Contains(L"StructTraversal"))
+	{
+		PrintRpcStdioSkippedTestCase(L"StructTraversal");
+	}
+	else
+	{
+		List<WString> waitingForServices;
+		waitingForServices.Add(L"RpcStructTraversal::IService");
+		RunRpcStdioTestCase<::vl_workflow_global::Rpc_StructTraversal, false>(L"StructTraversal", L"28", serviceCommand, waitingForServices);
 	}
 }

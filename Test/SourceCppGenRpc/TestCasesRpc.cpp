@@ -127,6 +127,7 @@
 #include "RpcRequestServiceReflection.h"
 #include "RpcServiceWrapperReflection.h"
 #include "RpcServiceWrapper_SharedMemspReflection.h"
+#include "RpcStructTraversalReflection.h"
 #include "../Source/RpcDualLifecycleMock.h"
 #include "../Source/TestCasesRpc.h"
 
@@ -269,6 +270,7 @@ void LoadTestCaseRpcTypes()
 	 LoadRpc_RequestServiceTypes();
 	 LoadRpc_ServiceWrapperTypes();
 	 LoadRpc_ServiceWrapper_SharedMemspTypes();
+	 LoadRpc_StructTraversalTypes();
 }
 
 TEST_FILE
@@ -917,5 +919,10 @@ TEST_CASE(L"Rpc:ServiceWrapper")
 TEST_CASE(L"Rpc:ServiceWrapper_SharedMemsp")
 {
 	RunRpcTestCase<::vl_workflow_global::Rpc_ServiceWrapper_SharedMemsp, false>(L"ServiceWrapper_SharedMemsp", L"[false][true]");
+});
+
+TEST_CASE(L"Rpc:StructTraversal")
+{
+	RunRpcTestCase<::vl_workflow_global::Rpc_StructTraversal, false>(L"StructTraversal", L"28");
 });
 }

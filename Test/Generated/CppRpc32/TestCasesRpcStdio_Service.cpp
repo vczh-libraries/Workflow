@@ -127,6 +127,7 @@
 #include "RpcRequestService.h"
 #include "RpcServiceWrapper.h"
 #include "RpcServiceWrapper_SharedMemsp.h"
+#include "RpcStructTraversal.h"
 #include "../Source/TestCasesRpcStdio_Service.h"
 
 using namespace vl;
@@ -777,6 +778,11 @@ void RunTestCasesRpcStdio_Service(const WString& itemName)
 	if (itemName == L"ServiceWrapper_SharedMemsp")
 	{
 		RunRpcStdioService<::vl_workflow_global::Rpc_ServiceWrapper_SharedMemsp, false>();
+		return;
+	}
+	if (itemName == L"StructTraversal")
+	{
+		RunRpcStdioService<::vl_workflow_global::Rpc_StructTraversal, false>();
 		return;
 	}
 	CHECK_FAIL(L"Unknown RPC stdio test case.");

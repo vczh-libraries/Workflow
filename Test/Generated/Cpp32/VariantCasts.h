@@ -78,6 +78,8 @@ namespace vl_workflow_global
 		void ExpectFailure(const ::vl::Func<void()>& action);
 		::vl::Variant<::vl::vint32_t, ::vl::WString> Echo(::vl::Variant<::vl::vint32_t, ::vl::WString> value);
 		::vl::vint32_t EscapedPayload();
+		::vl::Ptr<::vl::glr::json::JsonNode> SerializeRpcValue(const ::vl::reflection::description::Value& value);
+		void SerializeEscapedVariant(::vl::vint32_t mode);
 		::vl::WString main();
 
 		static VariantCasts& Instance();
