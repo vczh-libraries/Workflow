@@ -1,0 +1,34 @@
+module test;
+using system::*;
+
+var result = "";
+
+func Render(value:variant<int, string>):string
+{
+  var number = value as int?;
+  if (number is not null) { return cast int number; }
+  return cast string value;
+}
+
+func main():string
+{
+  var values : variant<int, string>[] =
+    {1 of variant<int, string> "s" of variant<int, string> 2 of variant<int, string>};
+  for (value in values) { result = result & Render(value); }
+  result = result & "|";
+  for (value in reversed values) { result = result & Render(value); }
+  result = result & "|";
+  var coroutine = $coroutine
+  {
+    for (value in values)
+    {
+      $pause;
+      result = result & Render(value);
+    }
+  };
+  while (coroutine.Status != CoroutineStatus::Stopped)
+  {
+    coroutine.Resume(true, null);
+  }
+  return result;
+}

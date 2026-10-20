@@ -324,6 +324,19 @@ Print (Type)
 				writer.AfterPrint(node);
 			}
 
+			void Visit(WfVariantType* node)override
+			{
+				writer.BeforePrint(node);
+				writer.WriteString(L"variant<");
+				for (vint i = 0; i < node->arguments.Count(); i++)
+				{
+					if (i > 0) writer.WriteString(L", ");
+					WfPrint(node->arguments[i], indent, writer);
+				}
+				writer.WriteString(L">");
+				writer.AfterPrint(node);
+			}
+
 			void Visit(WfChildType* node)override
 			{
 				writer.BeforePrint(node);

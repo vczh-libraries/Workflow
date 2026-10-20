@@ -198,4 +198,63 @@ func GetEmptyCallback() : func():string
 		}
 	});
 
+	TEST_CASE(L"An escaped variant cannot be extracted by an ordinary VM cast")
+	{
+		Ptr<WfAssembly> assembly;
+		LoadSampleAssemblyBinary(L"Codegen", L"VariantCasts", assembly);
+		auto context = Ptr(new WfRuntimeGlobalContext(assembly));
+		LoadFunction<void()>(context, L"<initialize>")();
+		TEST_EXCEPTION(LoadFunction<vint()>(context, L"EscapedPayload")(), WfRuntimeException, [](const WfRuntimeException& exception)
+		{
+			TEST_ASSERT(!exception.IsFatal());
+		});
+	});
+
+	TEST_CASE(L"Variant instruction type operands survive independent assembly loads")
+	{
+		Ptr<WfAssembly> first, second;
+		LoadSampleAssemblyBinary(L"Codegen", L"VariantInstructionTypes", first);
+		LoadSampleAssemblyBinary(L"Codegen", L"VariantInstructionTypes", second);
+		TEST_ASSERT(first->instructions.Count() == second->instructions.Count());
+		vint boxes = 0;
+		vint casts = 0;
+		for (vint i = 0; i < first->instructions.Count(); i++)
+		{
+			auto& instruction = first->instructions[i];
+			auto type = instruction.typeInfoParameter;
+			if (!type) continue;
+			auto reloaded = second->instructions[i].typeInfoParameter;
+			TEST_ASSERT(type != reloaded);
+			TEST_ASSERT(IsSameTypeInfo(type.Obj(), reloaded.Obj()));
+			if (instruction.code == WfInsCode::VBox)
+			{
+				boxes++;
+				TEST_ASSERT(type->GetDecorator() == ITypeInfo::RawPtr);
+				TEST_ASSERT(type->GetTypeDescriptor()->GetTypeName() == L"test::ObservableValue");
+			}
+			else if (instruction.code == WfInsCode::VCast)
+			{
+				casts++;
+				if (type->GetDecorator() == ITypeInfo::Variant)
+				{
+					TEST_ASSERT(!type->GetTypeDescriptor());
+					TEST_ASSERT(!type->GetElementType());
+					TEST_ASSERT(type->GetGenericArgumentCount() == 2);
+					TEST_ASSERT(type->GetGenericArgument(0)->GetTypeFriendlyName() == L"test::PointClass*");
+					TEST_ASSERT(type->GetGenericArgument(1)->GetTypeFriendlyName() == L"test::ObservableValue*");
+				}
+				else
+				{
+					TEST_ASSERT(type->GetTypeFriendlyName() == L"test::ObservableValue*");
+				}
+			}
+			else
+			{
+				TEST_ASSERT(false);
+			}
+		}
+		TEST_ASSERT(boxes == 1);
+		TEST_ASSERT(casts == 2);
+	});
+
 }

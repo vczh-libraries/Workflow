@@ -539,6 +539,27 @@ GenerateInstructions(Expression)
 								auto secondResult = context.manager->expressionResolvings[node->second.Obj()];
 								auto firstType = firstResult.expectedType ? firstResult.expectedType : firstResult.type;
 								auto secondType = secondResult.expectedType ? secondResult.expectedType : secondResult.type;
+								if (firstType->GetDecorator() == ITypeInfo::Variant || secondType->GetDecorator() == ITypeInfo::Variant)
+								{
+									GenerateExpressionInstructions(context, node->first);
+									if (firstType->GetDecorator() == ITypeInfo::Variant) INSTRUCTION(Ins::VUnbox());
+									GenerateExpressionInstructions(context, node->second);
+									if (secondType->GetDecorator() == ITypeInfo::Variant) INSTRUCTION(Ins::VUnbox());
+									switch (node->op)
+									{
+									case WfBinaryOperator::EQ: INSTRUCTION(Ins::CompareValue()); break;
+									case WfBinaryOperator::NE:
+										INSTRUCTION(Ins::CompareValue());
+										INSTRUCTION(Ins::OpNot(WfInsType::Bool));
+										break;
+									case WfBinaryOperator::LT: INSTRUCTION(Ins::CompareValueLT()); break;
+									case WfBinaryOperator::GT: INSTRUCTION(Ins::CompareValueGT()); break;
+									case WfBinaryOperator::LE: INSTRUCTION(Ins::CompareValueLE()); break;
+									case WfBinaryOperator::GE: INSTRUCTION(Ins::CompareValueGE()); break;
+									default:;
+									}
+									return;
+								}
 								mergedType = GetMergedType(firstType, secondType);
 
 								if (node->op == WfBinaryOperator::EQ || node->op == WfBinaryOperator::NE)
@@ -855,13 +876,47 @@ GenerateInstructions(Expression)
 					}
 				}
 
+				bool GenerateVariantCast(WfExpression* node, Ptr<WfExpression> expression, Ptr<ITypeInfo> target, bool strongCast)
+				{
+					auto source = context.manager->expressionResolvings[expression.Obj()].type;
+					bool fromVariant = source->GetDecorator() == ITypeInfo::Variant;
+					bool toVariant = target->GetDecorator() == ITypeInfo::Variant;
+					if (!fromVariant && !toVariant) return false;
+
+					GenerateExpressionInstructions(context, expression);
+					if (!fromVariant)
+					{
+						INSTRUCTION(Ins::VBox(source));
+					}
+					else if (toVariant && IsVariantSubset(source.Obj(), target.Obj()))
+					{
+					}
+					else if (!toVariant && target->GetTypeDescriptor() == description::GetTypeDescriptor<Value>()
+						&& GetVariantOptionIndex(source.Obj(), target.Obj()) == -1)
+					{
+					}
+					else if (strongCast)
+					{
+						INSTRUCTION(Ins::VCast(target));
+					}
+					else
+					{
+						INSTRUCTION(Ins::VTryCast(target));
+					}
+					return true;
+				}
+
 				void Visit(WfInferExpression* node)override
 				{
+					auto type = context.manager->expressionResolvings[node].type;
+					if (GenerateVariantCast(node, node->expression, type, true)) return;
 					GenerateExpressionInstructions(context, node->expression);
 				}
 
 				void Visit(WfTypeCastingExpression* node)override
 				{
+					auto target = context.manager->expressionResolvings[node].type;
+					if (GenerateVariantCast(node, node->expression, target, node->strategy == WfTypeCastingStrategy::Strong)) return;
 					if (node->strategy == WfTypeCastingStrategy::Strong)
 					{
 						auto result = context.manager->expressionResolvings[node];
@@ -882,11 +937,13 @@ GenerateInstructions(Expression)
 					{
 					case WfTypeTesting::IsNull:
 						GenerateExpressionInstructions(context, node->expression);
+						if (context.manager->expressionResolvings[node->expression.Obj()].type->GetDecorator() == ITypeInfo::Variant) INSTRUCTION(Ins::VUnbox());
 						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CompareReference());
 						break;
 					case WfTypeTesting::IsNotNull:
 						GenerateExpressionInstructions(context, node->expression);
+						if (context.manager->expressionResolvings[node->expression.Obj()].type->GetDecorator() == ITypeInfo::Variant) INSTRUCTION(Ins::VUnbox());
 						INSTRUCTION(Ins::LoadValue({}));
 						INSTRUCTION(Ins::CompareReference());
 						INSTRUCTION(Ins::OpNot(WfInsType::Bool));

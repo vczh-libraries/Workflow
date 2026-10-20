@@ -192,6 +192,16 @@ WfCppConfig
 			{
 				switch (typeInfo->GetDecorator())
 				{
+				case ITypeInfo::Variant:
+					{
+						WString result = L"::vl::Variant<";
+						for (vint i = 0; i < typeInfo->GetGenericArgumentCount(); i++)
+						{
+							if (i > 0) result += L", ";
+							result += ConvertType(typeInfo->GetGenericArgument(i), useHeaderEnumStructName);
+						}
+						return result + L">";
+					}
 				case ITypeInfo::RawPtr:
 					return ConvertType(typeInfo->GetElementType(), useHeaderEnumStructName) + L"*";
 				case ITypeInfo::SharedPtr:
@@ -285,6 +295,7 @@ WfCppConfig
 				case ITypeInfo::Nullable:
 					return L"";
 				case ITypeInfo::Generic:
+				case ITypeInfo::Variant:
 					return L"";
 				default:;
 				}

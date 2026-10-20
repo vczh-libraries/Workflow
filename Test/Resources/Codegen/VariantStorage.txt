@@ -1,0 +1,61 @@
+module test;
+using system::*;
+
+struct Payload
+{
+  value : int;
+}
+
+struct VariantFields
+{
+  number : variant<int, string>;
+  optional : variant<int?, string>;
+  objectValue : variant<object, string>;
+  nested : variant<Payload, string>;
+}
+
+class VariantHolder
+{
+  var data : variant<int, string> = 0 of variant<int, string>;
+  new(){}
+}
+
+var checks : int = 0;
+
+func Check(value:bool):void
+{
+  if (not value) { raise "Variant storage assertion failed."; }
+  checks = checks + 1;
+}
+
+func main():string
+{
+  var a = {} of VariantFields;
+  var b = {} of VariantFields;
+  Check((cast int a.number) == 0);
+  Check((cast int? a.optional) is null);
+  Check((cast object a.objectValue) is null);
+  Check((cast Payload a.nested).value == 0);
+  Check(a == b);
+  a = {number:5 of variant<int, string>} of VariantFields;
+  Check(a != b);
+  b = {number:5 of variant<int, string>} of VariantFields;
+  Check(a == b);
+  a = {number:a.number optional:1 of int? of variant<int?, string>} of VariantFields;
+  Check(a != b);
+  var copy = a;
+  a = {number:"changed" of variant<int, string>} of VariantFields;
+  Check((cast int copy.number) == 5);
+  var holder = new VariantHolder^();
+  holder.data = copy.number;
+  Check((cast int holder.data) == 5);
+  var values : variant<int, string>[] = {copy.number holder.data};
+  Check((cast int values[0]) == 5);
+  values[1] = "second" of variant<int, string>;
+  Check((cast string values[1]) == "second");
+  var dictionary : variant<int, string>[string] = {"one":copy.number};
+  Check((cast int dictionary["one"]) == 5);
+  var captured = func():variant<int, string> { return copy.number; };
+  Check((cast int captured()) == 5);
+  return checks;
+}

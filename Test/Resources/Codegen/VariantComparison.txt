@@ -1,0 +1,54 @@
+module test;
+using system::*;
+
+var checks : int = 0;
+
+func Check(value:bool):void
+{
+  if (not value) { raise "Variant comparison assertion failed."; }
+  checks = checks + 1;
+}
+
+func main():string
+{
+  var a = 3 of variant<int, string>;
+  var b = 3.0 of variant<double, bool>;
+  Check(a == b);
+  Check(not (a != b));
+  Check(a <= b);
+  Check(a >= b);
+  Check(not (a < b));
+  Check(not (a > b));
+  Check(a == 3.0);
+  Check(3.0 == a);
+  Check(a < 4);
+  Check(2 < a);
+  Check(a > 2);
+  Check(4 > a);
+  Check(a <= 3);
+  Check(3 >= a);
+  Check(a != 4);
+  var text = "three" of variant<int, string>;
+  Check(a != text);
+  Check(not (a < text));
+  Check(not (a > text));
+  Check(not (a <= text));
+  Check(not (a >= text));
+  var nullValue : int? = null;
+  var empty = nullValue of variant<int?, string>;
+  Check(empty == nullValue);
+  Check(nullValue == empty);
+  Check(empty != a);
+  var escaped : object = cast object a;
+  Check(a != escaped);
+  Check(escaped != a);
+  var zero : double = 0.0;
+  var nan = (zero / zero) of variant<double, string>;
+  Check(not (nan == nan));
+  Check(nan != nan);
+  Check(not (nan < nan));
+  Check(not (nan > nan));
+  Check(not (nan <= nan));
+  Check(not (nan >= nan));
+  return checks;
+}

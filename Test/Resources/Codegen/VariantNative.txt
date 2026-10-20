@@ -1,0 +1,71 @@
+module test;
+using system::*;
+using test::*;
+
+var checks : int = 0;
+var observed = 0 of variant<int, string>;
+
+func Check(value:bool):void
+{
+  if (not value) { raise "Native variant assertion failed."; }
+  checks = checks + 1;
+}
+
+func main():string
+{
+  var number = 42 of variant<int, string>;
+  Check((cast int VariantProvider::Echo(number)) == 42);
+  Check((cast int VariantProvider::EchoConst(number)) == 42);
+  Check((cast int VariantProvider::EchoRef(number)) == 42);
+  var text = "native" of variant<int, string>;
+  Check((cast string VariantProvider::Echo(text)) == "native");
+  var provider = new VariantProvider^();
+  provider.data = text;
+  Check((cast string provider.data) == "native");
+  var handler = attach(provider.Changed, func(value:variant<int, string>):void
+  {
+    observed = value;
+  });
+  provider.Value = text;
+  Check((cast string observed) == "native");
+  Check((cast string provider.Value) == "native");
+  detach(provider.Changed, handler);
+  var values : variant<int, string>[] = {number text};
+  var result = "";
+  for (value in VariantProvider::Items(values))
+  {
+    result = result & (value == number ? "n" : "t");
+  }
+  Check(result == "nt");
+  var erased = VariantProvider::ErasedList();
+  Check((cast int (cast List^ erased).Get(0)) == 42);
+  var failed = false;
+  try { var typed = cast variant<int[], string> erased; }
+  catch(ex) { failed = not ex.Fatal and Sys::Find(ex.Message, "variant option") != -1; }
+  Check(failed);
+  var empty = VariantProvider::EmptyNullable();
+  Check(empty is null);
+  Check((cast int? empty) is null);
+  var function = cast (func(int):int) VariantProvider::Function();
+  Check(function(4) == 5);
+  var enumerable = cast int{} VariantProvider::Enumerable();
+  var sum = 0;
+  for (value in enumerable) { sum = sum + value; }
+  Check(sum == 6);
+  var typedList : int[] = {1 2};
+  var typedVariant = typedList of variant<int[], string>;
+  var reordered = typedVariant of variant<string, int[]>;
+  Check((cast int[] reordered)[1] == 2);
+  failed = false;
+  try { var wrong = cast variant<string[], string> typedVariant; }
+  catch(ex) { failed = not ex.Fatal and Sys::Find(ex.Message, "variant option") != -1; }
+  Check(failed);
+  var first = func(value:int):int { return value + 1; };
+  var functionOptions = first of variant<func(int):int, func(string):string>;
+  Check((cast (func(int):int) functionOptions)(9) == 10);
+  var lazyOptions = enumerable of variant<int{}, string{}>;
+  sum = 0;
+  for (value in (cast int{} lazyOptions)) { sum = sum + value; }
+  Check(sum == 6);
+  return checks;
+}

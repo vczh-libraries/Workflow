@@ -372,7 +372,7 @@ ValidateSemantic(Declaration)
 					for (auto member : node->members)
 					{
 						auto memberTd = td->GetPropertyByName(member->name.value, false)->GetReturn()->GetTypeDescriptor();
-						if ((memberTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
+						if (memberTd && (memberTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::ReferenceType) != TypeDescriptorFlags::Undefined)
 						{
 							manager->errors.Add(WfErrors::StructContainsNonValueType(member.Obj(), node));
 						}

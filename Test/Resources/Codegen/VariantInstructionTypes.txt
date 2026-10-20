@@ -1,0 +1,11 @@
+module test;
+using system::*;
+using test::*;
+
+func main():string
+{
+  var pointer : ObservableValue* = null;
+  var boxed = pointer of variant<ObservableValue*, string>;
+  var narrowed = cast variant<PointClass*, ObservableValue*> boxed;
+  return (cast ObservableValue* narrowed) is null;
+}

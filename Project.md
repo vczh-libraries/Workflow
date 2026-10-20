@@ -207,6 +207,6 @@ The following unit test projects could be built to web assembly and run with a b
 - `REPO-ROOT/Test/Linux/CppTest_Metaonly`
 - `REPO-ROOT/Test/Linux/CppTest_Reflection`
 
-Before running `RuntimeTest` in the browser, run the native code-generation sequence (`CompilerTest_GenerateMetadata`, then `CompilerTest_LoadAndCompile`) to refresh the ignored `Test/Generated/Workflow32/*.bin` fixtures. Its `vbuild` maps the required 32-bit assemblies, index files and debugger samples into OPFS. The other four browser suites preload no files.
+Before running `RuntimeTest` in the browser, run the native code-generation sequence (`CompilerTest_GenerateMetadata`, then `CompilerTest_LoadAndCompile`) to refresh the ignored `Test/Generated/Workflow32/*.bin` fixtures. Its `vbuild` maps the required 32-bit assemblies, index files and debugger samples into OPFS. `CppTest_Metaonly` also maps the generated `Reflection32.bin`, `ReflectionCppTypes32.bin` and `Workflow32/Metadata.Codegen.*.bin` metadata layers, which supply declared option identity for variant parameter boxing. The other three browser suites preload no files.
 
 All Wasm projects use the shared Ubuntu tools' `-O3` setting for compilation and linking; debug information, exceptions and assertions remain enabled.

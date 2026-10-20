@@ -221,7 +221,7 @@ WfRuntimeThreadContext (TypeConversion)
 					}
 					break;
 				case Value::BoxedValue:
-					if (result.GetValueType() != Value::BoxedValue)
+					if (result.GetValueType() != Value::BoxedValue || !result.GetTypeDescriptor())
 					{
 						return false;
 					}
@@ -617,6 +617,62 @@ WfRuntimeThreadContext
 						operand.DeleteRawPtr();
 						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
+				case WfInsCode::VBox:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						DynamicVariantBox box{ operand, ins.typeInfoParameter };
+						auto result = Value::From(Ptr(new IValueType::TypedBox<DynamicVariantBox>(box)), nullptr);
+						CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::VUnbox:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						auto box = operand.GetBoxedValue().Cast<IValueType::TypedBox<DynamicVariantBox>>();
+						CONTEXT_ACTION(PushValue(box->value.value), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
+				case WfInsCode::VCast:
+				case WfInsCode::VTryCast:
+					{
+						Value operand;
+						CONTEXT_ACTION(PopValue(operand), L"failed to pop a value from the stack.");
+						auto& box = operand.GetBoxedValue().Cast<IValueType::TypedBox<DynamicVariantBox>>()->value;
+						auto target = ins.typeInfoParameter.Obj();
+						bool match = false;
+						if (target->GetDecorator() == ITypeInfo::Variant)
+						{
+							for (vint i = 0; i < target->GetGenericArgumentCount(); i++)
+							{
+								if (IsSameTypeInfo(box.type.Obj(), target->GetGenericArgument(i))) match = true;
+							}
+						}
+						else
+						{
+							match = IsSameTypeInfo(box.type.Obj(), target);
+							if (ins.code == WfInsCode::VTryCast && target->GetDecorator() == ITypeInfo::Nullable)
+							{
+								match |= IsSameTypeInfo(box.type.Obj(), target->GetElementType());
+							}
+						}
+						if (match)
+						{
+							auto result = target->GetDecorator() == ITypeInfo::Variant ? operand : box.value;
+							CONTEXT_ACTION(PushValue(result), L"failed to push a value to the stack.");
+						}
+						else if (ins.code == WfInsCode::VTryCast)
+						{
+							CONTEXT_ACTION(PushValue(Value()), L"failed to push a value to the stack.");
+						}
+						else
+						{
+							RaiseException(L"Failed to convert variant option \"" + box.type->GetTypeFriendlyName()
+								+ L"\" to \"" + target->GetTypeFriendlyName() + L"\".", false);
+						}
+						return WfRuntimeExecutionAction::ExecuteInstruction;
+					}
 				case WfInsCode::ConvertToType:
 					{
 						Value result, converted;
@@ -631,6 +687,10 @@ WfRuntimeThreadContext
 							if (result.IsNull())
 							{
 								from = L"<null>";
+							}
+							else if (!result.GetTypeDescriptor())
+							{
+								from = result.GetTypeFriendlyName();
 							}
 							else
 							{
@@ -974,6 +1034,27 @@ WfRuntimeThreadContext
 				case WfInsCode::CompareValue:
 					{
 						return OPERATOR_OpCompareValue(*this);
+					}
+				case WfInsCode::CompareValueLT:
+				case WfInsCode::CompareValueGT:
+				case WfInsCode::CompareValueLE:
+				case WfInsCode::CompareValueGE:
+					{
+						Value first, second;
+						CONTEXT_ACTION(PopValue(second), L"failed to pop a value from the stack.");
+						CONTEXT_ACTION(PopValue(first), L"failed to pop a value from the stack.");
+						auto ordering = first <=> second;
+						bool result = false;
+						switch (ins.code)
+						{
+						case WfInsCode::CompareValueLT: result = ordering < 0; break;
+						case WfInsCode::CompareValueGT: result = ordering > 0; break;
+						case WfInsCode::CompareValueLE: result = ordering <= 0; break;
+						case WfInsCode::CompareValueGE: result = ordering >= 0; break;
+						default:;
+						}
+						CONTEXT_ACTION(PushValue(BoxValue(result)), L"failed to push a value to the stack.");
+						return WfRuntimeExecutionAction::ExecuteInstruction;
 					}
 				case WfInsCode::OpNot:
 					BEGIN_TYPE

@@ -98,6 +98,50 @@ Expression Helpers
 
 			void ConvertType(WfCppConfig* config, stream::StreamWriter& writer, ITypeInfo* fromType, ITypeInfo* toType, const Func<void()>& writeExpression, bool strongCast)
 			{
+				bool fromVariant = fromType->GetDecorator() == ITypeInfo::Variant;
+				bool toVariant = toType->GetDecorator() == ITypeInfo::Variant;
+				if (fromVariant || toVariant)
+				{
+					if (!fromVariant)
+					{
+						writer.WriteString(config->ConvertType(toType) + L"(::vl::VariantIndex<"
+							+ itow(GetVariantOptionIndex(toType, fromType)) + L">{}, ");
+						writeExpression();
+						writer.WriteString(L")");
+					}
+					else if (toVariant)
+					{
+						writer.WriteString(L"::vl::__vwsn::VariantCast<" + config->ConvertType(toType));
+						for (vint i = 0; i < fromType->GetGenericArgumentCount(); i++)
+						{
+							writer.WriteString(L", " + itow(GetVariantOptionIndex(toType, fromType->GetGenericArgument(i))));
+						}
+						writer.WriteString(L">(");
+						writeExpression();
+						writer.WriteString(L")");
+					}
+					else if (toType->GetTypeDescriptor() == description::GetTypeDescriptor<Value>() && GetVariantOptionIndex(fromType, toType) == -1)
+					{
+						WriteBoxValue(config, writer, fromType, writeExpression);
+					}
+					else
+					{
+						writer.WriteString(L"::vl::__vwsn::VariantExtract<" + config->ConvertType(toType));
+						for (vint i = 0; i < fromType->GetGenericArgumentCount(); i++)
+						{
+							auto option = fromType->GetGenericArgument(i);
+							if (IsSameType(option, toType)
+								|| (!strongCast && toType->GetDecorator() == ITypeInfo::Nullable && IsSameType(option, toType->GetElementType())))
+							{
+								writer.WriteString(L", " + itow(i));
+							}
+						}
+						writer.WriteString(L">(");
+						writeExpression();
+						writer.WriteString(strongCast ? L", true)" : L", false)");
+					}
+					return;
+				}
 				if (fromType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Object)
 				{
 					if (strongCast)
@@ -1389,6 +1433,28 @@ WfGenerateExpressionVisitor
 						auto result = config->manager->expressionResolvings[node];
 						auto firstResult = config->manager->expressionResolvings[node->first.Obj()];
 						auto secondResult = config->manager->expressionResolvings[node->second.Obj()];
+						if (firstResult.type->GetDecorator() == ITypeInfo::Variant || secondResult.type->GetDecorator() == ITypeInfo::Variant)
+						{
+							const wchar_t* op = nullptr;
+							switch (node->op)
+							{
+							case WfBinaryOperator::EQ: op = L"=="; break;
+							case WfBinaryOperator::NE: op = L"!="; break;
+							case WfBinaryOperator::LT: op = L"<"; break;
+							case WfBinaryOperator::GT: op = L">"; break;
+							case WfBinaryOperator::LE: op = L"<="; break;
+							case WfBinaryOperator::GE: op = L">="; break;
+							default: CHECK_FAIL(L"Unsupported variant comparison.");
+							}
+							writer.WriteString(L"(::vl::reflection::description::CompareVariantPayloads(");
+							writer.WriteString(firstResult.type->GetDecorator() == ITypeInfo::Variant ? L"::vl::__vwsn::VariantPayload(" : L"::vl::__vwsn::Box(");
+							Call(node->first);
+							writer.WriteString(L"), ");
+							writer.WriteString(secondResult.type->GetDecorator() == ITypeInfo::Variant ? L"::vl::__vwsn::VariantPayload(" : L"::vl::__vwsn::Box(");
+							Call(node->second);
+							writer.WriteString(L")) " + WString::Unmanaged(op) + L" 0)");
+							return;
+						}
 						auto mergedType = GetMergedType(firstResult.type, secondResult.type);
 
 						switch (node->op)
@@ -1757,6 +1823,13 @@ WfGenerateExpressionVisitor
 
 				void Visit(WfInferExpression* node)override
 				{
+					auto target = config->manager->expressionResolvings[node].type;
+					if (target->GetDecorator() == ITypeInfo::Variant)
+					{
+						auto source = config->manager->expressionResolvings[node->expression.Obj()].type;
+						ConvertType(config, writer, source.Obj(), target.Obj(), [&]() { Call(node->expression); }, true);
+						return;
+					}
 					Call(node->expression);
 				}
 
@@ -1781,6 +1854,11 @@ WfGenerateExpressionVisitor
 
 					switch (result.type->GetDecorator())
 					{
+					case ITypeInfo::Variant:
+						writer.WriteString(node->test == WfTypeTesting::IsNotNull ? L"(!::vl::__vwsn::VariantPayload(" : L"(::vl::__vwsn::VariantPayload(");
+						Call(node->expression);
+						writer.WriteString(L").IsNull())");
+						break;
 					case ITypeInfo::RawPtr:
 						{
 							switch (node->test)
@@ -2095,10 +2173,21 @@ WfGenerateExpressionVisitor
 					auto result = config->manager->expressionResolvings[node->function.Obj()];
 					if (result.methodInfo)
 					{
-						WriteMethodTemplate(CppGetInvokeTemplate(result.methodInfo), result.methodInfo,
-							[&](IMethodInfo* methodInfo) { return thisCallback(methodInfo->GetOwnerTypeDescriptor()); },
-							[&](IMethodInfo* methodInfo, vint index) { return argumentCallback(methodInfo, nullptr, index); },
-							useReturnValue);
+						auto writeCall = [&]()
+						{
+							WriteMethodTemplate(CppGetInvokeTemplate(result.methodInfo), result.methodInfo,
+								[&](IMethodInfo* methodInfo) { return thisCallback(methodInfo->GetOwnerTypeDescriptor()); },
+								[&](IMethodInfo* methodInfo, vint index) { return argumentCallback(methodInfo, nullptr, index); },
+								useReturnValue);
+						};
+						if (node->typedResult)
+						{
+							WriteUnboxValue(config->manager->expressionResolvings[node].type.Obj(), writeCall);
+						}
+						else
+						{
+							writeCall();
+						}
 						return;
 					}
 					else if (result.eventInfo)

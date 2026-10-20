@@ -961,6 +961,16 @@ WfErrors
 				return MakeParsingError(node, L"I3: RPC mangled name \"" + mangledName + L"\" is ambiguous between \"" + previousFullName + L"\" and \"" + currentFullName + L"\".");
 			}
 
+			glr::ParsingError WfErrors::InvalidVariantType(WfType* node, const WString& reason)
+			{
+				return MakeParsingError(node, L"J0: Invalid variant type. " + reason);
+			}
+
+			glr::ParsingError WfErrors::InvalidVariantExpression(WfExpression* node, const WString& reason)
+			{
+				return MakeParsingError(node, L"J1: Invalid variant expression. " + reason);
+			}
+
 			glr::ParsingError WfErrors::CppUnableToDecideClassOrder(WfClassDeclaration* node, collections::List<reflection::description::ITypeDescriptor*>& tds)
 			{
 				auto description = ListToErrorMessage(tds, [](auto&& td) { return td->GetTypeName(); });

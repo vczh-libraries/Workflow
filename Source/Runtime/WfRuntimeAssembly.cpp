@@ -120,8 +120,9 @@ Serialization (CollectMetadata)
 					CollectTd(typeInfo->GetElementType(), prepare);
 					break;
 				case ITypeInfo::Generic:
+				case ITypeInfo::Variant:
 					{
-						CollectTd(typeInfo->GetElementType(), prepare);
+						if (typeInfo->GetDecorator() == ITypeInfo::Generic) CollectTd(typeInfo->GetElementType(), prepare);
 						vint count = typeInfo->GetGenericArgumentCount();
 						for (vint i = 0; i < count; i++)
 						{
@@ -259,6 +260,7 @@ Serialization (CollectMetadata)
 #define COLLECTMETADATA_EVENT(NAME)					case WfInsCode::NAME: EI(ins.eventParameter); break;
 #define COLLECTMETADATA_EVENT_COUNT(NAME)			case WfInsCode::NAME: EI(ins.eventParameter); break;
 #define COLLECTMETADATA_LABEL(NAME)					case WfInsCode::NAME: break;
+#define COLLECTMETADATA_TYPEINFO(NAME)			case WfInsCode::NAME: CollectTd(ins.typeInfoParameter.Obj(), prepare); break;
 #define COLLECTMETADATA_TYPE(NAME)					case WfInsCode::NAME: break;
 
 				for (vint i = 0; i < instructions.Count(); i++)
@@ -280,7 +282,8 @@ Serialization (CollectMetadata)
 							COLLECTMETADATA_EVENT,
 							COLLECTMETADATA_EVENT_COUNT,
 							COLLECTMETADATA_LABEL,
-							COLLECTMETADATA_TYPE
+							COLLECTMETADATA_TYPE,
+							COLLECTMETADATA_TYPEINFO
 							)
 					}
 				}
@@ -311,6 +314,7 @@ Serialization (CollectMetadata)
 #undef COLLECTMETADATA_EVENT
 #undef COLLECTMETADATA_EVENT_COUNT
 #undef COLLECTMETADATA_LABEL
+#undef COLLECTMETADATA_TYPEINFO
 #undef COLLECTMETADATA_TYPE
 #undef MI
 #undef TD
@@ -386,6 +390,20 @@ Serizliation (ITypeInfo)
 					reader << decorator;
 					switch (static_cast<ITypeInfo::Decorator>(decorator))
 					{
+					case ITypeInfo::Variant:
+						{
+							auto variantType = Ptr(new VariantTypeInfo);
+							typeInfo = variantType;
+							vint count = 0;
+							reader << count;
+							for (vint i = 0; i < count; i++)
+							{
+								Ptr<ITypeInfo> argumentType;
+								IOType(reader, argumentType);
+								variantType->AddGenericArgument(argumentType);
+							}
+						}
+						break;
 					case ITypeInfo::RawPtr:
 						{
 							Ptr<ITypeInfo> elementType;
@@ -450,8 +468,9 @@ Serizliation (ITypeInfo)
 						IOType(writer, typeInfo->GetElementType());
 						break;
 					case ITypeInfo::Generic:
+					case ITypeInfo::Variant:
 						{
-							IOType(writer, typeInfo->GetElementType());
+							if (typeInfo->GetDecorator() == ITypeInfo::Generic) IOType(writer, typeInfo->GetElementType());
 							vint count = typeInfo->GetGenericArgumentCount();
 							writer << count;
 							for (vint i = 0; i < count; i++)
@@ -1519,6 +1538,7 @@ Serialization (Instruction)
 #define STREAMIO_EVENT(NAME)				case WfInsCode::NAME: EI(value.eventParameter); break;
 #define STREAMIO_EVENT_COUNT(NAME)			case WfInsCode::NAME: EI(value.eventParameter); IO(value.countParameter); break;
 #define STREAMIO_LABEL(NAME)				case WfInsCode::NAME: IO(value.indexParameter); break;
+#define STREAMIO_TYPEINFO(NAME)				case WfInsCode::NAME: Serialization<ITypeInfo>::IOType(reader, value.typeInfoParameter); break;
 #define STREAMIO_TYPE(NAME)					case WfInsCode::NAME: IO(value.typeParameter); break;
 
 					switch (value.code)
@@ -1537,7 +1557,8 @@ Serialization (Instruction)
 							STREAMIO_EVENT,
 							STREAMIO_EVENT_COUNT,
 							STREAMIO_LABEL,
-							STREAMIO_TYPE)
+							STREAMIO_TYPE,
+							STREAMIO_TYPEINFO)
 					}
 
 #undef STREAMIO
@@ -1553,6 +1574,7 @@ Serialization (Instruction)
 #undef STREAMIO_EVENT
 #undef STREAMIO_EVENT_COUNT
 #undef STREAMIO_LABEL
+#undef STREAMIO_TYPEINFO
 #undef STREAMIO_TYPE
 #undef MI
 #undef TD
@@ -1582,6 +1604,7 @@ Serialization (Instruction)
 #define STREAMIO_EVENT(NAME)				case WfInsCode::NAME: EI(value.eventParameter); break;
 #define STREAMIO_EVENT_COUNT(NAME)			case WfInsCode::NAME: EI(value.eventParameter); IO(value.countParameter); break;
 #define STREAMIO_LABEL(NAME)				case WfInsCode::NAME: IO(value.indexParameter); break;
+#define STREAMIO_TYPEINFO(NAME)				case WfInsCode::NAME: Serialization<ITypeInfo>::IOType(writer, value.typeInfoParameter.Obj()); break;
 #define STREAMIO_TYPE(NAME)					case WfInsCode::NAME: IO(value.typeParameter); break;
 
 					switch (value.code)
@@ -1600,7 +1623,8 @@ Serialization (Instruction)
 							STREAMIO_EVENT,
 							STREAMIO_EVENT_COUNT,
 							STREAMIO_LABEL,
-							STREAMIO_TYPE)
+							STREAMIO_TYPE,
+							STREAMIO_TYPEINFO)
 					}
 
 #undef STREAMIO
@@ -1616,6 +1640,7 @@ Serialization (Instruction)
 #undef STREAMIO_EVENT
 #undef STREAMIO_EVENT_COUNT
 #undef STREAMIO_LABEL
+#undef STREAMIO_TYPEINFO
 #undef STREAMIO_TYPE
 #undef MI
 #undef TD

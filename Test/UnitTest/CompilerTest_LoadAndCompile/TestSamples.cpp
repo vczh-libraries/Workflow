@@ -2,6 +2,51 @@
 
 TEST_FILE
 {
+	TEST_CASE(L"Indexed variant syntax survives copying and printed round trips")
+	{
+		auto&& parser = GetWorkflowParser();
+		auto print = [](auto node)
+		{
+			return stream::GenerateToStream([&](TextWriter& writer)
+			{
+				WfPrint(node, L"", writer);
+			});
+		};
+		List<glr::ParsingError> errors;
+		auto handler = glr::InstallDefaultErrorMessageGenerator(parser, errors);
+		auto declaration = ParseDeclaration(LoadSample(L"Declaration", L"VariantTypes"), parser);
+		auto copiedDeclaration = CopyDeclaration(declaration, false);
+		auto declarationText = print(copiedDeclaration);
+		TEST_ASSERT(declarationText == print(declaration));
+		TEST_ASSERT(declarationText == print(ParseDeclaration(declarationText, parser)));
+
+		auto expression = ParseExpression(LoadSample(L"Expression", L"VariantType"), parser);
+		auto copiedExpression = CopyExpression(expression, false);
+		auto expressionText = print(copiedExpression);
+		TEST_ASSERT(expressionText == print(expression));
+		TEST_ASSERT(expressionText == print(ParseExpression(expressionText, parser)));
+		parser.OnError.Remove(handler);
+		TEST_ASSERT(errors.Count() == 0);
+	});
+
+	TEST_CATEGORY(L"Test malformed variant type syntax")
+	{
+		auto&& parser = GetWorkflowParser();
+		List<WString> itemNames;
+		LoadSampleIndex(L"InvalidType", itemNames);
+		for (auto itemName : itemNames)
+		{
+			TEST_CASE(itemName)
+			{
+				List<glr::ParsingError> errors;
+				auto handler = glr::InstallDefaultErrorMessageGenerator(parser, errors);
+				ParseType(LoadSample(L"InvalidType", itemName), parser);
+				parser.OnError.Remove(handler);
+				TEST_ASSERT(errors.Count() > 0);
+			});
+		}
+	});
+
 	const wchar_t* categories[] =
 	{
 		L"Expression",

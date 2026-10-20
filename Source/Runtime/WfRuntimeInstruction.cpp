@@ -154,6 +154,15 @@ WfInstruction
 				return ins; \
 			}\
 
+#define CTOR_TYPEINFO(NAME)\
+			WfInstruction WfInstruction::NAME(Ptr<ITypeInfo> typeInfo)\
+			{\
+				WfInstruction ins; \
+				ins.code = WfInsCode::NAME; \
+				ins.typeInfoParameter = typeInfo; \
+				return ins; \
+			}\
+
 			INSTRUCTION_CASES(
 				CTOR,
 				CTOR_VALUE,
@@ -168,7 +177,8 @@ WfInstruction
 				CTOR_EVENT,
 				CTOR_EVENT_COUNT,
 				CTOR_LABEL,
-				CTOR_TYPE)
+				CTOR_TYPE,
+				CTOR_TYPEINFO)
 
 #undef CTOR
 #undef CTOR_VALUE
@@ -184,6 +194,7 @@ WfInstruction
 #undef CTOR_EVENT_COUNT
 #undef CTOR_LABEL
 #undef CTOR_TYPE
+#undef CTOR_TYPEINFO
 		}
 	}
 }

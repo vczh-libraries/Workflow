@@ -1,0 +1,23 @@
+module test;
+using system::*;
+
+var result = "";
+
+func main():string
+{
+  var value = 1 of variant<int, string>;
+  var coroutine = $coroutine
+  {
+    var stored = value;
+    $pause;
+    result = result & (cast int stored);
+    stored = "done" of variant<int, string>;
+    $pause;
+    result = result & (cast string stored);
+  };
+  coroutine.Resume(true, null);
+  value = "changed" of variant<int, string>;
+  coroutine.Resume(true, null);
+  coroutine.Resume(true, null);
+  return result;
+}

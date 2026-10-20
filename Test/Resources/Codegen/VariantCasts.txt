@@ -1,0 +1,145 @@
+module test;
+using system::*;
+
+class VariantBase
+{
+  new(){}
+}
+
+class VariantDerived : VariantBase
+{
+  new(){}
+}
+
+var checks : int = 0;
+
+func Check(value:bool):void
+{
+  if (not value) { raise "Variant cast assertion failed."; }
+  checks = checks + 1;
+}
+
+func ExpectFailure(action:func():void):void
+{
+  var failed = false;
+  try { action(); }
+  catch(ex) { failed = not ex.Fatal and Sys::Find(ex.Message, "variant option") != -1; }
+  Check(failed);
+}
+
+func Echo(value:variant<int, string>):variant<int, string>
+{
+  return value;
+}
+
+func EscapedPayload():int
+{
+  var value = 1 of variant<int, string>;
+  var escaped : object = cast object value;
+  return cast int escaped;
+}
+
+func main():string
+{
+  var number = cast variant<int, string> 42;
+  Check((cast int Echo(number)) == 42);
+  var text = "hello" of variant<int, string>;
+  Check((cast string text) == "hello");
+  var reordered = cast variant<string, int> number;
+  Check((cast int reordered) == 42);
+  var widened = text of variant<double, string, int>;
+  Check((cast string widened) == "hello");
+  var widenedNumber = number of variant<double, string, int>;
+  Check((cast int widenedNumber) == 42);
+  var intersected = cast variant<string, bool> text;
+  Check((cast string intersected) == "hello");
+  ExpectFailure(func():void { var result = cast string number; });
+  ExpectFailure(func():void { var result = cast variant<string, bool> number; });
+
+  var plain = cast variant<int, int?, string> 7;
+  var optional : int? = 8;
+  var present = optional of variant<int, int?, string>;
+  var empty : int? = null;
+  var missing = cast variant<int, int?, string> empty;
+  Check((plain as int?) == 7);
+  Check((present as int?) == 8);
+  Check((missing as int?) is null);
+  Check((cast int? missing) is null);
+  Check((cast int? (cast variant<int?, bool> missing)) is null);
+  Check(missing is null);
+  Check(plain is not null);
+  ExpectFailure(func():void { var result = cast int? plain; });
+  ExpectFailure(func():void { var result = cast int missing; });
+  var other = "other" of variant<int, int?, string>;
+  Check((other as int?) is null);
+
+  var baseNull : VariantBase* = null;
+  var derivedNull : VariantDerived* = null;
+  var baseSlot = baseNull of variant<VariantBase*, VariantDerived*, string>;
+  var derivedSlot = derivedNull of variant<VariantBase*, VariantDerived*, string>;
+  Check((cast VariantBase* baseSlot) is null);
+  Check((baseSlot as VariantBase*) is null);
+  Check((derivedSlot as VariantBase*) is null);
+  Check(baseSlot is null);
+  Check((cast VariantBase* (cast variant<VariantBase*, bool> baseSlot)) is null);
+  ExpectFailure(func():void { var result = cast VariantBase* derivedSlot; });
+  var rawReordered = baseSlot of variant<string, VariantDerived*, VariantBase*>;
+  Check((cast VariantBase* rawReordered) is null);
+  ExpectFailure(func():void { var result = cast variant<VariantBase*, bool> derivedSlot; });
+  var rawSlots : variant<VariantBase*, VariantDerived*, string>[] = {baseSlot derivedSlot};
+  Check((cast VariantBase* rawSlots[0]) is null);
+  ExpectFailure(func():void { var result = cast VariantBase* rawSlots[1]; });
+  Check((cast VariantDerived* rawSlots[1]) is null);
+
+  var owner : VariantBase^ = new VariantDerived^();
+  var raw : VariantBase* = cast VariantBase* owner;
+  var taggedBase = raw of variant<VariantBase*, VariantDerived*>;
+  Check((cast VariantBase* taggedBase) == raw);
+  Check(taggedBase == raw);
+  Check(raw == taggedBase);
+  Check((taggedBase as VariantBase*) == raw);
+  Check((taggedBase as VariantDerived*) is null);
+  ExpectFailure(func():void { var result = cast VariantDerived* taggedBase; });
+  var sharedNull : VariantBase^ = null;
+  var sharedDerivedNull : VariantDerived^ = null;
+  var sharedBase = sharedNull of variant<VariantBase^, VariantDerived^, string>;
+  var sharedDerived = sharedDerivedNull of variant<VariantBase^, VariantDerived^, string>;
+  Check((cast VariantBase^ sharedBase) is null);
+  Check(sharedBase is null);
+  Check((cast VariantBase^ (cast variant<VariantBase^, bool> sharedBase)) is null);
+  ExpectFailure(func():void { var result = cast variant<VariantBase^, bool> sharedDerived; });
+  Check((sharedDerived as VariantBase^) is null);
+  ExpectFailure(func():void { var result = cast VariantBase^ sharedDerived; });
+  var sharedReordered = sharedBase of variant<string, VariantDerived^, VariantBase^>;
+  Check((cast VariantBase^ sharedReordered) is null);
+  var sharedSlots : variant<VariantBase^, VariantDerived^, string>[] = {sharedBase sharedDerived};
+  Check((cast VariantBase^ sharedSlots[0]) is null);
+  ExpectFailure(func():void { var result = cast VariantBase^ sharedSlots[1]; });
+  Check((cast VariantDerived^ sharedSlots[1]) is null);
+  var taggedShared = owner of variant<VariantBase^, VariantDerived^>;
+  Check((cast VariantBase^ taggedShared) == owner);
+  Check(taggedShared == owner);
+  Check(owner == taggedShared);
+  Check((taggedShared as VariantBase^) == owner);
+  ExpectFailure(func():void { var result = cast VariantDerived^ taggedShared; });
+
+  var objectNull : object = null;
+  var objectSlot = objectNull of variant<object, int?, int>;
+  Check((cast object objectSlot) is null);
+  Check(objectSlot is null);
+  ExpectFailure(func():void { var result = cast variant<int?, bool> objectSlot; });
+  var nullableSlot = empty of variant<object, int?, int>;
+  ExpectFailure(func():void { var result = cast object nullableSlot; });
+  var objectNumber : object = 42;
+  var opaque = objectNumber of variant<object, int?, int>;
+  Check((cast int (cast object opaque)) == 42);
+  ExpectFailure(func():void { var result = cast int opaque; });
+  var escaped : object = cast object number;
+  Check(escaped is not null);
+  var copied = missing;
+  missing = other;
+  Check(copied is null);
+  Check((cast int? copied) is null);
+  Check(missing is not null);
+  return checks;
+}

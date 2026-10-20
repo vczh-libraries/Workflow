@@ -42,6 +42,7 @@ GetTypeFlag
 
 			TypeFlag GetTypeFlag(reflection::description::ITypeInfo* typeInfo)
 			{
+				if (typeInfo->GetDecorator() == ITypeInfo::Variant) return TypeFlag::Others;
 				ITypeDescriptor* td = typeInfo->GetTypeDescriptor();
 				return GetTypeFlag(td);
 			}
@@ -160,6 +161,17 @@ GetTypeFromTypeInfo
 			{
 				switch (typeInfo->GetDecorator())
 				{
+				case ITypeInfo::Variant:
+					{
+						auto type = Ptr(new WfVariantType);
+						for (vint i = 0; i < typeInfo->GetGenericArgumentCount(); i++)
+						{
+							auto argument = GetTypeFromTypeInfo(typeInfo->GetGenericArgument(i));
+							if (!argument) return nullptr;
+							type->arguments.Add(argument);
+						}
+						return type;
+					}
 				case ITypeInfo::RawPtr:
 					{
 						Ptr<WfType> element = GetTypeFromTypeInfo(typeInfo->GetElementType());
@@ -476,6 +488,11 @@ GetScopeNameFromReferenceType
 					CHECK_FAIL(L"GetScopeNameFromReferenceTypeVisitor::Visit(WfFunctionType*)#Internal error, ValidateTypeStructure function should check correctly.");
 				}
 
+				void Visit(WfVariantType* node)override
+				{
+					CHECK_FAIL(L"GetScopeNameFromReferenceTypeVisitor::Visit(WfVariantType*)#Internal error, ValidateTypeStructure function should check correctly.");
+				}
+
 				void Visit(WfChildType* node)override
 				{
 					if (Ptr<WfLexicalScopeName> scopeName = Call(node->parent.Obj()))
@@ -504,6 +521,48 @@ GetScopeNameFromReferenceType
 /***********************************************************************
 CreateTypeInfoFromType
 ***********************************************************************/
+
+			bool IsSameVariantNativeOption(ITypeInfo* first, ITypeInfo* second)
+			{
+				auto eraseContainerArguments = [](ITypeInfo* type)
+				{
+					if (type->GetDecorator() == ITypeInfo::Generic
+						&& type->GetTypeDescriptor() != GetTypeDescriptor<IValueEnumerable>()
+						&& type->GetTypeDescriptor() != GetTypeDescriptor<IValueFunctionProxy>())
+					{
+						return type->GetElementType();
+					}
+					return type;
+				};
+				first = eraseContainerArguments(first);
+				second = eraseContainerArguments(second);
+				if (first->GetDecorator() != second->GetDecorator()) return false;
+				switch (first->GetDecorator())
+				{
+				case ITypeInfo::RawPtr:
+				case ITypeInfo::SharedPtr:
+				case ITypeInfo::Nullable:
+					return IsSameVariantNativeOption(first->GetElementType(), second->GetElementType());
+				case ITypeInfo::TypeDescriptor:
+					return first->GetTypeDescriptor() == second->GetTypeDescriptor();
+				case ITypeInfo::Generic:
+					if (first->GetTypeDescriptor() != second->GetTypeDescriptor()) return false;
+					if (first->GetTypeDescriptor() != GetTypeDescriptor<IValueEnumerable>()
+						&& first->GetTypeDescriptor() != GetTypeDescriptor<IValueFunctionProxy>())
+					{
+						return true;
+					}
+					[[fallthrough]];
+				case ITypeInfo::Variant:
+					if (first->GetGenericArgumentCount() != second->GetGenericArgumentCount()) return false;
+					for (vint i = 0; i < first->GetGenericArgumentCount(); i++)
+					{
+						if (!IsSameVariantNativeOption(first->GetGenericArgument(i), second->GetGenericArgument(i))) return false;
+					}
+					return true;
+				}
+				return false;
+			}
 
 			class CreateTypeInfoFromTypeVisitor : public Object, public WfType::IVisitor
 			{
@@ -762,6 +821,26 @@ CreateTypeInfoFromType
 					}
 				}
 
+				void Visit(WfVariantType* node)override
+				{
+					auto variant = Ptr(new VariantTypeInfo);
+					for (auto argument : node->arguments)
+					{
+						auto type = Call(argument.Obj(), true);
+						if (!type) return;
+						for (vint i = 0; i < variant->GetGenericArgumentCount(); i++)
+						{
+							if (IsSameVariantNativeOption(type.Obj(), variant->GetGenericArgument(i)))
+							{
+								scope->FindManager()->errors.Add(WfErrors::InvalidVariantType(argument.Obj(),
+									L"Options must have distinct native types: " + type->GetTypeFriendlyName() + L"."));
+							}
+						}
+						variant->AddGenericArgument(type);
+					}
+					result = variant;
+				}
+
 				void Visit(WfChildType* node)override
 				{
 					VisitReferenceType(node);
@@ -786,6 +865,15 @@ CreateTypeInfoFromType
 			{
 				switch (typeInfo->GetDecorator())
 				{
+				case ITypeInfo::Variant:
+				{
+					auto impl = Ptr(new VariantTypeInfo);
+					for (vint i = 0; i < typeInfo->GetGenericArgumentCount(); i++)
+					{
+						impl->AddGenericArgument(CopyTypeInfo(typeInfo->GetGenericArgument(i)));
+					}
+					return impl;
+				}
 				case ITypeInfo::RawPtr:
 					return Ptr(new RawPtrTypeInfo(CopyTypeInfo(typeInfo->GetElementType())));
 				case ITypeInfo::SharedPtr:
@@ -821,6 +909,23 @@ CanConvertToType
 
 			bool CanConvertToType(reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType, bool explicitly)
 			{
+				bool fromVariant = fromType->GetDecorator() == ITypeInfo::Variant;
+				bool toVariant = toType->GetDecorator() == ITypeInfo::Variant;
+				if (fromVariant || toVariant)
+				{
+					if (!explicitly) return IsSameType(fromType, toType);
+					if (fromVariant && toVariant)
+					{
+						for (vint i = 0; i < fromType->GetGenericArgumentCount(); i++)
+						{
+							if (GetVariantOptionIndex(toType, fromType->GetGenericArgument(i)) != -1) return true;
+						}
+						return false;
+					}
+					if (toVariant) return GetVariantOptionIndex(toType, fromType) != -1;
+					return GetVariantOptionIndex(fromType, toType) != -1
+						|| toType->GetTypeDescriptor() == GetTypeDescriptor<Value>();
+				}
 				ITypeDescriptor* objectType = GetTypeDescriptor<Value>();
 				bool fromObject = fromType->GetDecorator() == ITypeInfo::TypeDescriptor && fromType->GetTypeDescriptor() == objectType;
 				bool toObject = toType->GetDecorator() == ITypeInfo::TypeDescriptor && toType->GetTypeDescriptor() == objectType;
@@ -1006,11 +1111,13 @@ IsSameType
 				case ITypeInfo::TypeDescriptor:
 					return fromType->GetTypeDescriptor() == toType->GetTypeDescriptor();
 				case ITypeInfo::Generic:
+				case ITypeInfo::Variant:
 					if (fromType->GetGenericArgumentCount() != toType->GetGenericArgumentCount())
 					{
 						return false;
 					}
-					if (!IsSameType(fromType->GetElementType(), toType->GetElementType())) return false;
+					if (fromType->GetDecorator() == ITypeInfo::Generic
+						&& !IsSameType(fromType->GetElementType(), toType->GetElementType())) return false;
 					for (vint i = 0; i < fromType->GetGenericArgumentCount(); i++)
 					{
 						if (!IsSameType(fromType->GetGenericArgument(i), toType->GetGenericArgument(i)))
@@ -1026,6 +1133,24 @@ IsSameType
 /***********************************************************************
 GetMergedType
 ***********************************************************************/
+
+			vint GetVariantOptionIndex(ITypeInfo* variant, ITypeInfo* option)
+			{
+				for (vint i = 0; i < variant->GetGenericArgumentCount(); i++)
+				{
+					if (IsSameType(variant->GetGenericArgument(i), option)) return i;
+				}
+				return -1;
+			}
+
+			bool IsVariantSubset(ITypeInfo* fromType, ITypeInfo* toType)
+			{
+				for (vint i = 0; i < fromType->GetGenericArgumentCount(); i++)
+				{
+					if (GetVariantOptionIndex(toType, fromType->GetGenericArgument(i)) == -1) return false;
+				}
+				return true;
+			}
 
 			Ptr<reflection::description::ITypeInfo>	GetMergedType(Ptr<reflection::description::ITypeInfo> firstType, Ptr<reflection::description::ITypeInfo> secondType)
 			{

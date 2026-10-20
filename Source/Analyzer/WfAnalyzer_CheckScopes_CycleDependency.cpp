@@ -53,6 +53,37 @@ CheckBaseClass
 					}
 				}
 
+				void CollectStructDependency(WfStructDeclaration* node, ITypeDescriptor* td, ITypeInfo* propType)
+				{
+					if (propType->GetDecorator() == ITypeInfo::Variant)
+					{
+						for (vint i = 0; i < propType->GetGenericArgumentCount(); i++)
+						{
+							CollectStructDependency(node, td, propType->GetGenericArgument(i));
+						}
+						return;
+					}
+					if (propType->GetDecorator() == ITypeInfo::Nullable)
+					{
+						propType = propType->GetElementType();
+					}
+					if (propType->GetDecorator() == ITypeInfo::TypeDescriptor)
+					{
+						auto propTd = propType->GetTypeDescriptor();
+						if (!depItems.Keys().Contains(propTd)) return;
+						if (td == propTd)
+						{
+							List<ITypeDescriptor*> tds;
+							tds.Add(td);
+							manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(node, tds));
+						}
+						else if (propTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
+						{
+							if (!depGroup.Contains(td, propTd)) depGroup.Add(td, propTd);
+						}
+					}
+				}
+
 				void Visit(WfStructDeclaration* node)override
 				{
 					auto scope = manager->nodeScopes[node];
@@ -67,30 +98,7 @@ CheckBaseClass
 						vint count = td->GetPropertyCount();
 						for (vint i = 0; i < count; i++)
 						{
-							auto propType = td->GetProperty(i)->GetReturn();
-							if (propType->GetDecorator() == ITypeInfo::Nullable)
-							{
-								propType = propType->GetElementType();
-							}
-							if (propType->GetDecorator() == ITypeInfo::TypeDescriptor)
-							{
-								auto propTd = propType->GetTypeDescriptor();
-								if (!depItems.Keys().Contains(propTd)) continue;
-
-								if (td == propTd)
-								{
-									List<ITypeDescriptor*> tds;
-									tds.Add(td);
-									manager->errors.Add(WfErrors::StructRecursivelyIncludeItself(node, tds));
-								}
-								else if (propTd->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
-								{
-									if (!depGroup.Contains(td, propTd))
-									{
-										depGroup.Add(td, propTd);
-									}
-								}
-							}
+							CollectStructDependency(node, td, td->GetProperty(i)->GetReturn());
 						}
 					}
 				}

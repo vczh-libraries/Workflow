@@ -335,7 +335,15 @@ ExpandForEachStatement
 
 								auto decl = Ptr(new WfVariableDeclaration);
 								decl->name.value = node->name.value;
-								decl->expression = castExpr;
+								if (castExpr->type.Cast<WfVariantType>())
+								{
+									callExpr->typedResult = castExpr->type;
+									decl->expression = callExpr;
+								}
+								else
+								{
+									decl->expression = castExpr;
+								}
 
 								auto stat = Ptr(new WfVariableStatement);
 								stat->variable = decl;

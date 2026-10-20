@@ -83,6 +83,15 @@ TEST_FILE
 					if (output->containsReflectionInfo)
 					{
 						reflectableAssemblies.Add(input->assemblyName);
+						List<ITypeDescriptor*> nativeTypes;
+						CollectRegisteredTypes(nativeTypes);
+						auto typeManager = GetGlobalTypeManager();
+						TEST_ASSERT(typeManager->AddTypeLoader(assembly->typeImpl));
+						{
+							FileStream metadata(GetWorkflowOutputPath() + L"Metadata.Codegen." + itemName + L".bin", FileStream::WriteOnly);
+							GenerateMetaonlyTypes(nativeTypes, metadata);
+						}
+						TEST_ASSERT(typeManager->RemoveTypeLoader(assembly->typeImpl));
 					}
 					if (output->reflection)
 					{

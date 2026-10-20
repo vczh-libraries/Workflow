@@ -713,6 +713,13 @@ CreateDefaultValue
 
 			Ptr<WfExpression> CreateDefaultValue(ITypeInfo* elementType)
 			{
+				if (elementType->GetDecorator() == ITypeInfo::Variant)
+				{
+					auto inferExpr = Ptr(new WfInferExpression);
+					inferExpr->type = GetTypeFromTypeInfo(elementType);
+					inferExpr->expression = CreateDefaultValue(elementType->GetGenericArgument(0));
+					return inferExpr;
+				}
 				auto valueType = elementType->GetTypeDescriptor()->GetValueType();
 				if (elementType->GetDecorator()==ITypeInfo::TypeDescriptor && valueType != nullptr)
 				{

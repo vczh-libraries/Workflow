@@ -309,7 +309,7 @@ ValidateSemantic(Expression)
 
 				void Visit(WfReferenceExpression* node)override
 				{
-					if (expectedType && (expectedType->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
+					if (expectedType && expectedType->GetDecorator() != ITypeInfo::Variant && (expectedType->GetTypeDescriptor()->GetTypeDescriptorFlags() & TypeDescriptorFlags::EnumType) != TypeDescriptorFlags::Undefined)
 					{
 						auto scope = manager->nodeScopes[node].Obj();
 						List<ResolveExpressionResult> testResults;
@@ -478,6 +478,11 @@ ValidateSemantic(Expression)
 					Ptr<ITypeInfo> type = GetExpressionType(manager, node->parent, 0);
 					if (type)
 					{
+						if (type->GetDecorator() == ITypeInfo::Variant)
+						{
+							manager->errors.Add(WfErrors::InvalidVariantExpression(node, L"Extract an option before accessing a member."));
+							return;
+						}
 						SortedList<ITypeDescriptor*> searchedTypes;
 						manager->ResolveMember(type->GetTypeDescriptor(), node->name.value, false, searchedTypes, results);
 
@@ -865,6 +870,23 @@ ValidateSemantic(Expression)
 						Ptr<ITypeInfo> elementType;
 						if (firstType && secondType)
 						{
+							if (firstType->GetDecorator() == ITypeInfo::Variant || secondType->GetDecorator() == ITypeInfo::Variant)
+							{
+								switch (node->op)
+								{
+								case WfBinaryOperator::LT:
+								case WfBinaryOperator::GT:
+								case WfBinaryOperator::LE:
+								case WfBinaryOperator::GE:
+								case WfBinaryOperator::EQ:
+								case WfBinaryOperator::NE:
+									results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<bool>::CreateTypeInfo()));
+									break;
+								default:
+									manager->errors.Add(WfErrors::InvalidVariantExpression(node, L"This operator does not support variant operands."));
+								}
+								return;
+							}
 							if (!(elementType = GetMergedType(firstType, secondType)))
 							{
 								manager->errors.Add(WfErrors::CannotMergeTwoType(node, firstType.Obj(), secondType.Obj()));
@@ -1147,6 +1169,11 @@ ValidateSemantic(Expression)
 				void Visit(WfSetTestingExpression* node)override
 				{
 					Ptr<ITypeInfo> elementType = GetExpressionType(manager, node->element, 0);
+					if (elementType && elementType->GetDecorator() == ITypeInfo::Variant)
+					{
+						manager->errors.Add(WfErrors::InvalidVariantExpression(node, L"Extract an option before testing set membership."));
+						return;
+					}
 
 					if (auto range = node->collection.Cast<WfRangeExpression>())
 					{
@@ -1185,6 +1212,11 @@ ValidateSemantic(Expression)
 
 				void Visit(WfConstructorExpression* node)override
 				{
+					if (expectedType && expectedType->GetDecorator() == ITypeInfo::Variant)
+					{
+						manager->errors.Add(WfErrors::InvalidVariantExpression(node, L"A constructor cannot select a variant option. Type the option explicitly first."));
+						return;
+					}
 					if (expectedType && expectedType->GetTypeDescriptor()->GetTypeDescriptorFlags() == TypeDescriptorFlags::Struct)
 					{
 						SortedList<WString> fields;
@@ -1369,6 +1401,21 @@ ValidateSemantic(Expression)
 				{
 					auto scope = manager->nodeScopes[node].Obj();
 					Ptr<ITypeInfo> type = CreateTypeInfoFromType(scope, node->type);
+					if (type && type->GetDecorator() == ITypeInfo::Variant)
+					{
+						if (auto expressionType = GetExpressionType(manager, node->expression, nullptr))
+						{
+							bool valid = expressionType->GetDecorator() == ITypeInfo::Variant
+								? IsVariantSubset(expressionType.Obj(), type.Obj())
+								: GetVariantOptionIndex(type.Obj(), expressionType.Obj()) != -1;
+							if (!valid)
+							{
+								manager->errors.Add(WfErrors::ExpressionCannotExplicitlyConvertToType(node->expression.Obj(), expressionType.Obj(), type.Obj()));
+							}
+							results.Add(ResolveExpressionResult::ReadonlyType(type));
+						}
+						return;
+					}
 					Ptr<ITypeInfo> expressionType = GetExpressionType(manager, node->expression, type);
 					if (expressionType)
 					{
@@ -1383,7 +1430,14 @@ ValidateSemantic(Expression)
 					{
 						if (auto expressionType = GetExpressionType(manager, node->expression, 0))
 						{
-							if (!CanConvertToType(expressionType.Obj(), type.Obj(), true))
+							bool valid = CanConvertToType(expressionType.Obj(), type.Obj(), true);
+							if (node->strategy == WfTypeCastingStrategy::Weak
+								&& expressionType->GetDecorator() == ITypeInfo::Variant
+								&& type->GetDecorator() == ITypeInfo::Nullable)
+							{
+								valid = valid || GetVariantOptionIndex(expressionType.Obj(), type->GetElementType()) != -1;
+							}
+							if (!valid)
 							{
 								manager->errors.Add(WfErrors::ExpressionCannotExplicitlyConvertToType(node->expression.Obj(), expressionType.Obj(), type.Obj()));
 							}
@@ -1413,12 +1467,30 @@ ValidateSemantic(Expression)
 						{
 						case WfTypeTesting::IsNull:
 						case WfTypeTesting::IsNotNull:
-							if (!IsNullAcceptableType(type.Obj()))
+						{
+							bool nullable = IsNullAcceptableType(type.Obj());
+							if (type->GetDecorator() == ITypeInfo::Variant)
+							{
+								for (vint i = 0; i < type->GetGenericArgumentCount(); i++)
+								{
+									nullable |= IsNullAcceptableType(type->GetGenericArgument(i));
+								}
+							}
+							if (!nullable)
 							{
 								manager->errors.Add(WfErrors::NullCannotImplicitlyConvertToType(node->expression.Obj(), type.Obj()));
 							}
 							break;
-						default:;
+						}
+						default:
+						{
+							auto scope = manager->nodeScopes[node].Obj();
+							auto target = CreateTypeInfoFromType(scope, node->type);
+							if (type->GetDecorator() == ITypeInfo::Variant || (target && target->GetDecorator() == ITypeInfo::Variant))
+							{
+								manager->errors.Add(WfErrors::InvalidVariantExpression(node, L"Type testing does not support variants."));
+							}
+						}
 						}
 					}
 					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<bool>::CreateTypeInfo()));
@@ -1426,12 +1498,22 @@ ValidateSemantic(Expression)
 
 				void Visit(WfTypeOfTypeExpression* node)override
 				{
+					auto scope = manager->nodeScopes[node].Obj();
+					auto type = CreateTypeInfoFromType(scope, node->type, false);
+					if (type && type->GetDecorator() == ITypeInfo::Variant)
+					{
+						manager->errors.Add(WfErrors::InvalidVariantExpression(node, L"A variant has no type descriptor."));
+					}
 					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<ITypeDescriptor*>::CreateTypeInfo()));
 				}
 
 				void Visit(WfTypeOfExpressionExpression* node)override
 				{
-					GetExpressionType(manager, node->expression, 0);
+					auto type = GetExpressionType(manager, node->expression, 0);
+					if (type && type->GetDecorator() == ITypeInfo::Variant)
+					{
+						manager->errors.Add(WfErrors::InvalidVariantExpression(node, L"A variant has no type descriptor."));
+					}
 					results.Add(ResolveExpressionResult::ReadonlyType(TypeInfoRetriver<ITypeDescriptor*>::CreateTypeInfo()));
 				}
 
@@ -1463,6 +1545,11 @@ ValidateSemantic(Expression)
 					{
 						if (node->observeType == WfObserveType::SimpleObserve)
 						{
+							if (parentType->GetDecorator() == ITypeInfo::Variant)
+							{
+								manager->errors.Add(WfErrors::InvalidVariantExpression(node, L"Extract an option before observing a member."));
+								return;
+							}
 							ITypeDescriptor* td = parentType->GetTypeDescriptor();
 							IPropertyInfo* propertyInfo = 0;
 							{
@@ -1542,6 +1629,10 @@ ValidateSemantic(Expression)
 					if (resultType)
 					{
 						manager->expressionResolvings.Add(node->function, functions[selectedFunctionIndex]);
+						if (node->typedResult)
+						{
+							resultType = CreateTypeInfoFromType(manager->nodeScopes[node].Obj(), node->typedResult);
+						}
 						results.Add(ResolveExpressionResult::ReadonlyType(resultType));
 					}
 				}
@@ -1644,7 +1735,7 @@ ValidateSemantic(Expression)
 					if (type)
 					{
 						ITypeDescriptor* td = type->GetTypeDescriptor();
-						IMethodGroupInfo* ctors = td->GetConstructorGroup();
+						IMethodGroupInfo* ctors = td ? td->GetConstructorGroup() : nullptr;
 						Ptr<ITypeInfo> selectedType;
 						IMethodInfo* selectedConstructor = nullptr;
 
@@ -1699,7 +1790,7 @@ ValidateSemantic(Expression)
 					if (type)
 					{
 						ITypeDescriptor* td = type->GetTypeDescriptor();
-						IMethodGroupInfo* ctors = td->GetConstructorGroup();
+						IMethodGroupInfo* ctors = td ? td->GetConstructorGroup() : nullptr;
 						Ptr<ITypeInfo> selectedType;
 						IMethodInfo* selectedConstructor = nullptr;
 
@@ -1952,7 +2043,7 @@ ValidateSemantic(Expression)
 						{
 							auto fromTd = expressionType->GetTypeDescriptor();
 							auto toTd = type->GetTypeDescriptor();
-							if ((fromTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::InterfaceType) != TypeDescriptorFlags::Undefined)
+							if (fromTd && toTd && (fromTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::InterfaceType) != TypeDescriptorFlags::Undefined)
 							{
 								if ((toTd->GetTypeDescriptorFlags() & TypeDescriptorFlags::InterfaceType) != TypeDescriptorFlags::Undefined)
 								{
@@ -2072,6 +2163,7 @@ IsConstantExpression
 				void VisitReferenceExpression(WfExpression* node, const WString& name)
 				{
 					auto result = manager->expressionResolvings[node];
+					if (result.type->GetDecorator() == ITypeInfo::Variant) return;
 					if (auto enumType = result.type->GetTypeDescriptor()->GetEnumType())
 					{
 						vint index = enumType->IndexOfItem(name);

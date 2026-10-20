@@ -75,6 +75,25 @@ namespace test
 	{
 	};
 
+	class VariantProvider : public Object, public Description<VariantProvider>
+	{
+	public:
+		using IntVariant = Variant<vint, WString>;
+		IntVariant							data = vint(0);
+		Event<void(IntVariant)>				Changed;
+
+		IntVariant							GetValue();
+		void								SetValue(IntVariant value);
+		static IntVariant					Echo(IntVariant value);
+		static IntVariant					EchoConst(const IntVariant& value);
+		static IntVariant					EchoRef(IntVariant& value);
+		static Variant<Ptr<IValueList>, WString>	ErasedList();
+		static Variant<Nullable<vint>, WString>	EmptyNullable();
+		static Variant<Func<vint(vint)>, WString>	Function();
+		static Variant<LazyList<vint>, WString>	Enumerable();
+		static LazyList<IntVariant>			Items(const List<IntVariant>& values);
+	};
+
 	class Hinters : public Object, public Description<Hinters>
 	{
 	public:
@@ -173,6 +192,7 @@ namespace vl
 			F(test::PointClass)\
 			F(test::ObservableValue)\
 			F(test::CustomInterfaceProcessor)\
+			F(test::VariantProvider)\
 			F(test::Hinters)\
 			F(test::SyncScheduler)\
 

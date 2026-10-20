@@ -447,6 +447,24 @@ WfField
 WfStructField
 ***********************************************************************/
 
+			Value CreateFieldDefault(ITypeInfo* type)
+			{
+				if (type->GetDecorator() == ITypeInfo::Variant)
+				{
+					auto option = type->GetGenericArgument(0);
+					DynamicVariantBox box{ CreateFieldDefault(option), Ptr(option) };
+					return Value::From(Ptr(new IValueType::TypedBox<DynamicVariantBox>(box)), nullptr);
+				}
+				if (type->GetDecorator() == ITypeInfo::TypeDescriptor)
+				{
+					if (auto valueType = type->GetTypeDescriptor()->GetValueType())
+					{
+						return valueType->CreateDefault();
+					}
+				}
+				return Value();
+			}
+
 			Value WfStructField::GetValueInternal(const Value& thisObject)
 			{
 #ifdef VCZH_DESCRIPTABLEOBJECT_WITH_METADATA
@@ -458,7 +476,7 @@ WfStructField
 				vint index = structValue->fieldValues.Keys().IndexOf(this);
 				if (index == -1)
 				{
-					return returnInfo->GetTypeDescriptor()->GetValueType()->CreateDefault();
+					return CreateFieldDefault(returnInfo.Obj());
 				}
 				else
 				{
@@ -980,18 +998,18 @@ WfStructInstance
 					{
 						af = as.Values()[ai];
 					}
-					else if (p->GetReturn()->GetDecorator() == ITypeInfo::TypeDescriptor)
+					else
 					{
-						af = p->GetReturn()->GetTypeDescriptor()->GetValueType()->CreateDefault();
+						af = CreateFieldDefault(p->GetReturn());
 					}
 
 					if (p == bp)
 					{
 						bf = bs.Values()[bi];
 					}
-					else if (p->GetReturn()->GetDecorator() == ITypeInfo::TypeDescriptor)
+					else
 					{
-						bf = p->GetReturn()->GetTypeDescriptor()->GetValueType()->CreateDefault();
+						bf = CreateFieldDefault(p->GetReturn());
 					}
 
 					auto result = af <=> bf;

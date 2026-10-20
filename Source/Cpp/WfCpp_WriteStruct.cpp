@@ -15,9 +15,11 @@ namespace vl
 					auto td = manager->declarationTypes[decl.Obj()].Obj();
 					writer.WriteLine(prefix + L"struct " + name);
 					writer.WriteLine(prefix + L"{");
+					bool hasVariant = false;
 					for (auto member : decl->members)
 					{
 						auto prop = td->GetPropertyByName(member->name.value, false);
+						hasVariant |= prop->GetReturn()->GetDecorator() == ITypeInfo::Variant;
 						auto defaultValue = DefaultValue(prop->GetReturn());
 						if (defaultValue != L"")
 						{
@@ -30,7 +32,32 @@ namespace vl
 					{
 						writer.WriteLine(L"");
 					}
-					writer.WriteLine(prefix + L"\tauto operator<=>(const " + name + L"&) const = default;");
+					if (hasVariant)
+					{
+						writer.WriteLine(prefix + L"\tstd::partial_ordering operator<=>(const " + name + L"& other) const");
+						writer.WriteLine(prefix + L"\t{");
+						for (auto member : decl->members)
+						{
+							auto prop = td->GetPropertyByName(member->name.value, false);
+							auto field = ConvertName(member->name.value);
+							if (prop->GetReturn()->GetDecorator() == ITypeInfo::Variant)
+							{
+								writer.WriteLine(prefix + L"\t\tif (auto result = ::vl::reflection::description::CompareVariantPayloads(::vl::__vwsn::VariantPayload("
+									+ field + L"), ::vl::__vwsn::VariantPayload(other." + field + L")); result != 0) return result;");
+							}
+							else
+							{
+								writer.WriteLine(prefix + L"\t\tif (auto result = " + field + L" <=> other." + field + L"; result != 0) return result;");
+							}
+						}
+						writer.WriteLine(prefix + L"\t\treturn std::partial_ordering::equivalent;");
+						writer.WriteLine(prefix + L"\t}");
+						writer.WriteLine(prefix + L"\tbool operator==(const " + name + L"& other) const { return (*this <=> other) == 0; }");
+					}
+					else
+					{
+						writer.WriteLine(prefix + L"\tauto operator<=>(const " + name + L"&) const = default;");
+					}
 					writer.WriteLine(prefix + L"};");
 				}
 				else
@@ -81,15 +108,29 @@ namespace vl
 					for (vint i = 0; i < count; i++)
 					{
 						auto propType = td->GetProperty(i)->GetReturn();
-						if (propType->GetDecorator() == ITypeInfo::TypeDescriptor)
+						auto collectDependencies = [&](auto&& self, ITypeInfo* type) -> void
 						{
-							auto propTd = propType->GetTypeDescriptor();
-							vint index = tdDecls.Keys().IndexOf(propTd);
-							if (index != -1)
+							if (type->GetDecorator() == ITypeInfo::Variant)
 							{
-								depGroup.Add(decl, tdDecls.Values()[index].Cast<WfStructDeclaration>());
+								for (vint j = 0; j < type->GetGenericArgumentCount(); j++) self(self, type->GetGenericArgument(j));
 							}
-						}
+							else if (type->GetDecorator() == ITypeInfo::Nullable)
+							{
+								self(self, type->GetElementType());
+							}
+							else if (type->GetDecorator() == ITypeInfo::TypeDescriptor)
+							{
+								vint index = tdDecls.Keys().IndexOf(type->GetTypeDescriptor());
+								if (index != -1)
+								{
+									if (auto dependency = tdDecls.Values()[index].Cast<WfStructDeclaration>())
+									{
+										depGroup.Add(decl, dependency);
+									}
+								}
+							}
+						};
+						collectDependencies(collectDependencies, propType);
 					}
 				}
 

@@ -370,6 +370,8 @@ Type Analyzing
 			extern Ptr<reflection::description::ITypeInfo>	CopyTypeInfo(reflection::description::ITypeInfo* typeInfo);
 			extern bool										CanConvertToType(reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType, bool explicitly);
 			extern bool										IsSameType(reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
+			extern vint										GetVariantOptionIndex(reflection::description::ITypeInfo* variant, reflection::description::ITypeInfo* option);
+			extern bool										IsVariantSubset(reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType);
 			extern Ptr<reflection::description::ITypeInfo>	GetMergedType(Ptr<reflection::description::ITypeInfo> firstType, Ptr<reflection::description::ITypeInfo> secondType);
 			extern bool										IsNullAcceptableType(reflection::description::ITypeInfo* type);
 
@@ -665,6 +667,8 @@ Error Messages
 				static glr::ParsingError					ExpectedTypeCastCannotResolveType(WfExpression* node);
 
 				// B: Type error
+				static glr::ParsingError					InvalidVariantType(WfType* node, const WString& reason);
+				static glr::ParsingError					InvalidVariantExpression(WfExpression* node, const WString& reason);
 				static glr::ParsingError					WrongVoidType(WfType* node);
 				static glr::ParsingError					WrongInterfaceType(WfType* node);
 				static glr::ParsingError					RawPointerToNonReferenceType(WfType* node, reflection::description::ITypeInfo* typeInfo = 0);

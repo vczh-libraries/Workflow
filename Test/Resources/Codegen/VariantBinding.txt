@@ -1,0 +1,21 @@
+module test;
+using system::*;
+using test::*;
+
+var log = "";
+
+func main():string
+{
+  var provider = new VariantProvider^();
+  var subscription = bind((cast int provider.Value) + 1);
+  subscription.Open();
+  attach(subscription.ValueChanged, func(value:object):void
+  {
+    log = log & "[" & (cast int value) & "]";
+  });
+  provider.Value = 1 of variant<int, string>;
+  provider.Value = 2 of variant<int, string>;
+  subscription.Close();
+  provider.Value = 3 of variant<int, string>;
+  return log;
+}

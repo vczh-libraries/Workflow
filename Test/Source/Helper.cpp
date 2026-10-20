@@ -579,6 +579,7 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 #define LOG_EVENT(NAME)					case WfInsCode::NAME: writer.WriteLine(formatText(itow(index), 5) + L": " + formatText(L"    " L ## #NAME, 18) + L": eventInfo = " + ins.eventParameter->GetName() + L"<" + ins.eventParameter->GetOwnerTypeDescriptor()->GetTypeName() + L">"); break;
 #define LOG_EVENT_COUNT(NAME)			case WfInsCode::NAME: writer.WriteLine(formatText(itow(index), 5) + L": " + formatText(L"    " L ## #NAME, 18) + L": eventInfo = " + ins.eventParameter->GetName() + L"<" + ins.eventParameter->GetOwnerTypeDescriptor()->GetTypeName() + L">, stackPatternCount = " + itow(ins.countParameter)); break;
 #define LOG_LABEL(NAME)					case WfInsCode::NAME: writer.WriteLine(formatText(itow(index), 5) + L": " + formatText(L"    " L ## #NAME, 18) + L": label = " + itow(ins.indexParameter)); break;
+#define LOG_TYPEINFO(NAME)				case WfInsCode::NAME: writer.WriteLine(formatText(itow(index), 5) + L": " + formatText(L"    " L ## #NAME, 18) + L": typeInfo = " + ins.typeInfoParameter->GetTypeFriendlyName()); break;
 #define LOG_TYPE(NAME)					case WfInsCode::NAME: writer.WriteLine(formatText(itow(index), 5) + L": " + formatText(L"    " L ## #NAME, 18) + L": type = " + formatType(ins.typeParameter)); break;
 
 	for (auto [ins, index] : indexed(assembly->instructions))
@@ -612,7 +613,8 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 				LOG_EVENT,
 				LOG_EVENT_COUNT,
 				LOG_LABEL,
-				LOG_TYPE)
+				LOG_TYPE,
+				LOG_TYPEINFO)
 		}
 	}
 
@@ -629,6 +631,7 @@ void LogSampleCodegenResult(const WString& sampleName, const WString& itemName, 
 #undef LOG_EVENT
 #undef LOG_EVENT_COUNT
 #undef LOG_LABEL
+#undef LOG_TYPEINFO
 #undef LOG_TYPE
 }
 

@@ -72,6 +72,11 @@ ValidateStructure(Type)
 					result = false;
 				}
 
+				void Visit(WfVariantType* node)override
+				{
+					result = false;
+				}
+
 				void Visit(WfChildType* node)override
 				{
 					node->parent->Accept(this);
@@ -244,6 +249,26 @@ ValidateStructure(Type)
 					ValidateTypeStructure(manager, node->result, ValidateTypeStragety::ReturnType);
 					for (auto argument : node->arguments)
 					{
+						ValidateTypeStructure(manager, argument);
+					}
+				}
+
+				void Visit(WfVariantType* node)override
+				{
+					if (strategy == ValidateTypeStragety::BaseType)
+					{
+						manager->errors.Add(WfErrors::WrongBaseType(classDecl, node));
+					}
+					if (node->arguments.Count() < 2)
+					{
+						manager->errors.Add(WfErrors::InvalidVariantType(node, L"At least two options are required."));
+					}
+					for (auto argument : node->arguments)
+					{
+						if (argument.Cast<WfVariantType>())
+						{
+							manager->errors.Add(WfErrors::InvalidVariantType(argument.Obj(), L"A variant cannot be a direct option of another variant."));
+						}
 						ValidateTypeStructure(manager, argument);
 					}
 				}

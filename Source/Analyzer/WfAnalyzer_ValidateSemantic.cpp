@@ -442,7 +442,7 @@ GetEnumerableExpressionItemType
 				Ptr<ITypeInfo> collectionType = GetExpressionType(manager, expression, expectedType);
 				if (collectionType)
 				{
-					if (collectionType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<IValueEnumerable>()))
+					if (collectionType->GetDecorator() != ITypeInfo::Variant && collectionType->GetTypeDescriptor()->CanConvertTo(description::GetTypeDescriptor<IValueEnumerable>()))
 					{
 						if (collectionType->GetDecorator() == ITypeInfo::SharedPtr)
 						{

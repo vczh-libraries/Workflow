@@ -169,6 +169,7 @@ ValidateModuleRPC_Ast
 						bool found = false;
 
 						void Visit(WfFunctionType* node)override { found = true; }
+						void Visit(WfVariantType* node)override { for (auto argument : node->arguments) argument->Accept(this); }
 						void Visit(WfRawPointerType* node)override { node->element->Accept(this); }
 						void Visit(WfSharedPointerType* node)override { node->element->Accept(this); }
 						void Visit(WfNullableType* node)override { node->element->Accept(this); }

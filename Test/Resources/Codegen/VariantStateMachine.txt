@@ -1,0 +1,39 @@
+module test;
+using system::*;
+
+class VariantMachine : StateMachine
+{
+  var output : string = "";
+
+  $state_machine
+  {
+    $state_input Store(value:variant<int, string>);
+
+    $state default()
+    {
+      var stored = 0 of variant<int, string>;
+      $switch ()
+      {
+      case Store(first):
+        {
+          stored = first;
+        }
+      }
+      $switch ()
+      {
+      case Store(second):
+        {
+          output = (cast int stored) & (cast string second);
+        }
+      }
+    }
+  }
+}
+
+func main():string
+{
+  var machine = new VariantMachine^();
+  machine.Store(7 of variant<int, string>);
+  machine.Store("done" of variant<int, string>);
+  return machine.output;
+}

@@ -216,8 +216,61 @@ SyncScheduler
 	}
 
 /***********************************************************************
-Metadata
+VariantProvider
 ***********************************************************************/
+
+	VariantProvider::IntVariant VariantProvider::GetValue()
+	{
+		return data;
+	}
+
+	void VariantProvider::SetValue(IntVariant value)
+	{
+		data = std::move(value);
+		Changed(data);
+	}
+
+	VariantProvider::IntVariant VariantProvider::Echo(IntVariant value)
+	{
+		return value;
+	}
+
+	VariantProvider::IntVariant VariantProvider::EchoConst(const IntVariant& value)
+	{
+		return value;
+	}
+
+	VariantProvider::IntVariant VariantProvider::EchoRef(IntVariant& value)
+	{
+		return value;
+	}
+
+	Variant<Ptr<IValueList>, WString> VariantProvider::ErasedList()
+	{
+		auto list = IValueList::Create();
+		list->Add(BoxValue<vint>(42));
+		return list;
+	}
+
+	Variant<Nullable<vint>, WString> VariantProvider::EmptyNullable()
+	{
+		return Nullable<vint>();
+	}
+
+	Variant<Func<vint(vint)>, WString> VariantProvider::Function()
+	{
+		return Func<vint(vint)>([](vint value) { return value + 1; });
+	}
+
+	Variant<LazyList<vint>, WString> VariantProvider::Enumerable()
+	{
+		return Range<vint>(1, 3);
+	}
+
+	LazyList<VariantProvider::IntVariant> VariantProvider::Items(const List<IntVariant>& values)
+	{
+		return From(values).Evaluate(true);
+	}
 }
 
 namespace vl
@@ -279,6 +332,21 @@ namespace vl
 			BEGIN_CLASS_MEMBER(CustomInterfaceProcessor)
 				CLASS_MEMBER_STATIC_METHOD(Sum, { L"values" })
 			END_CLASS_MEMBER(CustomInterfaceProcessor)
+
+			BEGIN_CLASS_MEMBER(VariantProvider)
+				CLASS_MEMBER_CONSTRUCTOR(Ptr<VariantProvider>(), NO_PARAMETER)
+				CLASS_MEMBER_FIELD(data)
+				CLASS_MEMBER_EVENT(Changed)
+				CLASS_MEMBER_PROPERTY_EVENT_FAST(Value, Changed)
+				CLASS_MEMBER_STATIC_METHOD(Echo, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(EchoConst, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(EchoRef, { L"value" })
+				CLASS_MEMBER_STATIC_METHOD(ErasedList, NO_PARAMETER)
+				CLASS_MEMBER_STATIC_METHOD(EmptyNullable, NO_PARAMETER)
+				CLASS_MEMBER_STATIC_METHOD(Function, NO_PARAMETER)
+				CLASS_MEMBER_STATIC_METHOD(Enumerable, NO_PARAMETER)
+				CLASS_MEMBER_STATIC_METHOD(Items, { L"values" })
+			END_CLASS_MEMBER(VariantProvider)
 
 			BEGIN_CLASS_MEMBER(Hinters)
 				CLASS_MEMBER_EXTERNALCTOR(Ptr<Hinters>(), NO_PARAMETER, test::CreateHinter)
