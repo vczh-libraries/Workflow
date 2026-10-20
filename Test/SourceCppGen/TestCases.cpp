@@ -88,6 +88,7 @@
 #include "OpSub.h"
 #include "OpXor.h"
 #include "OrderedLambda.h"
+#include "OrdinaryCastBaselineReflection.h"
 #include "Overloading.h"
 #include "Property.h"
 #include "RecursiveFunction.h"
@@ -151,6 +152,7 @@ void LoadTestCaseTypes()
 	 LoadOpCompareTypes();
 	 LoadOpCompareIndexOfTypes();
 	 LoadOpCompareStruct2Types();
+	 LoadOrdinaryCastBaselineTypes();
 	 LoadStructCtorTypes();
 	 LoadStructCtor2Types();
 	 LoadWorkflowAttributesTypes();
@@ -966,6 +968,15 @@ TEST_CASE(L"OrderedLambda")
 {
 	WString expected = L"2, 3, 3, 4";
 	WString actual = ::vl_workflow_global::OrderedLambda::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"OrdinaryCastBaseline")
+{
+	WString expected = L"true, true, true, true, true, true";
+	WString actual = ::vl_workflow_global::OrdinaryCastBaseline::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
