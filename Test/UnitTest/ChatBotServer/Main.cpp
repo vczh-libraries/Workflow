@@ -194,8 +194,16 @@ public:
 			return WaitForClientResult::Reject;
 		}
 
-		dispatcher->RegisterClient(clientId);
 		return WaitForClientResult::Accept;
+	}
+
+	void OnClientReady(vint clientId, Ptr<JsonChannelClient> localClient) override
+	{
+		if (localClient && dynamic_cast<ChatBotRpcBroadcastingLocalClient*>(localClient.Obj()))
+		{
+			return;
+		}
+		dispatcher->RegisterClient(clientId);
 	}
 
 	void OnClientDisconnected(vint clientId) override

@@ -67,7 +67,6 @@ namespace vl::rpc_controller_test
 			return WaitForClientResult::Accept;
 		}
 
-		bool signalRemote = false;
 		SPIN_LOCK(lockState)
 		{
 			CHECK_ERROR(!broadcastingDispatcher, L"RPC stdio endpoints cannot connect after dispatching begins.");
@@ -77,14 +76,17 @@ namespace vl::rpc_controller_test
 			{
 				CHECK_ERROR(remoteClientId == -1, L"Only one RPC stdio service can connect.");
 				remoteClientId = clientId;
-				signalRemote = true;
 			}
 		}
-		if (signalRemote)
+		return WaitForClientResult::Accept;
+	}
+
+	void RpcStdioChannelServer::OnClientReady(vint clientId, Ptr<JsonChannelClient> localClient)
+	{
+		if (!localClient)
 		{
 			remoteConnected.Signal();
 		}
-		return WaitForClientResult::Accept;
 	}
 
 	void RpcStdioChannelServer::OnClientDisconnected(vint clientId)

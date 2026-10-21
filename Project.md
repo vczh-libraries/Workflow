@@ -143,6 +143,7 @@ If `CompilerTest_LoadAndCompiler` succeeded but subsequent test projects fail:
 - The optional skipped-test file contains exact `IndexRpc.txt` case names, one per line.
 - When the launchers are called without a skipped-test file, they attempt every indexed case. Use `Test/StartRpcStdio_SharedMemspSkipList.txt` with the native C++ provider; it skips only `*_SharedMemsp` cases whose assertions require `clientMain` and `serviceMain` to share one memory space. `Test/StartRpcStdio_DtorSkipList.txt` additionally skips destructor cases for providers whose languages do not guarantee deterministic destruction. The launchers do not select either list automatically.
 - The driver starts a new service process for each non-skipped case and appends the case name to the supplied service command.
+- The driver waits for the channel server's `OnClientReady` notification before starting RPC dispatch, so the service's channels and assigned-id confirmation are complete before the coordinator sends login messages.
 - The driver reports the expected `IndexRpc.txt` value and the value returned by each case's `clientMain`; mismatches, exceptions, and protocol failures terminate the test process.
 - The service accepts exactly one case name, runs that case's `serviceMain`, and reserves standard output for the channel protocol.
 
