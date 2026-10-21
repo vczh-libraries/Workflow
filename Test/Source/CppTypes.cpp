@@ -276,6 +276,12 @@ VariantProvider
 	{
 		return From(values).Evaluate(true);
 	}
+
+	Array<VariantProvider::IntVariant>& VariantProvider::ArrayItems(const List<IntVariant>& values)
+	{
+		CopyFrom(arrayItems, values);
+		return arrayItems;
+	}
 }
 
 namespace vl
@@ -352,6 +358,7 @@ namespace vl
 				CLASS_MEMBER_STATIC_METHOD(Function, NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(Enumerable, NO_PARAMETER)
 				CLASS_MEMBER_STATIC_METHOD(Items, { L"values" })
+				CLASS_MEMBER_METHOD(ArrayItems, { L"values" })
 			END_CLASS_MEMBER(VariantProvider)
 
 			BEGIN_CLASS_MEMBER(Hinters)

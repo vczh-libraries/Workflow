@@ -81,6 +81,7 @@ namespace test
 		using IntVariant = Variant<vint, WString>;
 		IntVariant							data = vint(0);
 		Event<void(IntVariant)>				Changed;
+		Array<IntVariant>					arrayItems;
 
 		IntVariant							GetValue();
 		void								SetValue(IntVariant value);
@@ -93,6 +94,7 @@ namespace test
 		static Variant<Func<vint(vint)>, WString>	Function();
 		static Variant<LazyList<vint>, WString>	Enumerable();
 		static LazyList<IntVariant>			Items(const List<IntVariant>& values);
+		Array<IntVariant>&					ArrayItems(const List<IntVariant>& values);
 	};
 
 	class Hinters : public Object, public Description<Hinters>

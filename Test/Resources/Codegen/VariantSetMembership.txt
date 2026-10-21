@@ -1,0 +1,167 @@
+module test;
+using system::*;
+using test::*;
+
+struct MembershipPayload
+{
+  value : int;
+}
+
+var checks : int = 0;
+var elementEvaluations : int = 0;
+var collectionEvaluations : int = 0;
+
+func Check(value:bool):void
+{
+  if (not value) { raise "Variant set membership assertion failed."; }
+  checks = checks + 1;
+}
+
+func OriginalCase(value:variant<int, string>, values:variant<int, string>[]):bool
+{
+  var result = value in values;
+  return result;
+}
+
+func NextElement():variant<int, string>
+{
+  elementEvaluations = elementEvaluations + 1;
+  return 7 of variant<int, string>;
+}
+
+func NextCollection():variant<int, string>[]
+{
+  collectionEvaluations = collectionEvaluations + 1;
+  return {7 of variant<int, string>};
+}
+
+func main():string
+{
+  var number = 7 of variant<int, string>;
+  var text = "seven" of variant<int, string>;
+  var missing = 8 of variant<int, string>;
+  var values : variant<int, string>[] = {number text};
+  Check(OriginalCase(number, values));
+  Check(number in values);
+  Check(text in values);
+  Check(missing not in values);
+  Check(not (number not in values));
+  Check(not (missing in values));
+  Check(("missing" of variant<int, string>) not in values);
+
+  var readonlyValues : const variant<int, string>[] = values;
+  Check(number in readonlyValues);
+  Check(text in readonlyValues);
+  Check(missing not in readonlyValues);
+  var observableValues : observe variant<int, string>[] = {number text};
+  Check(number in observableValues);
+  Check(text in observableValues);
+  Check(missing not in observableValues);
+  var enumerableValues : variant<int, string>{} = values;
+  Check(number in enumerableValues);
+  Check(text in enumerableValues);
+  Check(missing not in enumerableValues);
+  var nativeEnumerable = VariantProvider::Items(values);
+  Check(number in nativeEnumerable);
+  Check(text in nativeEnumerable);
+  Check(missing not in nativeEnumerable);
+  var provider = new VariantProvider^();
+  var array = provider.ArrayItems(values);
+  Check(number in array);
+  Check(text in array);
+  Check(missing not in array);
+
+  var empty : variant<int, string>[] = {};
+  Check(number not in empty);
+  Check(not (number in empty));
+  var emptyEnumerable : variant<int, string>{} = empty;
+  Check(number not in emptyEnumerable);
+  var emptyArray = provider.ArrayItems(empty);
+  Check(number not in emptyArray);
+
+  var integer = 7 of variant<int, double>;
+  var real = 7.0 of variant<int, double>;
+  var numericValues : variant<int, double>[] = {integer};
+  Check(real in numericValues);
+  Check(not (real not in numericValues));
+  numericValues[0] = real;
+  Check(integer in numericValues);
+  var numericEnumerable : variant<int, double>{} = numericValues;
+  Check(integer in numericEnumerable);
+  var zero : double = 0.0;
+  var nan = (zero / zero) of variant<int, double>;
+  numericValues[0] = nan;
+  Check(nan not in numericValues);
+  Check(not (nan in numericValues));
+  Check(integer not in numericValues);
+  Check(nan not in numericEnumerable);
+
+  var nullNumber : int? = null;
+  var nullText : string? = null;
+  var firstNull = nullNumber of variant<int?, string?>;
+  var secondNull = nullText of variant<int?, string?>;
+  var nullValues : variant<int?, string?>[] = {firstNull};
+  Check(firstNull in nullValues);
+  Check(secondNull in nullValues);
+  var presentNumber : int? = 1;
+  Check((presentNumber of variant<int?, string?>) not in nullValues);
+
+  var other = new VariantProvider^();
+  var raw = cast VariantProvider* provider;
+  var sharedOption = provider of variant<VariantProvider*, VariantProvider^>;
+  var rawOption = raw of variant<VariantProvider*, VariantProvider^>;
+  var pointerValues : variant<VariantProvider*, VariantProvider^>[] = {sharedOption};
+  Check(rawOption in pointerValues);
+  Check((other of variant<VariantProvider*, VariantProvider^>) not in pointerValues);
+
+  var structure = {value:12} of MembershipPayload of variant<MembershipPayload, string>;
+  var structValues : variant<MembershipPayload, string>[] = {structure};
+  Check(({value:12} of MembershipPayload of variant<MembershipPayload, string>) in structValues);
+  Check(({value:13} of MembershipPayload of variant<MembershipPayload, string>) not in structValues);
+
+  var function = func(value:int):int { return value + 1; };
+  var functionValue = function of variant<func(int):int, string>;
+  var functionCopy = functionValue;
+  var functionValues : variant<func(int):int, string>[] = {functionValue};
+  Check((functionValue in functionValues) == (functionValue == functionValues[0]));
+  Check((functionCopy not in functionValues) == (functionCopy != functionValues[0]));
+  var functionEnumerable : variant<func(int):int, string>{} = functionValues;
+  Check((functionValue in functionEnumerable) == (functionValue == functionValues[0]));
+  var otherFunction = func(value:int):int { return value + 1; };
+  var otherFunctionValue = otherFunction of variant<func(int):int, string>;
+  Check(otherFunctionValue not in functionValues);
+  var nativeFunction = VariantProvider::Function();
+  var nativeFunctionCopy = nativeFunction;
+  var nativeFunctionValues : variant<func(int):int, string>[] = {nativeFunction};
+  Check((nativeFunction in nativeFunctionValues) == (nativeFunction == nativeFunctionValues[0]));
+  Check((nativeFunctionCopy not in nativeFunctionValues) == (nativeFunctionCopy != nativeFunctionValues[0]));
+  var otherNativeFunction = VariantProvider::Function();
+  Check(otherNativeFunction not in nativeFunctionValues);
+
+  var lazy = range [1, 3];
+  var lazyValue = lazy of variant<int{}, string>;
+  var lazyCopy = lazyValue;
+  var lazyValues : variant<int{}, string>[] = {lazyValue};
+  Check((lazyValue in lazyValues) == (lazyValue == lazyValues[0]));
+  Check((lazyCopy not in lazyValues) == (lazyCopy != lazyValues[0]));
+  var lazyEnumerable : variant<int{}, string>{} = lazyValues;
+  Check((lazyValue in lazyEnumerable) == (lazyValue == lazyValues[0]));
+  var otherLazy = range [1, 3];
+  var otherLazyValue = otherLazy of variant<int{}, string>;
+  Check(otherLazyValue not in lazyValues);
+  var nativeLazy = VariantProvider::Enumerable();
+  var nativeLazyCopy = nativeLazy;
+  var nativeLazyValues : variant<int{}, string>[] = {nativeLazy};
+  Check((nativeLazy in nativeLazyValues) == (nativeLazy == nativeLazyValues[0]));
+  Check((nativeLazyCopy not in nativeLazyValues) == (nativeLazyCopy != nativeLazyValues[0]));
+  var otherNativeLazy = VariantProvider::Enumerable();
+  Check(otherNativeLazy not in nativeLazyValues);
+
+  Check((NextElement()) in (NextCollection()));
+  Check(elementEvaluations == 1);
+  Check(collectionEvaluations == 1);
+  Check(not ((NextElement()) not in (NextCollection())));
+  Check(elementEvaluations == 2);
+  Check(collectionEvaluations == 2);
+  return checks;
+}

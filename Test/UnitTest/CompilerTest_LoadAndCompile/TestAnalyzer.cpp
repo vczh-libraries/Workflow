@@ -134,6 +134,11 @@ TEST_FILE
 				manager.AddModule(sample);
 				manager.Rebuild(true);
 
+				if (manager.errors.Count() == 0 && manager.rpcMetadata)
+				{
+					GenerateModuleRpc(&manager, L"Assembly");
+				}
+
 				if (manager.errors.Count() == 0)
 				{
 					WfCppConfig(&manager, L"Assembly", L"Namespace");
