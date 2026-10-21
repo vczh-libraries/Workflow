@@ -1,0 +1,60 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+interface I
+{
+}
+
+var value = new (I^)();
+
+========================================================
+Printed
+========================================================
+module test;
+
+interface I
+{
+}
+
+var value = new (I^)();
+
+========================================================
+Errors
+========================================================
+Line: 3, Column: 13, Message: A6: Arguments are not allowed in new interface expression.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 2, "column": 20, "index": 50}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "ClassDeclaration", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 13, "index": 27}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "I", "codeRange": {"start": {"row": 1, "column": 10, "index": 24}, "end": {"row": 1, "column": 10, "index": 24}, "codeIndex": -1}},
+        "baseTypes": [],
+        "constructorType": "SharedPtr",
+        "declarations": [],
+        "kind": "Interface"
+    }, {
+        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 2, "column": 0, "index": 30}, "end": {"row": 2, "column": 20, "index": 50}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "value", "codeRange": {"start": {"row": 2, "column": 4, "index": 34}, "end": {"row": 2, "column": 8, "index": 38}, "codeIndex": -1}},
+        "expression": {
+            "$ast": { "type": "NewClassExpression", "codeRange": {"start": {"row": 2, "column": 12, "index": 42}, "end": {"row": 2, "column": 19, "index": 49}, "codeIndex": -1}},
+            "arguments": [],
+            "type": {
+                "$ast": { "type": "SharedPointerType", "codeRange": {"start": {"row": 2, "column": 16, "index": 46}, "end": {"row": 2, "column": 17, "index": 47}, "codeIndex": -1}},
+                "element": {
+                    "$ast": { "type": "ReferenceType", "codeRange": {"start": {"row": 2, "column": 16, "index": 46}, "end": {"row": 2, "column": 16, "index": 46}, "codeIndex": -1}},
+                    "name": { "value": "I", "codeRange": {"start": {"row": 2, "column": 16, "index": 46}, "end": {"row": 2, "column": 16, "index": 46}, "codeIndex": -1}}
+                }
+            }
+        },
+        "type": null
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

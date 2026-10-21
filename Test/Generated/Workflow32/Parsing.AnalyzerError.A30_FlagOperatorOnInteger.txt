@@ -1,0 +1,45 @@
+﻿========================================================
+Original
+========================================================
+module test;
+
+var value = (1 | 2);
+
+========================================================
+Printed
+========================================================
+module test;
+
+var value = (1 | 2);
+
+========================================================
+Errors
+========================================================
+Line: 2, Column: 13, Message: A30: Expression of type "system::Int32" cannot be used in intersect (|) expression because it is not flag enum.
+========================================================
+AST
+========================================================
+{
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 1, "column": 17, "index": 31}, "codeIndex": -1}},
+    "declarations": [{
+        "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 1, "column": 17, "index": 31}, "codeIndex": -1}},
+        "attributes": [],
+        "name": { "value": "value", "codeRange": {"start": {"row": 1, "column": 4, "index": 18}, "end": {"row": 1, "column": 8, "index": 22}, "codeIndex": -1}},
+        "expression": {
+            "$ast": { "type": "BinaryExpression", "codeRange": {"start": {"row": 1, "column": 12, "index": 26}, "end": {"row": 1, "column": 16, "index": 30}, "codeIndex": -1}},
+            "first": {
+                "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 1, "column": 12, "index": 26}, "end": {"row": 1, "column": 12, "index": 26}, "codeIndex": -1}},
+                "value": { "value": "1", "codeRange": {"start": {"row": 1, "column": 12, "index": 26}, "end": {"row": 1, "column": 12, "index": 26}, "codeIndex": -1}}
+            },
+            "op": "FlagOr",
+            "second": {
+                "$ast": { "type": "IntegerExpression", "codeRange": {"start": {"row": 1, "column": 16, "index": 30}, "end": {"row": 1, "column": 16, "index": 30}, "codeIndex": -1}},
+                "value": { "value": "2", "codeRange": {"start": {"row": 1, "column": 16, "index": 30}, "end": {"row": 1, "column": 16, "index": 30}, "codeIndex": -1}}
+            }
+        },
+        "type": null
+    }],
+    "moduleType": "Module",
+    "name": { "value": "test", "codeRange": {"start": {"row": 0, "column": 7, "index": 7}, "end": {"row": 0, "column": 10, "index": 10}, "codeIndex": -1}},
+    "paths": []
+}

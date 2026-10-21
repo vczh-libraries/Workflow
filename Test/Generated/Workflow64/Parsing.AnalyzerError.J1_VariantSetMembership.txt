@@ -3,9 +3,9 @@ Original
 ========================================================
 module test;
 
-func f(value : variant<int, string>, values : variant<int, string>[]) : (void)
+func f(value : variant<int, string>) : (void)
 {
-    var result = value in values;
+    var result = value in range [value, value];
 }
 
 ========================================================
@@ -13,22 +13,22 @@ Printed
 ========================================================
 module test;
 
-func f(value : variant<int, string>, values : variant<int, string>[]) : (void)
+func f(value : variant<int, string>) : (void)
 {
-    var result = value in values;
+    var result = value in range [value, value];
 }
 
 ========================================================
 Errors
 ========================================================
-Line: 4, Column: 16, Message: J1: Invalid variant expression. Extract an option before testing set membership.
+Line: 4, Column: 16, Message: J1: Invalid variant expression. Extract an option before testing range membership.
 ========================================================
 AST
 ========================================================
 {
-    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 4, "column": 0, "index": 122}, "codeIndex": -1}},
+    "$ast": { "type": "Module", "codeRange": {"start": {"row": 0, "column": 0, "index": 0}, "end": {"row": 4, "column": 0, "index": 105}, "codeIndex": -1}},
     "declarations": [{
-        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 4, "column": 0, "index": 122}, "codeIndex": -1}},
+        "$ast": { "type": "FunctionDeclaration", "codeRange": {"start": {"row": 1, "column": 0, "index": 14}, "end": {"row": 4, "column": 0, "index": 105}, "codeIndex": -1}},
         "attributes": [],
         "name": { "value": "f", "codeRange": {"start": {"row": 1, "column": 5, "index": 19}, "end": {"row": 1, "column": 5, "index": 19}, "codeIndex": -1}},
         "anonymity": "Named",
@@ -46,49 +46,39 @@ AST
                     "name": "String"
                 }]
             }
-        }, {
-            "$ast": { "type": "FunctionArgument", "codeRange": {"start": {"row": 1, "column": 35, "index": 49}, "end": {"row": 1, "column": 63, "index": 77}, "codeIndex": -1}},
-            "attributes": [],
-            "name": { "value": "values", "codeRange": {"start": {"row": 1, "column": 35, "index": 49}, "end": {"row": 1, "column": 40, "index": 54}, "codeIndex": -1}},
-            "type": {
-                "$ast": { "type": "MapType", "codeRange": {"start": {"row": 1, "column": 42, "index": 56}, "end": {"row": 1, "column": 63, "index": 77}, "codeIndex": -1}},
-                "key": null,
-                "value": {
-                    "$ast": { "type": "VariantType", "codeRange": {"start": {"row": 1, "column": 42, "index": 56}, "end": {"row": 1, "column": 61, "index": 75}, "codeIndex": -1}},
-                    "arguments": [{
-                        "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 1, "column": 50, "index": 64}, "end": {"row": 1, "column": 52, "index": 66}, "codeIndex": -1}},
-                        "name": "Int"
-                    }, {
-                        "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 1, "column": 55, "index": 69}, "end": {"row": 1, "column": 60, "index": 74}, "codeIndex": -1}},
-                        "name": "String"
-                    }]
-                },
-                "writability": "Writable"
-            }
         }],
         "functionKind": "Normal",
         "returnType": {
-            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 1, "column": 66, "index": 80}, "end": {"row": 1, "column": 69, "index": 83}, "codeIndex": -1}},
+            "$ast": { "type": "PredefinedType", "codeRange": {"start": {"row": 1, "column": 35, "index": 49}, "end": {"row": 1, "column": 38, "index": 52}, "codeIndex": -1}},
             "name": "Void"
         },
         "statement": {
-            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 2, "column": 0, "index": 86}, "end": {"row": 4, "column": 0, "index": 122}, "codeIndex": -1}},
+            "$ast": { "type": "BlockStatement", "codeRange": {"start": {"row": 2, "column": 0, "index": 55}, "end": {"row": 4, "column": 0, "index": 105}, "codeIndex": -1}},
             "endLabel": { "value": "", "codeRange": {"start": {"row": -2, "column": -2, "index": -2}, "end": {"row": -2, "column": -2, "index": -2}, "codeIndex": -1}},
             "statements": [{
-                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 3, "column": 2, "index": 91}, "end": {"row": 3, "column": 30, "index": 119}, "codeIndex": -1}},
+                "$ast": { "type": "VariableStatement", "codeRange": {"start": {"row": 3, "column": 2, "index": 60}, "end": {"row": 3, "column": 44, "index": 102}, "codeIndex": -1}},
                 "variable": {
-                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 3, "column": 2, "index": 91}, "end": {"row": 3, "column": 30, "index": 119}, "codeIndex": -1}},
+                    "$ast": { "type": "VariableDeclaration", "codeRange": {"start": {"row": 3, "column": 2, "index": 60}, "end": {"row": 3, "column": 44, "index": 102}, "codeIndex": -1}},
                     "attributes": [],
-                    "name": { "value": "result", "codeRange": {"start": {"row": 3, "column": 6, "index": 95}, "end": {"row": 3, "column": 11, "index": 100}, "codeIndex": -1}},
+                    "name": { "value": "result", "codeRange": {"start": {"row": 3, "column": 6, "index": 64}, "end": {"row": 3, "column": 11, "index": 69}, "codeIndex": -1}},
                     "expression": {
-                        "$ast": { "type": "SetTestingExpression", "codeRange": {"start": {"row": 3, "column": 15, "index": 104}, "end": {"row": 3, "column": 29, "index": 118}, "codeIndex": -1}},
+                        "$ast": { "type": "SetTestingExpression", "codeRange": {"start": {"row": 3, "column": 15, "index": 73}, "end": {"row": 3, "column": 43, "index": 101}, "codeIndex": -1}},
                         "collection": {
-                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 3, "column": 24, "index": 113}, "end": {"row": 3, "column": 29, "index": 118}, "codeIndex": -1}},
-                            "name": { "value": "values", "codeRange": {"start": {"row": 3, "column": 24, "index": 113}, "end": {"row": 3, "column": 29, "index": 118}, "codeIndex": -1}}
+                            "$ast": { "type": "RangeExpression", "codeRange": {"start": {"row": 3, "column": 24, "index": 82}, "end": {"row": 3, "column": 43, "index": 101}, "codeIndex": -1}},
+                            "begin": {
+                                "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 3, "column": 31, "index": 89}, "end": {"row": 3, "column": 35, "index": 93}, "codeIndex": -1}},
+                                "name": { "value": "value", "codeRange": {"start": {"row": 3, "column": 31, "index": 89}, "end": {"row": 3, "column": 35, "index": 93}, "codeIndex": -1}}
+                            },
+                            "beginBoundary": "Inclusive",
+                            "end": {
+                                "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 3, "column": 38, "index": 96}, "end": {"row": 3, "column": 42, "index": 100}, "codeIndex": -1}},
+                                "name": { "value": "value", "codeRange": {"start": {"row": 3, "column": 38, "index": 96}, "end": {"row": 3, "column": 42, "index": 100}, "codeIndex": -1}}
+                            },
+                            "endBoundary": "Inclusive"
                         },
                         "element": {
-                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 3, "column": 15, "index": 104}, "end": {"row": 3, "column": 19, "index": 108}, "codeIndex": -1}},
-                            "name": { "value": "value", "codeRange": {"start": {"row": 3, "column": 15, "index": 104}, "end": {"row": 3, "column": 19, "index": 108}, "codeIndex": -1}}
+                            "$ast": { "type": "ReferenceExpression", "codeRange": {"start": {"row": 3, "column": 15, "index": 73}, "end": {"row": 3, "column": 19, "index": 77}, "codeIndex": -1}},
+                            "name": { "value": "value", "codeRange": {"start": {"row": 3, "column": 15, "index": 73}, "end": {"row": 3, "column": 19, "index": 77}, "codeIndex": -1}}
                         },
                         "test": "In"
                     },
