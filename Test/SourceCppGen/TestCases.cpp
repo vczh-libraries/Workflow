@@ -108,6 +108,7 @@
 #include "VariantInstructionTypes.h"
 #include "VariantIteration.h"
 #include "VariantNative.h"
+#include "VariantSetMembershipReflection.h"
 #include "VariantStateMachineReflection.h"
 #include "VariantStorageReflection.h"
 #include "WorkflowAttributesReflection.h"
@@ -168,6 +169,7 @@ void LoadTestCaseTypes()
 	 LoadStructCtor2Types();
 	 LoadVariantCastsTypes();
 	 LoadVariantExtractObjectTypes();
+	 LoadVariantSetMembershipTypes();
 	 LoadVariantStateMachineTypes();
 	 LoadVariantStorageTypes();
 	 LoadWorkflowAttributesTypes();
@@ -1163,6 +1165,15 @@ TEST_CASE(L"VariantNative")
 {
 	WString expected = L"18";
 	WString actual = ::vl_workflow_global::VariantNative::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"VariantSetMembership")
+{
+	WString expected = L"61";
+	WString actual = ::vl_workflow_global::VariantSetMembership::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
