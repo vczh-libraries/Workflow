@@ -24,6 +24,7 @@ GenerateTypeCastInstructions
 
 			void GenerateTypeCastInstructions(WfCodegenContext& context, Ptr<reflection::description::ITypeInfo> expectedType, bool strongCast, WfExpression* node)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::workflow::emitter::GenerateTypeCastInstructions(...)#"
 				if (expectedType->GetTypeDescriptor() != GetTypeDescriptor<Value>())
 				{
 					vint fillElseIndex = -1;
@@ -41,6 +42,8 @@ GenerateTypeCastInstructions
 					{
 						switch (expectedType->GetDecorator())
 						{
+						case ITypeInfo::Variant:
+							CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant casts must use variant instructions.");
 						case ITypeInfo::RawPtr:
 							INSTRUCTION(Ins::ConvertToType(Value::RawPtr, expectedType->GetTypeDescriptor()));
 							break;
@@ -58,6 +61,8 @@ GenerateTypeCastInstructions
 					{
 						switch (expectedType->GetDecorator())
 						{
+						case ITypeInfo::Variant:
+							CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant casts must use variant instructions.");
 						case ITypeInfo::RawPtr:
 							INSTRUCTION(Ins::TryConvertToType(Value::RawPtr, expectedType->GetTypeDescriptor()));
 							break;
@@ -80,6 +85,7 @@ GenerateTypeCastInstructions
 						FILL_LABEL_TO_CURRENT(fillEndIndex);
 					}
 				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 /***********************************************************************
@@ -88,10 +94,13 @@ GetInstructionTypeArgument
 
 			void GenerateTypeTestingInstructions(WfCodegenContext& context, Ptr<reflection::description::ITypeInfo> expectedType, WfExpression* node)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::workflow::emitter::GenerateTypeTestingInstructions(...)#"
 				if (expectedType->GetTypeDescriptor() != GetTypeDescriptor<Value>())
 				{
 					switch (expectedType->GetDecorator())
 					{
+					case ITypeInfo::Variant:
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Type testing does not support variants.");
 					case ITypeInfo::RawPtr:
 						INSTRUCTION(Ins::TestType(Value::RawPtr, expectedType->GetTypeDescriptor()));
 						break;
@@ -110,6 +119,7 @@ GetInstructionTypeArgument
 					INSTRUCTION(Ins::Pop());
 					INSTRUCTION(Ins::LoadValue({ true }));
 				}
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 /***********************************************************************

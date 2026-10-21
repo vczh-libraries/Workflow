@@ -585,6 +585,9 @@ CreateTypeInfoFromType
 						auto manager = scope->FindManager();
 						switch (typeInfo->GetDecorator())
 						{
+						case ITypeInfo::Variant:
+							// Visit(WfVariantType*) has already validated each option.
+							break;
 						case ITypeInfo::RawPtr:
 						case ITypeInfo::SharedPtr:
 							switch (typeInfo->GetTypeDescriptor()->GetTypeDescriptorFlags())
@@ -909,6 +912,7 @@ CanConvertToType
 
 			bool CanConvertToType(reflection::description::ITypeInfo* fromType, reflection::description::ITypeInfo* toType, bool explicitly)
 			{
+#define ERROR_MESSAGE_PREFIX L"vl::workflow::analyzer::CanConvertToType(...)#"
 				bool fromVariant = fromType->GetDecorator() == ITypeInfo::Variant;
 				bool toVariant = toType->GetDecorator() == ITypeInfo::Variant;
 				if (fromVariant || toVariant)
@@ -944,9 +948,13 @@ CanConvertToType
 
 				switch (fromType->GetDecorator())
 				{
+				case ITypeInfo::Variant:
+					CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant conversions should have been handled before ordinary conversions.");
 				case ITypeInfo::RawPtr:
 					switch (toType->GetDecorator())
 					{
+					case ITypeInfo::Variant:
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant conversions should have been handled before ordinary conversions.");
 					case ITypeInfo::RawPtr:
 						return CanConvertToType(fromType->GetElementType(), toType->GetElementType(), explicitly);
 					case ITypeInfo::SharedPtr:
@@ -960,6 +968,8 @@ CanConvertToType
 				case ITypeInfo::SharedPtr:
 					switch (toType->GetDecorator())
 					{
+					case ITypeInfo::Variant:
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant conversions should have been handled before ordinary conversions.");
 					case ITypeInfo::RawPtr:
 						return explicitly && CanConvertToType(fromType->GetElementType(), toType->GetElementType(), explicitly);
 					case ITypeInfo::SharedPtr:
@@ -973,6 +983,8 @@ CanConvertToType
 				case ITypeInfo::Nullable:
 					switch (toType->GetDecorator())
 					{
+					case ITypeInfo::Variant:
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant conversions should have been handled before ordinary conversions.");
 					case ITypeInfo::RawPtr:
 					case ITypeInfo::SharedPtr:
 						return false;
@@ -987,6 +999,8 @@ CanConvertToType
 				case ITypeInfo::TypeDescriptor:
 					switch (toType->GetDecorator())
 					{
+					case ITypeInfo::Variant:
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant conversions should have been handled before ordinary conversions.");
 					case ITypeInfo::RawPtr:
 					case ITypeInfo::SharedPtr:
 						return false;
@@ -1064,6 +1078,8 @@ CanConvertToType
 				case ITypeInfo::Generic:
 					switch (toType->GetDecorator())
 					{
+					case ITypeInfo::Variant:
+						CHECK_FAIL(ERROR_MESSAGE_PREFIX L"Variant conversions should have been handled before ordinary conversions.");
 					case ITypeInfo::RawPtr:
 					case ITypeInfo::SharedPtr:
 					case ITypeInfo::Nullable:
@@ -1089,6 +1105,7 @@ CanConvertToType
 					break;
 				}
 				return false;
+#undef ERROR_MESSAGE_PREFIX
 			}
 
 /***********************************************************************
@@ -1182,6 +1199,7 @@ IsNullAcceptableType
 				case ITypeInfo::TypeDescriptor:
 					return type->GetTypeDescriptor() == description::GetTypeDescriptor<Value>();
 				case ITypeInfo::Generic:
+				case ITypeInfo::Variant:
 					return false;
 				}
 				return false;

@@ -198,6 +198,12 @@ You need to build, test and debug in that specific folder, otherwise the unit te
 On Linux, only configuration "debug x64" is available, no need to build or run projects with other configurations.
 Unlike Windows, building have to be done in each folder separately.
 
+`CompilerTest_LoadAndCompile` generates `<Workflow repo>/Test/Generated/Workflow32/Metadata.Codegen.*.bin`
+and `<Workflow repo>/Test/Generated/Workflow64/Metadata.Codegen.*.bin` on every native platform.
+These ignored metadata layers preserve the declared class identity of variant options
+when `CppTest_Metaonly` boxes and unboxes generated classes, so regenerate them after
+a clean checkout before running that suite.
+
 ## WebAssembly
 
 The following unit test projects could be built to web assembly and run with a browser:
