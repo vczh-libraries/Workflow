@@ -1,4 +1,5 @@
 #include "../../Source/Helper.h"
+#include "../../../Source/Cpp/WfMergeCpp.h"
 
 extern WfCpuArchitecture testCpuArchitecture;
 
@@ -40,6 +41,70 @@ bool DecodeCodegenName(const WString& codegenName, WString& itemName, WString& i
 
 TEST_FILE
 {
+	TEST_CATEGORY(L"C++ user content merging")
+	{
+		TEST_CASE(L"Removed method bodies retain their declarations across repeated merges")
+		{
+			auto method = [](const WString& signature, const WString& body, const WString& newline)
+			{
+				return L"\t" + signature + newline
+					+ L"\t{/* USER_CONTENT_BEGIN(::Example) */" + newline
+					+ L"\t\t" + body + newline
+					+ L"\t}/* USER_CONTENT_END() */" + newline;
+			};
+			const wchar_t* newlines[] = { L"\n", L"\r\n" };
+			for (auto newline : newlines)
+			{
+				auto original = method(L"void Example::Run()", L"First();", newline)
+					+ method(L"void Example::Run(int value)", L"Second(value);", newline);
+				WString empty = L"// Generated file\r\n";
+				auto retired = MergeCppFileContent(original, empty);
+				TEST_ASSERT(retired == empty
+					+ L"// UNUSED_USER_CONTENT:\r\n"
+					L"//\tvoid Example::Run()\r\n"
+					L"//\t{/* USER_CONTENT_BEGIN(::Example) */\r\n"
+					L"//\t\tFirst();\r\n"
+					L"//\t}/* USER_CONTENT_END() */\r\n"
+					L"//\tvoid Example::Run(int value)\r\n"
+					L"//\t{/* USER_CONTENT_BEGIN(::Example) */\r\n"
+					L"//\t\tSecond(value);\r\n"
+					L"//\t}/* USER_CONTENT_END() */\r\n");
+				TEST_ASSERT(MergeCppFileContent(retired, empty) == retired);
+				auto regenerated = method(L"void Example::Run(int value)", L"Default();", newline)
+					+ method(L"void Example::Run()", L"Default();", newline);
+				auto restored = method(L"void Example::Run(int value)", L"Second(value);", L"\r\n")
+					+ method(L"void Example::Run()", L"First();", L"\r\n");
+				TEST_ASSERT(MergeCppFileContent(retired, regenerated) == restored);
+			}
+		});
+
+		TEST_CASE(L"Named and legacy regions remain recoverable")
+		{
+			WString original =
+				L"/* USER_CONTENT_BEGIN(custom global declarations) */\r\n"
+				L"int saved = 42;\r\n"
+				L"/* USER_CONTENT_END() */\r\n"
+				L"USERIMPL(/* ::Example */)\r\n"
+				L"void Example::Run()\r\n"
+				L"{\r\n"
+				L"\tSaved();\r\n"
+				L"}\r\n";
+			WString regenerated =
+				L"/* USER_CONTENT_BEGIN(custom global declarations) */\r\n"
+				L"int saved = 0;\r\n"
+				L"/* USER_CONTENT_END() */\r\n"
+				L"USERIMPL(/* ::Example */)\r\n"
+				L"void Example::Run()\r\n"
+				L"{\r\n"
+				L"\tDefault();\r\n"
+				L"}\r\n";
+			WString empty = L"// Generated file\r\n";
+			auto retired = MergeCppFileContent(original, empty);
+			TEST_ASSERT(MergeCppFileContent(retired, empty) == retired);
+			TEST_ASSERT(MergeCppFileContent(retired, regenerated) == original);
+		});
+	});
+
 	TEST_CATEGORY(L"Code generation")
 	{
 		List<WString> codegenNames, reflectableAssemblies;
