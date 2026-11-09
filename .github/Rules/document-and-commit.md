@@ -4,9 +4,9 @@
 
 Multiple commits are strongly recommended to separate manual edited files and generated files.
 - First commit only has all modified files and files you created directly.
-- Followed by a commit with all new files that not created by you (aka auto generated), focus on *.txt files. The commit title would be the first commit appending ` [tx`.
+- Followed by a commit with all new files that not created by you (aka auto generated), focus on *.txt files. The commit title would be the first commit appending `[txt]`.
   - You can skip it if no such file is edited.
-- Followed by a commit with all new files that not created by you (aka auto generated), focus on the rest. The commit title would be the first commit appending [generated]`.
+- Followed by a commit with all new files that not created by you (aka auto generated), focus on the rest. The commit title would be the first commit appending `[generated]`.
   - You can skip it if no such file is edited.
   - Typical folders for generated files:
     - `Test/Generated`
