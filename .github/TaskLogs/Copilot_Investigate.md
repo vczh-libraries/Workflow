@@ -53,9 +53,29 @@ No unresolved review comments.
 - Regenerate parser artifacts through `<Tools repo>/Tools/GlrParserGen.exe`. Scan handwritten source, parser outputs, and parsing dumps for the removed AST field. Review changed parsing JSON separately from C++ and assembly semantics.
 - Run the required Debug Win32/x64 build, metadata, compiler, VM, generated-C++, RPC stdio, and TypeScript checks; inspect raw logs for failures and memory leaks. Complete `<Tools repo>/Tools/Build.ps1 Workflow` before the final push.
 
+Completed Debug validation (all test files enabled):
+
+| Check | Win32 | x64 |
+| --- | --- | --- |
+| Build and rebuild after generated C++ | 0 warnings, 0 errors | 0 warnings, 0 errors |
+| LibraryTest | 21/21 cases | 21/21 cases |
+| CompilerTest_GenerateMetadata | 2/2 cases | 2/2 cases |
+| CompilerTest_LoadAndCompile (x64 executable targeting both architectures) | 873/873 cases | 873/873 cases |
+| RuntimeTest | 285/285 cases | 285/285 cases |
+| CppTest | 251/251 cases | 251/251 cases |
+| CppTest_Metaonly | 251/251 cases | 251/251 cases |
+| CppTest_Reflection | 251/251 cases | 251/251 cases |
+| RPC stdio launcher, explicit SharedMemsp skip list | 127 cases, exit 0 | 127 cases, exit 0 |
+
+Raw Debug logs contain no memory-leak dump. Both iteration samples return their indexed expected results in VM and C++ execution. TypeScript preparation and `npm run build` also pass.
+
+All 512 changed existing parsing logs compare identically after removing `typedResult` JSON properties; their non-AST sections are unchanged. Existing assembly, generated C++ implementations, and RPC fixtures are unchanged. New fixtures and test registration belong to `VariantIterationCopied`. The source and generated-parser scan finds no obsolete field references.
+
+Canonical `<Tools repo>/Tools/Build.ps1 Workflow` completed with exit code 0. It rebuilt Release Win32 and x64, passed the library, metadata, compiler, runtime, and all three C++ suites on both platforms, passed TypeScript preparation/install/build and Release x64 stdio RPC, regenerated the release bundle, and rebuilt CppMerge. Only the compiler release header/source changed in `<Workflow repo>/Release`; imports and existing RPC/type metadata baselines remain unchanged. The final source, parser, release, and parsing-log scan finds no obsolete `typedResult` field.
+
 # PROPOSALS
 
-- No.1 Own generated-call types in the scope manager and regenerate expansions after clear
+- No.1 Own generated-call types in the scope manager and regenerate expansions after clear [CONFIRMED]
 
 ## No.1 Own generated-call types in the scope manager and regenerate expansions after clear
 
@@ -65,6 +85,23 @@ Extend `CopyWithExpandVirtualVisitor` with an optional manager and transfer cach
 
 Clear the new map with the other semantic tables. When retaining modules, discard virtual expansions before scope reconstruction and regenerate them through the existing pipeline. Include context-free expansions because they can contain copied context-sensitive descendants; retaining those flattened descendants would retain generated calls whose semantic types were cleared. Do not retain resolved types across a clear.
 
+The new property-initializer regression also exposed a C++ collection failure independent of cache transfer. CDB caught a missing `nodeScopes` entry in `WfCollectModuleVisitor::Traverse(WfFunctionExpression*)`, reached through the original auto-property initializer. Only the copied, expanded declaration is analyzed. Collect context-free virtual declarations through their expanded declarations, matching the analyzer's ownership of executable syntax.
+
 ### CODE CHANGE
 
-Pending implementation: manager cache and copy support, expansion invalidation on retained modules, parser regeneration, focused regression samples, and maintained design documentation.
+- Added the manager-owned generated-call result cache, populated directly with the variant foreach symbol's resolved type. Normal call overload selection still runs before the override, and C++ generation checks cache membership before the existing unboxing path. Removed AST-field-specific structural validation.
+- Extended the analyzer copy visitor and copy helper overloads with an optional manager. Generated-call entries transfer to copies made by foreach, switch, bind, coroutine, co-provider, state-machine, property, and cast lowering. Syntax-only copies remain independent of semantic state.
+- Added virtual-expansion invalidation to retained-module clearing and clear the new cache with the other semantic tables. Rebuilding now regenerates both context-free and context-sensitive expansions and their scopes.
+- Updated C++ module collection to visit expanded context-free declarations, avoiding unscoped original property-initializer lambdas. Keep the property regression enabled for VM and all C++ configurations.
+- Removed the AST field declaration and regenerated the parser artifacts with the prescribed generator.
+- Added `VariantIterationCopied`, with expected result `1s21s2|2s12s1|1s2|1s22s1|6|p3`, plus analyzer regressions for direct repeated rebuilds, explicit retained-module clearing, generic module copying, fresh-module reuse, and manager-aware call copying. Updated the compiler rebuild and AST helper knowledge documents.
+
+### CONFIRMED
+
+The generated-call override now belongs to the scope manager and contains the already-resolved variant type. The regressions confirm that ordinary overload selection still resolves `GetCurrent`, while each generated or copied call receives the cached result type. Calls copied without a manager and ordinary calls do not acquire entries. Generated C++ retains the existing unboxing behavior, including both `variant<int, string>` and `variant<string, int>` orderings in the new sample.
+
+The retained-module failure was reproduced before the production change and is now fixed. Six representative modules successfully rebuild repeatedly, including a direct second rebuild of expanded syntax, an explicit retained-module clear, and a generic copy of an analyzed module. The map empties on clear, regenerated calls have fresh identities, and reusing the manager for an ordinary foreach module leaves no variant-call entries. Regenerating virtual expansions restores their scopes as well as their result types, without preserving stale semantic data.
+
+The focused property initializer exposed a separate collection bug: C++ collection traversed the unscoped original lambda instead of its analyzed expansion. Following expanded context-free declarations resolves that failure while preserving all existing generated C++ implementations. The original iteration sample remains `1s2|2s1|1s2`, and the new copied-loop sample returns `1s21s2|2s12s1|1s2|1s22s1|6|p3` in VM and every C++ configuration.
+
+All verification above passed, including the canonical Release sequence. The final comparison of 512 existing parsing logs confirms that their only semantic JSON change is removal of the AST field; existing assembly and RPC results are unchanged. This is the sole confirmed proposal, and its implementation is retained.
