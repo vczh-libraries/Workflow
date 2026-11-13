@@ -185,12 +185,6 @@ MakeCallExpression
 		return *this;
 	}
 
-	MakeCallExpression& MakeCallExpression::typedResult(const vl::Ptr<WfType>& value)
-	{
-		node->typedResult = value;
-		return *this;
-	}
-
 /***********************************************************************
 MakeCastResultInterfaceDeclaration
 ***********************************************************************/

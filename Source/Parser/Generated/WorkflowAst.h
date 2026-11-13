@@ -1256,7 +1256,6 @@ namespace vl::workflow
 	public:
 		vl::Ptr<WfExpression> function;
 		vl::collections::List<vl::Ptr<WfExpression>> arguments;
-		vl::Ptr<WfType> typedResult;
 
 		void Accept(WfExpression::IVisitor* visitor) override;
 	};

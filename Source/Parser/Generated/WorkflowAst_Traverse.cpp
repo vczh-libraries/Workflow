@@ -733,7 +733,6 @@ namespace vl::workflow::traverse_visitor
 			InspectInto(listItem.Obj());
 		}
 		InspectInto(node->function.Obj());
-		InspectInto(node->typedResult.Obj());
 		Finishing(static_cast<WfCallExpression*>(node));
 		Finishing(static_cast<WfExpression*>(node));
 		Finishing(static_cast<vl::glr::ParsingAstBase*>(node));

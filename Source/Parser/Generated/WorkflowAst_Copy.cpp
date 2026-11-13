@@ -78,7 +78,6 @@ namespace vl::workflow::copy_visitor
 			to->arguments.Add(CopyNode(listItem.Obj()));
 		}
 		to->function = CopyNode(from->function.Obj());
-		to->typedResult = CopyNode(from->typedResult.Obj());
 	}
 
 	void AstVisitor::CopyFields(WfCastResultInterfaceDeclaration* from, WfCastResultInterfaceDeclaration* to)

@@ -73,7 +73,6 @@ namespace vl::workflow::builder
 	public:
 		MakeCallExpression& arguments(const vl::Ptr<WfExpression>& value);
 		MakeCallExpression& function(const vl::Ptr<WfExpression>& value);
-		MakeCallExpression& typedResult(const vl::Ptr<WfType>& value);
 	};
 
 	class MakeCastResultInterfaceDeclaration : public vl::glr::ParsingAstBuilder<WfCastResultInterfaceDeclaration>

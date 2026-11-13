@@ -1592,7 +1592,6 @@ namespace vl::reflection::description
 
 		CLASS_MEMBER_FIELD(function)
 		CLASS_MEMBER_FIELD(arguments)
-		CLASS_MEMBER_FIELD(typedResult)
 	END_CLASS_MEMBER(vl::workflow::WfCallExpression)
 
 	BEGIN_CLASS_MEMBER(vl::workflow::WfFunctionExpression)

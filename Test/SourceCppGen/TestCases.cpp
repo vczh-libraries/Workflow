@@ -107,6 +107,7 @@
 #include "VariantExtractObjectReflection.h"
 #include "VariantInstructionTypes.h"
 #include "VariantIteration.h"
+#include "VariantIterationCopiedReflection.h"
 #include "VariantNative.h"
 #include "VariantSetMembershipReflection.h"
 #include "VariantStateMachineReflection.h"
@@ -169,6 +170,7 @@ void LoadTestCaseTypes()
 	 LoadStructCtor2Types();
 	 LoadVariantCastsTypes();
 	 LoadVariantExtractObjectTypes();
+	 LoadVariantIterationCopiedTypes();
 	 LoadVariantSetMembershipTypes();
 	 LoadVariantStateMachineTypes();
 	 LoadVariantStorageTypes();
@@ -1156,6 +1158,15 @@ TEST_CASE(L"VariantIteration")
 {
 	WString expected = L"1s2|2s1|1s2";
 	WString actual = ::vl_workflow_global::VariantIteration::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"VariantIterationCopied")
+{
+	WString expected = L"1s21s2|2s12s1|1s2|1s22s1|6|p3";
+	WString actual = ::vl_workflow_global::VariantIterationCopied::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);

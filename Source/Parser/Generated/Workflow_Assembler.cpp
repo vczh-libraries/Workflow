@@ -252,8 +252,6 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfCallExpression::arguments, object, field, value, cppFieldName);
 		case WorkflowFields::CallExpression_function:
 			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfCallExpression::function, object, field, value, cppFieldName);
-		case WorkflowFields::CallExpression_typedResult:
-			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfCallExpression::typedResult, object, field, value, cppFieldName);
 		case WorkflowFields::CastResultInterfaceDeclaration_baseType:
 			return vl::glr::AssemblerSetObjectField(&vl::workflow::WfCastResultInterfaceDeclaration::baseType, object, field, value, cppFieldName);
 		case WorkflowFields::CastResultInterfaceDeclaration_elementType:
@@ -912,7 +910,6 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"BlockStatement::statements",
 			L"CallExpression::arguments",
 			L"CallExpression::function",
-			L"CallExpression::typedResult",
 			L"CastResultInterfaceDeclaration::baseType",
 			L"CastResultInterfaceDeclaration::elementType",
 			L"ChildExpression::name",
@@ -1094,7 +1091,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"WhileStatement::statement",
 		};
 		vl::vint index = (vl::vint)field;
-		return 0 <= index && index < 200 ? results[index] : nullptr;
+		return 0 <= index && index < 199 ? results[index] : nullptr;
 	}
 
 	const wchar_t* WorkflowCppFieldName(WorkflowFields field)
@@ -1120,7 +1117,6 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::workflow::WfBlockStatement::statements",
 			L"vl::workflow::WfCallExpression::arguments",
 			L"vl::workflow::WfCallExpression::function",
-			L"vl::workflow::WfCallExpression::typedResult",
 			L"vl::workflow::WfCastResultInterfaceDeclaration::baseType",
 			L"vl::workflow::WfCastResultInterfaceDeclaration::elementType",
 			L"vl::workflow::WfChildExpression::name",
@@ -1302,7 +1298,7 @@ WorkflowAstInsReceiver : public vl::glr::AstInsReceiverBase
 			L"vl::workflow::WfWhileStatement::statement",
 		};
 		vl::vint index = (vl::vint)field;
-		return 0 <= index && index < 200 ? results[index] : nullptr;
+		return 0 <= index && index < 199 ? results[index] : nullptr;
 	}
 
 	vl::Ptr<vl::glr::ParsingAstBase> WorkflowAstInsReceiver::ResolveAmbiguity(vl::vint32_t type, vl::collections::Array<vl::Ptr<vl::glr::ParsingAstBase>>& candidates)

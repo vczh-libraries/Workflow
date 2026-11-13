@@ -220,9 +220,6 @@ namespace vl::workflow
 			BeginField(vl::WString::Unmanaged(L"function"));
 			Print(node->function.Obj());
 			EndField();
-			BeginField(vl::WString::Unmanaged(L"typedResult"));
-			Print(node->typedResult.Obj());
-			EndField();
 		}
 		void AstVisitor::PrintFields(WfCastResultInterfaceDeclaration* node)
 		{
@@ -3597,7 +3594,6 @@ namespace vl::workflow
 				{
 					fieldFound = fieldFound || name == L"function";
 					fieldFound = fieldFound || name == L"arguments";
-					fieldFound = fieldFound || name == L"typedResult";
 				}
 				else if (typeName == L"FunctionExpression")
 				{
@@ -3984,20 +3980,6 @@ namespace vl::workflow
 					}
 					else throw vl::Exception(L"AST JSON field \"arguments\" contains a non-object, non-null item.");
 				}
-			}
-			if (auto value = FindField(vl::WString::Unmanaged(L"typedResult")))
-			{
-				if (IsNull(value))
-				{
-					node->typedResult = nullptr;
-				}
-				else if (auto jsonObject = dynamic_cast<vl::glr::json::JsonObject*>(value))
-				{
-					auto ast = ReadJson(jsonObject).Cast<WfType>();
-					if (!ast) throw vl::Exception(L"AST JSON field \"typedResult\" contains an incompatible AST type.");
-					node->typedResult = ast;
-				}
-				else throw vl::Exception(L"AST JSON field \"typedResult\" must be an object or null.");
 			}
 		}
 
