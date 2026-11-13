@@ -29,6 +29,24 @@ void LoadMultipleSamples(WfLexicalScopeManager* manager, const WString& sampleNa
 
 TEST_FILE
 {
+	TEST_CATEGORY(L"Retained iteration expansion baseline")
+	{
+		for (auto sampleName : { L"ForEach", L"VariantIteration" })
+		{
+			TEST_CASE(sampleName)
+			{
+				WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
+				manager.AddModule(LoadSample(L"Codegen", sampleName));
+				manager.Rebuild(true);
+				TEST_ASSERT(manager.errors.Count() == 0);
+				TEST_EXCEPTION(manager.Rebuild(true), Error, [](const Error& error)
+				{
+					TEST_PRINT(error.Description());
+				});
+			});
+		}
+	});
+
 	TEST_CASE(L"Test building global name")
 	{
 		WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
