@@ -237,10 +237,6 @@ ValidateStructure(Expression)
 
 				void Visit(WfCallExpression* node)override
 				{
-					if (node->typedResult)
-					{
-						ValidateTypeStructure(manager, node->typedResult);
-					}
 					ValidateExpressionStructure(manager, context, node->function);
 					for (vint i = 0; i < node->arguments.Count(); i++)
 					{

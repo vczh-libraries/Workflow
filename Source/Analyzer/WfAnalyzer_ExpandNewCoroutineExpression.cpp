@@ -345,7 +345,7 @@ GenerateFlowChart
 				Dictionary<WfLexicalSymbol*, WString>&	referenceRenaming;
 
 				GenerateFlowChartModuleVisitor(WfLexicalScopeManager* _manager, Dictionary<WfLexicalSymbol*, WString>& _referenceRenaming)
-					:CopyWithExpandVirtualVisitor(true)
+					:CopyWithExpandVirtualVisitor(true, _manager)
 					, manager(_manager)
 					, referenceRenaming(_referenceRenaming)
 				{

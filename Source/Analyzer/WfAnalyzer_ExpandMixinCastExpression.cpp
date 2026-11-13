@@ -26,7 +26,7 @@ ExpandNewCoroutineExpression
 					auto varDecl = Ptr(new WfVariableDeclaration);
 					newExpr->declarations.Add(varDecl);
 					varDecl->name.value = L"<mixin-source>";
-					varDecl->expression = CopyExpression(node->expression, true);
+					varDecl->expression = CopyExpression(node->expression, true, manager);
 
 					if (sourceType->GetDecorator() == ITypeInfo::RawPtr)
 					{

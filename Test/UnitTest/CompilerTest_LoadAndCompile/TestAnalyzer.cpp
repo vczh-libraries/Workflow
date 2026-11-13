@@ -29,22 +29,85 @@ void LoadMultipleSamples(WfLexicalScopeManager* manager, const WString& sampleNa
 
 TEST_FILE
 {
-	TEST_CATEGORY(L"Retained iteration expansion baseline")
+	TEST_CATEGORY(L"Rebuilding retained virtual expansions")
 	{
-		for (auto sampleName : { L"ForEach", L"VariantIteration" })
+		for (auto sampleName : { L"ForEach", L"VariantIteration", L"VariantIterationCopied", L"BindLet", L"CoEnum2", L"VariantStateMachine" })
 		{
 			TEST_CASE(sampleName)
 			{
 				WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
-				manager.AddModule(LoadSample(L"Codegen", sampleName));
+				auto module = ParseModule(LoadSample(L"Codegen", sampleName), GetWorkflowParser());
+				TEST_ASSERT(module);
+				manager.AddModule(module);
+				bool variantIteration = WString(sampleName) == L"VariantIteration" || WString(sampleName) == L"VariantIterationCopied";
+				List<Ptr<WfCallExpression>> previousCalls;
+				for (vint i = 0; i < 3; i++)
+				{
+					manager.Rebuild(i != 0);
+					for (auto&& error : manager.errors)
+					{
+						TEST_PRINT(error.message);
+					}
+					TEST_ASSERT(manager.errors.Count() == 0);
+					TEST_ASSERT((manager.callExpressionTypedResults.Count() > 0) == variantIteration);
+					for (auto [call, index] : indexed(manager.callExpressionTypedResults.Keys()))
+					{
+						TEST_ASSERT(!previousCalls.Contains(call.Obj()));
+						auto type = manager.callExpressionTypedResults.Values()[index];
+						TEST_ASSERT(type->GetDecorator() == ITypeInfo::Variant);
+						TEST_ASSERT(manager.expressionResolvings[call.Obj()].type == type);
+						TEST_ASSERT(manager.expressionResolvings[call->function.Obj()].methodInfo->GetName() == L"GetCurrent");
+					}
+					TEST_ASSERT(GenerateAssembly(&manager));
+					CopyFrom(previousCalls, manager.callExpressionTypedResults.Keys());
+					if (i == 1)
+					{
+						manager.Clear(true, false);
+						TEST_ASSERT(manager.callExpressionTypedResults.Count() == 0);
+					}
+				}
+
+				auto copied = CopyModule(module, false);
+				manager.Clear(true, true);
+				TEST_ASSERT(manager.callExpressionTypedResults.Count() == 0);
+				manager.AddModule(copied);
 				manager.Rebuild(true);
 				TEST_ASSERT(manager.errors.Count() == 0);
-				TEST_EXCEPTION(manager.Rebuild(true), Error, [](const Error& error)
-				{
-					TEST_PRINT(error.Description());
-				});
+				TEST_ASSERT((manager.callExpressionTypedResults.Count() > 0) == variantIteration);
+
+				manager.Clear(true, true);
+				TEST_ASSERT(manager.callExpressionTypedResults.Count() == 0);
+				manager.AddModule(LoadSample(L"Codegen", L"ForEach"));
+				manager.Rebuild(true);
+				TEST_ASSERT(manager.errors.Count() == 0);
+				TEST_ASSERT(manager.callExpressionTypedResults.Count() == 0);
 			});
 		}
+	});
+
+	TEST_CASE(L"Copy generated call types only within the supplied manager")
+	{
+		WfLexicalScopeManager manager(GetWorkflowParser(), testCpuArchitecture);
+		manager.AddModule(LoadSample(L"Codegen", L"VariantIteration"));
+		manager.Rebuild(true);
+		TEST_ASSERT(manager.errors.Count() == 0);
+		TEST_ASSERT(manager.callExpressionTypedResults.Count() > 0);
+		auto call = manager.callExpressionTypedResults.Keys()[0];
+		auto type = manager.callExpressionTypedResults.Values()[0];
+		auto plainCopy = CopyExpression(call.Obj(), true).Cast<WfCallExpression>();
+		TEST_ASSERT(!manager.callExpressionTypedResults.Keys().Contains(plainCopy.Obj()));
+		auto analyzedCopy = CopyExpression(call.Cast<WfExpression>(), true, &manager).Cast<WfCallExpression>();
+		TEST_ASSERT(analyzedCopy != call);
+		TEST_ASSERT(manager.callExpressionTypedResults[analyzedCopy.Obj()] == type);
+		auto copiedAgain = CopyExpression(analyzedCopy.Obj(), false, &manager).Cast<WfCallExpression>();
+		TEST_ASSERT(manager.callExpressionTypedResults[copiedAgain.Obj()] == type);
+
+		auto ordinaryCall = ParseExpression(L"Render(1)", GetWorkflowParser());
+		auto ordinaryCopy = CopyExpression(ordinaryCall, true, &manager).Cast<WfCallExpression>();
+		TEST_ASSERT(ordinaryCopy);
+		TEST_ASSERT(!manager.callExpressionTypedResults.Keys().Contains(ordinaryCopy.Obj()));
+		manager.Clear(false, true);
+		TEST_ASSERT(manager.callExpressionTypedResults.Count() == 0);
 	});
 
 	TEST_CASE(L"Test building global name")

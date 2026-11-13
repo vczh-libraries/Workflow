@@ -106,8 +106,9 @@ Copy(Type|Expression|Statement|Declaration)
 				}
 			}
 
-			CopyWithExpandVirtualVisitor::CopyWithExpandVirtualVisitor(bool _expandVirtualAst)
+			CopyWithExpandVirtualVisitor::CopyWithExpandVirtualVisitor(bool _expandVirtualAst, WfLexicalScopeManager* _scopeManager)
 				:expandVirtualAst(_expandVirtualAst)
+				, scopeManager(_scopeManager)
 			{
 			}
 
@@ -138,6 +139,20 @@ Copy(Type|Expression|Statement|Declaration)
 				node->expandedStatement->Accept(this);
 			}
 
+			void CopyWithExpandVirtualVisitor::Visit(WfCallExpression* node)
+			{
+				copy_visitor::AstVisitor::Visit(node);
+				if (scopeManager)
+				{
+					auto index = scopeManager->callExpressionTypedResults.Keys().IndexOf(node);
+					if (index != -1)
+					{
+						auto type = scopeManager->callExpressionTypedResults.Values()[index];
+						scopeManager->callExpressionTypedResults.Add(result.Cast<WfCallExpression>(), type);
+					}
+				}
+			}
+
 			void CopyWithExpandVirtualVisitor::Visit(WfNamespaceDeclaration* node)
 			{
 				copy_visitor::AstVisitor::Visit(node);
@@ -161,24 +176,24 @@ Copy(Type|Expression|Statement|Declaration)
 				return CopyWithExpandVirtualVisitor(false).CopyNode(type.Obj());
 			}
 
-			Ptr<WfExpression> CopyExpression(Ptr<WfExpression> expression, bool expandVirtualExprStat)
+			Ptr<WfExpression> CopyExpression(Ptr<WfExpression> expression, bool expandVirtualExprStat, WfLexicalScopeManager* manager)
 			{
-				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(expression.Obj());
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat, manager).CopyNode(expression.Obj());
 			}
 
-			Ptr<WfStatement> CopyStatement(Ptr<WfStatement> statement, bool expandVirtualExprStat)
+			Ptr<WfStatement> CopyStatement(Ptr<WfStatement> statement, bool expandVirtualExprStat, WfLexicalScopeManager* manager)
 			{
-				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(statement.Obj());
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat, manager).CopyNode(statement.Obj());
 			}
 
-			Ptr<WfDeclaration> CopyDeclaration(Ptr<WfDeclaration> declaration, bool expandVirtualExprStat)
+			Ptr<WfDeclaration> CopyDeclaration(Ptr<WfDeclaration> declaration, bool expandVirtualExprStat, WfLexicalScopeManager* manager)
 			{
-				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(declaration.Obj());
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat, manager).CopyNode(declaration.Obj());
 			}
 
-			Ptr<WfModule> CopyModule(Ptr<WfModule> module, bool expandVirtualExprStat)
+			Ptr<WfModule> CopyModule(Ptr<WfModule> module, bool expandVirtualExprStat, WfLexicalScopeManager* manager)
 			{
-				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(module.Obj());
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat, manager).CopyNode(module.Obj());
 			}
 
 			Ptr<WfType> CopyType(WfType* type)
@@ -186,24 +201,24 @@ Copy(Type|Expression|Statement|Declaration)
 				return CopyWithExpandVirtualVisitor(false).CopyNode(type);
 			}
 
-			Ptr<WfExpression> CopyExpression(WfExpression* expression, bool expandVirtualExprStat)
+			Ptr<WfExpression> CopyExpression(WfExpression* expression, bool expandVirtualExprStat, WfLexicalScopeManager* manager)
 			{
-				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(expression);
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat, manager).CopyNode(expression);
 			}
 
-			Ptr<WfStatement> CopyStatement(WfStatement* statement, bool expandVirtualExprStat)
+			Ptr<WfStatement> CopyStatement(WfStatement* statement, bool expandVirtualExprStat, WfLexicalScopeManager* manager)
 			{
-				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(statement);
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat, manager).CopyNode(statement);
 			}
 
-			Ptr<WfDeclaration> CopyDeclaration(WfDeclaration* declaration, bool expandVirtualExprStat)
+			Ptr<WfDeclaration> CopyDeclaration(WfDeclaration* declaration, bool expandVirtualExprStat, WfLexicalScopeManager* manager)
 			{
-				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(declaration);
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat, manager).CopyNode(declaration);
 			}
 
-			Ptr<WfModule> CopyModule(WfModule* module, bool expandVirtualExprStat)
+			Ptr<WfModule> CopyModule(WfModule* module, bool expandVirtualExprStat, WfLexicalScopeManager* manager)
 			{
-				return CopyWithExpandVirtualVisitor(expandVirtualExprStat).CopyNode(module);
+				return CopyWithExpandVirtualVisitor(expandVirtualExprStat, manager).CopyNode(module);
 			}
 
 /***********************************************************************
@@ -626,20 +641,22 @@ ExpandObserveExpression
 			class ExpandObserveExpressionVisitor : public CopyWithExpandVirtualVisitor
 			{
 			public:
+				WfLexicalScopeManager*						manager;
 				BindContext&									context;
 
-				ExpandObserveExpressionVisitor(BindContext& _context)
-					:CopyWithExpandVirtualVisitor(true)
+				ExpandObserveExpressionVisitor(WfLexicalScopeManager* _manager, BindContext& _context)
+					:CopyWithExpandVirtualVisitor(true, _manager)
+					, manager(_manager)
 					, context(_context)
 				{
 				}
 
 				vl::Ptr<WfExpression> CopyNode(WfExpression* node)override
 				{
-					return Execute(node, context);
+					return Execute(manager, node, context);
 				}
 
-				static Ptr<WfExpression> Execute(WfExpression* expression, BindContext& context, bool expandImmediately = true)
+				static Ptr<WfExpression> Execute(WfLexicalScopeManager* manager, WfExpression* expression, BindContext& context, bool expandImmediately = true)
 				{
 					if (!expression)
 					{
@@ -661,7 +678,7 @@ ExpandObserveExpression
 						}
 					}
 
-					ExpandObserveExpressionVisitor visitor(context);
+					ExpandObserveExpressionVisitor visitor(manager, context);
 					expression->Accept(&visitor);
 					return visitor.result.Cast<WfExpression>();
 				}
@@ -675,18 +692,18 @@ ExpandObserveExpression
 						{
 							auto letVar = Ptr(new WfLetVariable);
 							letVar->name.value = var->name.value;
-							letVar->value = Execute(var->value.Obj(), context);
+							letVar->value = Execute(manager, var->value.Obj(), context);
 							letExpr->variables.Add(letVar);
 						}
 					}
 
 					if (letExpr->variables.Count() == 0)
 					{
-						result = Execute(node->expression.Obj(), context);
+						result = Execute(manager, node->expression.Obj(), context);
 					}
 					else
 					{
-						letExpr->expression = Execute(node->expression.Obj(), context);
+						letExpr->expression = Execute(manager, node->expression.Obj(), context);
 						result = letExpr;
 					}
 				}
@@ -890,7 +907,7 @@ ExpandObserveEvent
 					}
 					else
 					{
-						return ExpandObserveExpressionVisitor::Execute(observeExpr->events[eventIndex].Obj(), context);
+						return ExpandObserveExpressionVisitor::Execute(manager, observeExpr->events[eventIndex].Obj(), context);
 					}
 				}
 				else
@@ -990,7 +1007,7 @@ CreateBindCacheAssignStatement
 				auto cacheName = context.GetCacheVariableName(context.GetCachedExpressionIndexRecursively(parent, true));
 
 				auto protect = Ptr(new WfBinaryExpression);
-				protect->first = ExpandObserveExpressionVisitor::Execute(parent, context, false);
+				protect->first = ExpandObserveExpressionVisitor::Execute(manager, parent, context, false);
 				protect->second = CreateDefaultValue(manager->expressionResolvings[parent].type.Obj());
 				protect->op = WfBinaryOperator::FailedThen;
 
@@ -1348,7 +1365,7 @@ ExpandBindExpression
 						{
 							auto var = Ptr(new WfVariableDeclaration);
 							var->name.value = L"<bind-activator-result>";
-							var->expression = ExpandObserveExpressionVisitor::Execute(node->expression.Obj(), context);
+							var->expression = ExpandObserveExpressionVisitor::Execute(manager, node->expression.Obj(), context);
 
 							auto varStat = Ptr(new WfVariableStatement);
 							varStat->variable = var;

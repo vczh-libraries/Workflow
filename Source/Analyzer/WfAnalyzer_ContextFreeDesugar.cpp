@@ -288,7 +288,7 @@ ContextFreeModuleDesugar
 
 						decl->name.value = varName;
 						decl->type = CopyType(node->type);
-						decl->expression = CopyExpression(node->expression, true);
+						decl->expression = CopyExpression(node->expression, true, manager);
 
 						auto att = Ptr(new WfAttribute);
 						att->category.value = L"cpp";

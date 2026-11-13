@@ -25,7 +25,7 @@ ExpandSwitchStatement
 					auto decl = Ptr(new WfVariableDeclaration);
 					decl->name.value = varName;
 					decl->type = GetTypeFromTypeInfo(result.type.Obj());
-					decl->expression = CopyExpression(node->expression, true);
+					decl->expression = CopyExpression(node->expression, true, manager);
 
 					auto stat = Ptr(new WfVariableStatement);
 					stat->variable = decl;
@@ -46,7 +46,7 @@ ExpandSwitchStatement
 						refExpr->name.value = varName;
 
 						auto inferExpr = Ptr(new WfInferExpression);
-						inferExpr->expression= CopyExpression(switchCase->expression, true);
+						inferExpr->expression= CopyExpression(switchCase->expression, true, manager);
 						{
 							auto result = manager->expressionResolvings[switchCase->expression.Obj()];
 							inferExpr->type = GetTypeFromTypeInfo(result.type.Obj());
@@ -59,12 +59,12 @@ ExpandSwitchStatement
 
 						ifStat->expression = compare;
 					}
-					ifStat->trueBranch = CopyStatement(switchCase->statement, true);
+					ifStat->trueBranch = CopyStatement(switchCase->statement, true, manager);
 				}
 
 				if (node->defaultBranch)
 				{
-					*tailIfStat = CopyStatement(node->defaultBranch, true);
+					*tailIfStat = CopyStatement(node->defaultBranch, true, manager);
 				}
 
 				if (rootIfStat)
@@ -110,7 +110,7 @@ ExpandForEachStatement
 				WfForEachStatement*							forEach;
 
 				CopyForEachRangeBodyVisitor(WfLexicalScopeManager* _manager, WfForEachStatement* _forEach)
-					:CopyWithExpandVirtualVisitor(true)
+					:CopyWithExpandVirtualVisitor(true, _manager)
 					, manager(_manager)
 					, forEach(_forEach)
 				{
@@ -161,7 +161,7 @@ ExpandForEachStatement
 						auto decl = Ptr(new WfVariableDeclaration);
 						decl->name.value = varBegin;
 						decl->type = GetTypeFromTypeInfo(result.type.Obj());
-						decl->expression = CopyExpression(range->begin, true);
+						decl->expression = CopyExpression(range->begin, true, manager);
 						if (range->beginBoundary == WfRangeBoundary::Exclusive)
 						{
 							auto one = Ptr(new WfIntegerExpression);
@@ -184,7 +184,7 @@ ExpandForEachStatement
 						auto decl = Ptr(new WfVariableDeclaration);
 						decl->name.value = varEnd;
 						decl->type = GetTypeFromTypeInfo(result.type.Obj());
-						decl->expression = CopyExpression(range->end, true);
+						decl->expression = CopyExpression(range->end, true, manager);
 						if (range->endBoundary == WfRangeBoundary::Exclusive)
 						{
 							auto one = Ptr(new WfIntegerExpression);
@@ -253,7 +253,7 @@ ExpandForEachStatement
 						if (node->direction == WfForEachDirection::Normal)
 						{
 							auto inferExpr = Ptr(new WfInferExpression);
-							inferExpr->expression = CopyExpression(node->collection, true);
+							inferExpr->expression = CopyExpression(node->collection, true, manager);
 							inferExpr->type = GetTypeFromTypeInfo(TypeInfoRetriver<Ptr<IValueEnumerable>>::CreateTypeInfo().Obj());
 
 							decl->expression = inferExpr;
@@ -266,7 +266,7 @@ ExpandForEachStatement
 
 							auto refCall = Ptr(new WfCallExpression);
 							refCall->function = refMethod;
-							refCall->arguments.Add(CopyExpression(node->collection, true));
+							refCall->arguments.Add(CopyExpression(node->collection, true, manager));
 
 							decl->expression = refCall;
 						}
@@ -324,24 +324,22 @@ ExpandForEachStatement
 								auto callExpr = Ptr(new WfCallExpression);
 								callExpr->function = refMethod;
 
-								auto castExpr = Ptr(new WfTypeCastingExpression);
-								castExpr->expression = callExpr;
-								castExpr->strategy = WfTypeCastingStrategy::Strong;
-								{
-									auto parentScope = manager->nodeScopes[node];
-									auto symbol = parentScope->symbols[node->name.value][0];
-									castExpr->type = GetTypeFromTypeInfo(symbol->typeInfo.Obj());
-								}
+								auto parentScope = manager->nodeScopes[node];
+								auto symbol = parentScope->symbols[node->name.value][0];
 
 								auto decl = Ptr(new WfVariableDeclaration);
 								decl->name.value = node->name.value;
-								if (castExpr->type.Cast<WfVariantType>())
+								if (symbol->typeInfo->GetDecorator() == ITypeInfo::Variant)
 								{
-									callExpr->typedResult = castExpr->type;
+									manager->callExpressionTypedResults.Add(callExpr, symbol->typeInfo);
 									decl->expression = callExpr;
 								}
 								else
 								{
+									auto castExpr = Ptr(new WfTypeCastingExpression);
+									castExpr->expression = callExpr;
+									castExpr->strategy = WfTypeCastingStrategy::Strong;
+									castExpr->type = GetTypeFromTypeInfo(symbol->typeInfo.Obj());
 									decl->expression = castExpr;
 								}
 
@@ -349,7 +347,7 @@ ExpandForEachStatement
 								stat->variable = decl;
 								whileBlock->statements.Add(stat);
 							}
-							whileBlock->statements.Add(CopyStatement(node->statement, true));
+							whileBlock->statements.Add(CopyStatement(node->statement, true, manager));
 						}
 						block->statements.Add(whileStat);
 					}
@@ -366,7 +364,7 @@ ExpandCoProviderStatement
 				WfLexicalScopeManager*						manager;
 
 				ExpandCoProviderStatementVisitor(WfLexicalScopeManager* _manager)
-					:CopyWithExpandVirtualVisitor(true)
+					:CopyWithExpandVirtualVisitor(true, _manager)
 					, manager(_manager)
 				{
 				}

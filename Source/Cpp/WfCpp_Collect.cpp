@@ -145,6 +145,14 @@ CollectModule
 					traverse_visitor::AstVisitor::Visit(node);
 					skipCounter--;
 				}
+
+				void Visit(WfVirtualCfeDeclaration* node)override
+				{
+					for (auto decl : node->expandedDeclarations)
+					{
+						InspectInto(decl.Obj());
+					}
+				}
 			};
 
 			void CollectModule(WfCppConfig* config, Ptr<WfModule> module)

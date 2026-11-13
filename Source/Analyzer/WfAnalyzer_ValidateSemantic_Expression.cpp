@@ -46,7 +46,7 @@ ValidateSemantic(Expression)
 				{
 					auto castExpr = Ptr(new WfTypeCastingExpression);
 					castExpr->strategy = node->strategy;
-					castExpr->expression = CopyExpression(node->expression, true);
+					castExpr->expression = CopyExpression(node->expression, true, manager);
 					castExpr->type = GetTypeFromTypeInfo(expectedType.Obj());
 					node->expandedExpression = castExpr;
 				}
@@ -1642,9 +1642,10 @@ ValidateSemantic(Expression)
 					if (resultType)
 					{
 						manager->expressionResolvings.Add(node->function, functions[selectedFunctionIndex]);
-						if (node->typedResult)
+						auto index = manager->callExpressionTypedResults.Keys().IndexOf(node);
+						if (index != -1)
 						{
-							resultType = CreateTypeInfoFromType(manager->nodeScopes[node].Obj(), node->typedResult);
+							resultType = manager->callExpressionTypedResults.Values()[index];
 						}
 						results.Add(ResolveExpressionResult::ReadonlyType(resultType));
 					}

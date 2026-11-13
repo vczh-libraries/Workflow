@@ -229,6 +229,7 @@ Scope Manager
 				typedef collections::Pair<WfConstructorDeclaration*, ITypeDescriptor*>						BaseConstructorCallKey;
 				typedef collections::Pair<WfBaseConstructorCall*, IMethodInfo*>								BaseConstructorCallValue;
 				typedef collections::Dictionary<BaseConstructorCallKey, BaseConstructorCallValue>			BaseConstructorCallResolvingMap;
+				typedef collections::Dictionary<Ptr<WfCallExpression>, Ptr<reflection::description::ITypeInfo>> CallExpressionTypedResultMap;
 
 				typedef collections::Dictionary<glr::ParsingAstBase*, Ptr<WfLexicalCapture>>				LambdaCaptureMap;
 				typedef collections::Dictionary<WfFunctionDeclaration*, IMethodInfo*>						InterfaceMethodImplementationMap;
@@ -276,6 +277,7 @@ Scope Manager
 				CoOperatorResolvingMap						coProviderResolvings;				// the constructor for the co-provider statement (e.g. AsyncCoroutine::Create)
 				CoOperatorResolvingMap						coCastResultResolvings;				// the method for the co-operator's type casting (e.g. IStringAsync::CastResult)
 				BaseConstructorCallResolvingMap				baseConstructorCallResolvings;		// all base constructor call resolvings
+				CallExpressionTypedResultMap					callExpressionTypedResults;			// resolved result types for generated calls
 
 				LambdaCaptureMap							lambdaCaptures;						// all captured symbols in a lambda AST
 				InterfaceMethodImplementationMap			interfaceMethodImpls;				// the IMethodInfo* that implemented by a function
@@ -317,7 +319,7 @@ Scope Manager
 				/// If there is no new reflectable native type that is registered after the last call to <see cref="Rebuild"/>,
 				/// using true for this argument saves times by reusing scopes created from global types.
 				/// </param>
-				/// <param name="deleteModules">Set to true to delete all added modules.</param>
+				/// <param name="deleteModules">Set to true to delete all added modules. Otherwise discard virtual expansions to regenerate them with fresh semantic information.</param>
 				void										Clear(bool keepTypeDescriptorNames, bool deleteModules);
 				/// <summary>Perform semantic analyzing for added modules.</summary>
 				/// <param name="keepTypeDescriptorNames">The same to the argument in <see cref="Clear"/>.</param>
@@ -566,35 +568,37 @@ Expanding Virtual Nodes
 			{
 			private:
 				bool										expandVirtualAst;
+				WfLexicalScopeManager*						scopeManager;
 
 				void										Expand(collections::List<Ptr<WfDeclaration>>& decls);
 
 				void										Visit(WfVirtualCfeExpression* node)override;
 				void										Visit(WfVirtualCseExpression* node)override;
 				void										Visit(WfVirtualCseStatement* node)override;
+				void										Visit(WfCallExpression* node)override;
 
 				void										Visit(WfNamespaceDeclaration* node)override;
 				void										Visit(WfClassDeclaration* node)override;
 				void										Visit(WfNewInterfaceExpression* node)override;
 
 			public:
-				CopyWithExpandVirtualVisitor(bool _expandVirtualAst);
+				CopyWithExpandVirtualVisitor(bool _expandVirtualAst, WfLexicalScopeManager* _scopeManager = nullptr);
 			};
 
 			extern Ptr<WfStatement>							SearchUntilNonVirtualStatement(Ptr<WfStatement> statement);
 			extern Ptr<WfExpression>						CreateDefaultValue(reflection::description::ITypeInfo* elementType);
 
 			extern Ptr<WfType>								CopyType(Ptr<WfType> type);
-			extern Ptr<WfExpression>						CopyExpression(Ptr<WfExpression> expression, bool expandVirtualExprStat);
-			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement, bool expandVirtualExprStat);
-			extern Ptr<WfDeclaration>						CopyDeclaration(Ptr<WfDeclaration> declaration, bool expandVirtualExprStat);
-			extern Ptr<WfModule>							CopyModule(Ptr<WfModule> module, bool expandVirtualExprStat);
+			extern Ptr<WfExpression>						CopyExpression(Ptr<WfExpression> expression, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
+			extern Ptr<WfStatement>							CopyStatement(Ptr<WfStatement> statement, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
+			extern Ptr<WfDeclaration>						CopyDeclaration(Ptr<WfDeclaration> declaration, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
+			extern Ptr<WfModule>							CopyModule(Ptr<WfModule> module, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
 
 			extern Ptr<WfType>								CopyType(WfType* type);
-			extern Ptr<WfExpression>						CopyExpression(WfExpression* expression, bool expandVirtualExprStat);
-			extern Ptr<WfStatement>							CopyStatement(WfStatement* statement, bool expandVirtualExprStat);
-			extern Ptr<WfDeclaration>						CopyDeclaration(WfDeclaration* declaration, bool expandVirtualExprStat);
-			extern Ptr<WfModule>							CopyModule(WfModule* module, bool expandVirtualExprStat);
+			extern Ptr<WfExpression>						CopyExpression(WfExpression* expression, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
+			extern Ptr<WfStatement>							CopyStatement(WfStatement* statement, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
+			extern Ptr<WfDeclaration>						CopyDeclaration(WfDeclaration* declaration, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
+			extern Ptr<WfModule>							CopyModule(WfModule* module, bool expandVirtualExprStat, WfLexicalScopeManager* manager = nullptr);
 
 			extern void										ExpandBindExpression(WfLexicalScopeManager* manager, WfBindExpression* node);
 			extern void										ExpandNewCoroutineExpression(WfLexicalScopeManager* manager, WfNewCoroutineExpression* node);

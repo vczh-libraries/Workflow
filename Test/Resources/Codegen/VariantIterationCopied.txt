@@ -1,0 +1,84 @@
+module test;
+using system::*;
+
+var result = "";
+
+func Render(value:variant<int, string>):string
+{
+  var number = value as int?;
+  if (number is not null) { return cast int number; }
+  return cast string value;
+}
+
+class IterationHolder
+{
+  prop Text:string = (func():string
+  {
+    var text = "";
+    var values : variant<string, int>[] = {"p" of variant<string, int> 3 of variant<string, int>};
+    for (value in values)
+    {
+      var number = value as int?;
+      if (number is not null) { text = text & cast int number; }
+      else { text = text & cast string value; }
+    }
+    return text;
+  })() {const, not observe}
+}
+
+func main():string
+{
+  var values : variant<int, string>[] =
+    {1 of variant<int, string> "s" of variant<int, string> 2 of variant<int, string>};
+  for (index in range [1, 2])
+  {
+    for (value in values) { result = result & Render(value); }
+  }
+  result = result & "|";
+  for (index in {1 2})
+  {
+    for (value in reversed values) { result = result & Render(value); }
+  }
+  result = result & "|";
+  switch (1)
+  {
+  case 1:
+    {
+      for (value in values) { result = result & Render(value); }
+    }
+  }
+  result = result & "|";
+  var coroutine = $coroutine
+  {
+    for (index in range [1, 2])
+    {
+      switch (index)
+      {
+      case 1:
+        {
+          for (value in values)
+          {
+            $pause;
+            result = result & Render(value);
+          }
+        }
+      default:
+        {
+          for (value in reversed values)
+          {
+            $pause;
+            result = result & Render(value);
+          }
+        }
+      }
+    }
+  };
+  while (coroutine.Status != CoroutineStatus::Stopped)
+  {
+    coroutine.Resume(true, null);
+  }
+  var sum = 0;
+  for (value in {1 2 3}) { sum = sum + value; }
+  var holder = new IterationHolder^();
+  return result & "|" & sum & "|" & holder.Text;
+}

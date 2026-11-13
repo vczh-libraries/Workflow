@@ -366,6 +366,39 @@ ResolveExpressionResult
 			}
 
 /***********************************************************************
+ClearVirtualExpansionVisitor
+***********************************************************************/
+
+			class ClearVirtualExpansionVisitor : public traverse_visitor::AstVisitor
+			{
+			public:
+				void Traverse(WfVirtualCfeExpression* node)override
+				{
+					node->expandedExpression = nullptr;
+				}
+
+				void Traverse(WfVirtualCseExpression* node)override
+				{
+					node->expandedExpression = nullptr;
+				}
+
+				void Traverse(WfVirtualCseStatement* node)override
+				{
+					node->expandedStatement = nullptr;
+				}
+
+				void Traverse(WfVirtualCfeDeclaration* node)override
+				{
+					node->expandedDeclarations.Clear();
+				}
+
+				void Traverse(WfVirtualCseDeclaration* node)override
+				{
+					node->expandedDeclarations.Clear();
+				}
+			};
+
+/***********************************************************************
 WfLexicalScopeManager
 ***********************************************************************/
 
@@ -521,6 +554,14 @@ WfLexicalScopeManager
 					moduleCodes.Clear();
 					usedCodeIndex = 0;
 				}
+				else
+				{
+					ClearVirtualExpansionVisitor visitor;
+					for (auto module : modules)
+					{
+						visitor.InspectInto(module.Obj());
+					}
+				}
 
 				rpcMetadata = nullptr;
 				usedTempVars = 0;
@@ -537,6 +578,7 @@ WfLexicalScopeManager
 				coProviderResolvings.Clear();
 				coCastResultResolvings.Clear();
 				baseConstructorCallResolvings.Clear();
+				callExpressionTypedResults.Clear();
 
 				lambdaCaptures.Clear();
 				interfaceMethodImpls.Clear();

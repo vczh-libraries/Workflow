@@ -43,7 +43,7 @@ ExpandStateMachineStatementVisitor
 				using copy_visitor::AstVisitor::CopyNode;
 				vl::Ptr<WfExpression> CopyNode(WfExpression* node)override
 				{
-					return CopyExpression(node, true);
+					return CopyExpression(node, true, manager);
 				}
 
 				void Visit(WfCoroutineStatement* node)override

@@ -2181,7 +2181,7 @@ WfGenerateExpressionVisitor
 								[&](IMethodInfo* methodInfo, vint index) { return argumentCallback(methodInfo, nullptr, index); },
 								useReturnValue);
 						};
-						if (node->typedResult)
+						if (config->manager->callExpressionTypedResults.Keys().Contains(node))
 						{
 							WriteUnboxValue(config->manager->expressionResolvings[node].type.Obj(), writeCall);
 						}
