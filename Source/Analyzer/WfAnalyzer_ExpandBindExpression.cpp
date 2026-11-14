@@ -148,7 +148,7 @@ Copy(Type|Expression|Statement|Declaration)
 					if (index != -1)
 					{
 						auto type = scopeManager->callExpressionTypedResults.Values()[index];
-						scopeManager->callExpressionTypedResults.Add(result.Cast<WfCallExpression>(), type);
+						scopeManager->callExpressionTypedResults.Add(result.Cast<WfCallExpression>().Obj(), type);
 					}
 				}
 			}

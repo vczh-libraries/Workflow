@@ -40,7 +40,7 @@ TEST_FILE
 				TEST_ASSERT(module);
 				manager.AddModule(module);
 				bool variantIteration = WString(sampleName) == L"VariantIteration" || WString(sampleName) == L"VariantIterationCopied";
-				List<Ptr<WfCallExpression>> previousCalls;
+				List<Ptr<WfCallExpression>> previousCalls; // Ptr<T> keeps the lifecycle of these nodes, preventing the next compiling creating new nodes accidentally at the same address
 				for (vint i = 0; i < 3; i++)
 				{
 					manager.Rebuild(i != 0);
@@ -52,14 +52,14 @@ TEST_FILE
 					TEST_ASSERT((manager.callExpressionTypedResults.Count() > 0) == variantIteration);
 					for (auto [call, index] : indexed(manager.callExpressionTypedResults.Keys()))
 					{
-						TEST_ASSERT(!previousCalls.Contains(call.Obj()));
+						TEST_ASSERT(!previousCalls.Contains(call));
 						auto type = manager.callExpressionTypedResults.Values()[index];
 						TEST_ASSERT(type->GetDecorator() == ITypeInfo::Variant);
-						TEST_ASSERT(manager.expressionResolvings[call.Obj()].type == type);
+						TEST_ASSERT(manager.expressionResolvings[call].type == type);
 						TEST_ASSERT(manager.expressionResolvings[call->function.Obj()].methodInfo->GetName() == L"GetCurrent");
 					}
 					TEST_ASSERT(GenerateAssembly(&manager));
-					CopyFrom(previousCalls, manager.callExpressionTypedResults.Keys());
+					CopyFrom(previousCalls, From(manager.callExpressionTypedResults.Keys()).Select([](WfCallExpression* call) { return Ptr(call); }));
 					if (i == 1)
 					{
 						manager.Clear(true, false);
@@ -94,9 +94,9 @@ TEST_FILE
 		TEST_ASSERT(manager.callExpressionTypedResults.Count() > 0);
 		auto call = manager.callExpressionTypedResults.Keys()[0];
 		auto type = manager.callExpressionTypedResults.Values()[0];
-		auto plainCopy = CopyExpression(call.Obj(), true).Cast<WfCallExpression>();
+		auto plainCopy = CopyExpression(call, true).Cast<WfCallExpression>();
 		TEST_ASSERT(!manager.callExpressionTypedResults.Keys().Contains(plainCopy.Obj()));
-		auto analyzedCopy = CopyExpression(call.Cast<WfExpression>(), true, &manager).Cast<WfCallExpression>();
+		auto analyzedCopy = CopyExpression(static_cast<WfExpression*>(call), true, &manager).Cast<WfCallExpression>();
 		TEST_ASSERT(analyzedCopy != call);
 		TEST_ASSERT(manager.callExpressionTypedResults[analyzedCopy.Obj()] == type);
 		auto copiedAgain = CopyExpression(analyzedCopy.Obj(), false, &manager).Cast<WfCallExpression>();

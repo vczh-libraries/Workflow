@@ -331,7 +331,7 @@ ExpandForEachStatement
 								decl->name.value = node->name.value;
 								if (symbol->typeInfo->GetDecorator() == ITypeInfo::Variant)
 								{
-									manager->callExpressionTypedResults.Add(callExpr, symbol->typeInfo);
+									manager->callExpressionTypedResults.Add(callExpr.Obj(), symbol->typeInfo);
 									decl->expression = callExpr;
 								}
 								else
