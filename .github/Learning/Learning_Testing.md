@@ -32,6 +32,8 @@
 - Verify Workflow library file moves with stale-reference scans [1]
 - Keep Workflow stdio launchers repository-relative and interactive [1]
 - Format nested MSBuild source items for portable vmake parsing [1]
+- Exercise retained ASTs and generated-call copies across Workflow rebuilds [1]
+- Separate Workflow AST representation changes from executable output changes [1]
 
 # Refinements
 
@@ -192,3 +194,13 @@ After changing this layout, regenerate through `.github/Ubuntu/build.sh` and con
 Run `Test/StartRpcStdio.ps1 Test/StartRpcStdio_SharedMemspSkipList.txt` or `Test/StartRpcStdio.sh Test/StartRpcStdio_SharedMemspSkipList.txt` as required verification alongside the Workflow UnitTest projects. The canonical Tools build paths must include this cross-process-compatible suite: the Unix `vgo vbuild Workflow` path after its vmake projects, and the Windows `Build.ps1 -Project Workflow` path against the already-built Release x64 binaries.
 
 Allow the PowerShell launcher to select an explicit configuration and platform while keeping Debug x64 as its direct-use default. Invoke it in a child PowerShell process from the canonical Windows build because the launcher's deliberate `exit` must not terminate the parent before release generation finishes; propagate any nonzero result through the existing build failure path.
+
+## Exercise retained ASTs and generated-call copies across Workflow rebuilds
+
+A sample harness that reparses each module and calls `Rebuild` once does not test retained-AST lifecycle. Add focused analyzer checks for a direct second rebuild, explicit retained-module clearing, generic module copying and fresh-module reuse. Assert that semantic caches empty on clear and regenerate against fresh call identities; include ordinary calls and copies without a manager as controls.
+
+Exercise generated-call overrides through nested foreach, switch, coroutine and context-free property lowering, then verify indexed results in the VM and every generated-C++ configuration. Establish retained-syntax behavior before changing ownership so existing scope failures are distinguished from cache-transfer regressions. Keep the regressions in `<Workflow repo>/Test/UnitTest/CompilerTest_LoadAndCompile/TestAnalyzer.cpp` and indexed samples under `<Workflow repo>/Test/Resources/Codegen`.
+
+## Separate Workflow AST representation changes from executable output changes
+
+When removing a parser AST field, regenerate through the prescribed parser generator and scan handwritten source, generated parser artifacts and parsing dumps for obsolete references. Expected parsing JSON changes include removal of null-valued fields on ordinary nodes. Compare logs after excluding only the intentionally removed property, and inspect assembly, generated C++ and RPC output independently; a representation change does not authorize unrelated execution changes. Preserve existing indexed results and add separate focused fixtures for newly covered paths.

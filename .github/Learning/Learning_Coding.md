@@ -67,6 +67,8 @@
 - Keep shared Workflow test output path helpers in `Helper.h` / `Helper.cpp` [1]
 - Keep RPC array resizing separate from list-only mutations [1]
 - Document RPC JSON setup in the Workflow JSON request routing KB document [1]
+- Own generated-call result overrides in `WfLexicalScopeManager` [1]
+- Regenerate virtual expansions when rebuilding retained Workflow modules [1]
 
 # Refinements
 
@@ -391,3 +393,15 @@ Make the service/client process boundary visible even when the in-memory harness
 When a fixture intentionally compares local and wrapped identities, use separately named service-owned and client-owned objects instead of declarations that imply shared memory. This reorganization must preserve `IndexRpc.txt` byte-for-byte and regenerate derived outputs through `CompilerTest_LoadAndCompile`.
 
 If the behavior under test inherently requires the identical concrete object pointer to be offered through two lifecycles, preserve that intent as a distinct `*_SharedMemsp` fixture instead of weakening the process-safe fixture. Give it a separate namespace so both cases coexist, keep the shared objects on the client side used by the in-memory harness, and mark the process-boundary limitation explicitly in compatibility lists.
+
+## Own generated-call result overrides in `WfLexicalScopeManager`
+
+Keep variant foreach `GetCurrent()` result overrides in `WfLexicalScopeManager::callExpressionTypedResults`, declared in `<Workflow repo>/Source/Analyzer/WfAnalyzer.h`, using call-node identity and already-resolved `ITypeInfo` values within the manager's analysis lifetime. Perform ordinary overload selection before applying the override and preserve the C++ unboxing branch through map membership. Do not expose the override in parser AST fields or reconstruct a `WfType` merely to cache a resolved type.
+
+When lowering copies analyzed generated code, pass the current manager through the existing `CopyWithExpandVirtualVisitor` and copy helpers so copied calls receive their override entries. Generic copies without a manager remain independent of semantic state; a flattened generated subtree is not a self-contained parsed module. See `<Workflow repo>/.github/KnowledgeBase/KB_Workflow_AstBuildingHelperFunctions.md` for the copy-helper contract.
+
+## Regenerate virtual expansions when rebuilding retained Workflow modules
+
+Clear generated-call result overrides alongside the other semantic tables in `WfLexicalScopeManager::Clear`, defined in `<Workflow repo>/Source/Analyzer/WfAnalyzer.cpp`. Retained modules must discard both context-free and context-sensitive virtual expansions before rebuilding scopes and analysis: context-free expansions can contain copied context-sensitive descendants whose resolved types were cleared. Rebuild from original syntax instead of retaining stale semantic entries.
+
+Backend collection must visit the analyzed expanded context-free declarations, including copied property-initializer lambdas, rather than unscoped originals. Keep scope ownership, regenerated expansions and backend traversal aligned. See `<Workflow repo>/.github/KnowledgeBase/KB_Workflow_Design_CompilerRebuildAndDesugaring.md`.
