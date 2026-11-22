@@ -38,4 +38,8 @@ Register the sample's generated C++ and reflection files in the `Generated_Cpp` 
 
 ### CONFIRMED
 
-Both target architectures passed all 874 compiler cases. In the x64 Debug VM and all three generated-C++ suites, the property chain published `[1][2][4][-1][3][6]`. The explicit chain published `[1][2][4][4][-1][3][6]`, with the extra `4` coming from the current child's `Refreshed` event. Firing that event on the former child produced no update. The `-1` and subsequent `3` verify clearing the receiver and rebinding to the first child. The final mutation after close produced no update.
+Both target architectures passed all 874 compiler cases. In the VM and all three generated-C++ configurations on both Win32 and x64, the property chain published `[1][2][4][-1][3][6]`. The explicit chain published `[1][2][4][4][-1][3][6]`, with the extra `4` coming from the current child's `Refreshed` event. Firing that event on the former child produced no update. The `-1` and subsequent `3` verify clearing the receiver and rebinding to the first child. The final mutation after close produced no update.
+
+Both Debug builds completed with zero warnings and errors. On each platform the VM passed 286 cases, each generated-C++ suite passed 252 cases, and the library, metadata and RPC stdio checks passed. The TypeScript package passed `tsc --noEmit`.
+
+The full `Build.ps1 Workflow` run passed for Win32 and x64 Release and regenerated `<Workflow repo>/Release/VlppWorkflowCompiler.cpp` with the same analyzer fix.
