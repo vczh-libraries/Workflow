@@ -1,4 +1,5 @@
 #include "AnonymousLambda.h"
+#include "BindChainedObserveReflection.h"
 #include "BindComplex.h"
 #include "BindCustomInterfaceReflection.h"
 #include "BindCustomInterface2Reflection.h"
@@ -122,6 +123,7 @@ using namespace vl::reflection::description;
 
 void LoadTestCaseTypes()
 {
+	 LoadBindChainedObserveTypes();
 	 LoadBindCustomInterfaceTypes();
 	 LoadBindCustomInterface2Types();
 	 LoadBindLetTypes();
@@ -186,6 +188,15 @@ TEST_CASE(L"AnonymousLambda")
 {
 	WString expected = L"2, 3, 3, 4";
 	WString actual = ::vl_workflow_global::AnonymousLambda::Instance().main();
+	Console::WriteLine(L"    expected : " + expected);
+	Console::WriteLine(L"    actual   : " + actual);
+	TEST_ASSERT(actual == expected);
+});
+
+TEST_CASE(L"BindChainedObserve")
+{
+	WString expected = L"[1][2][4][-1][3][6]/[1][2][4][4][-1][3][6]";
+	WString actual = ::vl_workflow_global::BindChainedObserve::Instance().main();
 	Console::WriteLine(L"    expected : " + expected);
 	Console::WriteLine(L"    actual   : " + actual);
 	TEST_ASSERT(actual == expected);
