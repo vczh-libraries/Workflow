@@ -1,0 +1,50 @@
+module test;
+using system::*;
+
+class ChainedObserveNode
+{
+	prop Child : ChainedObserveNode^ = null {}
+	prop Value : int = 0 {}
+	event Refreshed();
+}
+
+func TraceChanges(root : ChainedObserveNode^, subscription : Subscription^) : string
+{
+	var first = new ChainedObserveNode^();
+	var second = new ChainedObserveNode^();
+	root.Child = first;
+
+	var trace = {""};
+	attach(subscription.ValueChanged, func(value : object) : void
+	{
+		trace[0] = trace[0] & $"[$(cast int value)]";
+	});
+	subscription.Open();
+
+	first.Value = 1;
+	second.Value = 2;
+	root.Child = second;
+	first.Value = 3;
+	first.Refreshed();
+	second.Value = 4;
+	second.Refreshed();
+	root.Child = null;
+	second.Value = 5;
+	root.Child = first;
+	first.Value = 6;
+
+	subscription.Close();
+	first.Value = 7;
+	return trace[0];
+}
+
+func main() : string
+{
+	var root = new ChainedObserveNode^();
+	var properties = TraceChanges(root, bind(root.Child.Value ?? -1));
+	var observations = TraceChanges(root, bind(
+		root.observe as parent(parent.Child on parent.ChildChanged)
+			.observe as child(child is null ? -1 : child.Value on child.ValueChanged, child.Refreshed)
+	));
+	return properties & "/" & observations;
+}
