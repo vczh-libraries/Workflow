@@ -21,3 +21,15 @@ Run the same changes through a property chain and a chain of two explicit observ
 Reproduce the compiler failure before changing the analyzer. After the fix, check the exact traces in the Workflow VM and generated C++ against `<Workflow repo>/Test/Resources/IndexCodegen.txt`.
 
 Before the fix, CDB stopped on an unhandled C++ exception in `BindChainedObserve` during the x86 code-generation pass. The stack showed the outer alias calling `CreateBindContextVisitor::DirectDepend`, revisiting the inner observation and reaching its alias registration a second time. `Dictionary::Add` rejected the duplicate key in `<Workflow repo>/Source/Analyzer/WfAnalyzer_ExpandBindExpression.cpp` before the compiler could emit the sample.
+
+# PROPOSALS
+
+- No.1 Reuse the receiver's dependencies when resolving an observe alias
+
+## No.1 Reuse the receiver's dependencies when resolving an observe alias
+
+`CreateBindContextVisitor::Visit(WfObserveExpression*)` processes the receiver before the observed value and its event list. Each reference to the alias can therefore propagate the receiver's existing causes. Traversing the receiver again registers its inner aliases and events a second time. The `let` reference path already uses the same dependency propagation without a second traversal.
+
+### CODE CHANGE
+
+In `<Workflow repo>/Source/Analyzer/WfAnalyzer_ExpandBindExpression.cpp`, pass `false` for `processDepended` when calling `DirectDepend` for an observe alias. Keep recording the alias and copying dependency edges so that upstream changes still refresh the downstream receiver and its handlers.
