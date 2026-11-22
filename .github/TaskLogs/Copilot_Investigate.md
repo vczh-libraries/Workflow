@@ -24,7 +24,7 @@ Before the fix, CDB stopped on an unhandled C++ exception in `BindChainedObserve
 
 # PROPOSALS
 
-- No.1 Reuse the receiver's dependencies when resolving an observe alias
+- No.1 Reuse the receiver's dependencies when resolving an observe alias [CONFIRMED]
 
 ## No.1 Reuse the receiver's dependencies when resolving an observe alias
 
@@ -33,3 +33,9 @@ Before the fix, CDB stopped on an unhandled C++ exception in `BindChainedObserve
 ### CODE CHANGE
 
 In `<Workflow repo>/Source/Analyzer/WfAnalyzer_ExpandBindExpression.cpp`, pass `false` for `processDepended` when calling `DirectDepend` for an observe alias. Keep recording the alias and copying dependency edges so that upstream changes still refresh the downstream receiver and its handlers.
+
+Register the sample's generated C++ and reflection files in the `Generated_Cpp` and `Generated_Reflection` shared projects so each native test configuration executes it.
+
+### CONFIRMED
+
+Both target architectures passed all 874 compiler cases. In the x64 Debug VM and all three generated-C++ suites, the property chain published `[1][2][4][-1][3][6]`. The explicit chain published `[1][2][4][4][-1][3][6]`, with the extra `4` coming from the current child's `Refreshed` event. Firing that event on the former child produced no update. The `-1` and subsequent `3` verify clearing the receiver and rebinding to the first child. The final mutation after close produced no update.
